@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 
 interface ImportMetaEnv {
     readonly VITE_API_ENDPOINT_GENERAL: string
@@ -11,5 +13,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv
 }
-
-

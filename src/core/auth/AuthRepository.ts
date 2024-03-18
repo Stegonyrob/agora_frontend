@@ -3,7 +3,7 @@ import type { IAuthUser } from "./IAuthUser";
 import type { ILoggedInUser } from "./ILoggedInUser";
 
 export default class AuthRepository {
-    uri: string = import.meta.env.VITE_APP_API_SPRING; // Asegúrate de que esta variable esté correctamente configurada
+    uri: string = import.meta.env.VITE_API_ENDPOINT_GENERAL;
 
     async authenticateFetch(data: IAuthUser): Promise<ILoggedInUser> {
         try {
