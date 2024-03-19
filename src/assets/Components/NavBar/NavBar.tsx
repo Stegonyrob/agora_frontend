@@ -1,10 +1,11 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-
+import './NavBar.scss';
 function NavBar() {
   return (
     <Navbar expand="lg" className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
       <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+        <Navbar.Brand href="#home">
+          <img src="../../../../public/images/agoraLogo.png"/></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ms-auto">
