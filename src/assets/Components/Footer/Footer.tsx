@@ -1,11 +1,9 @@
+import { } from 'mdb-react-ui-kit';
 import './Footer.scss';
-import {
-
-} from 'mdb-react-ui-kit';
 
 export default function Footer() {
   return (
-    <footer className="text-white-50 bg-dark text-center text-lg-start position-fixed bottom-0 w-100">
+    <footer className="text-white-50  text-center text-lg-start position-fixed bottom-0 w-100 footer">
      <div className="container p-2 pb-2">
       <div className="row-auto d-flex justify-content-between align-items-center">
         
