@@ -15,7 +15,7 @@ const Logo = () => {
       const rect = canvas.getBoundingClientRect();
       const offsetX = event.clientX - rect.left;
       const offsetY = event.clientY - rect.top;
-      context?.clearRect(0, 0, canvas.width, canvas.height);
+      context?.clearRect(2, 2, canvas.width, canvas.height);
       context?.fillText('Click Me!!!', offsetX, offsetY);
     };
 

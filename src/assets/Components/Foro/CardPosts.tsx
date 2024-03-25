@@ -33,7 +33,7 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
   }, []);
 
   return (
-    <Container className="g-2" style={{ marginLeft:"-22rem", marginBottom:"5rem" }}>
+    <Container className="g-2" style={{ marginLeft:"-18rem", marginBottom:"5rem" }}>
       <Row>
         {posts.map((post) => (
           <Col key={post.id} xs={12} sm={6} md={4} lg={3}>
