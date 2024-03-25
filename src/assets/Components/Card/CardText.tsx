@@ -3,14 +3,12 @@ import Card from 'react-bootstrap/Card';
 import { useSelector } from 'react-redux';
 import "./CardText.scss";
 
-// Definición de la interfaz para los objetos dentro de texts
 interface TextItem {
  id: string;
  image: string;
  description: string;
 }
 
-// Definición de la propiedad ids
 interface CardTextProps {
  ids: string[];
 }
@@ -18,7 +16,6 @@ interface CardTextProps {
 function CardText({ ids }: CardTextProps) {
  const texts = useSelector((state: any) => state.text.texts);
 
- // Filtrar los textos basados en los IDs proporcionados
  const filteredTexts = texts.filter((text: TextItem) => ids.includes(text.id));
 
  return (

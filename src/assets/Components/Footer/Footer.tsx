@@ -3,8 +3,8 @@ import './Footer.scss';
 
 export default function Footer() {
   return (
-    <footer className="text-white-50  text-center text-lg-start position-fixed bottom-0 w-100 footer">
-     <div className="container p-2 pb-2">
+    <footer className="text-white-50 text-center text-xlg-start position-fixed bottom-0 w-100 footer">
+     <div className="container p-4 pb-2">
       <div className="row-auto d-flex justify-content-between align-items-center">
         
            <div>
@@ -23,8 +23,8 @@ export default function Footer() {
            </div>
     
            <p className="text-center p-2" >
-             © 2023 Copyright:Ágora Centro Educativo de Apoyo Especializado
-             <a className="text-dark" href="#">Your Website</a>
+             © 2024 Copyright:Ágora Centro Educativo de Apoyo Especializado
+             <a className="text-dark" href="#"></a>
            </p>
     
       </div>

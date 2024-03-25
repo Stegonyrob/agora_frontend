@@ -1,4 +1,3 @@
-import type { AxiosResponse } from "axios";
 import AuthRepository from "./AuthRepository";
 import type { IAuthUser } from "./IAuthUser";
 import type { ILoggedInUser } from "./ILoggedInUser";
@@ -9,11 +8,11 @@ export default class AuthService {
 
     async login(data: IAuthUser): Promise<ILoggedInUser> {
 
-        // const json = await this.repository.authenticateAxios(data)
+       
         const json = await this.repository.authenticateFetch(data)
         
         const user: ILoggedInUser = {
-            username: json.username,
+            email: json.email,
             roles: json.roles,
             isAuthenticated: true
         }

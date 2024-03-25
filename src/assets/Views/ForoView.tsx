@@ -1,11 +1,12 @@
-import CardPosts from "../Components/Foro/CardPosts";
+import PostList from "../Components/Foro/PostList";
 
-
-export default function ForoView() {
-  return (
-    <div>
-       <h2>Foro</h2>
-    <CardPosts />
-    </div>
-  );
-}
+export default function AgoraView() {
+   return (
+     <div>
+       <h2>Agora</h2>
+       <PostList posts={[]}/>
+    
+     </div>
+   );
+ }
+ 

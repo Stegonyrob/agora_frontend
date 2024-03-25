@@ -8,7 +8,7 @@ export default class AuthRepository {
     async authenticateFetch(data: IAuthUser): Promise<ILoggedInUser> {
         try {
             const myHeaders = new Headers();
-            myHeaders.append('Authorization', 'Basic ' + btoa(data.username + ':' + data.password));
+            myHeaders.append('Authorization', 'Basic ' + btoa(data.email + ':' + data.password));
 
             const options: RequestInit = {
                 method: 'GET',

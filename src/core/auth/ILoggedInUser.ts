@@ -1,6 +1,6 @@
 
 export interface ILoggedInUser {
-    username: string
+    email: string
     roles:string
     isAuthenticated: boolean
 }

@@ -1,28 +1,30 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define el tipo de estado del usuario
 interface UserState {
- user: {
-    email: string;
-    password: string;
- } | null;
+ userId: string | null;
+ role: string | null;
 }
 
-// Define el estado inicial
 const initialState: UserState = {
- user: null,
+ userId: null,
+ role: null,
 };
 
-const userSlice = createSlice({
+export const userSlice = createSlice({
  name: 'user',
  initialState,
  reducers: {
-    login: (state, action: PayloadAction<{ email: string; password: string }>) => {
-      state.user = action.payload;
+    loginUser: (state, action: PayloadAction<{ userId: string; role: string }>) => {
+      state.userId = action.payload.userId;
+      state.role = action.payload.role;
+    },
+    clearErrorMessage: (state) => {
+      state.userId = null;
+      state.role = null;
     },
  },
 });
 
-export const { login } = userSlice.actions;
+export const { loginUser, clearErrorMessage } = userSlice.actions;
 
 export default userSlice.reducer;
