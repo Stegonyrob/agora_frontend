@@ -1,8 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import ListGroup from "react-bootstrap/ListGroup";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 
 interface Post {
   id: string;
@@ -35,23 +33,22 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
   }, []);
 
   return (
-    <div>
-      {posts.map((post) => (
-        <Card key={post.id} style={{ width: "18rem", marginBottom: "1rem" }}>
-          <Card.Body>
-            <Card.Title>{post.title}</Card.Title>
-            <Card.Text>{post.message}</Card.Text>
-            <Button variant="primary" onClick={() => onSelect(post)}>Editar</Button>
-            <Button variant="danger" onClick={() => onDelete(post.id)}>Borrar</Button>
-          </Card.Body>
-          <ListGroup className="list-group-flush">
-            <ListGroup.Item>Creado el: {post.creation_date}</ListGroup.Item>
-            <ListGroup.Item>Nombre del post: {post.postname}</ListGroup.Item>
-            <ListGroup.Item>Autor/a: {post.user_id}</ListGroup.Item>
-          </ListGroup>
-        </Card>
-      ))}
-    </div>
+    <Container className="g-2" style={{ marginLeft:"-22rem", marginBottom:"5rem" }}>
+      <Row>
+        {posts.map((post) => (
+          <Col key={post.id} xs={12} sm={6} md={4} lg={3}>
+            <Card style={{ width: "18rem", marginBottom: "1rem" }}>
+              <Card.Body>
+                <Card.Title>{post.title}</Card.Title>
+                <Card.Text>{post.message}</Card.Text>
+                <Button className="mt-2" variant="primary" onClick={() => onSelect(post)} style={{ marginRight: "0.5rem" }}>Editar</Button>
+                <Button className="mt-2" variant="danger" onClick={() => onDelete(post.id)}>Borrar</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 };
 
