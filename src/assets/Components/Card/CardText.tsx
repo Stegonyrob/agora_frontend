@@ -20,12 +20,12 @@ function CardText({ ids }: CardTextProps) {
 
  return (
     <div>
-      <Card className='cardText'>
+      <Card className='cardText mb-5'>
         {filteredTexts.map((currentText: TextItem, index: number) => (
           <div key={currentText.id} className={`card-item-${index}`}>
             <Card.Img variant="top" src={currentText.image} />
             <Card.Body>
-              <Card.Text className='mt-5 text-justify'>
+              <Card.Text className='mt-3 p-2 text-justify'>
                 {currentText.description}
               </Card.Text>
             </Card.Body>

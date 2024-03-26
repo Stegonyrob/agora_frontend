@@ -3,7 +3,7 @@ import './Footer.scss';
 
 export default function Footer() {
   return (
-    <footer className="text-white-50 text-center text-xlg-start position-fixed bottom-0 w-100 footer">
+    <footer className="text-white-50 text-center text-xlg-start position-fixed mt-5 bottom-0 w-100 footer">
      <div className="container p-4 pb-2">
       <div className="row-auto d-flex justify-content-between align-items-center">
         
