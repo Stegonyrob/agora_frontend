@@ -8,23 +8,20 @@
 
 
 .canvas {
-  background-color: #FFF;
-  position: absolute;
+   position: absolute;
   margin: -200px 0 0 -200px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.025);
-  z-index: 5;
+
+ 
 }
 
 
 
-.logo-image {
-    width: 15rem;
-    height: 15rem;
-    border-radius: 30rem;
-    position: relative;
-    background: radial-gradient(circle, transparent, white);
+.logo-image-home {
+    width: 13rem;
+    height: 13rem;
+       position: relative;
     z-index: -10;
-    top: 0rem;
+    top: 0.5rem;
     left: 0rem;
 }
   
@@ -32,8 +29,8 @@
 
 .logo-canvas {
     border-radius: 50%;
-    background: radial-gradient(circle, transparent, white);
     top: 0rem !important;
     position: absolute !important;
     left: 0rem;
+    font-size: larger!important;
 }

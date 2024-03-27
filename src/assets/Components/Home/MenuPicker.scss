@@ -1,5 +1,5 @@
 .color-picker-menu-container {
-   height: 60rem; // Tamaño del contenedor
+   height: 60rem; 
 }
 
 .central-picker {
@@ -44,23 +44,23 @@
   transition: transform 0.3s, opacity 0.3s;
   cursor: pointer;
   text-decoration: none;
-  transform-style: preserve-3d; // Mantener la orientación del texto
+  transform-style: preserve-3d; 
   
   &:hover {
-     background: radial-gradient(circle, transparent, rgb(121, 14, 214)); // Cambiar el color al pasar el mouse
-     text-decoration: none; // Quitar subrayado al pasar el mouse
+     background: radial-gradient(circle, transparent, rgb(121, 14, 214)); 
+     text-decoration: none; 
   }
  }
  
 
   .color-picker-menu-container.active  {
-    transform: translate(0) rotate(360deg); // Aplicar la animación cuando está activo
-    opacity: 1; // Mostrar los elementos cuando está activo
-    transition-delay: 0.1s; // Agregar un retraso a la animación para cada elemento
+    transform: translate(0) rotate(360deg); 
+    opacity: 1; 
+    transition-delay: 0.1s; 
   }
 
   a {
-    writing-mode: horizontal-tb; // Change this line
+    writing-mode: horizontal-tb; 
   }
 
  

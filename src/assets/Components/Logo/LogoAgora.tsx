@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import logo from './agoraLogo.png';
+import logo from './agoraLogoTras.png';
 import './Logo.scss';
 
 const Logo = () => {
@@ -16,6 +16,8 @@ const Logo = () => {
       const offsetX = event.clientX - rect.left;
       const offsetY = event.clientY - rect.top;
       context?.clearRect(0, 0, canvas.width, canvas.height);
+      if (context) context.font = '1.5rem Arial';
+      if (context) context.fillStyle = 'orange';
       context?.fillText('Click Me!!!', offsetX, offsetY);
     };
 
@@ -28,11 +30,11 @@ const Logo = () => {
 
  return (
     <div className="logo-container">
-      <img className="logo-image" src={logo} alt="Logo" />
+      <img className="logo-image-home" src={logo} alt="Logo" />
       <canvas
         ref={canvasRef}
-        width={250}
-        height={250}
+        width={260}
+        height={260}
         className="logo-canvas"
       />
     </div>

@@ -23,7 +23,7 @@ export default function Footer() {
            </div>
     
            <p className="text-center p-2" >
-             © 2024 Copyright:Ágora Centro Educativo de Apoyo Especializado
+             © 2024 Copyright: Ágora Centro Educativo de Apoyo Especializado
              <a className="text-dark" href="#"></a>
            </p>
     

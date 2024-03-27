@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import logo from './agoraLogo.png';
+import logo from './agoraLogoTrasBlanco.png';
 import './LogoSimply.scss';
 
 const Logo = () => {
