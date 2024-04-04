@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types';
-import Card from 'react-bootstrap/Card';
-import { useSelector } from 'react-redux';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import Card from "react-bootstrap/Card";
+import Placeholder from "react-bootstrap/Placeholder";
+import { useSelector } from "react-redux";
 import "./CardText.scss";
 
 interface TextItem {
@@ -13,25 +15,54 @@ interface CardTextProps {
  ids: string[];
 }
 
+function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+ e.currentTarget.src = '../../img/agoraLogo.png'; 
+}
+
 function CardText({ ids }: CardTextProps) {
  const texts = useSelector((state: any) => state.text.texts);
+ const [isLoading, setIsLoading] = useState(true); 
 
- const filteredTexts = texts.filter((text: TextItem) => ids.includes(text.id));
+ useEffect(() => {
+   
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); 
+    return () => clearTimeout(timer); 
+ }, []);
 
  return (
     <div>
-      <Card className='cardText'>
-        {filteredTexts.map((currentText: TextItem, index: number) => (
-          <div key={currentText.id} className={`card-item-${index}`}>
-            <Card.Img variant="top" src={currentText.image} />
-            <Card.Body>
-              <Card.Text className='mt-5 text-justify'>
-                {currentText.description}
-              </Card.Text>
-            </Card.Body>
-          </div>
-        ))}
-      </Card>
+      {isLoading ? (
+        <Card className="cardText mb-5">
+          <Card.Body>
+            <Card.Img variant="top" src="476x476" />
+            <Placeholder as={Card.Text} animation="glow">
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+              <Placeholder xs={12} />
+            </Placeholder>
+          </Card.Body>
+        </Card>
+      ) : (
+        <Card className="cardText mb-5">
+          {texts.filter((text: TextItem) => ids.includes(text.id)).map((currentText: TextItem, index: number) => (
+            <div key={currentText.id} className={`card-item-${index}`}>
+              <Card.Img variant="top" src={currentText.image} alt={currentText.description} onError={handleImgLoadingError}/>
+              <Card.Body>
+                <Card.Text className="mt-3 p-2 text-justify">
+                 {currentText.description}
+                </Card.Text>
+              </Card.Body>
+            </div>
+          ))}
+        </Card>
+      )}
     </div>
  );
 }

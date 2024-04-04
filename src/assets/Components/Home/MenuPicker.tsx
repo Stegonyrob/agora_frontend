@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import './MenuPicker.scss'; 
 import Logo from '../Logo/LogoAgora';
+import './MenuPicker.scss';
 
 
 const ColorPickerMenu = () => {
@@ -12,10 +12,10 @@ const ColorPickerMenu = () => {
 
  const menuItems = [
     
-    { name: "About", path: "/AboutMe" },
-    { name: "Services", path: "/Services" },
+    { name: "Sobre Mí", path: "/AboutMe" },
+    { name: "Servicios", path: "/Services" },
     { name: "Foro", path: "/Foro" },
-    { name: "Agora", path: "/Agora" },
+    { name: "Ágora", path: "/Agora" },
     { name: "TEA", path: "/Tea" },
     { name: "Tda/Tdh", path: "/Tda_Tdh" },
     { name: "T.Aprendizaje", path: "/Aprendizaje" },
@@ -26,7 +26,7 @@ const ColorPickerMenu = () => {
  const menuItemsJSX = menuItems.map((item, index) => {
   const deg = index * (360 / menuItems.length);
   const transformStyle = active ? `rotate(${deg}deg) translate(12.5rem)` : 'translate(0)';
-  const reverseDeg = -deg; // Rotar en sentido contrario
+  const reverseDeg = -deg; 
   return (
     <a
     key={index}
