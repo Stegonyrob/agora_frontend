@@ -1,6 +1,6 @@
 // UserView.tsx
 import React from 'react';
-import { Post } from '../Components/Foro/types';
+import { Post } from '../../types/types';
 
 interface UserViewProps {
  posts: Post[];

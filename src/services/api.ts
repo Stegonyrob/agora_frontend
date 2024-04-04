@@ -1,12 +1,27 @@
 import axios from 'axios';
+import { Post } from '../types/types';
 
 
 
-const baseURL = 'http://localhost:8080/api/v1'; // Reemplaza con la URL base de tu API
-
+const baseURL = 'http://localhost:8080/api/v1'; 
 const api = axios.create({
   baseURL,
 });
+
+
+
+
+export async function fetchPosts(): Promise<Post[]> {
+ try {
+    const response = await axios.get("http://localhost:8080/api/v1/posts");
+    return response.data;
+ } catch (error) {
+    console.error("Error fetching posts: ", error);
+    throw error; // Propagar el error para manejarlo en el componente
+ }
+}
+
+
 
 
 

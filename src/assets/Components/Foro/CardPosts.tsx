@@ -1,6 +1,6 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import { fetchPosts } from '../../../services/api';
 
 interface Post {
   id: string;
@@ -21,15 +21,16 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/posts");
-        setPosts(response.data);
+        const fetchedPosts = await fetchPosts();
+        setPosts(fetchedPosts);
       } catch (error) {
-        console.error("Error fetching posts: ", error);
+        console.error("Error loading posts: ", error);
+       alert('Post no encontrado ,disculpa las molestias');
       }
     };
-    fetchData();
+    loadPosts();
   }, []);
 
   return (
