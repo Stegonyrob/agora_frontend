@@ -2,38 +2,36 @@ import React, { useState } from 'react';
 import { Post } from '../../../types/types';
 
 interface PostFormProps {
-  post?: Post | null;
-  onSubmit: (post: Post) => void; // Asegúrate de que `onSubmit` espere un objeto `Post` completo
- }
- 
-
-// Función de ayuda para construir objetos `Post`
-function createPost(title: string, message: string, id?: string, creation_date?: string, postname?: string, user_id?: string): Post {
- return {
-    id: id || "default-id", // Proporciona un valor predeterminado para `id`
-    title: title,
-    message: message,
-    creation_date: creation_date || "default-date", // Proporciona un valor predeterminado para `creation_date`
-    postname: postname || "default-postname", // Proporciona un valor predeterminado para `postname`
-    user_id: user_id || "default-user-id", // Proporciona un valor predeterminado para `user_id`
- };
-}
-
-interface PostFormProps {
  post?: Post | null;
  onSubmit: (post: Post) => void;
+}
+
+function createPost(title: string, message: string, id?: string, creation_date?: string, postname?: string, user_id?: string): Post {
+ return {
+    id: id || "default-id",
+    title: title,
+    message: message,
+    creation_date: creation_date || "default-date",
+    postname: postname || "default-postname",
+    user_id: user_id || "default-user-id",
+ };
 }
 
 const PostForm: React.FC<PostFormProps> = ({ post, onSubmit }) => {
  const [title, setTitle] = useState(post ? post.title : '');
  const [message, setMessage] = useState(post ? post.message : '');
+ const [status, setStatus] = useState('typing');
 
  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Utiliza `createPost` para construir el objeto `newPost` con los valores actuales y valores predeterminados para las propiedades opcionales
     const newPost = createPost(title, message, post?.id, post?.creation_date, post?.postname, post?.user_id);
     onSubmit(newPost);
+    setStatus('success'); // Update status after submission
  };
+
+ if (status === 'success') {
+    return <h1>Post creado satisfactoriamente</h1>
+ }
 
  return (
     <form onSubmit={handleSubmit}>
