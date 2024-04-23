@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Post } from '../../../types/types';
+import CustomInput from '../Generals/Input/CustomInput';
+import './EditPostForm.scss';
 
 interface PostFormProps {
  post?: Post | null;
@@ -24,14 +26,26 @@ function EditPostForm({ post, onSubmit }: PostFormProps) {
  };
 
  return (
-    <form onSubmit={handleSubmit}>
+    <form className="formEdit" onSubmit={handleSubmit}>
       <label>
         Título:
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <CustomInput
+ type="text"
+ modelValue={title}
+ placeholder="Enter text"
+ required={true}
+ onChange={(e) => setTitle(e.target.value)}
+ icon={false}
+/>
       </label>
       <label>
         Mensaje:
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} required />
+        <textarea
+          className="form-control" // Asegúrate de que esta clase exista en tu archivo CSS
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          required
+        />
       </label>
       <button type="submit">{post ? 'Actualizar Post' : 'Crear Post'}</button>
     </form>
