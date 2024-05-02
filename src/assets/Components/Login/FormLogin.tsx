@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { Button, Card, FloatingLabel, Form } from 'react-bootstrap';
+import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/userSlice';
 import Logo from '../Logo/LogoSimply';
-
+import './FormLogin.scss';
 const FormLogin = () => {
  const [username, setUsername] = useState('');
  const [password, setPassword] = useState('');
@@ -40,18 +40,22 @@ const FormLogin = () => {
  };
 
  return (
-    <form onSubmit={handleSubmit}>
-      <Card className="text-center">
-        <Card.Body>
+    <form onSubmit={handleSubmit} >
+      <Card className="text-center  " id='card-login'>
+        <Card.Body className='card-login'>
           <Logo />
           <Card.Title>Inicio de Sesión</Card.Title>
-          <FloatingLabel controlId="floatingInput" label="Email" className="mb-3">
-            <Form.Control type="text" name="email" value={username} onChange={(e) => setUsername(e.target.value)} required placeholder="Email" />
-          </FloatingLabel>
-          <FloatingLabel controlId="floatingPassword" label="Contraseña" className="mb-3">
-            <Form.Control type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña" />
-          </FloatingLabel>
-          <Button variant="primary" type="submit">Enviar</Button>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="text" placeholder="name@example.com" value={username} onChange={(e) => setUsername(e.target.value)} required />
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >
+        <Form.Label>Contraseña</Form.Label>
+        <Form.Control type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña" />
+      </Form.Group>
+      <div className="d-grid gap-2">
+      <Button variant="light" size="lg"type="submit" className='ms-5 text-bg-info'>Enviar</Button>
+        </div>
         </Card.Body>
         <Card.Footer className="text-center">
           No tienes cuenta <a href="/register">Regístrate Aquí</a>

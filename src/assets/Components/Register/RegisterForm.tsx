@@ -1,76 +1,78 @@
+import React, { useState } from 'react';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import "./RegisterForm.scss";
 
 function RegisterForm() {
-  return (
+ const [username, setUsername] = useState('');
+ const [firstName, setFirstName] = useState('');
+ const [lastName, setLastName] = useState('');
+ const [nickname, setNickname] = useState('');
+ const [relationship, setRelationship] = useState('');
+ const [email, setEmail] = useState('');
+ const [password, setPassword] = useState('');
+ const [confirmPassword, setConfirmPassword] = useState('');
+
+ const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Aquí puedes manejar la lógica de envío de los datos del formulario
+    // Por ejemplo, llamar a una función que envíe los datos a un servidor
+    console.log({
+      username,
+      firstName,
+      lastName,
+      nickname,
+      relationship,
+      email,
+      password,
+      confirmPassword,
+    });
+ };
+
+ return (
     <Card className="text-center">
       <Card.Body>
         <Card.Title>Formulario de Registro</Card.Title>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="Nombre"
-          className="mb-3"
-        >
-          <Form.Control type="text" placeholder="name" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="Primer Apellido"
-          className="mb-3"
-        >
-          <Form.Control type="text" placeholder="fisrtlastName" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="Segundo Apellido"
-          className="mb-3"
-        >
-          <Form.Control type="text" placeholder=" secundtlastName" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="NickName"
-          className="mb-3"
-        >
-          <Form.Control type="text" placeholder="nickname" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="Parentesco"
-          className="mb-3"
-        >
-          <Form.Control type="text" placeholder="relationship" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingInput"
-          label="Email address"
-          className="mb-3"
-        >
-          <Form.Control type="email" placeholder="name@example.com" />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingPassword"
-          label="Password"
-          className="mb-3"
-        >
-          <Form.Control type="password" placeholder="Contraseña " />
-        </FloatingLabel>
-        <FloatingLabel
-          controlId="floatingPassword"
-          label="Password"
-          className="mb-3"
-        >
-          <Form.Control type="password" placeholder=" Confirmar conttraseña" />
-        </FloatingLabel>
-
-        <Button variant="primary">Cancelar</Button>
-        <Button variant="primary">Enviar</Button>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="formUsername">
+            <Form.Label>Nombre</Form.Label>
+            <Form.Control type="text" placeholder="Nombre" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formFirstName">
+            <Form.Label>Primer Apellido</Form.Label>
+            <Form.Control type="text" placeholder="Primer Apellido" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formLastName">
+            <Form.Label>Segundo Apellido</Form.Label>
+            <Form.Control type="text" placeholder="Segundo Apellido" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formNickname">
+            <Form.Label>NickName</Form.Label>
+            <Form.Control type="text" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formRelationship">
+            <Form.Label>Parentesco</Form.Label>
+            <Form.Control type="text" placeholder="Parentesco" value={relationship} onChange={(e) => setRelationship(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formConfirmPassword">
+            <Form.Label>Confirmar Contraseña</Form.Label>
+            <Form.Control type="password" placeholder="Confirmar Contraseña" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          </Form.Group>
+          <Button variant="primary" type="submit">Cancelar</Button>
+          <Button variant="primary" type="submit">Enviar</Button>
+        </Form>
       </Card.Body>
     </Card>
-  );
+ );
 }
 
 export default RegisterForm;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import api from '../../../services/api';
+import styles from './CardPosts.module.scss';
 
 
 
@@ -36,23 +37,31 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
      loadPosts();
   }, []);
 
-  return (
-    <Container className="g-2" style={{ marginLeft:"-22rem", marginBottom:"5rem" }}>
-      <Row>
-        {posts.map((post) => (
-          <Col key={post.id} xs={12} sm={6} md={4} lg={3}>
-            <Card style={{ width: "18rem", marginBottom: "1rem" }}>
-              <Card.Body>
-                <Card.Title>{post.title}</Card.Title>
-                <Card.Text>{post.message}</Card.Text>
-                <Button className="mt-2" variant="primary" onClick={() => onSelect(post)} style={{ marginRight: "0.5rem" }}>Editar</Button> 
-                <Button className="mt-2" variant="danger" onClick={() => onDelete(post.id)}>Borrar</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    </Container>
+
+      return (
+        <Container className={styles.cardPosts__container}>
+          <Row className={styles.cardPosts__row}>
+            {posts.map((post) => (
+              <Col key={post.id} className={styles.cardPosts__col}>
+                <Card className={styles.cardPosts__card}>
+            <Card.Body>
+              <Card.Title>{post.title}</Card.Title>
+              <Card.Text>{post.message}</Card.Text>
+              <div className={styles.buttonWrapper}>
+                <Button className={styles.button} variant="primary" onClick={() => onSelect(post)}>
+                  Editar
+                </Button>
+                <Button variant="danger" onClick={() => onDelete(post.id)}>
+                  Borrar
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+  </Container>
+  
   );
 };
 
