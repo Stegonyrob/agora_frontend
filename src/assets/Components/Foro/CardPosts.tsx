@@ -39,23 +39,25 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
 
 
       return (
-        <Container className={styles.cardPosts__container}>
-          <Row className={styles.cardPosts__row}>
+        <Container >
+          <Row >
             {posts.map((post) => (
-              <Col key={post.id} className={styles.cardPosts__col}>
-                <Card className={styles.cardPosts__card}>
+              <Col key={post.id} >
+                   <Card className={styles.cardPost}>
             <Card.Body>
               <Card.Title>{post.title}</Card.Title>
               <Card.Text>{post.message}</Card.Text>
-              <div className={styles.buttonWrapper}>
+          
+           
+            </Card.Body>
+            <div className={styles.buttonWrapper}>
                 <Button className={styles.button} variant="primary" onClick={() => onSelect(post)}>
                   Editar
                 </Button>
                 <Button variant="danger" onClick={() => onDelete(post.id)}>
                   Borrar
                 </Button>
-              </div>
-            </Card.Body>
+                </div>
           </Card>
         </Col>
       ))}

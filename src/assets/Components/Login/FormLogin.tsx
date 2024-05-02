@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/userSlice';
 import Logo from '../Logo/LogoSimply';
-import './FormLogin.scss';
+import styles from './FormLogin.module.scss';
 const FormLogin = () => {
  const [username, setUsername] = useState('');
  const [password, setPassword] = useState('');
@@ -41,20 +41,27 @@ const FormLogin = () => {
 
  return (
     <form onSubmit={handleSubmit} >
-      <Card className="text-center  " id='card-login'>
+   <Card className={styles.card}>
         <Card.Body className='card-login'>
           <Logo />
           <Card.Title>Inicio de Sesión</Card.Title>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >
         <Form.Label>Email</Form.Label>
-        <Form.Control type="text" placeholder="name@example.com" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <Form.Control type="text" placeholder="name@example.com" value={username} onChange={(e) => setUsername(e.target.value)} required   className={styles.input}/>
       </Form.Group>
       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >
         <Form.Label>Contraseña</Form.Label>
-        <Form.Control type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña" />
+        <Form.Control type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña" className={styles.input}/>
       </Form.Group>
       <div className="d-grid gap-2">
-      <Button variant="light" size="lg"type="submit" className='ms-5 text-bg-info'>Enviar</Button>
+      <Button
+      variant="light"
+      size="lg"
+      type="submit"
+      className={`${styles.button} text-bg-info`}
+    >
+      Enviar
+    </Button>
         </div>
         </Card.Body>
         <Card.Footer className="text-center">
