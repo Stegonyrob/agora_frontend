@@ -26,7 +26,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onSubmit }) => {
     event.preventDefault();
     const newPost = createPost(title, message, post?.id, post?.creation_date, post?.postname, post?.user_id);
     onSubmit(newPost);
-    setStatus('success'); // Update status after submission
+    setStatus('success'); 
  };
 
  if (status === 'success') {

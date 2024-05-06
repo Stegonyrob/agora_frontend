@@ -5,7 +5,7 @@ import { Post } from '../types/types';
 const uri = import.meta.env.VITE_API_ENDPOINT_GENERAL;
 const uri2 = import.meta.env.VITE_API_ENDPOINT_POSTS;
 
-// Creación de un objeto para organizar las funciones de API
+
 const api = {
  // Función para obtener posts
  async fetchPosts(): Promise<Post[]> {
@@ -14,12 +14,11 @@ const api = {
       return response.data;
     } catch (error) {
       console.error("Error fetching posts: ", error);
-      throw error; // Propagar el error para manejarlo en el componente
+      throw error; 
     }
  },
-
- // Función para actualizar un post
- async updatePost(postId: string, postData: any): Promise<Post> {
+ // Función para editar un nuevo post
+ async updatePost(postId: string, postData: string,): Promise<Post> {
     try {
       const response = await axios.put(`${uri2}/${postId}`, postData, {
         headers: {
@@ -52,7 +51,7 @@ const api = {
       return response.data;
     } catch (error) {
       console.error('Error al crear el post:', error);
-      throw error; // Propagar el error para manejarlo en el componente
+      throw error; 
     }
  },
 
@@ -63,7 +62,7 @@ const api = {
       console.log("Post eliminado exitosamente.");
     } catch (error) {
       console.error("Error al eliminar el post:", error);
-      throw error; // Propagar el error para manejarlo en el componente
+      throw error; 
     }
  },
 

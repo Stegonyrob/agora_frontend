@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Post } from '../../../types/types';
 import CustomInput from '../Generals/Input/CustomInput';
-import './EditPostForm.scss';
+// Import the CSS module into a variable named styles
+import styles from './EditPostForm.module.scss';
 
 interface PostFormProps {
  post?: Post | null;
  onSubmit: (post: Post) => void;
 }
 
-function EditPostForm({ post, onSubmit }: PostFormProps) {
+function editPostForm({ post, onSubmit }: PostFormProps) {
  const [title, setTitle] = useState(post?.title || '');
  const [message, setMessage] = useState(post?.message || '');
 
@@ -26,7 +27,7 @@ function EditPostForm({ post, onSubmit }: PostFormProps) {
  };
 
  return (
-    <form className="formEdit" onSubmit={handleSubmit}>
+    <form className={styles.editPostForm} onSubmit={handleSubmit}>
       <label>
         Título:
         <CustomInput
@@ -41,7 +42,7 @@ function EditPostForm({ post, onSubmit }: PostFormProps) {
       <label>
         Mensaje:
         <textarea
-          className="form-control" // Asegúrate de que esta clase exista en tu archivo CSS
+          className="form-control"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
@@ -52,4 +53,4 @@ function EditPostForm({ post, onSubmit }: PostFormProps) {
  );
 }
 
-export default EditPostForm;
+export default editPostForm;

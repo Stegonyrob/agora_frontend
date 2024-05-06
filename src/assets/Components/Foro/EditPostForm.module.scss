@@ -1,0 +1,15 @@
+.editPostForm{
+    width: 80%;
+    height: 20rem;
+    margin-bottom: 10rem;
+    margin-top: -50rem;
+    margin-left: 10%;
+    background-color: red;
+    z-index: 15 !important;
+    position: absolute;
+    display: flex;
+      flex-direction: column;
+    align-content: space-around;
+    justify-content: space-around;
+    padding: 3rem;
+}
