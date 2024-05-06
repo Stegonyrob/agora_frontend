@@ -34,7 +34,9 @@ const PostList = ({ posts }: PostList ) => {
  const handleSelect = (post: Post) => {
     setSelectedPost(post);
  };
-
+ const handleClose = () => {
+  setSelectedPost(null);
+};
  const handleDelete = async (postId: string) => {
     try {
       await api.deletePost(postId);
@@ -56,17 +58,17 @@ alert(`Post editado exitosamente`)
     setFetchedPosts(fetchedPosts.map(post => post.id === updatedPost.id ? updatedPostResponse : post));
   } catch (error) {
     console.error("Error updating post: ", error);
-    alert(`No se pudo editar el post, por favor intentelo más tarde, y disculpe las molestias.`)
+    alert(`No se pudo editar el post, por favor intentenlo más tarde, por favor disculpen las`)
   }
 };
 
 
 
  return (
-    <div>
-      <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} />
-      {selectedPost && <EditPostForm post={selectedPost} onSubmit={handleUpdate} />}
-    </div>
+  <div>
+  <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} />
+  {selectedPost && <EditPostForm post={selectedPost} onSubmit={handleUpdate} onClose={handleClose} />} // Pass the handleClose function as the onClose prop
+</div>
  );
 };
 

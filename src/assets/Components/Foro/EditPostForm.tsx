@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Post } from '../../../types/types';
 import CustomInput from '../Generals/Input/CustomInput';
-// Import the CSS module into a variable named styles
+
 import styles from './EditPostForm.module.scss';
 
 interface PostFormProps {
  post?: Post | null;
  onSubmit: (post: Post) => void;
+ onClose: () => void;
 }
 
-function editPostForm({ post, onSubmit }: PostFormProps) {
+function editPostForm({ post, onSubmit, onClose }: PostFormProps) {
  const [title, setTitle] = useState(post?.title || '');
  const [message, setMessage] = useState(post?.message || '');
 
@@ -27,7 +28,9 @@ function editPostForm({ post, onSubmit }: PostFormProps) {
  };
 
  return (
+  
     <form className={styles.editPostForm} onSubmit={handleSubmit}>
+      <button onClick={onClose}><i className="bi bi-x-square"></i></button>
       <label>
         Título:
         <CustomInput
