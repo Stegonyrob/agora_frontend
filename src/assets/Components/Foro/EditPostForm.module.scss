@@ -1,69 +1,38 @@
-.editPostForm{
-    width: 80%;
-    height: 20rem;
-    margin-bottom: 10rem;
-    margin-top: -50rem;
-    margin-left: 10%;
-    background-color: red;
-    z-index: 15 !important;
-    position: absolute;
-    display: flex;
-      flex-direction: column;
-    align-content: space-around;
-    justify-content: space-around;
-    padding: 3rem;
- }
-//  import { useState } from 'react';
-// import Button from 'react-bootstrap/Button';
-// import Form from 'react-bootstrap/Form';
-// import Modal from 'react-bootstrap/Modal';
-
-// function Example() {
-//   const [show, setShow] = useState(false);
-
-//   const handleClose = () => setShow(false);
-//   const handleShow = () => setShow(true);
-
-//   return (
-//     <>
-//       <Button variant="primary" onClick={handleShow}>
-//         Launch demo modal
-//       </Button>
-
-//       <Modal show={show} onHide={handleClose}>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Modal heading</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>
-//           <Form>
-//             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-//               <Form.Label>Email address</Form.Label>
-//               <Form.Control
-//                 type="email"
-//                 placeholder="name@example.com"
-//                 autoFocus
-//               />
-//             </Form.Group>
-//             <Form.Group
-//               className="mb-3"
-//               controlId="exampleForm.ControlTextarea1"
-//             >
-//               <Form.Label>Example textarea</Form.Label>
-//               <Form.Control as="textarea" rows={3} />
-//             </Form.Group>
-//           </Form>
-//         </Modal.Body>
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={handleClose}>
-//             Close
-//           </Button>
-//           <Button variant="primary" onClick={handleClose}>
-//             Save Changes
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-//     </>
-//   );
-// }
-
-// export default Example;
+.editPostForm {
+    .modal-content {
+       width: 50%;
+       margin: 0 auto;
+     }
+   
+    .modal-header {
+       background-color: #007bff;
+       color: white;
+     }
+   
+    .modal-footer {
+       display: flex;
+       justify-content: flex-end;
+     }
+   
+     input,
+     textarea {
+       width: 100%;
+       padding: 10px;
+       margin-bottom: 10px;
+       border: 1px solid #ccc;
+       border-radius: 4px;
+     }
+   
+     button {
+       padding: 10px 20px;
+       border: none;
+       border-radius: 4px;
+       background-color: #007bff;
+       color: white;
+       cursor: pointer;
+   
+       &:hover {
+         background-color: #0056b3;
+       }
+     }
+   }

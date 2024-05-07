@@ -37,23 +37,25 @@ const api = {
  },
 
  // Función para crear un nuevo post
- async createPost(postData: any): Promise<Post> {
-    try {
-      const response = await axios.post(`${uri2}`, postData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      });
-      if (!response.data) {
-        throw new Error('Error al crear el post');
-      }
-      return response.data;
-    } catch (error) {
-      console.error('Error al crear el post:', error);
-      throw error; 
-    }
- },
+ async createPost(post: { title: string; message: string; creationDate?: string }): Promise<Post> {
+  try {
+    const response = await axios.post(`${uri2}/store`, {
+      title: post.title,
+      message: post.message,
+      creationDate: post.creationDate || new Date().toISOString(),
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear el post:', error);
+    throw error;
+  }
+},
+
 
  // Función para eliminar un post
  async deletePost(postId: string): Promise<void> {
