@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import api from '../../../services/api';
 import styles from './CardPosts.module.scss';
-
+import ButtonComment from "./Comment/ButtonComent";
 
 
 interface Post {
@@ -24,7 +24,9 @@ interface CardPostsProps {
 const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
+
   useEffect(() => {
      const loadPosts = async () => {
        try {
@@ -47,21 +49,27 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
                    <Card className={styles.cardPost}>
             <Card.Body>
               <Card.Title>{post.title}</Card.Title>
-              <Card.Text>{post.message}</Card.Text>           
+              <Card.Text>{post.message}</Card.Text>
+          
+           
             </Card.Body>
-                   <Card.Footer>
-              
-                <Button className={styles.button} variant="success" onClick={handleShow}>
-          <i className="bi bi-chat-text"></i>
-        </Button>
+           <Card.Footer>
+           <div className={styles.buttonWrapper}>
+      
+              <ButtonComment onSelect={function (postId: string): void {
+                      throw new Error("Function not implemented.");
+                    } } post={post} userName={""}/>
+         
+      
                 <Button className={styles.button} variant="primary" onClick={() => onSelect(post)}>
                 <i className="bi bi-pen"></i>
                 </Button>
                 <Button variant="danger" onClick={() => onDelete(post.id)}>
                 <i className="bi bi-trash3"></i>
                 </Button>
-         
-          </Card.Footer>
+             
+                </div>
+           </Card.Footer>
           </Card>
         </Col>
       ))}
@@ -73,6 +81,3 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
 
 export default CardPosts;
 
-function setShow(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
