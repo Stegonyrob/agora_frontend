@@ -24,6 +24,7 @@ interface CardPostsProps {
 const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const handleShow = () => setShow(true);
   useEffect(() => {
      const loadPosts = async () => {
        try {
@@ -46,18 +47,21 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
                    <Card className={styles.cardPost}>
             <Card.Body>
               <Card.Title>{post.title}</Card.Title>
-              <Card.Text>{post.message}</Card.Text>
-          
-           
+              <Card.Text>{post.message}</Card.Text>           
             </Card.Body>
-            <div className={styles.buttonWrapper}>
+                   <Card.Footer>
+              
+                <Button className={styles.button} variant="success" onClick={handleShow}>
+          <i className="bi bi-chat-text"></i>
+        </Button>
                 <Button className={styles.button} variant="primary" onClick={() => onSelect(post)}>
-                  Editar
+                <i className="bi bi-pen"></i>
                 </Button>
                 <Button variant="danger" onClick={() => onDelete(post.id)}>
-                  Borrar
+                <i className="bi bi-trash3"></i>
                 </Button>
-                </div>
+         
+          </Card.Footer>
           </Card>
         </Col>
       ))}
@@ -68,3 +72,7 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, onDelete, userId }) => 
 };
 
 export default CardPosts;
+
+function setShow(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
