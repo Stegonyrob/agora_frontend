@@ -4,7 +4,7 @@ import { Post } from '../types/types';
 // Definición de las URIs utilizando variables de entorno
 const uri = import.meta.env.VITE_API_ENDPOINT_GENERAL;
 const uri2 = import.meta.env.VITE_API_ENDPOINT_POSTS;
-
+const uri3 = import.meta.env.VITE_API_ENDPOINT_REPLIES
 
 const api = {
  // Función para obtener posts
@@ -132,12 +132,67 @@ const api = {
       throw error; // Propagar el error para manejarlo en el componente
     }
  },
+ async fetchReplies(postId: string): Promise<any[]> {
+  try {
+    const response = await axios.get(`${uri3}/${postId}`, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching replies: ", error);
+    throw error;
+  }
+},
+
+// Función para crear una nueva respuesta
+async createReply(postId: string, replyData: any): Promise<any> {
+  try {
+    const response = await axios.post(`${uri3}/${postId}`, replyData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating reply:', error);
+    throw error;
+  }
+},
+
+// Función para actualizar una respuesta
+async updateReply(replyId: string, replyData: any): Promise<any> {
+  try {
+    const response = await axios.put(`${uri3}/${replyId}`, replyData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating reply:', error);
+    throw error;
+  }
+},
+
+// Función para eliminar una respuesta
+async deleteReply(replyId: string): Promise<void> {
+  try {
+    await axios.delete(`${uri3}/${replyId}`, { withCredentials: true });
+    console.log("Reply deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting reply:", error);
+    throw error;
+  }
+},
+
+
 
  // Función para cerrar sesión de un usuario
  async logoutUser(): Promise<void> {
     // Aquí puedes implementar la lógica necesaria para el logout, por ejemplo, invalidar el token de sesión
     console.log("Usuario desconectado exitosamente.");
  }
+
 };
 
 export default api;

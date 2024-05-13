@@ -22,11 +22,11 @@ function NavBar() {
               <NavDropdown.Item href="/Madurativo">Transtornos Madurativos</NavDropdown.Item>
             </NavDropdown>
             <Nav.Link href="/AboutMe">Sobre Mi</Nav.Link>
-            <NavDropdown title="Foro" id="basic-nav-dropdown">
+            <NavDropdown title="Blog" id="basic-nav-dropdown">
            
             <NavDropdown.Item href="/Login">Login</NavDropdown.Item>
             <NavDropdown.Item href="/Register">Registro</NavDropdown.Item>
-            <NavDropdown.Item href="/Foro">Foro</NavDropdown.Item>
+            <NavDropdown.Item href="/Blog">Blog</NavDropdown.Item>
              </NavDropdown>
        
              </Nav>

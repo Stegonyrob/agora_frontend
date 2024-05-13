@@ -1,4 +1,3 @@
-// src/stores/post.ts
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IPost } from '../core/posts/IPost'; // Asegúrate de que esta ruta sea correcta
 import PostRepository from '../core/posts/PostRepository';

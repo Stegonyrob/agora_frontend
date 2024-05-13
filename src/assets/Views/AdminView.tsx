@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Post } from '../../types/types';
-import CardPosts from '../Components/Foro/CardPosts';
-import PostForm from '../Components/Foro/PostForm';
-import PostList from '../Components/Foro/PostList';
+import CardPosts from '../Components/Blog/CardPosts';
+import PostForm from '../Components/Blog/PostForm';
+import PostList from '../Components/Blog/PostList';
 import { RootState } from '../redux/store';
 
 

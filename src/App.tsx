@@ -6,7 +6,7 @@ import NavBar from './assets/Components/NavBar/NavBar';
 import './assets/scss/reset.scss';
 import AboutMeView from './assets/Views/AboutMeView';
 import AgoraView from './assets/Views/AgoraView';
-import ForoView from './assets/Views/ForoView';
+import BlogView from './assets/Views/BlogView';
 import HomeView from './assets/Views/HomeView';
 import LoginView from './assets/Views/LoginView';
 import NeurodiversityView from './assets/Views/NeurodiversityView';
@@ -39,7 +39,7 @@ const MainLayout = () => {
         <Route path="/AboutMe" element={<AboutMeView />} />
         <Route path="/Neurodiversity" element={<NeurodiversityView />} />
         <Route path="/Services" element={<ServiceView />} />
-        <Route path="/Foro" element={<ForoView  />} />
+        <Route path="/Blog" element={<BlogView  />} />
         <Route path="/Agora" element={<AgoraView />} />
         <Route path="/Tea" element={<TeaView />} />
         <Route path="/Tda_Tdh" element={<Tda_TdhView />} />

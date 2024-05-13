@@ -14,7 +14,7 @@ const ColorPickerMenu = () => {
     
     { name: "Sobre Mí", path: "/AboutMe" },
     { name: "Servicios", path: "/Services" },
-    { name: "Foro", path: "/Foro" },
+    { name: "Blog", path: "/Blog" },
     { name: "Ágora", path: "/Agora" },
     { name: "TEA", path: "/Tea" },
     { name: "Tda/Tdh", path: "/Tda_Tdh" },
