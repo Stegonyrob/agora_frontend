@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Post } from 'types';
 import api from '../../../services/api';
 import CardPosts from './CardPosts';
+import CardUser from './CardUser/CardUser';
 import EditPostForm from './EditPostForm';
-import PostForm from './PostForm';
 
 interface PostList {
   posts: Post[];
@@ -88,7 +88,8 @@ const PostList = ({ posts }: PostList) => {
 
   return (
     <div>
-      <PostForm onSubmit={onSubmit} />
+      <CardUser id={''} name={''} avatar_url={''} title={''} skills={[]}/>
+    
       <div>
         <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} />
         {selectedPost && (

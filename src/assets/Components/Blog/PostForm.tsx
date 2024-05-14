@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import api from '../../../services/api';
@@ -8,10 +7,11 @@ import styles from './PostForm.module.scss';
 interface PostFormProps {
    post?: Post | null;
    onSubmit: (post: Post) => Promise<void>;
+   onClose: () => void;
  }
  
 
-const PostForm: React.FC<PostFormProps> = ({ post }) => {
+const PostForm: React.FC<PostFormProps> = ({ post ,onClose}) => {
   const [title, setTitle] = useState(post ? post.title : '');
   const [message, setMessage] = useState(post ? post.message : '');
   const [show, setShow] = useState(false);
@@ -48,10 +48,10 @@ const PostForm: React.FC<PostFormProps> = ({ post }) => {
       </Button>
 
       <Modal show={show} onHide={handleClose} className={styles.postForm}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Post</Modal.Title>
+        <Modal.Header className={styles.postForm} closeButton>
+          <Modal.Title>Nuevo Post</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={styles.postForm}>
           <form onSubmit={handleSubmit}>
             <label>
               Título:

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import Modal from 'react-bootstrap/Modal';
 import { IReply } from "../../../../core/replies/IReply";
 import { ReplyRepository } from '../../../../core/replies/ReplyRepository';
@@ -17,7 +17,7 @@ interface ButtonCommentProps {
 //para alacarame manda el reply pero va null debo revisar modelo controler y service en back
 //recuerda solucionar esto 
 
-const ButtonComment: React.FC<ButtonCommentProps> = ({ post, userName }) => {
+const ButtonComment: React.FC<ButtonCommentProps> = ({ post, userName, className }) => {
   const [show, setShow] = useState(false);
   const replyRepository = new ReplyRepository(); 
   const [commentCounter, setCommentCounter] = useState(0);
@@ -53,8 +53,7 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ post, userName }) => {
   };
   };
   return (
-    <Container>
-        <div className={styles.buttonWrapper}>
+           <div className={styles.buttonWrapper}>
          <span className="social-icons" style={{ width: "30px" }}  onClick={handleShow}>
           <i className="bi bi-chat-text" onClick={commentHandler} />{" "}
                     {commentCounter}
@@ -84,7 +83,7 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ post, userName }) => {
           </Form>
         </Modal>
       </div>
-    </Container>
+
   );
 };
 export default ButtonComment;

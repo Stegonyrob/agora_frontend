@@ -1,0 +1,7 @@
+.userCard {
+  width: 100%;
+  justify-self: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: azure !important;
+}

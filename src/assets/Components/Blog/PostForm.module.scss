@@ -1,17 +1,23 @@
 .postForm {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: azure ;
     .modal-content {
         width: 50%;
         margin: 0 auto;
+   
+        padding: 2rem;
+     
       }
     
     .modal-header {
-        background-color: #007bff;
+
         color: white;
       }
     
     .modal-footer {
         display: flex;
         justify-content: flex-end;
+
       }
     
       input,
@@ -30,6 +36,7 @@
         background-color: #007bff;
         color: white;
         cursor: pointer;
+        margin-bottom: 1rem;
     
         &:hover {
           background-color: #0056b3;
