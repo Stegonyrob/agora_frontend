@@ -1,27 +1,33 @@
-import AuthRepository from "./AuthRepository";
-import type { IAuthUser } from "./IAuthUser";
-import type { ILoggedInUser } from "./ILoggedInUser";
+// authService.ts
+import axios from "axios";
 
-export default class AuthService {
+const BASE_URL = "http://localhost:8080/api/v1/login";
 
-    repository: AuthRepository = new AuthRepository()
+const authenticateUser = async (
+  username: string,
+  password: string
+): Promise<string | null> => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}`,
+      {
+        username,
+        password,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Note: Basic auth requires encoding the username and password in the format "username:password"
+          // 'Authorization': 'Basic ' + btoa(username + ':' + password),
+        },
+      }
+    );
+    const token = response.data.token;
+    return token;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
-    async login(data: IAuthUser): Promise<ILoggedInUser> {
-
-       
-        const json = await this.repository.authenticateFetch(data)
-        
-        const user: ILoggedInUser = {
-            email: json.email,
-            role: json.role,
-            isAuthenticated: true,
-            username: json.username,
-            userId: "",
-            token: null
-        }
-
-        return user
-        
-    }
-
-}
+export { authenticateUser };

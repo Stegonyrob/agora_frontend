@@ -6,10 +6,10 @@ import api from '../../../services/api';
 import styles from './RegisterForm.module.scss';
 
 function RegisterForm() {
- 
+
   const [firstName, setFirstName] = useState('');
-  const [lastNameOne, setLastNameOne] = useState('');
-  const [lastNameTwo, setLastNameTwo] = useState('');
+  const [lastName1, setLastName1] = useState('');
+  const [lastName2, setLastName2] = useState('');
   const [username, setUsername] = useState('');
   const [relationship, setRelationship] = useState('');
   const [email, setEmail] = useState('');
@@ -23,7 +23,8 @@ function RegisterForm() {
     const userData = {
       username,
       firstName: firstName,
-      lastName: `${lastNameOne} ${lastNameTwo}`,
+      lastName1: `${lastName1} `,
+      lastName2: `${lastName2}`,
       relationship,
       email,
       password,
@@ -33,6 +34,7 @@ function RegisterForm() {
 
     try {
       await api.registerUser(userData);
+      console.log(userData)
       console.log("User registered successfully!");
     } catch (error) {
       console.error("Error registering user:", error);
@@ -44,43 +46,43 @@ function RegisterForm() {
       <Card.Body>
         <Card.Title>Formulario de Registro</Card.Title>
         <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formFirstName">
+          <Form.Group className="mb-3" controlId="formFirstName">
             <Form.Label>Nombre</Form.Label>
-            <Form.Control type="text"  placeholder="Nombre" value={firstName}  onChange={(e) => setFirstName(e.target.value)}  required
+            <Form.Control type="text" placeholder="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} required
               className={styles.input}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formLastNameOne">
+          <Form.Group className="mb-3" controlId="formLastName1">
             <Form.Label>Primer Apellido</Form.Label>
-            <Form.Control type="text" placeholder="Primer Apellido" value={lastNameOne} onChange={(e) => setLastNameOne(e.target.value)} required className={styles.input}/>
+            <Form.Control type="text" placeholder="Primer Apellido" value={lastName1} onChange={(e) => setLastName1(e.target.value)} required className={styles.input} />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formLastNameTwo">
+          <Form.Group className="mb-3" controlId="formLastName2">
             <Form.Label>Segundo Apellido</Form.Label>
-            <Form.Control type="text" placeholder="Segundo Apellido" value={lastNameTwo} onChange={(e) => setLastNameTwo(e.target.value)} required className={styles.input}/>
+            <Form.Control type="text" placeholder="Segundo Apellido" value={lastName2} onChange={(e) => setLastName2(e.target.value)} required className={styles.input} />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formNickname">
+          <Form.Group className="mb-3" controlId="formUsername">
             <Form.Label>Nombre de Usuario</Form.Label>
-            <Form.Control type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required className={styles.input}/>
+            <Form.Control type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formRelationship">
             <Form.Label>Parentesco</Form.Label>
-            <Form.Control type="text" placeholder="Parentesco" value={relationship} onChange={(e) => setRelationship(e.target.value)} required className={styles.input}/>
+            <Form.Control type="text" placeholder="Parentesco" value={relationship} onChange={(e) => setRelationship(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formEmail">
             <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input}/>
+            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formPassword">
             <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input}/>
+            <Form.Control type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formConfirmPassword">
             <Form.Label>Confirmar Contraseña</Form.Label>
-            <Form.Control type="password" placeholder="Confirmar Contraseña" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className={styles.input}/>
+            <Form.Control type="password" placeholder="Confirmar Contraseña" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="city">
             <Form.Label>Ciudad</Form.Label>
-            <Form.Control type="text" placeholder="Ciudad" value={city} onChange={(e) => setCity(e.target.value)} required className={styles.input}/>
+            <Form.Control type="text" placeholder="Ciudad" value={city} onChange={(e) => setCity(e.target.value)} required className={styles.input} />
           </Form.Group>
           <Button
             variant="danger"

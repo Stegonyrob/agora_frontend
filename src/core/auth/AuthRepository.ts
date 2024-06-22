@@ -1,28 +1,36 @@
-
-import type { IAuthUser } from "./IAuthUser";
-import type { ILoggedInUser } from "./ILoggedInUser";
-
-export default class AuthRepository {
-   uri: string = import.meta.env.VITE_API_ENDPOINT_GENERAL;
-
-   async authenticateFetch(data: IAuthUser): Promise<ILoggedInUser> {
-       try {
-            const myHeaders = new Headers();
-            myHeaders.append('Authorization', 'Basic ' + btoa(data.email + ':' + data.password));
-
-            const options: RequestInit = {
-                method: 'GET',
-                headers: myHeaders,
-                credentials: 'include',
-            };
-            const response = await fetch(this.uri + '/login', options);
-           if (!response.ok) {
-               throw new Error('API does not respond');
-           }
-            const json = await response.json();
-            return json;
-       } catch (error) {
-           throw new Error('API does not respond: ' + error);
-       }
-   }
+import axios from "axios";
+interface AuthResponse {
+  data: {
+    token: string;
+    userId: string;
+    role: string;
+  };
 }
+const BASE_URL = "http://localhost:8080/api/v1/login";
+
+const authenticateUser = async (
+  username: string,
+  password: string
+): Promise<string | null> => {
+  const credentials = `${username}:${password}`;
+  const encodedCredentials = btoa(credentials);
+
+  try {
+    const { data } = await axios.post(
+      BASE_URL,
+      {},
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+        },
+        responseType: "json",
+      }
+    );
+
+    return data?.token ?? null;
+  } catch {
+    return null;
+  }
+};
+
+export { authenticateUser };
