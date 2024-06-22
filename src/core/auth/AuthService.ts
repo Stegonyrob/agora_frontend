@@ -13,8 +13,11 @@ export default class AuthService {
         
         const user: ILoggedInUser = {
             email: json.email,
-            roles: json.roles,
-            isAuthenticated: true
+            role: json.role,
+            isAuthenticated: true,
+            username: json.username,
+            userId: "",
+            token: null
         }
 
         return user

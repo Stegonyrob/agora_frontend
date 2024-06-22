@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/userSlice';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
+
 const FormLogin = () => {
  const [username, setUsername] = useState('');
  const [password, setPassword] = useState('');
@@ -13,31 +14,31 @@ const FormLogin = () => {
  const dispatch = useDispatch();
 
  const handleSubmit = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-
-    try {
-      const response = await axios.get('http://localhost:8080/api/v1/login', {
-        auth: {
-          username: username,
-          password: password,
-        },
-      });
-      console.log(response.data); // Esto debería imprimir el objeto response.data
-
-
-      // Acceder a userId y username correctamente
-      const userId = response.data.userId;
-      const role = response.data.role; 
-      const userName = response.data.username;
-      dispatch(loginUser({ userId, role }));
-      console.log(userId, username); // Debería imprimir "1" y "admin"
-
-      navigate('/foroview', { state: { userId } }); 
-
-    } catch (error) {
-      console.error('Error:', error);
-    }
- };
+  event.preventDefault();
+ 
+  try {
+    const response = await axios.post('http://localhost:8080/auth/login', {
+      username: username,
+      password: password,
+    });
+    
+    // Almacenar el token JWT
+    localStorage.setItem('authToken', response.data.token);
+ 
+    // Obtener la información del usuario
+    const userId = response.data.userId;
+    const role = response.data.role; 
+    const userName = response.data.username;
+    
+    // Despachar la acción de Redux para actualizar el estado del usuario
+    dispatch(loginUser({ userId, role}));
+ 
+    // Redirigir al usuario a la página de blog
+    navigate('/blogview', { state: { userId } }); 
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
  return (
     <form onSubmit={handleSubmit} >

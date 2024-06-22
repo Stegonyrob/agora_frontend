@@ -3,10 +3,10 @@ import type { IAuthUser } from "./IAuthUser";
 import type { ILoggedInUser } from "./ILoggedInUser";
 
 export default class AuthRepository {
-    uri: string = import.meta.env.VITE_API_ENDPOINT_GENERAL;
+   uri: string = import.meta.env.VITE_API_ENDPOINT_GENERAL;
 
-    async authenticateFetch(data: IAuthUser): Promise<ILoggedInUser> {
-        try {
+   async authenticateFetch(data: IAuthUser): Promise<ILoggedInUser> {
+       try {
             const myHeaders = new Headers();
             myHeaders.append('Authorization', 'Basic ' + btoa(data.email + ':' + data.password));
 
@@ -16,13 +16,13 @@ export default class AuthRepository {
                 credentials: 'include',
             };
             const response = await fetch(this.uri + '/login', options);
-            if (!response.ok) {
-                throw new Error('API does not respond');
-            }
+           if (!response.ok) {
+               throw new Error('API does not respond');
+           }
             const json = await response.json();
             return json;
-        } catch (error) {
-            throw new Error('API does not respond: ' + error);
-        }
-    }
+       } catch (error) {
+           throw new Error('API does not respond: ' + error);
+       }
+   }
 }
