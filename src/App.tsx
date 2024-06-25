@@ -17,29 +17,29 @@ import TeaView from './assets/Views/TeaView';
 import TransAprendizajeView from './assets/Views/TransAprendizajeView';
 import TransMadurativoView from './assets/Views/TransMadurativoView';
 const App = () => {
- return (
-  
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomeView />} />
-          <Route path="/*" element={<MainLayout />} />
-       
-        </Routes>
-        <Footer/>
-      </Router>
-    
- );
+  return (
+
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomeView />} />
+        <Route path="/*" element={<MainLayout />} />
+
+      </Routes>
+      <Footer />
+    </Router>
+
+  );
 };
 
 const MainLayout = () => {
- return (
+  return (
     <>
       <NavBar />
       <Routes>
         <Route path="/AboutMe" element={<AboutMeView />} />
         <Route path="/Neurodiversity" element={<NeurodiversityView />} />
         <Route path="/Services" element={<ServiceView />} />
-        <Route path="/Blog" element={<BlogView  />} />
+        <Route path="/Blog" element={<BlogView />} />
         <Route path="/Agora" element={<AgoraView />} />
         <Route path="/Tea" element={<TeaView />} />
         <Route path="/Tda_Tdh" element={<Tda_TdhView />} />
@@ -47,9 +47,10 @@ const MainLayout = () => {
         <Route path="/Madurativo" element={<TransMadurativoView />} />
         <Route path="/Login" element={<LoginView />} />
         <Route path="/Register" element={<RegisterView />} />
+        <Route path="/Logout" element={<HomeView />} />
       </Routes>
     </>
- );
+  );
 };
 
 export default App;

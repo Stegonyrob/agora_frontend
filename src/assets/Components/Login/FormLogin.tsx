@@ -1,44 +1,37 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { authenticateUser } from '../../../core/auth/AuthRepository';
+import { login } from '../../../services/auth';
 import { loginUser } from '../../redux/userSlice';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
-interface AuthResponse {
-  data: {
-    token: string;
-    userId: string;
-    role: string;
-  };
+
+interface FormLoginProps {
+  // No props for now
 }
-const FormLogin = () => {
+
+const FormLogin: React.FC<FormLoginProps> = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log('Iniciando envío de formulario');
     event.preventDefault();
-
     try {
-      const response = await authenticateUser(username, password) as unknown as AuthResponse;
-      if (!response || !response.data) throw new Error('Authentication failed or unexpected response format');
-      const { token, userId, role } = response.data;
-      localStorage.setItem('authToken', token);
-
-      dispatch(loginUser({ userId, role }));
+      console.log('Enviando credenciales a servidor');
+      const { accessToken, refreshToken, userId, role } = await login(username, password);
+      console.log('Servidor ha respondido con éxito');
+      localStorage.setItem('authToken', accessToken);
+      dispatch(loginUser({ userId: userId.toString(), role }));
+      console.log('Redux ha actualizado el estado con éxito');
       navigate('/blogview', { state: { userId } });
+      console.log('Navegación exitosa');
     } catch (error) {
       console.error('Error:', error);
     }
-  }
-
-  // Función para encriptar password con RSA
-  const encryptRSA = (password: string) => {
-    // Aquí iría la lógica de encriptación con RSA
-    // Por ahora, simplemente devuelvo la password encriptada
-    return password;
   };
 
   return (
