@@ -1,0 +1,19 @@
+.cardText {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  width: 98% !important;
+  margin: 1rem;
+  margin-right: 1rem !important;
+  text-align: justify;
+  margin-bottom: 11rem !important;
+  color: white;
+}
+
+.cardText img {
+  width: 100%;
+  max-width: 15rem;
+  float: left;
+  margin: 2rem;
+}

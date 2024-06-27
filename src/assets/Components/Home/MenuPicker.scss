@@ -1,5 +1,5 @@
 .color-picker-menu-container {
-   height: 60rem; 
+   height: 40rem; 
 }
 
 .central-picker {
@@ -7,15 +7,13 @@
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: flex;
+ 
   justify-content: center;
   align-items: center;
   color: white;
   cursor: pointer;
   z-index: 2;
-  transition: background-color 0.3s;
-  border-radius: 50%;
-  background: radial-gradient(circle, transparent, white);
+  background: radial-gradient(circle, #141313fc, rgb(239, 243, 242));
   transition: background 0.3s ease;
   padding: 11px;
   width: 15rem;
@@ -62,6 +60,87 @@
   a {
     writing-mode: horizontal-tb; 
   }
-
+  /* Mobile devices */
+@media only screen and (max-width: 920px) {
+  .color-picker-menu-container {
+   height: 80rem; 
  
+ 
+}
+.central-picker {
+
+  top: 55%;
+  left: 50%;
+
+}
+.menu-items-container {
+
+  top: 55%;
+
+}
+}
+/* Mobile devices */
+@media only screen and (max-width: 820px) {
+  .color-picker-menu-container {
+   height: 40rem; 
+ 
+ 
+}
+.central-picker {
+
+  top: 55%;
+  left: 50%;
+
+}
+.menu-items-container {
+
+  top: 55%;
+
+}
+}
+/* Mobile devices */
+@media only screen and (max-width: 768px) {
+  .color-picker-menu-container {
+   height: 50rem; 
+}
+  .central-picker {
+    width: 10rem;
+    height: 10rem;
+    padding: 8px;
+  }
+
+  .menu-item {
+    width: 5rem !important;
+    height: 5rem !important;
+    line-height: 5rem;
+    font-size: 0.8rem;
+   }
+}
+
+/* Small mobile devices */
+@media only screen and (max-width: 480px) {
+  .central-picker {
+    width: 10rem;
+    height: 10rem;
+    padding: 6px;
+  }
+
+  .menu-item {
+    width: 3rem;
+    height: 3rem;
+  
+  }
+  
+.central-picker {
+
+  top: 55%;
+  left: 50%;
+
+}
+.menu-items-container {
+
+  top: 55%;
+
+}
+}
    

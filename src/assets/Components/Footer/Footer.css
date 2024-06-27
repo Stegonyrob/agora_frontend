@@ -1,0 +1,61 @@
+.footer {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  height: 5rem;
+  color: white;
+  text-justify: center;
+  margin-top: -5rem;
+  justify-content: center;
+}
+
+.footer .icon {
+  font-size: 2rem !important;
+  padding: 1rem;
+  color: white;
+}
+
+.footer .text {
+  font-size: 1rem;
+  color: white;
+  text-align: end;
+  margin-right: 2rem;
+  margin-top: -2rem;
+}
+
+@media only screen and (max-width: 920px) {
+  .footer {
+    height: 8rem;
+    margin-top: -8rem;
+  }
+  .icon {
+    margin-left: 0.5rem;
+  }
+  .text {
+    font-size: 0.8rem;
+    color: white;
+  }
+}
+
+@media only screen and (max-width: 820px) {
+  .footer {
+    height: 7rem;
+  }
+  .icon {
+    margin-left: 1rem;
+  }
+  .text {
+    font-size: 0.8rem;
+    color: white;
+    margin-top: 1rem !important;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  .footer {
+    height: 8rem;
+  }
+  .text {
+    font-size: 0.8rem;
+    color: white;
+    margin-right: 2rem;
+  }
+}
