@@ -19,9 +19,11 @@ interface CardPostsProps {
   onSelect: (post: Post) => void;
   onDelete: (postId: string) => void;
   userId?: string;
+  user: string;
 }
 
 const CardPosts: React.FC<CardPostsProps> = ({
+  user,
   onSelect,
   onDelete,
   userId,
@@ -50,7 +52,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error loading posts: ", error);
-        alert("Post no encontrado ,disculpa las molestias");
+        alert("Post not found, sorry for the inconvenience");
       }
     };
     loadPosts();
@@ -69,23 +71,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
                 <span className="social-icons" style={{ width: "3rem" }}>
                   <i className="bi bi-pen" onClick={() => onSelect(post)} />{" "}
                 </span>
-                <ButtonComment
-                  className="social-icons"
-                  onSelect={function (postId: string): void {
-                    throw new Error("Function not implemented.");
-                  }}
-                  post={post}
-                  userName={""}
-                />
-                <span  className="social-icons">
-                  <i
-                    className={
-                      loveCounter > 0 ? "fas fa-heart red" : "fas fa-heart"
-                    }
-                    onClick={loveHandler}
-                  ></i>{" "}
-                  {loveCounter}
-                </span>
+                <ButtonComment postId={""} userId={undefined} />
                 <span className="social-icons" style={{ width: "3rem" }}>
                   <i
                     className="bi bi-trash3"

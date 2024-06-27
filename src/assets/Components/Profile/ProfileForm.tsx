@@ -2,48 +2,53 @@ import React, { useState } from 'react';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { useParams } from 'react-router-dom';
 import api from '../../../services/api';
 import AvatarComponent from '../Blog/CardUser/AvatarComponent';
-import styles from './RegisterForm.module.scss';
+import styles from './ProfileForm.module.scss';
 
-function RegisterForm() {
-
+function ProfileForm() {
+  const { userId } = useParams();
   const [firstName, setFirstName] = useState('');
   const [lastName1, setLastName1] = useState('');
   const [lastName2, setLastName2] = useState('');
   const [relationship, setRelationship] = useState('');
   const [email, setEmail] = useState('');
-  const [avatar, setAvatar] = useState('')
+  const [avatar, setAvatar] = useState('');
   const [city, setCity] = useState('');
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const userData = {
       avatar,
-      firstName: firstName,
+      firstName: firstName || '',
       lastName1: `${lastName1} `,
       lastName2: `${lastName2}`,
       relationship,
       email,
       city,
+      userId: userId || '', // Add a check to ensure userId is not undefined
     };
 
     try {
-      await api.registerUser(userData);
-      console.log(userData)
-      console.log("User registered successfully!");
+      console.log({ firstName, lastName1, lastName2, relationship, email, city, userId });
+      if (userId) { // Add a check to ensure userId is defined before calling the function
+        await api.profileUser(userData);
+        console.log("User profile updated successfully!");
+      }
     } catch (error) {
-      console.error("Error registering user:", error);
+      console.error("Error updating profile user:", error);
     }
   };
 
   return (
     <Card className={styles.card}>
       <Card.Body>
-        <Card.Title>Formulario de Registro</Card.Title>
+        <Card.Title>Formulario de Perfil</Card.Title>
         <Form onSubmit={handleSubmit}>
-          <AvatarComponent />
+          <AvatarComponent avatar={avatar} />
           <Form.Group className="mb-3" controlId="formFirstName">
             <Form.Label>Nombre</Form.Label>
             <Form.Control type="text" placeholder="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} required
@@ -56,7 +61,7 @@ function RegisterForm() {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formLastName2">
             <Form.Label>Segundo Apellido</Form.Label>
-            <Form.Control type="text" placeholder="Segundo Apellido" value={lastName2} onChange={(e) => setLastName2(e.target.value)} required className={styles.input} />
+            <Form.Control type="text" placeholder="Segundo Apellido" value={lastName2} onChange={(e) => setLastName2(e.target.value)} className={styles.input} />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formRelationship">
@@ -92,4 +97,4 @@ function RegisterForm() {
   );
 }
 
-export default RegisterForm;
+export default ProfileForm;

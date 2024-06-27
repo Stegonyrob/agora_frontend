@@ -1,28 +1,31 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
- userId: string | null;
- role: string | null;
+  userId: string | null;
+  userRole: string | null;
 }
 
 const initialState: UserState = {
- userId: null,
- role: null,
+  userId: null,
+  userRole: null,
 };
 
 export const userSlice = createSlice({
- name: 'user',
- initialState,
- reducers: {
-    loginUser: (state, action: PayloadAction<{ userId: string; role: string }>) => {
+  name: "user",
+  initialState,
+  reducers: {
+    loginUser: (
+      state,
+      action: PayloadAction<{ userId: string; role: string }>
+    ) => {
       state.userId = action.payload.userId;
-      state.role = action.payload.role;
+      state.userRole = action.payload.role;
     },
     clearErrorMessage: (state) => {
       state.userId = null;
-      state.role = null;
+      state.userRole = null;
     },
- },
+  },
 });
 
 export const { loginUser, clearErrorMessage } = userSlice.actions;

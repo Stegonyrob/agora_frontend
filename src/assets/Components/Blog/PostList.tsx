@@ -9,6 +9,7 @@ interface PostList {
   posts: Post[];
   onSelect: (post: Post) => void;
   onDelete: (postId: string) => Promise<void>;
+  userId: string | null;
 }
 
 const PostList = ({ posts }: PostList) => {
@@ -75,8 +76,8 @@ const PostList = ({ posts }: PostList) => {
       alert(`No se pudo crear el post, por favor intentenlo más tarde, por favor disculpen las molestias`);
     }
   };
-  
-  
+
+
 
   const onSubmit = async (post: Post) => {
     if (post.id) {
@@ -88,8 +89,8 @@ const PostList = ({ posts }: PostList) => {
 
   return (
     <div>
-      <CardUser id={''} name={''} avatar_url={''} title={''} skills={[]}/>
-    
+      <CardUser id={''} name={''} avatar_url={''} title={''} skills={[]} />
+
       <div>
         <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} />
         {selectedPost && (

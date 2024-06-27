@@ -6,22 +6,23 @@ import { ReplyRepository } from '../../../../core/replies/ReplyRepository';
 import styles from './ButtonComent.module.scss';
 
 interface User {
-  id: string;
+  userId: string;
   username: string;
+  role: string;
+
 }
 
 interface Post {
   id: string;
 }
-
 interface ButtonCommentProps {
-  onSelect: (postId: string) => void;
-  post: Post;
-  user: User; // Agregar el usuario actual como una propiedad
+  postId: string;
+  userId: string | undefined;
   className?: string;
 }
 
-const ButtonComment: React.FC<ButtonCommentProps> = ({ post, user, className }) => {
+
+const ButtonComment: React.FC<ButtonCommentProps> = ({ postId, userId, className }) => {
   const [show, setShow] = useState(false);
   const replyRepository = new ReplyRepository();
   const [commentCounter, setCommentCounter] = useState(0);
@@ -35,21 +36,23 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ post, user, className }) 
   const handleSaveChanges = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Reply message:', replyMessage);
-    const commentData: IReply = {
-      user_id: user.id, // Usar el ID del usuario actual
-      reply_message: replyMessage,
-      creation_date: new Date().toISOString(),
-      reply_id: "reply_id_here",
-      post_id: post.id,
-      postId: "",
-      comment: ""
-    };
+    if (userId) {
+      const commentData: IReply = {
+        user_id: userId,
+        reply_message: replyMessage,
+        creation_date: new Date().toISOString(),
+        reply_id: "reply_id_here",
+        post_id: postId,
+        postId: "",
+        comment: ""
+      };
 
-    try {
-      await replyRepository.create(commentData);
-      handleClose();
-    } catch (error) {
-      console.error('Error sending comment: ', error);
+      try {
+        await replyRepository.create(commentData);
+        handleClose();
+      } catch (error) {
+        console.error('Error sending comment: ', error);
+      }
     }
   };
 
@@ -65,7 +68,7 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ post, user, className }) 
       </span>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-        <Modal.Title> <p>{user?.username}</p> </Modal.Title>  </Modal.Header>
+          <Modal.Title> <p>{userId && typeof userId === 'string' ? userId : 'Usuario Desconocido'}</p> </Modal.Title>  </Modal.Header>
         <Form onSubmit={handleSaveChanges}>
           <Modal.Body>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -86,5 +89,7 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ post, user, className }) 
     </div>
   );
 };
+
+
 
 export default ButtonComment;

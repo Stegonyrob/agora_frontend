@@ -151,6 +151,81 @@ const api = {
     }
   },
 
+  //Perfiles Crud
+  // Función para registrar un nuevo usuario todos se pueden registrar
+  async profileUser(userData: {
+    avatar: string;
+    firstName: string;
+    lastName1: string;
+    lastName2: string;
+    relationship: string;
+    email: string;
+    city: string;
+    userId: string;
+  }): Promise<any> {
+    // No role restriction for registering users
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.post(
+        `${uri}/users/profile/${userId}`,
+        userData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (!response.data) {
+        throw new Error("Error al registrar el usuario");
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error al registrar el usuario:", error);
+      throw error;
+    }
+  },
+
+  // Función para obtener usuarios el admin puede obtener todos los usuarios para poder moderar
+  async getProfiles(userId: string): Promise<any> {
+    const userRole = await getUserRole();
+    if (userRole !== "admin") {
+      throw new Error("Only admin can fetch users");
+    }
+    try {
+      const response = await axios.get(`${uri}/users/profile`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching users: ", error);
+      throw error;
+    }
+  },
+
+  // Función para actualizar un usuario el usuario puede actualizar su perfil
+  async updateProfile(profileId: string, userData: any): Promise<any> {
+    const userRole = await getUserRole();
+    if (userRole !== "admin" && profileId !== userData.id) {
+      throw new Error("Only admin or self can update user");
+    }
+    try {
+      const response = await axios.put(`${uri}/users/${profileId}`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      if (!response.data) {
+        throw new Error("Error al actualizar el usuario");
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      throw error;
+    }
+  },
+
   //Función para eliminar un usuario el usuario y el admin pueden eliminar usuarios peroe l usuario solo se puede eliminar asi mismo
 
   async deleteUser(userId: string, userData: any): Promise<void> {
@@ -160,6 +235,9 @@ const api = {
     }
     try {
       await axios.delete(`${uri}/users/${userId}`, { withCredentials: true });
+      await axios.delete(`${uri}/users/profile/${userId}`, {
+        withCredentials: true,
+      });
       console.log("Usuario eliminado exitosamente.");
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);

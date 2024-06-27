@@ -10,44 +10,52 @@ import { RootState } from '../redux/store';
 
 
 interface AdminViewProps {
- posts: Post[];
- onDeletePost: (postId: string) => void;
- onEditPost: (post: Post) => void;
- onCreatePost: (post: Post) => void;
+   posts: Post[];
+   onDeletePost: (postId: string) => void;
+   onEditPost: (post: Post) => void;
+   onCreatePost: (post: Post) => void;
+   userId: string;
 }
-
 const AdminView: React.FC<AdminViewProps> = ({ posts, onDeletePost, onEditPost, onCreatePost }) => {
- const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
- const handleSelectPost = (post: Post) => {
-    setSelectedPost(post);
- };
+   const handleSelectPost = (post: Post) => {
+      setSelectedPost(post);
+   };
 
- const handleDeletePost = (postId: string) => {
-    onDeletePost(postId);
- };
+   const handleDeletePost = async (postId: string) => {
+      await onDeletePost(postId);
+   };
 
- const handleEditPost = (post: Post) => {
-    onEditPost(post);
- };
+   const handleEditPost = async (post: Post): Promise<void> => {
+      await onEditPost(post);
+   };
 
- const handleCreatePost = (post: Post) => {
-    onCreatePost(post);
- };
- const { userId } = useSelector((state: RootState) => state.user);
- return (
-    <div>
-      // En el componente padre de PostList
+   const handleCreatePost = async (post: Post): Promise<void> => {
+      await onCreatePost(post);
+   };
 
-<PostList userId={userId ?? undefined} posts={[]} onSelect={function (posts: any): void {
-          throw new Error('Function not implemented.');
-       } } onDelete={function (postsId: any): void {
-          throw new Error('Function not implemented.');
-       } } />
-      <PostForm post={selectedPost} onSubmit={selectedPost ? handleEditPost : handleCreatePost} />
-      <CardPosts posts={posts} onSelect={handleSelectPost} onDelete={handleDeletePost} />
-    </div>
- );
+   const { userId } = useSelector((state: RootState) => state.user);
+
+   return (
+      <div>
+         <PostList
+            posts={posts}
+            onSelect={handleSelectPost}
+            onDelete={handleDeletePost}
+            userId={userId}
+         />
+         <PostForm
+            post={selectedPost}
+            onSubmit={selectedPost ? handleEditPost : handleCreatePost} onClose={function (): void {
+               throw new Error('Function not implemented.');
+            }} />
+         <CardPosts
+            posts={posts}
+            onSelect={handleSelectPost}
+            onDelete={handleDeletePost} user={''} />
+      </div>
+   );
 };
 
 export default AdminView;

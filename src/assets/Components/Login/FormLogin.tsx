@@ -13,6 +13,7 @@ interface FormLoginProps {
 
 const FormLogin: React.FC<FormLoginProps> = () => {
   const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,7 +21,10 @@ const FormLogin: React.FC<FormLoginProps> = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     console.log('Iniciando envío de formulario');
     event.preventDefault();
+    setUserId(userId);
     try {
+
+
       console.log('Enviando credenciales a servidor');
       const { accessToken, refreshToken, userId, role } = await login(username, password);
       console.log('Servidor ha respondido con éxito');
