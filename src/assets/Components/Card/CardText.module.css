@@ -15,5 +15,10 @@
 }
 
 .skeleton {
-  width: 88% !important;
+  margin: 3rem;
+  padding: 2rem;
+  justify-self: center;
+  width: 80%;
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  margin-bottom: 10rem;
 }

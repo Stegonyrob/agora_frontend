@@ -33,29 +33,38 @@ function CardText({ ids }: CardTextProps) {
   return (
 
 
-    <Card className={styles.cardText}>
+    <div >
       {isLoading ? (
-        <Card.Body className={styles.skeleton}>
-          <Card.Text className={styles.skeleton} style={{ marginTop: '2rem' }} >
+        <Card.Body >
+          <Card.Text className={styles.skeleton} >
             <Placeholder as={Card.Text} animation="glow" >
-              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginTop: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
+              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginBottom: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} />
-              <Placeholder xs={11} />
-              <Placeholder xs={11} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
             </Placeholder>
-            <Placeholder as={Card.Text} animation="glow">
-              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginTop: '2rem' }} />
+            <Placeholder as={Card.Text} animation="glow" >
+              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginTop: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} />
-              <Placeholder xs={11} />
-              <Placeholder xs={11} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
             </Placeholder>
           </Card.Text>
+
         </Card.Body>
       ) : (
         <Card className={styles.cardText}>
@@ -72,7 +81,7 @@ function CardText({ ids }: CardTextProps) {
         </Card>
       )}
 
-    </Card>
+    </div>
 
 
   );
