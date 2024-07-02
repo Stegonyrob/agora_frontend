@@ -11,7 +11,7 @@
   margin: -200px 0 0 -200px;
 }
 
-.logo-image-home {
+.logoImageHome {
   width: 14rem;
   height: 14rem;
   position: relative;
@@ -20,7 +20,7 @@
   left: 0rem;
 }
 
-.logo-canvas {
+.logoCanvas {
   border-radius: 50%;
   top: 0rem !important;
   position: absolute !important;
@@ -30,12 +30,12 @@
 
 /* Mobile devices */
 @media only screen and (max-width: 768px) {
-  .central-picker {
+  .centralPicker {
     width: 10rem;
     height: 10rem;
     padding: 8px;
   }
-  .menu-item {
+  .menuItem {
     width: 4rem;
     height: 4rem;
     line-height: 4rem;
@@ -44,7 +44,7 @@
     position: absolute;
     margin: -80px 0 0 -80px;
   }
-  .logo-image-home {
+  .logoImageHome {
     width: 10rem;
     height: 10rem;
     position: relative;
@@ -52,7 +52,7 @@
     top: 0.1rem;
     left: -0.1rem;
   }
-  .logo-canvas {
+  .logoCanvas {
     top: 0rem !important;
     position: absolute !important;
     left: 0rem;
@@ -62,21 +62,38 @@
   }
 }
 
+.circle {
+  height: 1px;
+  width: 1px;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  box-shadow: 2px 2px 2px #489dcf,  -2px -2px 2px #62d5ff;
+  transform: translate(-50%, -50%);
+  animation: blow 4s linear infinite;
+}
+
+.circle-out {
+  transform: translate(-50%, -1000%);
+  opacity: 0;
+  filter: hue-rotate(720deg);
+}
+
 /* Small mobile devices */
 @media only screen and (max-width: 480px) {
-  .central-picker {
+  .centralPicker {
     width: 8rem;
     height: 8rem;
     padding: 6px;
   }
-  .menu-item {
+  .menuItem {
     width: 3rem;
     height: 3rem;
     line-height: 3rem;
   }
 }
 
-span {
+.span {
   height: 1px;
   width: 1px;
   border-radius: 50%;

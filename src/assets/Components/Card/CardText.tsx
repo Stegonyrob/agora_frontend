@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Placeholder from "react-bootstrap/Placeholder";
 import { useSelector } from "react-redux";
-import "./CardText.scss";
+import styles from './CardText.module.scss';
 
 interface TextItem {
   id: string;
@@ -24,38 +24,46 @@ function CardText({ ids }: CardTextProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 180000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div>
+
+
+    <Card className={styles.cardText}>
       {isLoading ? (
-        <Card className="cardText mb-5">
-          <Card.Body>
-            <Card.Img variant="top" src="470x450" />
-            <Placeholder as={Card.Text} animation="glow">
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
-              <Placeholder xs={12} />
+        <Card.Body className={styles.skeleton}>
+          <Card.Text className={styles.skeleton} style={{ marginTop: '2rem' }} >
+            <Placeholder as={Card.Text} animation="glow" >
+              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginTop: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} />
+              <Placeholder xs={11} />
+              <Placeholder xs={11} />
             </Placeholder>
-          </Card.Body>
-        </Card>
+            <Placeholder as={Card.Text} animation="glow">
+              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginTop: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
+              <Placeholder xs={11} />
+              <Placeholder xs={11} />
+              <Placeholder xs={11} />
+            </Placeholder>
+          </Card.Text>
+        </Card.Body>
       ) : (
-        <Card className="cardText mb-5">
+        <Card className={styles.cardText}>
           {texts.filter((text: TextItem) => ids.includes(text.id)).map((currentText: TextItem, index: number) => (
-            <div key={currentText.id} className={`card-item-${index}`}>
-              <Card.Img variant="top" src={currentText.image} alt={currentText.description} onError={handleImgLoadingError} />
+            <div key={currentText.id} className={styles.cardText}>
+              <Card.Img className={styles.cardText} src={currentText.image} alt={currentText.description} onError={handleImgLoadingError} />
               <Card.Body>
-                <Card.Text className="mt-3 p-2 text-justify">
+                <Card.Text className={styles.cardText}>
                   {currentText.description}
                 </Card.Text>
               </Card.Body>
@@ -63,7 +71,10 @@ function CardText({ ids }: CardTextProps) {
           ))}
         </Card>
       )}
-    </div>
+
+    </Card>
+
+
   );
 }
 

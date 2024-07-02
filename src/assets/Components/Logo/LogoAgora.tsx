@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import logo from './agoraLogoTras.png';
-import './Logo.scss';
+import style from './Logo.module.scss';
 
 const Logo = () => {
- const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
- useEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -17,28 +17,47 @@ const Logo = () => {
       const offsetY = event.clientY - rect.top;
       context?.clearRect(0, 0, canvas.width, canvas.height);
       if (context) context.font = '1.5rem Arial';
-      if (context) context.fillStyle = 'orange';
+      if (context) context.fillStyle = 'white';
       context?.fillText('Click Me!!!', offsetX, offsetY);
     };
 
     canvas.addEventListener('mousemove', handleMouseMove);
 
+    const handleBodyMouseMove = (event: MouseEvent) => {
+      let circle = document.createElement('span');
+      let x = event.clientX;
+      let y = event.clientY;
+      circle.className = style.circle;
+      circle.style.left = x + "px";
+      circle.style.top = y + "px";
+      let size = Math.random() * 100;
+      circle.style.width = 1 + size + "px";
+      circle.style.height = 1 + size + "px";
+      document.body.appendChild(circle);
+      setTimeout(function () {
+        circle.remove();
+      }, 3800);
+    };
+
+    document.body.addEventListener('mousemove', handleBodyMouseMove);
+
     return () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
+      document.body.removeEventListener('mousemove', handleBodyMouseMove);
     };
- }, []);
+  }, []);
 
- return (
-    <div className="logo-container">
-      <img className="logo-image-home" src={logo} alt="Logo" />
+  return (
+    <div className={style.logoContainer}>
+      <img className={style.logoImageHome} src={logo} alt="Logo" />
       <canvas
         ref={canvasRef}
         width={260}
         height={260}
-        className="logo-canvas"
+        className={style.logoCanvas}
       />
     </div>
- );
+  );
 };
 
 export default Logo;

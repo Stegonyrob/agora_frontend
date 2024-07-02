@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Logo from '../Logo/LogoAgora';
-import './MenuPicker.scss';
+import styles from './MenuPicker.module.scss';
 
 
 const ColorPickerMenu = () => {
@@ -31,7 +31,7 @@ const ColorPickerMenu = () => {
       <a
         key={index}
         href={item.path}
-        className="menu-item"
+        className={styles.menuItem}
         style={{
           transform: `${transformStyle} rotate(${reverseDeg}deg)`,
           transitionDelay: `${index * 0.1}s`,
@@ -45,12 +45,11 @@ const ColorPickerMenu = () => {
 
 
   return (
-    <div className="color-picker-menu-container">
-      <div className={`central-picker${active ? ' active' : ''}`} onClick={toggleMenu}>
+    <div className={styles.colorPickerMenuContainer}>
+      <div className={`${styles.centralPicker} ${active ? 'active' : ''}`} onClick={toggleMenu}>
         <Logo />
-
       </div>
-      <div className="menu-items-container">{menuItemsJSX}</div>
+      <div className={styles.menuItemsContainer}>{menuItemsJSX}</div>
     </div>
   );
 };

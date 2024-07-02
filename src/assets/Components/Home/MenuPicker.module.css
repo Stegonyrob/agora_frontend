@@ -1,8 +1,8 @@
-.color-picker-menu-container {
+.colorPickerMenuContainer {
   height: 40rem;
 }
 
-.central-picker {
+.centralPicker {
   position: absolute;
   top: 45%;
   left: 50%;
@@ -20,7 +20,7 @@
   border-radius: 30rem;
 }
 
-.menu-items-container {
+.menuItemsContainer {
   position: absolute;
   top: 45%;
   left: 50%;
@@ -30,7 +30,7 @@
   align-items: center;
 }
 
-.menu-item {
+.menuItem {
   position: absolute;
   width: 6rem;
   height: 6rem;
@@ -44,12 +44,12 @@
   transform-style: preserve-3d;
 }
 
-.menu-item:hover {
+.menuItem:hover {
   background: radial-gradient(circle, transparent, #790ed6);
   text-decoration: none;
 }
 
-.color-picker-menu-container.active {
+.colorPickerMenuContainer.active {
   transform: translate(0) rotate(360deg);
   opacity: 1;
   transition-delay: 0.1s;
@@ -61,43 +61,43 @@ a {
 
 /* Mobile devices */
 @media only screen and (max-width: 920px) {
-  .color-picker-menu-container {
+  .colorPickerMenuContainer {
     height: 80rem;
   }
-  .central-picker {
+  .centralPicker {
     top: 55%;
     left: 50%;
   }
-  .menu-items-container {
+  .menuItemsContainer {
     top: 55%;
   }
 }
 
 /* Mobile devices */
 @media only screen and (max-width: 820px) {
-  .color-picker-menu-container {
+  .colorPickerMenuContainer {
     height: 40rem;
   }
-  .central-picker {
+  .centralPicker {
     top: 55%;
     left: 50%;
   }
-  .menu-items-container {
+  .menuItemsContainer {
     top: 55%;
   }
 }
 
 /* Mobile devices */
 @media only screen and (max-width: 768px) {
-  .color-picker-menu-container {
+  .colorPickerMenuContainer {
     height: 50rem;
   }
-  .central-picker {
+  .centralPicker {
     width: 10rem;
     height: 10rem;
     padding: 8px;
   }
-  .menu-item {
+  .menuItem {
     width: 5rem !important;
     height: 5rem !important;
     line-height: 5rem;
@@ -107,20 +107,20 @@ a {
 
 /* Small mobile devices */
 @media only screen and (max-width: 480px) {
-  .central-picker {
+  .centralPicker {
     width: 10rem;
     height: 10rem;
     padding: 6px;
   }
-  .menu-item {
+  .menuItem {
     width: 3rem;
     height: 3rem;
   }
-  .central-picker {
+  .centralPicker {
     top: 55%;
     left: 50%;
   }
-  .menu-items-container {
+  .menuItemsContainer {
     top: 55%;
   }
 }
