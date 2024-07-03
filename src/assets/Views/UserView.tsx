@@ -1,4 +1,3 @@
-// UserView.tsx
 import React from 'react';
 import { Post } from '../../types/types';
 import { CardPostUser } from '../Components/Blog/CardPostUser/CardPostUser';

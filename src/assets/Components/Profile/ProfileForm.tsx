@@ -6,6 +6,15 @@ import { useParams } from 'react-router-dom';
 import api from '../../../services/api';
 import AvatarComponent from '../Blog/CardUser/AvatarComponent';
 import styles from './ProfileForm.module.scss';
+interface ProfileFormProps {
+  setLogin: (value: boolean) => void;
+  setRegister: (value: boolean) => void;
+  setUserId: (value: string) => void;
+  setUserName: (value: string) => void;
+  setRole: (value: string) => void;
+
+  // No props for now
+}
 
 function ProfileForm() {
   const { userId } = useParams();
@@ -16,8 +25,6 @@ function ProfileForm() {
   const [email, setEmail] = useState('');
   const [avatar, setAvatar] = useState('');
   const [city, setCity] = useState('');
-
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -29,13 +36,15 @@ function ProfileForm() {
       relationship,
       email,
       city,
-      userId: userId || '', // Add a check to ensure userId is not undefined
+      userId: userId || '',
     };
 
     try {
       console.log({ firstName, lastName1, lastName2, relationship, email, city, userId });
-      if (userId) { // Add a check to ensure userId is defined before calling the function
-        await api.profileUser(userData);
+      if (userId) {
+        const response = await api.profileUser(userData);
+        console.log(response);
+        console.log(userData);
         console.log("User profile updated successfully!");
       }
     } catch (error) {
@@ -44,10 +53,11 @@ function ProfileForm() {
   };
 
   return (
-    <Card className={styles.card}>
-      <Card.Body>
-        <Card.Title>Formulario de Perfil</Card.Title>
-        <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
+      <Card className={styles.card}>
+        <Card.Body>
+          <Card.Title>Formulario de Perfil</Card.Title>
+
           <AvatarComponent avatar={avatar} />
           <Form.Group className="mb-3" controlId="formFirstName">
             <Form.Label>Nombre</Form.Label>
@@ -91,10 +101,12 @@ function ProfileForm() {
           >
             Enviar
           </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+
+        </Card.Body>
+      </Card>
+    </Form>
   );
 }
 
 export default ProfileForm;
+

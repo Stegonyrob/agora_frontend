@@ -23,7 +23,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="/*" element={<MainLayout />} />
-
+        <Route path="/Logout" element={<HomeView />} />
       </Routes>
       <Footer />
     </Router>

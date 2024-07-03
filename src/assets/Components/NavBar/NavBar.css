@@ -1,0 +1,11 @@
+.navbar {
+  display: flex;
+  font-size: large;
+}
+
+.navbar .logoNavbar {
+  width: 4rem;
+  height: 4rem;
+  margin-left: 1rem !important;
+  border-radius: 20rem;
+}

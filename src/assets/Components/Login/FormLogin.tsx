@@ -8,6 +8,12 @@ import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
 interface FormLoginProps {
+  setLogin: (value: boolean) => void;
+  setRegister: (value: boolean) => void;
+  setUserId: (value: string) => void;
+  setUserName: (value: string) => void;
+  setRole: (value: string) => void;
+
   // No props for now
 }
 
@@ -30,8 +36,9 @@ const FormLogin: React.FC<FormLoginProps> = () => {
       console.log('Servidor ha respondido con éxito');
       localStorage.setItem('authToken', accessToken);
       dispatch(loginUser({ userId: userId.toString(), role }));
+      console.log(userId);
       console.log('Redux ha actualizado el estado con éxito');
-      navigate('/blogview', { state: { userId } });
+      navigate('/userview', { state: { userId } });
       console.log('Navegación exitosa');
     } catch (error) {
       console.error('Error:', error);

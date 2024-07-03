@@ -51,7 +51,7 @@ function CardText({ ids }: CardTextProps) {
               <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
             </Placeholder>
             <Placeholder as={Card.Text} animation="glow" >
-              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginTop: '2rem' }} />
+              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginTop: '2rem', marginBottom: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
               <Placeholder xs={9} style={{ marginLeft: '2rem' }} />

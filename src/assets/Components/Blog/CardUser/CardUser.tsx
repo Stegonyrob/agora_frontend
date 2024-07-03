@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Card, Container, Row } from 'react-bootstrap';
 import { Post } from 'types';
 import PostForm from '../PostForm';
-import AvatarComponent from './AvatarComponent'; // Importa AvatarComponent
+import AvatarComponent from './AvatarComponent';
+
 import styles from './CardUser.module.scss';
 
 interface UserProfileProps {
@@ -40,30 +41,30 @@ const UserProfile: React.FC<UserProfileProps> = ({
   return (
     <Container>
       <Row>
-    
-          <Card className={styles.userCard}>
-            <AvatarComponent /> 
-            <Card.Body>
-              <Card.Title>{name}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                {title}
-              </Card.Subtitle>
-              <Card.Text>
-                {skills.map((skill, index) => (
-                  <div key={index}>
-                    <img src={skill.icon} alt={skill.description} />
-                    {skill.description}
-                  </div>
-                ))}
-              </Card.Text>
-            </Card.Body>
-            <PostForm onSubmit={onsubmit} onClose={function (): void {
-        throw new Error('Function not implemented.');
-      } } />
-          </Card>
-        
+
+        <Card className={styles.userCard}>
+          <AvatarComponent avatar={''} />
+          <Card.Body>
+            <Card.Title>{name}</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              {title}
+            </Card.Subtitle>
+            <Card.Text>
+              {skills.map((skill, index) => (
+                <div key={index}>
+                  <img src={skill.icon} alt={skill.description} />
+                  {skill.description}
+                </div>
+              ))}
+            </Card.Text>
+          </Card.Body>
+          <PostForm onSubmit={onsubmit} onClose={function (): void {
+            throw new Error('Function not implemented.');
+          }} />
+        </Card>
+
       </Row>
-     
+
     </Container>
   );
 };

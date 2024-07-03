@@ -1,6 +1,6 @@
-// auth.ts
 import axios from "axios";
-
+const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
+const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
 interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -12,13 +12,10 @@ const login = async (
   password: string
 ): Promise<AuthResponse> => {
   try {
-    const response = await axios.post(
-      "http://localhost:8080/api/v1/all/login",
-      {
-        username,
-        password,
-      }
-    );
+    const response = await axios.post(`${uri}`, {
+      username,
+      password,
+    });
     const { accessToken, refreshToken, userId, role } = response.data;
     return { accessToken, refreshToken, userId, role };
   } catch (error) {
@@ -31,7 +28,7 @@ const logout = async (): Promise<void> => {
     const token = localStorage.getItem("authToken");
     if (token) {
       await axios.post(
-        "http://localhost:8080/api/v1/all/logout",
+        `${uri2}`,
         {},
         {
           headers: {
