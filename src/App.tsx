@@ -16,6 +16,7 @@ import Tda_TdhView from './assets/Views/Tda_TdhView';
 import TeaView from './assets/Views/TeaView';
 import TransAprendizajeView from './assets/Views/TransAprendizajeView';
 import TransMadurativoView from './assets/Views/TransMadurativoView';
+import ProtectedRoute from './routes/ProtectedRoute';
 const App = () => {
   return (
 
@@ -39,7 +40,9 @@ const MainLayout = () => {
         <Route path="/AboutMe" element={<AboutMeView />} />
         <Route path="/Neurodiversity" element={<NeurodiversityView />} />
         <Route path="/Services" element={<ServiceView />} />
-        <Route path="/Blog" element={<BlogView />} />
+        <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} path={'/Blog'}>
+
+        </ProtectedRoute>} />
         <Route path="/Agora" element={<AgoraView />} />
         <Route path="/Tea" element={<TeaView />} />
         <Route path="/Tda_Tdh" element={<Tda_TdhView />} />

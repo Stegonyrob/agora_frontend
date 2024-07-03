@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Post } from 'types';
-import api from '../../../services/api';
+import api from '../../../../services/api';
+import CardUser from '../user/CardUser/CardUser';
 import CardPosts from './CardPosts';
-import CardUser from './CardUser/CardUser';
 import EditPostForm from './EditPostForm';
 
 interface PostList {

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/auth';
-import { loginUser } from '../../redux/userSlice';
+import { setAuthentication } from '../../../types/redux/authSlice';
+import { RootState } from '../../../types/redux/store';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
+
 
 interface FormLoginProps {
   setLogin: (value: boolean) => void;
@@ -13,9 +15,9 @@ interface FormLoginProps {
   setUserId: (value: string) => void;
   setUserName: (value: string) => void;
   setRole: (value: string) => void;
-
-  // No props for now
 }
+
+
 
 const FormLogin: React.FC<FormLoginProps> = () => {
   const [username, setUsername] = useState('');
@@ -23,32 +25,37 @@ const FormLogin: React.FC<FormLoginProps> = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    console.log('isAuthenticated:', isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     console.log('Iniciando envío de formulario');
     event.preventDefault();
     setUserId(userId);
     try {
-
-
       console.log('Enviando credenciales a servidor');
       const { accessToken, refreshToken, userId, role } = await login(username, password);
       console.log('Servidor ha respondido con éxito');
       localStorage.setItem('authToken', accessToken);
-      dispatch(loginUser({ userId: userId.toString(), role }));
+      dispatch(setAuthentication({ isAuthenticated: true, user: { userId, role } }));
+
       console.log(userId);
       console.log('Redux ha actualizado el estado con éxito');
-      navigate('/userview', { state: { userId } });
+      navigate('/blog', { state: { userId: userId.toString() } });
       console.log('Navegación exitosa');
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit} >
-      <Card className={styles.card}>
-        <Card.Body className='card-login'>
+      <Card className={styles.card} >
+        <Card.Body className='card-login' >
           <Logo />
           <Card.Title>Inicio de Sesión</Card.Title>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >

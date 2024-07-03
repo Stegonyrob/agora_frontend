@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import api from '../../../services/api';
-import { Post } from '../../../types/types';
+import api from '../../../../services/api';
+import { Post } from '../../../../types/types';
 import styles from './PostForm.module.scss';
 
 interface PostFormProps {
-   post?: Post | null;
-   onSubmit: (post: Post) => Promise<void>;
-   onClose: () => void;
- }
- 
+  post?: Post | null;
+  onSubmit: (post: Post) => Promise<void>;
+  onClose: () => void;
+}
 
-const PostForm: React.FC<PostFormProps> = ({ post ,onClose}) => {
+
+const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
   const [title, setTitle] = useState(post ? post.title : '');
   const [message, setMessage] = useState(post ? post.message : '');
   const [show, setShow] = useState(false);
@@ -20,26 +20,26 @@ const PostForm: React.FC<PostFormProps> = ({ post ,onClose}) => {
   const handleShow = () => setShow(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-   event.preventDefault();
-   const newPost: { title: string; message: string; creationDate?: string } = {
-     title: title,
-     message: message,
-     creationDate: new Date().toISOString(),
-   };
- 
-   console.log('Enviando este post al backend:', newPost);
- 
-   try {
-     await api.createPost(newPost);
-     alert(`Post creado con exito.`);
-     handleClose();
-   } catch (error) {
-     console.error('Error al crear el post:', error);
-     alert(`No se pudo crear el post, por favor intentelo más tarde, y disculpe las molestias.`);
-   }
- };
- 
- 
+    event.preventDefault();
+    const newPost: { title: string; message: string; creationDate?: string } = {
+      title: title,
+      message: message,
+      creationDate: new Date().toISOString(),
+    };
+
+    console.log('Enviando este post al backend:', newPost);
+
+    try {
+      await api.createPost(newPost);
+      alert(`Post creado con exito.`);
+      handleClose();
+    } catch (error) {
+      console.error('Error al crear el post:', error);
+      alert(`No se pudo crear el post, por favor intentelo más tarde, y disculpe las molestias.`);
+    }
+  };
+
+
 
   return (
     <>

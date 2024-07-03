@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { useParams } from 'react-router-dom';
 import api from '../../../services/api';
-import AvatarComponent from '../Blog/CardUser/AvatarComponent';
+import AvatarComponent from '../Blog/user/CardUser/AvatarComponent';
 import styles from './ProfileForm.module.scss';
 interface ProfileFormProps {
   setLogin: (value: boolean) => void;

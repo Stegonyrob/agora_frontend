@@ -2,6 +2,7 @@ import axios from "axios";
 const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
 const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
 interface AuthResponse {
+  [x: string]: any;
   accessToken: string;
   refreshToken: string;
   userId: number;

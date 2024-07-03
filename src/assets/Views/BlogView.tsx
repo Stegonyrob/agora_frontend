@@ -1,13 +1,9 @@
-
 import { useSelector } from 'react-redux';
 import { Post } from 'types';
-import CardPosts from '../Components/Blog/CardPosts';
-import { CardPostUser } from '../Components/Blog/CardPostUser/CardPostUser';
-import PostForm from '../Components/Blog/PostForm';
-import PostList from '../Components/Blog/PostList';
-import ProfileForm from '../Components/Profile/ProfileForm';
-import { RootState } from '../redux/store';
-
+import { RootState } from '../../types/redux/store';
+import CardPosts from '../Components/Blog/admin/CardPosts';
+import PostForm from '../Components/Blog/admin/PostForm';
+import PostList from '../Components/Blog/admin/PostList';
 
 export default function BlogView() {
   const { userRole, userId } = useSelector((state: RootState) => state.user);
@@ -36,8 +32,12 @@ export default function BlogView() {
   } else {
     return (
       <div>
-        <ProfileForm />
-        <CardPostUser children={<CardPostUser children={undefined} postId={''} />} postId="a-valid-post-id" />
+        <h2>Blog</h2>
+        <CardPosts posts={[]} onSelect={function (post: Post): void {
+          throw new Error("Function not implemented.");
+        }} onDelete={function (postId: string): Promise<void> {
+          throw new Error("Function not implemented.");
+        }} user={''} />
       </div>
     );
   }

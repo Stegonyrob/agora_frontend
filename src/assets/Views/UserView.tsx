@@ -1,6 +1,6 @@
 import React from 'react';
 import { Post } from '../../types/types';
-import { CardPostUser } from '../Components/Blog/CardPostUser/CardPostUser';
+import { CardPostUser } from '../Components/Blog/user/CardPostUser/CardPostUser';
 import ProfileForm from '../Components/Profile/ProfileForm';
 
 interface UserViewProps {

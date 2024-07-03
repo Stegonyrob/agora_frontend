@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import api from "../../../services/api";
+import api from "../../../../services/api";
+import AccordionComment from "../Comment/AccordionComment";
+import ButtonComment from "../Comment/ButtonComent";
 import styles from "./CardPosts.module.scss";
-import AccordionComment from "./Comment/AccordionComment";
-import ButtonComment from "./Comment/ButtonComent";
 
 interface Post {
   id: string;

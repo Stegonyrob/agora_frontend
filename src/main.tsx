@@ -4,17 +4,17 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import App from './App.jsx'
-import store from "./assets/redux/store.js"
 import './index.scss'
+import store from "./types/redux/store.js"
 const rootElement = document.getElementById('root');
 if (!rootElement) {
- throw new Error("Could not find the 'root' element");
+  throw new Error("Could not find the 'root' element");
 }
 
 ReactDOM.createRoot(rootElement).render(
- <React.StrictMode>
+  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
- </React.StrictMode>
+  </React.StrictMode>
 );
