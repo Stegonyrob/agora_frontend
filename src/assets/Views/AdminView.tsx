@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../types/redux/store';
+import { RootState } from '../../redux/store';
 import { Post } from '../../types/types';
 import CardPosts from '../Components/Blog/CardPosts';
 import PostForm from '../Components/Blog/admin/PostForm';

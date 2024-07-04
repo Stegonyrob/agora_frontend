@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Post } from 'types';
 import api from '../../../../services/api';
-import CardUser from '../user/CardUser/CardUser';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 
@@ -16,7 +15,6 @@ const PostList = ({ posts }: PostList) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<Post[]>([]);
 
-  // Load posts initially
   useEffect(() => {
     const loadPosts = async () => {
       try {
@@ -89,10 +87,10 @@ const PostList = ({ posts }: PostList) => {
 
   return (
     <div>
-      <CardUser id={''} name={''} avatar_url={''} title={''} skills={[]} />
+
 
       <div>
-        <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} />
+        <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} user={''} />
         {selectedPost && (
           <EditPostForm
             post={selectedPost}

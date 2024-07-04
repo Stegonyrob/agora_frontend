@@ -9,6 +9,6 @@ const store = configureStore({
     user: userReducer,
   },
 });
-
+export const getToken = (state: RootState) => state.auth.token;
 export type RootState = ReturnType<typeof store.getState>;
 export default store;

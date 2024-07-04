@@ -28,8 +28,17 @@ const uri5 = import.meta.env.VITE_API_ENDPOINT_IMAGES;
 const api = {
   // 1. Fetch Posts - Retrieves posts visible to both users and admins
   async fetchPosts(): Promise<Post[]> {
+    const token = localStorage.getItem("authToken");
+    console.log(token);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    console.log(config);
     try {
-      const response = await axios.get(`${uri2}`, { withCredentials: true });
+      const response = await axios.get(`${uri2}`, config);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching posts: ", error);
@@ -88,7 +97,9 @@ const api = {
       throw new Error("Only admin can delete posts");
     }
     try {
-      await axios.delete(`${uri3}/${postId}`, { withCredentials: true });
+      await axios.delete(`${uri3}/${postId}`, {
+        withCredentials: true,
+      });
       console.log("Post deleted successfully.");
     } catch (error) {
       console.error("Error deleting post:", error);
@@ -223,7 +234,9 @@ const api = {
       throw new Error("Only admin or self can delete user");
     }
     try {
-      await axios.delete(`${uri}/users/${userId}`, { withCredentials: true });
+      await await axios(`${uri}/users/${userId}`, {
+        withCredentials: true,
+      });
       await axios.delete(`${uri}/users/profile/${userId}`, {
         withCredentials: true,
       });
@@ -294,7 +307,9 @@ const api = {
       throw new Error("Only admin or user can delete replies");
     }
     try {
-      await axios.delete(`${uri4}/${replyId}`, { withCredentials: true });
+      await axios.delete(`${uri4}/${replyId}`, {
+        withCredentials: true,
+      });
       console.log("Reply deleted successfully.");
     } catch (error) {
       console.error("Error deleting reply:", error);
@@ -349,7 +364,9 @@ const api = {
       throw new Error("Only admin can delete images");
     }
     try {
-      await axios.delete(`${uri5}/${filename}`, { withCredentials: true });
+      await axios.delete(`${uri5}/${filename}`, {
+        withCredentials: true,
+      });
       console.log("Image deleted successfully.");
     } catch (error) {
       console.error("Error deleting image:", error);

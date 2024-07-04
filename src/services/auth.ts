@@ -8,6 +8,23 @@ interface AuthResponse {
   userId: number;
   role: string;
 }
+// const login = async (
+//   username: string,
+//   password: string
+// ): Promise<AuthResponse> => {
+//   try {
+//     const response = await axios.post(`${uri}`, {
+//       username,
+//       password,
+//     });
+//     const { accessToken, refreshToken, userId, role } = response.data;
+//     console.log(accessToken, refreshToken, userId, role);
+//     return { accessToken, refreshToken, userId, role };
+//     console.log(accessToken);
+//   } catch (error) {
+//     throw new Error("Authentication failed");
+//   }
+// };
 const login = async (
   username: string,
   password: string
@@ -17,8 +34,16 @@ const login = async (
       username,
       password,
     });
-    const { accessToken, refreshToken, userId, role } = response.data;
-    return { accessToken, refreshToken, userId, role };
+    const { accessToken, refreshToken, userId } = response.data;
+    console.log(accessToken, refreshToken, userId);
+
+    // Acceder al rol del usuario desde el token
+    const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+    const userRole = tokenPayload.role;
+
+    console.log(`El usuario tiene el rol de ${userRole}`);
+
+    return { accessToken, refreshToken, userId, role: userRole };
   } catch (error) {
     throw new Error("Authentication failed");
   }
@@ -27,6 +52,7 @@ const login = async (
 const logout = async (): Promise<void> => {
   try {
     const token = localStorage.getItem("authToken");
+    console.log(token);
     if (token) {
       await axios.post(
         `${uri2}`,

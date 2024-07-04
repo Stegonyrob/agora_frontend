@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setAuthentication } from '../../../redux/authSlice';
+import { RootState } from '../../../redux/store';
 import { login } from '../../../services/auth';
-import { setAuthentication } from '../../../types/redux/authSlice';
-import { RootState } from '../../../types/redux/store';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
@@ -38,11 +38,18 @@ const FormLogin: React.FC<FormLoginProps> = () => {
     try {
       console.log('Enviando credenciales a servidor');
       const { accessToken, refreshToken, userId, role } = await login(username, password);
+      console.log(accessToken, refreshToken, userId, role)
       console.log('Servidor ha respondido con éxito');
       localStorage.setItem('authToken', accessToken);
-      dispatch(setAuthentication({ isAuthenticated: true, user: { userId, role } }));
+      localStorage.setItem('refreshToken', refreshToken);
+      console.log(accessToken, refreshToken)
+      dispatch(setAuthentication({
+        isAuthenticated: true, user: { userId, role },
+        role: ''
+      }));
 
       console.log(userId);
+      console.log(role);
       console.log('Redux ha actualizado el estado con éxito');
       navigate('/blog', { state: { userId: userId.toString() } });
       console.log('Navegación exitosa');
