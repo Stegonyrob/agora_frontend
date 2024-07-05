@@ -26,7 +26,7 @@ function CardText({ ids }: CardTextProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 180000);
+    }, 1800);
     return () => clearTimeout(timer);
   }, []);
 
