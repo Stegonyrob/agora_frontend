@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { useParams } from 'react-router-dom';
-import api from '../../../services/api';
+import { profileUser } from '../../../services/profile.api';
 import AvatarComponent from '../Blog/user/CardUser/AvatarComponent';
 import styles from './ProfileForm.module.scss';
 interface ProfileFormProps {
@@ -42,7 +42,7 @@ function ProfileForm() {
     try {
       console.log({ firstName, lastName1, lastName2, relationship, email, city, userId });
       if (userId) {
-        const response = await api.profileUser(userData);
+        const response = await profileUser(userData);
         console.log(response);
         console.log(userData);
         console.log("User profile updated successfully!");

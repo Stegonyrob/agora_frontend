@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Post } from 'types';
-import api from '../../../../services/api';
+
+import apiPost from '../../../../services/posts.api';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 
@@ -18,7 +19,7 @@ const PostList = ({ posts }: PostList) => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const fetchedPosts = await api.fetchPosts();
+        const fetchedPosts = await apiPost.fetchPosts();
         setFetchedPosts(fetchedPosts);
       } catch (error) {
         console.error("Error loading posts: ", error);
@@ -37,7 +38,7 @@ const PostList = ({ posts }: PostList) => {
 
   const handleDelete = async (postId: string) => {
     try {
-      await api.deletePost(postId);
+      await apiPost.deletePost(postId);
       console.log(`Post with ID: ${postId} deleted successfully.`);
       setFetchedPosts(fetchedPosts.filter(post => post.id !== postId));
     } catch (error) {
@@ -47,11 +48,11 @@ const PostList = ({ posts }: PostList) => {
 
   const handleUpdate = async (updatedPost: Post) => {
     try {
-      const updatedPostData = JSON.stringify({
+      const updatedPostData = {
         title: updatedPost.title,
         message: updatedPost.message,
-      });
-      const updatedPostResponse = await api.updatePost(updatedPost.id, updatedPostData);
+      };
+      const updatedPostResponse = await apiPost.updatePost(updatedPost.id, updatedPostData);
       console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
       alert(`Post editado exitosamente`);
       setFetchedPosts(fetchedPosts.map(post => post.id === updatedPost.id ? updatedPostResponse : post));
@@ -65,7 +66,7 @@ const PostList = ({ posts }: PostList) => {
     try {
       console.log("Enviando este post al backend:", newPost);
 
-      const createdPost = await api.createPost(newPost);
+      const createdPost = await apiPost.createPost(newPost);
       console.log(`Post with ID: ${createdPost.id} created successfully.`);
       alert(`Post creado exitosamente`);
       setFetchedPosts([...fetchedPosts, createdPost]);

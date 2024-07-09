@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import api from "../../../../services/api";
+import apiPost from "../../../../services/posts.api";
 import AccordionComment from "../Comment/AccordionComment";
 import ButtonComment from "../Comment/ButtonComent";
 import styles from "./CardPosts.module.scss";
@@ -44,11 +44,10 @@ const CardPosts: React.FC<CardPostsProps> = ({
   };
   const loveHandler = () => {
     setLoveCounter((prevState) => prevState + 1);
-  };
-  useEffect(() => {
+  }; useEffect(() => {
     const loadPosts = async () => {
       try {
-        const fetchedPosts = await api.fetchPosts();
+        const fetchedPosts = await apiPost.fetchPosts();
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error loading posts: ", error);
@@ -60,7 +59,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
   return (
     <Container>
       <Row>
-        {posts.map((post) => (
+        {Array.isArray(posts) && posts.map((post) => (
           <Col key={post.id}>
             <Card className={styles.cardPost}>
               <Card.Body>

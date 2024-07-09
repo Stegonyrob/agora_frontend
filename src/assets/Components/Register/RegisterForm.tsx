@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import api from '../../../services/api';
+import { registerUser } from '../../../services/users.api';
 import styles from './RegisterForm.module.scss';
 
 function RegisterForm() {
@@ -26,7 +26,7 @@ function RegisterForm() {
 
     try {
       console.log({ username, email, password, confirmPassword });
-      await api.registerUser(userData);
+      await registerUser(userData);
       console.log(userData)
       console.log("User registered successfully!");
     } catch (error) {

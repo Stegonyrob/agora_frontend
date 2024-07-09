@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import api from "../../../services/api";
+import api from "../../../services/profile.api";
 import ProfileForm from "./ProfileForm";
 
 jest.mock("../../../services/api");

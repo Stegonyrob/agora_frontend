@@ -5,6 +5,7 @@ interface AuthState {
   isLoggedIn: any;
   isAuthenticated: boolean;
   user: any | null;
+  role: string | null;
 }
 
 const initialState: AuthState = {
@@ -12,7 +13,9 @@ const initialState: AuthState = {
   user: null,
   isLoggedIn: undefined,
   token: undefined,
+  role: null,
 };
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -27,7 +30,10 @@ export const authSlice = createSlice({
     ) => {
       state.isAuthenticated = action.payload.isAuthenticated;
       state.user = action.payload.user;
-      state.user.role = action.payload.role;
+      state.role = action.payload.role;
+      console.log(`El usuario tiene el rol de ${state.role}`);
+      console.log(state.user);
+      console.log(state.isAuthenticated);
     },
   },
 });

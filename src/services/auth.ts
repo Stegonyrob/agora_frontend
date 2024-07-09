@@ -1,4 +1,6 @@
 import axios from "axios";
+import { setAuthentication } from "../redux/authSlice";
+
 const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
 const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
 interface AuthResponse {
@@ -8,23 +10,7 @@ interface AuthResponse {
   userId: number;
   role: string;
 }
-// const login = async (
-//   username: string,
-//   password: string
-// ): Promise<AuthResponse> => {
-//   try {
-//     const response = await axios.post(`${uri}`, {
-//       username,
-//       password,
-//     });
-//     const { accessToken, refreshToken, userId, role } = response.data;
-//     console.log(accessToken, refreshToken, userId, role);
-//     return { accessToken, refreshToken, userId, role };
-//     console.log(accessToken);
-//   } catch (error) {
-//     throw new Error("Authentication failed");
-//   }
-// };
+
 const login = async (
   username: string,
   password: string
@@ -36,7 +22,8 @@ const login = async (
     });
     const { accessToken, refreshToken, userId } = response.data;
     console.log(accessToken, refreshToken, userId);
-
+    const { user, role } = response.data;
+    setAuthentication({ isAuthenticated: true, user, role });
     // Acceder al rol del usuario desde el token
     const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
     const userRole = tokenPayload.role;

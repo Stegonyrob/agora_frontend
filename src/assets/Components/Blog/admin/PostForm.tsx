@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import api from '../../../../services/api';
+import api from "../../../../services/posts.api";
 import { Post } from '../../../../types/types';
 import styles from './PostForm.module.scss';
 
