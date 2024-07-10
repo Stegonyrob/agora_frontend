@@ -35,13 +35,12 @@ const login = async (
     throw new Error("Authentication failed");
   }
 };
-
 const logout = async (): Promise<void> => {
   try {
     const token = localStorage.getItem("authToken");
     console.log(token);
     if (token) {
-      await axios.post(
+      const response = await axios.post(
         `${uri2}`,
         {},
         {
@@ -50,7 +49,15 @@ const logout = async (): Promise<void> => {
           },
         }
       );
-      localStorage.removeItem("authToken");
+      if (response.status === 200) {
+        // Token was successfully invalidated, remove it from local storage
+        localStorage.removeItem("authToken");
+        console.log("Logged out successfully!");
+      } else {
+        console.error("Error logging out:", response.status, response.data);
+      }
+    } else {
+      console.log("No token found, already logged out.");
     }
   } catch (error) {
     console.error("Error logging out:", error);

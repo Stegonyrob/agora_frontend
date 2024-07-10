@@ -44,9 +44,12 @@ const FormLogin: React.FC<FormLoginProps> = () => {
       localStorage.setItem('refreshToken', refreshToken);
       console.log(accessToken, refreshToken)
       dispatch(setAuthentication({
-        isAuthenticated: true, user: { userId, role },
-        role: ''
+        isAuthenticated: true,
+        user: { userId, role },
+        role,
       }));
+
+
 
       console.log(userId);
       console.log(role);

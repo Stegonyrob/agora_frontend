@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
+  [x: string]: any;
   token: any;
   isLoggedIn: any;
   isAuthenticated: boolean;
@@ -34,6 +35,7 @@ export const authSlice = createSlice({
       console.log(`El usuario tiene el rol de ${state.role}`);
       console.log(state.user);
       console.log(state.isAuthenticated);
+      console.log(state.role);
     },
   },
 });
