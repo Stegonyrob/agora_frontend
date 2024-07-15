@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setAuthentication } from "../redux/authSlice";
+import store from "../redux/store";
 
 const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
 const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
@@ -20,12 +21,24 @@ const login = async (
       username,
       password,
     });
+
     const { accessToken, refreshToken, userId } = response.data;
-    console.log(accessToken, refreshToken, userId);
+
     const { user, role } = response.data;
-    setAuthentication({ isAuthenticated: true, user, role });
-    // Acceder al rol del usuario desde el token
+    store.dispatch(
+      setAuthentication({
+        isAuthenticated: true,
+        user,
+        role,
+        accessToken: "",
+        userId: undefined,
+      })
+    );
+
+    console.log("Authentication state:", store.getState().auth);
+    console.log(accessToken);
     const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+    console.log(accessToken);
     const userRole = tokenPayload.role;
 
     console.log(`El usuario tiene el rol de ${userRole}`);
@@ -38,7 +51,7 @@ const login = async (
 const logout = async (): Promise<void> => {
   try {
     const token = localStorage.getItem("authToken");
-    console.log(token);
+    console.log("Logout token:", token);
     if (token) {
       const response = await axios.post(
         `${uri2}`,
@@ -49,6 +62,7 @@ const logout = async (): Promise<void> => {
           },
         }
       );
+      console.log("Logout response:", response);
       if (response.status === 200) {
         // Token was successfully invalidated, remove it from local storage
         localStorage.removeItem("authToken");

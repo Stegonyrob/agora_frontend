@@ -1,13 +1,13 @@
 import axios from "axios";
 import { PostDTO } from "../dto/post.dto";
+import { RootState, useAppSelector } from "../redux/store";
 import { Post } from "../types/types";
 import { getUserRole } from "./users.api";
-
 // Environment Variables for API Endpoints
 
-const uri2 = import.meta.env.VITE_API_USERS_ENDPOINT_POSTS;
+const uri2 = import.meta.env.VITE_API_ENDPOINT_USERS_POSTS;
 const uri3 = import.meta.env.VITE_API_ENDPOINT_ADMIN_POSTS;
-console.log(uri3);
+
 interface PostData {
   title: string;
   message: string;
@@ -16,8 +16,13 @@ interface PostData {
 
 const apiPost = {
   // Fetch Posts - Retrieves posts visible to both users and admins
-  async fetchPosts(): Promise<Post[]> {
-    const token = localStorage.getItem("authToken");
+  async fetchPosts(getToken: (state: RootState) => any): Promise<Post[]> {
+    const token = useAppSelector(getToken);
+
+    if (!token) {
+      throw new Error("No token available");
+    }
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -32,7 +37,6 @@ const apiPost = {
       throw error;
     }
   },
-
   // Create Post - Allows only admins to create posts
   // posts.api.ts
   async createPost(
@@ -40,7 +44,12 @@ const apiPost = {
     role: string,
     isAuthenticated: boolean
   ): Promise<Post> {
-    if (!isAuthenticated || role !== "ADMIN") {
+    if (!isAuthenticated) {
+      throw new Error("Only admin can create posts");
+    }
+
+    const userRole = useAppSelector((state) => state.auth.role);
+    if (userRole !== "ADMIN") {
       throw new Error("Only admin can create posts");
     }
 
@@ -103,7 +112,8 @@ const apiPost = {
 
   // Delete Post - Allows only admins to delete posts
   async deletePost(postId: string): Promise<void> {
-    const userRole = await getUserRole();
+    const userRole = useAppSelector((state) => state.auth.role);
+
     if (userRole !== "admin") {
       throw new Error("Only admin can delete posts");
     }

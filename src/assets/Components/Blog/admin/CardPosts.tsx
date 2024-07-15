@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
+import { useSelector } from 'react-redux';
+import { getToken, RootState } from '../../../../redux/store';
 import apiPost from "../../../../services/posts.api";
 import AccordionComment from "../Comment/AccordionComment";
 import ButtonComment from "../Comment/ButtonComent";
 import styles from "./CardPosts.module.scss";
-
 interface Post {
   id: string;
   title: string;
@@ -28,6 +29,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
   onDelete,
   userId,
 }) => {
+  const token = useSelector((state: RootState) => state.auth.token);
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [show, setShow] = useState(false);
@@ -35,6 +37,8 @@ const CardPosts: React.FC<CardPostsProps> = ({
   const [commentCounter, setCommentCounter] = useState(0);
   const [tweetCounter, setTweetCounter] = useState(0);
   const [loveCounter, setLoveCounter] = useState(0);
+  const role = useSelector((state: RootState) => state.auth.role);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const commentHandler = () => {
     setCommentCounter((prevState) => prevState + 1);
@@ -43,19 +47,30 @@ const CardPosts: React.FC<CardPostsProps> = ({
     setTweetCounter((prevState) => prevState + 1);
   };
   const loveHandler = () => {
-    setLoveCounter((prevState) => prevState + 1);
-  }; useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        const fetchedPosts = await apiPost.fetchPosts();
-        setPosts(fetchedPosts);
-      } catch (error) {
-        console.error("Error loading posts: ", error);
-        alert("Post not found, sorry for the inconvenience");
+    setLoveCounter((prevState) => {
+      if (prevState === null) {
+        return 1;
+      } else {
+        return prevState + 1;
       }
-    };
-    loadPosts();
-  }, []);
+    });
+  };
+  useEffect(() => {
+    if (isAuthenticated) {
+      const loadPosts = async () => {
+        try {
+          const fetchedPosts = await apiPost.fetchPosts(getToken);
+          setPosts(fetchedPosts);
+        } catch (error) {
+          console.error("Error loading posts: ", error);
+          alert("Post not found, sorry for the inconvenience");
+        }
+      };
+      loadPosts();
+    }
+  }, [isAuthenticated, token]);
+
+
   return (
     <Container>
       <Row>
