@@ -70,6 +70,7 @@ const useAuth = () => {
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
+
             const updatedAuthState = {
                 isAuthenticated: true,
                 user: { userId: userId.toString(), role },
