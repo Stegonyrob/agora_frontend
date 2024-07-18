@@ -1,52 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface AuthState {
+export interface AuthState {
   [x: string]: any;
-  token: any;
-  isLoggedIn: any;
   isAuthenticated: boolean;
   user: any | null;
-  role: string | null;
+  role: string;
   accessToken: string;
+  userId: number | null;
+  refreshToken: string;
+  error: string | null;
+  success: boolean;
+  isLoggedIn: boolean;
+  isLoading: boolean;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  isLoggedIn: undefined,
-  token: undefined,
-  role: null,
+  role: "",
   accessToken: "",
   userId: null,
+  refreshToken: "",
+  error: null,
+  success: false,
+  isLoggedIn: false,
+  isLoading: false,
 };
 
-export const authSlice = createSlice({
+const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuthentication: (
-      state,
-      action: PayloadAction<{
-        isAuthenticated: boolean;
-        user: any;
-        role: string;
-        accessToken: string;
-        userId: any;
-      }>
-    ) => {
-      state.isAuthenticated = action.payload.isAuthenticated;
-      state.user = action.payload.user;
-      state.role = action.payload.role;
-      state.accessToken = action.payload.accessToken;
-      state.userId = action.payload.userId;
-
-      console.log(`El usuario tiene el rol de ${state.role}`);
-      console.log(state.accessToken);
-      console.log("Reducer:", state);
+    setCredentials(state, action: PayloadAction<Partial<AuthState>>) {
+      return { ...state, ...action.payload };
     },
   },
 });
 
-export const { setAuthentication } = authSlice.actions;
-console.log(setAuthentication);
+export const { setCredentials } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,4 +1,3 @@
-// users.api.ts
 import axios from "axios";
 
 // Index:

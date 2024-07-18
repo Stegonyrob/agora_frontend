@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setAuthentication } from '../redux/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCredentials } from '../redux/authSlice';
+import { RootState } from '../redux/store';
 import { login } from '../services/auth';
 
 interface AuthState {
     isAuthenticated: boolean;
     user: {
-        userId: string | null;
-        role: string | null;
+        userId: number | null;
+        role: string | undefined;
     } | null;
     accessToken: string;
     refreshToken: string;
-    role: string | null;
-    userId: string | null;
+    role: string | undefined;
+    userId: number | null;
 }
 
 const initialState: AuthState = {
@@ -20,13 +21,14 @@ const initialState: AuthState = {
     user: null,
     accessToken: '',
     refreshToken: '',
-    role: null,
+    role: '',
     userId: null,
 };
 
 const useAuth = () => {
     const [authState, setAuthState] = useState(initialState);
     const dispatch = useDispatch();
+    const auth = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
@@ -37,7 +39,7 @@ const useAuth = () => {
             const userRole = tokenPayload.role;
             const userId = tokenPayload.userId;
 
-            dispatch(setAuthentication({
+            dispatch(setCredentials({
                 isAuthenticated: true,
                 user: {
                     userId,
@@ -70,18 +72,17 @@ const useAuth = () => {
             localStorage.setItem('authToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
-
-            const updatedAuthState = {
+            const updatedAuthState: Partial<AuthState> = {
                 isAuthenticated: true,
-                user: { userId: userId.toString(), role },
+                user: { userId: userId, role },
                 accessToken,
                 refreshToken,
-                role,
-                userId: userId.toString(),
+                role: role || "",
+                userId: userId,
             };
 
-            dispatch(setAuthentication(updatedAuthState));
-            setAuthState(updatedAuthState);
+            dispatch(setCredentials(updatedAuthState as AuthState));
+            setAuthState(updatedAuthState as AuthState);
 
             return { accessToken, refreshToken, userId, role };
         } catch (error) {
@@ -94,7 +95,7 @@ const useAuth = () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
 
-        const logoutState = {
+        const logoutState: AuthState = {
             isAuthenticated: false,
             user: null,
             accessToken: '',
@@ -103,12 +104,12 @@ const useAuth = () => {
             userId: null,
         };
 
-        dispatch(setAuthentication(logoutState));
+        dispatch(setCredentials(logoutState));
         setAuthState(logoutState);
     };
 
     return {
-        ...authState,
+        ...auth,
         login: loginHandler,
         logout: logoutHandler,
     };

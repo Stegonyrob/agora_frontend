@@ -1,15 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface UserState {
-  users: any;
-  userId: string | null;
+import { AuthState } from "./authSlice";
+import { LogoutState } from "./logoutSlice";
+export interface UserState {
+  user: any;
+  userId: number | null;
   userRole: string | null;
 }
-
+export interface RootState {
+  auth: AuthState;
+  logout: LogoutState;
+  user: UserState;
+}
 const initialState: UserState = {
   userId: null,
   userRole: null,
-  users: undefined,
+  user: undefined,
 };
 
 export const userSlice = createSlice({
@@ -18,7 +23,7 @@ export const userSlice = createSlice({
   reducers: {
     loginUser: (
       state,
-      action: PayloadAction<{ userId: string; role: string }>
+      action: PayloadAction<{ userId: number; role: string }>
     ) => {
       state.userId = action.payload.userId;
       state.userRole = action.payload.role;

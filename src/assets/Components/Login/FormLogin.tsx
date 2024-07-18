@@ -103,7 +103,7 @@ import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
-import { setAuthentication } from '../../../redux/authSlice';
+import { setCredentials } from '../../../redux/authSlice';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
@@ -140,16 +140,20 @@ const FormLogin: React.FC<FormLoginProps> = () => {
       localStorage.setItem('authToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       console.log(accessToken, refreshToken)
-      dispatch(setAuthentication({
+
+      // Verificar que el token se esté guardando correctamente
+      let claves = Object.keys(localStorage);
+      for (let clave of claves) {
+        console.log(`${clave}: ${localStorage.getItem(clave)}`);
+      }
+
+      dispatch(setCredentials({
         isAuthenticated: true,
         user: { userId, role },
         role,
         accessToken: accessToken,
         userId: undefined
       }));
-
-
-
 
 
       console.log(userId);
