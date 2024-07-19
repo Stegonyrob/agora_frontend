@@ -1,94 +1,82 @@
-import axios from "axios";
-import { setCredentials } from "../redux/authSlice";
-import store from "../redux/store";
+// import axios from "axios";
 
-const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
-const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
+// import store from "../redux/store";
 
-interface AuthResponse {
-  [x: string]: any;
-  accessToken: string;
-  refreshToken: string;
-  userId: number;
-  role: string;
-}
+// const uri = import.meta.env.VITE_API_ENDPOINT_LOGIN;
+// const uri2 = import.meta.env.VITE_API_ENDPOINT_LOGOUT;
 
-const login = async (
-  username: string,
-  password: string
-): Promise<AuthResponse> => {
-  try {
-    const response = await axios.post(`${uri}`, {
-      username,
-      password,
-    });
+// interface AuthResponse {
+//   [x: string]: any;
+//   accessToken: string;
+//   refreshToken: string;
+//   userId: number;
+//   role: string;
+// }
 
-    const { accessToken, refreshToken, userId } = response.data;
+// const login = async (
+//   username: string,
+//   password: string
+// ): Promise<AuthResponse> => {
+//   try {
+//     const response = await axios.post(`${uri}`, {
+//       username,
+//       password,
+//     });
 
-    const { user, role } = response.data;
-    store.dispatch(
-      setCredentials({
-        isAuthenticated: true,
-        user,
-        role,
-        accessToken: "",
-        userId: undefined,
-        refreshToken: "",
-        error: undefined,
-        success: false,
-        isLoggedIn: true,
-        loading: false,
-      })
-    );
+//     const { accessToken, refreshToken, userId } = response.data;
 
-    console.log("Authentication state:", store.getState().auth);
+//     const { user, role } = response.data;
+//     store.dispatch(
+//       setCredentials({
+//         isAuthenticated: true,
+//         user,
+//         role,
+//         accessToken: "",
+//         userId: undefined,
+//         refreshToken: "",
+//         error: undefined,
+//         success: false,
+//         isLoggedIn: true,
+//         loading: false,
+//       })
+//     );
 
-    console.log(accessToken);
-    const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
-    console.log(accessToken);
-    const userRole = tokenPayload.role;
-    const token = localStorage.getItem("authToken");
-    console.log(token);
-    console.log(localStorage.getItem(accessToken));
-    console.log("Logout token:", token);
-    console.log(`El usuario tiene el rol de ${userRole}`);
+//     const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
 
-    return { accessToken, refreshToken, userId, role: userRole };
-  } catch (error) {
-    throw new Error("Authentication failed");
-  }
-};
-const logout = async (): Promise<void> => {
-  try {
-    const token = localStorage.getItem("authToken");
-    console.log("Logout token:", token);
-    if (token) {
-      const response = await axios.post(
-        `${uri2}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("Logout response:", response);
-      if (response.status === 200) {
-        // Token was successfully invalidated, remove it from local storage
-        localStorage.removeItem("authToken");
-        console.log("Logged out successfully!");
-      } else {
-        console.error("Error logging out:", response.status, response.data);
-      }
-    } else {
-      console.log("No token found, already logged out.");
-    }
-  } catch (error) {
-    console.error("Error logging out:", error);
-  }
-};
+//     const userRole = tokenPayload.role;
+//     const token = localStorage.getItem("authToken");
 
-export { login, logout };
+//     return { accessToken, refreshToken, userId, role: userRole };
+//   } catch (error) {
+//     throw new Error("Authentication failed");
+//   }
+// };
+// const logout = async (): Promise<void> => {
+//   try {
+//     const token = localStorage.getItem("authToken");
+//     console.log("Logout token:", token);
+//     if (token) {
+//       const response = await axios.post(
+//         `${uri2}`,
+//         {},
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       if (response.status === 200) {
+//         // Token was successfully invalidated, remove it from local storage
+//         localStorage.removeItem("authToken");
+//       } else {
+//       }
+//     } else {
+//     }
+//   } catch (error) {}
+// };
+
+// export { login, logout };
 
 // import { createAsyncThunk } from "@reduxjs/toolkit";
 // import axios from "axios";

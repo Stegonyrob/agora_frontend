@@ -1,30 +1,37 @@
 import { useSelector } from 'react-redux';
 import { Post } from 'types';
-import useAuth from '../../hooks/useAuth'; // Importa tu hook useAuth
 import { RootState } from '../../redux/store';
 import CardPosts from '../Components/Blog/admin/CardPosts';
 import PostForm from '../Components/Blog/admin/PostForm';
 import PostList from '../Components/Blog/admin/PostList';
 
-export default function BlogView() {
-  const userRole = useSelector<RootState>((state) => state.user.userRole);
-  const accessToken = useSelector<RootState>((state) => state.auth.accessToken);
-  const { userId } = useAuth(accessToken); // Utiliza tu hook useAuth para obtener userId
+interface PostListProps {
+  posts: Post[];
+  onSelect: (post: Post) => Promise<void>;
+  onDelete: (postId: string) => Promise<void>;
+  userId: string | null;
+}
 
-  // Convierte userId a string si no es null
-  const userIdString: string | null = userId !== null ? String(userId) : null;
+interface CardPostsProps {
+  posts: Post[];
+  onSelect: (post: Post) => Promise<void>;
+  onDelete: (postId: string) => Promise<void>;
+  user: string;
+}
+
+export default function BlogView() {
+  const userRole = useSelector((state: RootState) => state.user.userRole);
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
+  const userIdString = accessToken ? String(accessToken) : null;
 
   return (
     <div>
       <h2>Agora</h2>
       <PostList
         posts={[]}
-        onSelect={(post: Post) => {
-          throw new Error("Function not implemented.");
-        }}
-        onDelete={(postId: string) => {
-          throw new Error("Function not implemented.");
-        }}
+        onSelect={(post: Post) => Promise.resolve()}
+        onDelete={(postId: string) => Promise.resolve()}
         userId={userIdString}
       />
 
@@ -35,13 +42,9 @@ export default function BlogView() {
 
       <CardPosts
         posts={[]}
-        onSelect={(post: Post) => {
-          throw new Error("Function not implemented.");
-        }}
-        onDelete={(postId: string) => {
-          throw new Error("Function not implemented.");
-        }}
-        user={''}
+        onSelect={(post: Post) => Promise.resolve()}
+        onDelete={(postId: string) => Promise.resolve()}
+        user={userIdString || ''}
       />
     </div>
   );

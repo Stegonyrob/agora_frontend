@@ -98,12 +98,13 @@
 // };
 
 // export default FormLogin;
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../../../hooks/useAuth';
-import { setCredentials } from '../../../redux/authSlice';
+import { ITokenDTO } from '../../../core/auth/ITokenDTO';
+import LoginService from '../../../core/auth/LoginService';
+import { login } from '../../../redux/reducers/loginSlice';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
@@ -113,72 +114,60 @@ interface FormLoginProps {
   setUserId: (value: string) => void;
   setUserName: (value: string) => void;
   setRole: (value: string) => void;
-
 }
-
 
 const FormLogin: React.FC<FormLoginProps> = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [userId, setUserId] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { login: loginHandler, isAuthenticated } = useAuth();
-  useEffect(() => {
-    console.log('isAuthenticated:', isAuthenticated);
-  }, [isAuthenticated]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log('Iniciando envío de formulario');
     event.preventDefault();
-    setUserId(userId);
     try {
-      console.log('Enviando credenciales a servidor');
-      const { accessToken, refreshToken, userId, role } = await loginHandler(username, password);
-      console.log(accessToken, refreshToken, userId, role)
-      console.log('Servidor ha respondido con éxito');
-      localStorage.setItem('authToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      console.log(accessToken, refreshToken)
-
-      // Verificar que el token se esté guardando correctamente
-      let claves = Object.keys(localStorage);
-      for (let clave of claves) {
-        console.log(`${clave}: ${localStorage.getItem(clave)}`);
-      }
-
-      dispatch(setCredentials({
-        isAuthenticated: true,
-        user: { userId, role },
-        role,
-        accessToken: accessToken,
-        userId: undefined
-      }));
-
-
-      console.log(userId);
-      console.log(role);
-      console.log('Redux ha actualizado el estado con éxito');
-      navigate('/blog', { state: { userId: userId.toString() } });
-      console.log('Navegación exitosa');
+      const loginService = new LoginService();
+      const tokenDTO: ITokenDTO = {
+        userId: 0,
+        roles: '',
+        accessToken: '',
+        refreshToken: ''
+      };
+      const response = await loginService.post({ username, password });
+      dispatch(login(response));
+      navigate('/blog', { state: { userId: String(response.userId) } });
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} >
-      <Card className={styles.card} >
-        <Card.Body className='card-login' >
+    <form onSubmit={handleSubmit}>
+      <Card className={styles.card}>
+        <Card.Body className='card-login'>
           <Logo />
           <Card.Title>Inicio de Sesión</Card.Title>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" >
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>Email</Form.Label>
-            <Form.Control type="text" placeholder="NeoThe Matrix" value={username} onChange={(e) => setUsername(e.target.value)} required className={styles.input} />
+            <Form.Control
+              type="text"
+              placeholder="NeoThe Matrix"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className={styles.input}
+            />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput" >
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput">
             <Form.Label>Contraseña</Form.Label>
-            <Form.Control type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Contraseña" className={styles.input} />
+            <Form.Control
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Contraseña"
+              className={styles.input}
+            />
           </Form.Group>
           <div className="d-grid gap-2">
             <Button
@@ -200,6 +189,3 @@ const FormLogin: React.FC<FormLoginProps> = () => {
 };
 
 export default FormLogin;
-
-
-

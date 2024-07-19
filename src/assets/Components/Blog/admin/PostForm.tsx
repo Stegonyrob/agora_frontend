@@ -18,21 +18,21 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
   const [show, setShow] = useState(false);
-  const role = useSelector((state: RootState) => state.auth.role);
+  const roles = useSelector((state: RootState) => state.auth.role);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  console.log(role, isAuthenticated)
+  console.log(roles, isAuthenticated)
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const newPostDTO = new PostDTO(title, message, new Date().toISOString());
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (role === "ADMIN" && isAuthenticated) {
+    if (roles === "ADMIN" && isAuthenticated) {
       try {
-        const response = await apiPost.createPost(newPostDTO, role, isAuthenticated);
+        const response = await apiPost.createPost(newPostDTO, roles,);
 
 
-        console.log(role)
+        console.log(roles)
         console.log(isAuthenticated)
         console.log(response)
         alert("Post creado con éxito.");
@@ -45,7 +45,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
       }
     } else {
       alert("Solo el admin puede crear posts.");
-      console.log(role)
+      console.log(roles)
       console.log(isAuthenticated)
     }
   };

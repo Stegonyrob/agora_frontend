@@ -138,8 +138,8 @@ interface PostData {
 
 // Add JWT Authorization header
 const accessToken = () => {
-  const token = localStorage.getItem("authToken");
-  console.log(localStorage.getItem("authToken"));
+  const token = sessionStorage.getItem("authToken");
+  console.log(sessionStorage.getItem("authToken"));
   if (!token) {
     throw new Error("No token found in local storage");
   }
@@ -149,17 +149,17 @@ const accessToken = () => {
 const apiPostInstance = {
   // Fetch Posts  // Fetch Posts
 
-  async fetchPosts(): Promise<Post[]> {
+  async fetchPosts(getToken: any): Promise<Post[]> {
     const token = accessToken();
     console.log(token);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    console.log("Headers:", headers); // Verificar que se esté configurando correctamente
+    console.log("Headers:", headers);
     try {
       const response = await axios.get(uri2, { headers });
       console.log("Request:", axios.create().get(uri2, { headers }));
-      console.log("Response:", response); // Imprimir la respuesta
+      console.log("Response:", response);
       return response.data;
     } catch (error) {
       console.error("Error:", error);
@@ -167,18 +167,35 @@ const apiPostInstance = {
     }
   },
 
+  // async post(newProduct: IProductDTO): Promise<IProduct> {
+  //         let config: AxiosRequestConfig = {
+  //             headers: {
+  //                 'Content-Type': 'application/json',
+  //                 'Authorization': 'Bearer ' + sessionStorage.getItem("accessToken")
+  //             }
+  //         }
+  //         try {
+  //             const response = await axios.post(this.adminUri, newProduct, config)
+  //             const status = response.status
+  //             console.log(status);
+  //             return response.data
+  //         } catch (error) {
+  //             throw new Error('Error with API calling: ' + error)
+  //         }
+  //     }
+
   // Create Post - Allows only admins to create posts
   async createPost(
     token: string,
     postData: PostData,
-    role: string,
+    roles: string,
     isAuthenticated: boolean
   ): Promise<Post> {
     if (!isAuthenticated) {
       throw new Error("Only admin can create posts");
     }
 
-    if (role !== "ADMIN") {
+    if (roles !== "ADMIN") {
       throw new Error("Only admin can create posts");
     }
 
