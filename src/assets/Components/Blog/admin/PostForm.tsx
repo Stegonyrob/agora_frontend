@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { PostDTO } from '../../../../dto/post.dto';
+import PostService from '../../../../core/posts/PostService';
 import { RootState } from '../../../../redux/store';
-import apiPost from '../../../../services/posts.api';
-import { Post } from '../../../../types/types';
-import styles from './PostForm.module.scss';
 
+import { IPost } from '../../../../core/posts/IPost';
+import { IPostDTO } from '../../../../core/posts/IPostDTO';
+import styles from './PostForm.module.scss';
 interface PostFormProps {
-  post?: Post | null;
-  onSubmit: (post: Post) => Promise<void>;
+  post?: IPost | null;
+  onSubmit: (post: IPost) => Promise<void>;
   onClose: () => void;
+  show: boolean;
+  onCreate: (post: IPost) => void;
+  onEdit: (post: IPost) => void;
+  userId: number | null;
 }
 
 
@@ -24,29 +28,36 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const newPostDTO = new PostDTO(title, message, new Date().toISOString());
+
+  const apiPost = new PostService();
+
+
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (roles === "ADMIN" && isAuthenticated) {
-      try {
-        const response = await apiPost.createPost(newPostDTO, roles,);
 
-
-        console.log(roles)
-        console.log(isAuthenticated)
-        console.log(response)
-        alert("Post creado con éxito.");
-        handleClose();
-        return response;
-      } catch (error) {
-        console.error("Error al crear el post:", error);
-        alert("No se pudo crear el post, por favor intentelo más tarde, y disculpe las molestias.");
-        throw error;
-      }
-    } else {
+    if (roles !== "ADMIN" || !isAuthenticated) {
       alert("Solo el admin puede crear posts.");
-      console.log(roles)
-      console.log(isAuthenticated)
+      return;
+    }
+
+    try {
+      const newPostDTO: IPostDTO = {
+        title,
+        message,
+        creation_date: new Date().toISOString(),
+        id: 0,
+        postname: '',
+        user_id: 0
+      };
+
+      const response = await apiPost.createPost(newPostDTO, roles);
+
+      alert("Post creado con éxito.");
+      handleClose();
+    } catch (error) {
+      console.error("Error al crear el post:", error);
+      alert("No se pudo crear el post, por favor inténtelo más tarde, y disculpe las molestias.");
     }
   };
 
@@ -74,10 +85,10 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
             <br />
             <label>
               Mensaje:
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </label>
             <br />

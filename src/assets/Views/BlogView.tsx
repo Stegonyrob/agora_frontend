@@ -5,47 +5,30 @@ import CardPosts from '../Components/Blog/admin/CardPosts';
 import PostForm from '../Components/Blog/admin/PostForm';
 import PostList from '../Components/Blog/admin/PostList';
 
-interface PostListProps {
-  posts: Post[];
-  onSelect: (post: Post) => Promise<void>;
-  onDelete: (postId: string) => Promise<void>;
-  userId: string | null;
-}
-
-interface CardPostsProps {
-  posts: Post[];
-  onSelect: (post: Post) => Promise<void>;
-  onDelete: (postId: string) => Promise<void>;
-  user: string;
-}
-
 export default function BlogView() {
-  const userRole = useSelector((state: RootState) => state.user.userRole);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
-
-  const userIdString = accessToken ? String(accessToken) : null;
+  const userId = accessToken ? String(accessToken) : '';
 
   return (
     <div>
       <h2>Agora</h2>
-      <PostList
-        posts={[]}
-        onSelect={(post: Post) => Promise.resolve()}
-        onDelete={(postId: string) => Promise.resolve()}
-        userId={userIdString}
-      />
-
-      <PostForm
-        onSubmit={(post: Post) => Promise.resolve()}
-        onClose={() => { }}
-      />
-
-      <CardPosts
-        posts={[]}
-        onSelect={(post: Post) => Promise.resolve()}
-        onDelete={(postId: string) => Promise.resolve()}
-        user={userIdString || ''}
-      />
+      <PostList posts={[]} userId={userId} onSelect={function (post: Post): void {
+        throw new Error('Function not implemented.');
+      }} onDelete={function (postId: string): Promise<void> {
+        throw new Error('Function not implemented.');
+      }} />
+      <PostForm onSubmit={(post: Post) => {
+        // Mocking the asynchronous operation
+        return new Promise<void>((resolve) => {
+          console.log("Submitting post:", post);
+          resolve();
+        });
+      }} onClose={() => { }} />
+      <CardPosts posts={[]} user={userId} onSelect={function (post: Post): void {
+        throw new Error('Function not implemented.');
+      }} onDelete={function (postId: string): Promise<void> {
+        throw new Error('Function not implemented.');
+      }} />
     </div>
   );
 }

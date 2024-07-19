@@ -1,32 +1,78 @@
-import type { IPost } from "./IPost";
-import type PostRepository from "./PostRepository";
-
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { IPost } from "./IPost";
+import { IPostDTO } from "./IPostDTO";
 
 export default class PostService {
+  [x: string]: any;
+  private userUri: string = import.meta.env.VITE_APP_API_USERS_POSTS;
+  private adminUri: string = import.meta.env.VITE_APP_API_ADMIN_POSTS;
 
-    repository: PostRepository;
+  async fetchPosts(): Promise<IPost[]> {
+    const { data } = await axios.get<IPost[]>(this.userUri);
+    return data;
+  }
 
-    constructor(repository: PostRepository) {
-        this.repository = repository
+  async fetchPostById(id: number): Promise<IPost> {
+    try {
+      const response: AxiosResponse = await axios.get(`${this.userUri}/${id}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Error fetching post by id: ${error.message}`);
     }
+  }
 
-    async get(): Promise<IPost[]> {
-        const data: IPost[] = await this.repository.getAll()
-        let list: IPost[] = []
-        
-        data.forEach((post: IPost) => {
-            let template = {
-                id: post.id,
-                title: post.title,
-                user_id: post.user_id,
-                postname: post.postname,
-                creation_date: post.creation_date,
-                message: post.message
-            }
-            list.push(template)
-        });
+  async createPost(newPost: IPostDTO, roles: string): Promise<IPost> {
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      },
+    };
 
-        return list
+    try {
+      const response: AxiosResponse = await axios.post(
+        this.adminUri,
+        newPost,
+        config
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Error creating post: ${error.message}`);
     }
+  }
 
+  async deletePost(id: number): Promise<void> {
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      },
+    };
+
+    try {
+      await axios.delete(`${this.adminUri}/${id}`, config);
+    } catch (error: any) {
+      throw new Error(`Error deleting post: ${error.message}`);
+    }
+  }
+
+  async updatePost(post: IPostDTO, id: number): Promise<IPost> {
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      },
+    };
+
+    try {
+      const response: AxiosResponse = await axios.put(
+        `${this.adminUri}/${id}`,
+        post,
+        config
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Error updating post: ${error.message}`);
+    }
+  }
 }

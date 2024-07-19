@@ -9,21 +9,7 @@ export class ReplyService {
   }
 
   async get(): Promise<IReply[]> {
-    const data: IReply[] = await this.repository.getAll();
-    let list: IReply[] = [];
-
-    data.forEach((reply: IReply) => {
-      let template = {
-        reply_id: reply.reply_id,
-        post_id: reply.post_id,
-        user_id: reply.user_id,
-        reply_message: reply.reply_message,
-        creation_date: reply.creation_date,
-      };
-      list.push(template);
-    });
-
-    return list;
+    return await this.repository.getAll();
   }
 
   async getByPostId(postId: number): Promise<IReply[]> {
@@ -31,12 +17,13 @@ export class ReplyService {
     let list: IReply[] = [];
 
     data.forEach((reply: IReply) => {
-      let template = {
-        reply_id: reply.reply_id,
-        post_id: reply.post_id,
-        user_id: reply.user_id,
+      let template: IReply = {
+        replyId: reply.replyId,
+        postId: reply.postId,
+        userId: reply.userId,
         reply_message: reply.reply_message,
         creation_date: reply.creation_date,
+        comment: "",
       };
       list.push(template);
     });

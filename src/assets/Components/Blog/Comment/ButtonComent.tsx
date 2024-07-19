@@ -6,18 +6,15 @@ import { ReplyRepository } from '../../../../core/replies/ReplyRepository';
 import styles from './ButtonComent.module.scss';
 
 interface User {
-  userId: string;
+  userId: number;
   username: string;
   role: string;
 
 }
 
-interface Post {
-  id: string;
-}
 interface ButtonCommentProps {
-  postId: string;
-  userId: string | undefined;
+  postId: number;
+  userId: number;
   className?: string;
 }
 
@@ -38,12 +35,11 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ postId, userId, className
     console.log('Reply message:', replyMessage);
     if (userId) {
       const commentData: IReply = {
-        user_id: userId,
+        userId,
         reply_message: replyMessage,
         creation_date: new Date().toISOString(),
-        reply_id: "reply_id_here",
-        post_id: postId,
-        postId: "",
+        replyId: -1,
+        postId: postId as number,
         comment: ""
       };
 

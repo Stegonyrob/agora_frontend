@@ -1,20 +1,26 @@
 import { useEffect, useState } from 'react';
-import { Post } from 'types';
-
-import apiPost from '../../../../services/posts.api';
+import { IPost } from '../../../../core/posts/IPost';
+import { IPostDTO } from '../../../../core/posts/IPostDTO';
+import PostsService from '../../../../core/posts/PostService';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 
 interface PostList {
-  posts: Post[];
-  onSelect: (post: Post) => void;
+  post: IPost[];
+  onSelect: (post: IPost) => void;
   onDelete: (postId: string) => Promise<void>;
-  userId: string | null;
+  onClose: () => void;
+  onEdit: (post: IPost) => void;
+  onCreate: (post: IPost) => void;
+
+  userId: number | null;
 }
 
-const PostList = ({ posts }: PostList) => {
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [fetchedPosts, setFetchedPosts] = useState<Post[]>([]);
+const PostList = ({ post }: PostList) => {
+  const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
+  const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
+
+  const apiPost = new PostsService();
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -28,7 +34,7 @@ const PostList = ({ posts }: PostList) => {
     loadPosts();
   }, []);
 
-  const handleSelect = (post: Post) => {
+  const handleSelect = (post: IPost) => {
     setSelectedPost(post);
   };
 
@@ -38,35 +44,47 @@ const PostList = ({ posts }: PostList) => {
 
   const handleDelete = async (postId: string) => {
     try {
-      await apiPost.deletePost(postId);
+      await apiPost.deletePost(Number(postId));
       console.log(`Post with ID: ${postId} deleted successfully.`);
-      setFetchedPosts(fetchedPosts.filter(post => post.id !== postId));
+      setFetchedPosts(fetchedPosts.filter((post: { id: number; }) => post.id !== Number(postId)));
     } catch (error) {
       console.error("Error deleting post: ", error);
     }
   };
 
-  const handleUpdate = async (updatedPost: Post) => {
+  const handleUpdate = async (updatedPost: IPost) => {
     try {
-      const updatedPostData = {
+      const updatedPostData: IPostDTO = {
         title: updatedPost.title,
         message: updatedPost.message,
+        id: 0,
+        creation_date: '',
+        postname: '',
+        user_id: 0
       };
-      const updatedPostResponse = await apiPost.updatePost(updatedPost.id, updatedPostData);
+      const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
       console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
-      alert(`Post editado exitosamente`);
-      setFetchedPosts(fetchedPosts.map(post => post.id === updatedPost.id ? updatedPostResponse : post));
+      const message = updatedPostResponse.message || "Default message";
+      alert(`Post editado exitosamente: ${message}`);
+      setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === updatedPost.id ? updatedPostResponse : post));
     } catch (error) {
       console.error("Error updating post: ", error);
       alert(`No se pudo editar el post, por favor intentenlo más tarde, por favor disculpen las molestias`);
     }
   };
 
-  const handleCreate = async (newPost: Post) => {
+  const handleCreate = async (newPost: IPost) => {
     try {
-      console.log("Enviando este post al backend:", newPost);
+      const newPostData: IPostDTO = {
+        title: newPost.title,
+        message: newPost.message,
+        id: newPost.id,
+        creation_date: newPost.creation_date ? newPost.creation_date.toString() : '',
+        postname: newPost.postname ? String(newPost.postname) : '',
+        user_id: newPost.user_id as number
+      };
 
-      const createdPost = await apiPost.createPost(newPost);
+      const createdPost = await apiPost.createPost(newPostData);
       console.log(`Post with ID: ${createdPost.id} created successfully.`);
       alert(`Post creado exitosamente`);
       setFetchedPosts([...fetchedPosts, createdPost]);
@@ -76,9 +94,7 @@ const PostList = ({ posts }: PostList) => {
     }
   };
 
-
-
-  const onSubmit = async (post: Post) => {
+  const onSubmit = async (post: IPostDTO) => {
     if (post.id) {
       await handleUpdate(post);
     } else {
@@ -88,14 +104,18 @@ const PostList = ({ posts }: PostList) => {
 
   return (
     <div>
-
-
       <div>
-        <CardPosts posts={fetchedPosts} onSelect={handleSelect} onDelete={handleDelete} user={''} />
+        <CardPosts
+          posts={fetchedPosts}
+          onSelect={handleSelect}
+          onDelete={handleDelete}
+          user=''
+
+        />
         {selectedPost && (
           <EditPostForm
             post={selectedPost}
-            onSubmit={handleUpdate}
+            onSubmit={onSubmit}
             onClose={handleClose}
             show={selectedPost !== null}
           />
