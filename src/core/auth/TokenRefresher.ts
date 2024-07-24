@@ -6,14 +6,19 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    console.log(error);
     // Check if the error is unauthorized
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      console.log("Interceptor activado");
+
       // Create refresh token DTO
       let refreshToken: string = sessionStorage.getItem("refreshToken")!;
+
       let refreshTokenDTO: IRefreshTokenDTO = {
         refreshToken: "",
       };
+
       refreshTokenDTO.refreshToken = refreshToken;
       let config: AxiosRequestConfig = {
         headers: {

@@ -1,27 +1,61 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import store from "../../redux/store";
 import { IPost } from "./IPost";
 import { IPostDTO } from "./IPostDTO";
 
 export default class PostService {
   [x: string]: any;
-  private userUri: string = import.meta.env.VITE_APP_API_USERS_POSTS;
-  private adminUri: string = import.meta.env.VITE_APP_API_ADMIN_POSTS;
+  private userUri: string = import.meta.env.VITE_API_ENDPOINT_USERS_POSTS;
+  private adminUri: string = import.meta.env.VITE_API_ENDPOINT_ADMIN_POSTS;
 
   async fetchPosts(): Promise<IPost[]> {
-    const { data } = await axios.get<IPost[]>(this.userUri);
-    return data;
+    const isAuthenticated = store.getState().login.isLoggedIn;
+    const token = sessionStorage.getItem("accessToken");
+    console.log(sessionStorage.getItem("accessToken"));
+    console.log(token);
+    console.log("Begin fetchPosts");
+    console.log("Fetching posts...");
+    try {
+      console.log("Headers:", {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      });
+      const response: AxiosResponse<IPost[]> = await axios.get<IPost[]>(
+        this.userUri,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      console.log(
+        `Posts fetched successfully. Data: ${JSON.stringify(response.data)}`
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error fetching posts: ${error.message}`);
+      throw new Error(`Error fetching posts: ${error.message}`);
+    } finally {
+      console.log("End fetchPosts");
+    }
   }
 
   async fetchPostById(id: number): Promise<IPost> {
+    console.log(`Fetching post by id: ${id}`);
     try {
       const response: AxiosResponse = await axios.get(`${this.userUri}/${id}`);
+      console.log(`Post by id: ${id} fetched successfully.`);
       return response.data;
     } catch (error: any) {
+      console.error(`Error fetching post by id: ${error.message}`);
       throw new Error(`Error fetching post by id: ${error.message}`);
     }
   }
 
-  async createPost(newPost: IPostDTO, roles: string): Promise<IPost> {
+  async createPost(newPost: IPostDTO): Promise<IPost> {
+    console.log("Creating post...");
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -35,13 +69,16 @@ export default class PostService {
         newPost,
         config
       );
+      console.log("Post created successfully.");
       return response.data;
     } catch (error: any) {
+      console.error(`Error creating post: ${error.message}`);
       throw new Error(`Error creating post: ${error.message}`);
     }
   }
 
   async deletePost(id: number): Promise<void> {
+    console.log(`Deleting post by id: ${id}`);
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -51,12 +88,15 @@ export default class PostService {
 
     try {
       await axios.delete(`${this.adminUri}/${id}`, config);
+      console.log(`Post by id: ${id} deleted successfully.`);
     } catch (error: any) {
+      console.error(`Error deleting post: ${error.message}`);
       throw new Error(`Error deleting post: ${error.message}`);
     }
   }
 
   async updatePost(post: IPostDTO, id: number): Promise<IPost> {
+    console.log(`Updating post by id: ${id}`);
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -70,8 +110,10 @@ export default class PostService {
         post,
         config
       );
+      console.log(`Post by id: ${id} updated successfully.`);
       return response.data;
     } catch (error: any) {
+      console.error(`Error updating post: ${error.message}`);
       throw new Error(`Error updating post: ${error.message}`);
     }
   }

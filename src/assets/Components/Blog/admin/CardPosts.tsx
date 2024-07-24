@@ -11,16 +11,16 @@ import styles from "./CardPosts.module.scss";
 
 
 interface CardPostsProps {
-  user: string;
+  user: number;
   onSelect: (post: IPost) => void;
   onDelete: (postId: string) => Promise<void>;
   posts: IPost[];
 }
 
 const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete }) => {
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const accessToken = useSelector((state: RootState) => state.login.accessToken);
   const role = useSelector((state: RootState) => state.user.userRole);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
   const apiPost = new PostsService();
 
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -60,7 +60,7 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete }) => {
                 <span className="social-icons" style={{ width: "3rem" }}>
                   <i className="bi bi-pen" onClick={() => onSelect(post)} />{" "}
                 </span>
-                <ButtonComment postId={post.id} userId={parseInt(user, 10)} />
+                <ButtonComment postId={post.id} userId={user} />
                 <span className="social-icons" style={{ width: "3rem" }}>
                   <i
                     className="bi bi-trash3"

@@ -6,5 +6,5 @@ export interface IPostDTO {
   message: React.ReactNode;
   creation_date: string;
   postname: string;
-  user_id: number;
+  userId: number;
 }

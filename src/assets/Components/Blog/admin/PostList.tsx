@@ -4,7 +4,6 @@ import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import PostsService from '../../../../core/posts/PostService';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
-
 interface PostList {
   post: IPost[];
   onSelect: (post: IPost) => void;
@@ -16,7 +15,7 @@ interface PostList {
   userId: number | null;
 }
 
-const PostList = ({ post }: PostList) => {
+const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
 
@@ -60,7 +59,7 @@ const PostList = ({ post }: PostList) => {
         id: 0,
         creation_date: '',
         postname: '',
-        user_id: 0
+        userId: 0
       };
       const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
       console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
@@ -81,7 +80,7 @@ const PostList = ({ post }: PostList) => {
         id: newPost.id,
         creation_date: newPost.creation_date ? newPost.creation_date.toString() : '',
         postname: newPost.postname ? String(newPost.postname) : '',
-        user_id: newPost.user_id as number
+        userId: newPost.userId as number
       };
 
       const createdPost = await apiPost.createPost(newPostData);
@@ -109,7 +108,7 @@ const PostList = ({ post }: PostList) => {
           posts={fetchedPosts}
           onSelect={handleSelect}
           onDelete={handleDelete}
-          user=''
+          user={userId}
 
         />
         {selectedPost && (
