@@ -22,12 +22,23 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete }) => {
   const role = useSelector((state: RootState) => state.user.userRole);
   const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
   const apiPost = new PostsService();
-
+  const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
+  const [show, setShow] = useState(false);
+  const handleShow = () => setShow(true);
   const [posts, setPosts] = useState<IPost[]>([]);
   const [commentCounter, setCommentCounter] = useState(0);
+  const [tweetCounter, setTweetCounter] = useState(0);
+  const [loveCounter, setLoveCounter] = useState(0);
+
 
   const commentHandler = () => {
-    setCommentCounter(commentCounter + 1);
+    setCommentCounter((prevState) => prevState + 1);
+  };
+  const tweetHandler = () => {
+    setTweetCounter((prevState) => prevState + 1);
+  };
+  const loveHandler = () => {
+    setLoveCounter((prevState) => prevState + 1);
   };
 
   useEffect(() => {

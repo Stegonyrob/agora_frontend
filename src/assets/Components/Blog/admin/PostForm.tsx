@@ -21,9 +21,11 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
   const [show, setShow] = useState(false);
-  const roles = useSelector((state: RootState) => state.login.loggedUserRole);
+  const role = useSelector((state: RootState) => state.login.loggedUserRole);
   const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
-  console.log(roles, isAuthenticated)
+
+
+  console.log(role, isAuthenticated)
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 

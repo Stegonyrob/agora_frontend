@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ITokenDTO } from "../../core/auth/ITokenDTO";
 
 interface LoginState {
+  [x: string]: any;
   isLoggedIn: boolean;
   loggedUserId: number;
   loggedUserRole: string;
