@@ -4,6 +4,7 @@ import './App.scss';
 import Footer from './assets/Components/Footer/Footer';
 import NavBar from './assets/Components/NavBar/NavBar';
 import './assets/scss/reset.scss';
+import Error404View from './assets/Views/404View';
 import AboutMeView from './assets/Views/AboutMeView';
 import AgoraView from './assets/Views/AgoraView';
 import BlogView from './assets/Views/BlogView';
@@ -64,6 +65,9 @@ const App = () => {
           <Route path="/Register" element={<MainLayout />}>
             <Route path="" element={<RegisterView />} />
           </Route>
+          <Route path="/Error404" element={<MainLayout />}>
+            <Route path="" element={<Error404View />} />
+          </Route>
           <Route path="/Blog" element={<MainLayout />}>
 
             <Route path="" element={<BlogView />} />
@@ -71,6 +75,7 @@ const App = () => {
 
           {/* <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} path={''} />} /> */}
         </Routes>
+
         <Footer />
       </Router>
     </SWRConfig>

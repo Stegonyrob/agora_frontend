@@ -9,13 +9,13 @@ export default class PostService {
   private adminUri: string = import.meta.env.VITE_API_ENDPOINT_ADMIN_POSTS;
 
   async fetchPosts(): Promise<IPost[]> {
-    const isAuthenticated = store.getState().login.isLoggedIn;
-    const token = sessionStorage.getItem("accessToken");
-    console.log(sessionStorage.getItem("accessToken"));
-    console.log(token);
     console.log("Begin fetchPosts");
     console.log("Fetching posts...");
     try {
+      const isAuthenticated = store.getState().login.isLoggedIn;
+      console.log("isAuthenticated:", isAuthenticated);
+      const token = sessionStorage.getItem("accessToken");
+      console.log("token:", token);
       console.log("Headers:", {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
@@ -29,7 +29,7 @@ export default class PostService {
           },
         }
       );
-
+      console.log("Response Data:", response.data);
       console.log(
         `Posts fetched successfully. Data: ${JSON.stringify(response.data)}`
       );

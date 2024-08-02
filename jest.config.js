@@ -6,5 +6,5 @@ module.exports = {
   moduleNameMapper: {
     "^react-native$": "react-native-web",
   },
-  setupFilesAfterEnv: ["<rootDir>/setupTests.js"],
+  setupFilesAfterEnv: ["@testing-library/react/cleanup-after-each"],
 };
