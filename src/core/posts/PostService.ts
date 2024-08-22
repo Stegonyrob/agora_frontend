@@ -3,11 +3,17 @@ import store from "../../redux/store";
 import { IPost } from "./IPost";
 import { IPostDTO } from "./IPostDTO";
 
+// Index:
+
+// 1. Get posts - fetchPosts() 200 ok
+// 2. Get posts by id - fetchPostById() 200 ok,
+// 3. Created Posts - createPost() 200 ok but null
+// 4. Delete Posts- deletePost() 200 ok 500
+// 5. Update Posts- updatePost() 202 ok
 export default class PostService {
   [x: string]: any;
-  private userUri: string = import.meta.env.VITE_API_ENDPOINT_USERS_POSTS;
-  private adminUri: string = import.meta.env.VITE_API_ENDPOINT_ADMIN_POSTS;
-
+  private uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
+  // 1. Get posts - fetchPosts() 200ok
   async fetchPosts(): Promise<IPost[]> {
     console.log("Begin fetchPosts");
     console.log("Fetching posts...");
@@ -21,7 +27,7 @@ export default class PostService {
         Authorization: "Bearer " + token,
       });
       const response: AxiosResponse<IPost[]> = await axios.get<IPost[]>(
-        this.userUri,
+        this.uri,
         {
           headers: {
             "Content-Type": "application/json",
@@ -42,22 +48,11 @@ export default class PostService {
     }
   }
 
-  // async fetchPostById(id: number): Promise<IPost> {
-  //   console.log(`Fetching post by id: ${id}`);
-  //   try {
-  //     const response: AxiosResponse = await axios.get(`${this.userUri}/${id}`);
-  //     console.log(`Post by id: ${id} fetched successfully.`);
-  //     return response.data;
-  //   } catch (error: any) {
-  //     console.error(`Error fetching post by id: ${error.message}`);
-  //     throw new Error(`Error fetching post by id: ${error.message}`);
-  //   }
-  // }
-
+  // 2. Get posts by id - fetchPostById() 200 ok,
   async fetchPostById(id: number): Promise<IPost> {
     try {
       const response: AxiosResponse<IPost> = await axios.get<IPost>(
-        `${this.userUri}/${id}`,
+        `${this.uri}/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +66,7 @@ export default class PostService {
       throw new Error(`Error fetching post by id: ${error.message}`);
     }
   }
-
+  // 3. Created Posts - createPost() 200 ok but null
   async createPost(newPost: IPostDTO): Promise<IPost> {
     console.log("Creating post...");
     console.log("newPost:", newPost);
@@ -83,16 +78,16 @@ export default class PostService {
     };
 
     try {
-      console.log("Sending POST request to:", this.adminUri);
+      console.log("Sending POST request to:", this.uri);
       console.log("Request body:", newPost);
       console.log("Request headers:", config.headers);
       const response: AxiosResponse<IPost> = await axios.post<IPost>(
-        `${this.adminUri}`,
+        `${this.uri}`,
 
         newPost,
         config
       );
-      console.log(this.adminUri);
+      console.log(this.uri);
       console.log("Response:", response);
       console.log("Post created successfully.");
       return response.data;
@@ -102,7 +97,7 @@ export default class PostService {
       throw new Error(`Error creating post: ${error.message}`);
     }
   }
-
+  // 4. Delete Posts- deletePost()200 ok
   async deletePost(id: number): Promise<void> {
     console.log(`Attempting to delete post by id: ${id}`);
     console.log(`Deleting post by id: ${id}`);
@@ -114,9 +109,9 @@ export default class PostService {
     };
 
     try {
-      console.log(`Sending DELETE request to: ${this.adminUri}/${id}`);
+      console.log(`Sending DELETE request to: ${this.uri}/${id}`);
       console.log(`Request headers:`, config.headers);
-      await axios.delete(`${this.adminUri}/${id}`, config);
+      await axios.delete(`${this.uri}/${id}`, config);
       console.log(`Post by id: ${id} deleted successfully.`);
     } catch (error: any) {
       console.error(`Error deleting post: ${error.message}`);
@@ -124,7 +119,7 @@ export default class PostService {
       throw new Error(`Error deleting post: ${error.message}`);
     }
   }
-
+  // 5. Update Posts- updatePost() error 500
   async updatePost(post: IPostDTO, id: number): Promise<IPost> {
     console.log(`Updating post by id: ${id}`);
     console.log("Post DTO:", post);
@@ -136,11 +131,11 @@ export default class PostService {
     };
 
     try {
-      console.log("Sending PUT request to:", `${this.adminUri}/${id}`);
+      console.log("Sending PUT request to:", `${this.uri}/${id}`);
       console.log("Request body:", post);
       console.log("Request headers:", config.headers);
       const response: AxiosResponse = await axios.put(
-        `${this.adminUri}/${id}`,
+        `${this.uri}/${id}`,
         post,
         config
       );

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { Post } from 'types';
+import { IPost } from '../../../../core/posts/IPost';
 import styles from './EditPostForm.module.scss';
 
 interface EditPostFormProps {
-  post: Post;
-  onSubmit: (post: Post) => Promise<void>;
+  post: IPost;
+  onSubmit: (post: IPost) => Promise<void>;
   onClose: () => void;
   show: boolean;
 }
@@ -17,12 +17,12 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newPost = {
-      id: post?.id || "default-id",
+      id: Number(post?.id) || 0,
       title: title,
       message: message,
       creation_date: post?.creation_date || "default-date",
       postname: post?.postname || "default-postname",
-      user_id: post?.user_id || "default-user-id",
+      userId: post?.userId || "default-user-id",
     };
     onSubmit(newPost);
   };
@@ -41,10 +41,10 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
           <br />
           <label>
             Mensaje:
-            <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+            <textarea value={message.toString()} onChange={(e) => setMessage(e.target.value)} />
           </label>
           <br />
-          <Button type="submit" variant="primary">{post? 'Actualizar Post' : 'Crear Post'}</Button>
+          <Button type="submit" variant="primary">{post ? 'Actualizar Post' : 'Crear Post'}</Button>
         </form>
       </Modal.Body>
     </Modal>
