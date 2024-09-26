@@ -67,20 +67,25 @@ function CardText({ ids }: CardTextProps) {
 
         </Card.Body>
       ) : (
-        <Card className={styles.cardText}>
+        <div className={styles.cardContainer}>
           {texts.filter((text: TextItem) => ids.includes(text.id)).map((currentText: TextItem, index: number) => (
             <div key={currentText.id} className={styles.cardText}>
-              <Card.Img className={styles.cardText} src={currentText.image} alt={currentText.description} onError={handleImgLoadingError} />
+              <Card.Img
+                className={styles.cardImage}
+                src={currentText.image}
+                alt={currentText.description}
+                onError={handleImgLoadingError}
+                style={{ float: index % 2 === 0 ? 'left' : 'right' }}
+              />
               <Card.Body>
-                <Card.Text className={styles.cardText}>
+                <Card.Text className={styles.cardDescription}>
                   {currentText.description}
                 </Card.Text>
               </Card.Body>
             </div>
           ))}
-        </Card>
+        </div>
       )}
-
     </div>
 
 
