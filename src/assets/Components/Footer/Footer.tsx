@@ -20,6 +20,7 @@ export default function Footer() {
             <a href="https://www.instagram.com" className="icon" target="_blank" rel="noreferrer">
               <i className="bi bi-instagram"></i>
             </a>
+            <a href="https://www.flaticon.es/iconos-animados-gratis/carpeta" title="carpeta iconos animados">Carpeta iconos animados creados por Freepik - Flaticon</a>
           </div>
 
           <p className="text" >
