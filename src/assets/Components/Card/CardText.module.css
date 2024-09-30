@@ -1,12 +1,12 @@
 .cardContainer {
   width: 95%;
   margin: auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .cardContainer .cardText {
   background-color: rgba(0, 0, 0, 0.9);
-  padding: 1rem;
+  padding: 2.5rem;
   margin: auto;
   color: white;
 }
@@ -14,8 +14,7 @@
 .cardContainer .cardText .cardImage {
   max-width: 15rem;
   margin: 1rem;
-  border-radius: 0.5rem;
-  padding: 1rem;
+  border-radius: 1rem;
 }
 
 .cardContainer .cardText .cardDescription {
