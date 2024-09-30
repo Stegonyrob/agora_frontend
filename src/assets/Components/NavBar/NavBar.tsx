@@ -1,11 +1,13 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import LogoSimply from '../Logo/LogoSimply';
-import './NavBar.scss';
+import Logo from '../Logo/LogoSimply';
+import styles from './NavBar.module.scss';
+
 function NavBar() {
   return (
     <Navbar expand="lg" className="navbar  border-bottom border-body" data-bs-theme="dark" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
       <Container>
-        <Navbar.Brand href="#home"><LogoSimply />
+        <Navbar.Brand href="#home">
+          <Logo className={styles.logoSmall} />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

@@ -1,24 +1,25 @@
 .footer {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  height: 5.8rem;
-  color: white;
-  text-justify: center;
-  justify-content: center;
-}
+ display: flex;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 5.8rem;
+    color: white;
+    align-items: center;
 
-.footer .icon {
-  font-size: 2rem !important;
-  padding: 1rem;
-  color: white;
-  padding-top: 2rem;
-}
+  .icon {
+ justify-items: center;
+    font-size: 2rem ;
+    padding: 1rem;
+    color: white;
 
-.footer .text {
-  font-size: 1rem;
-  color: white;
-  text-align: end;
-  margin-right: 2rem;
-  margin-top: -1.5rem;
+  }
+  .text {
+
+    font-size: 1rem;
+    color: white;
+    margin-left: 32rem;
+margin-top: -2rem;
+
+  }
 }
 
 @media only screen and (max-width: 920px) {
@@ -48,7 +49,6 @@
     margin-top: 1rem !important;
   }
 }
-
 @media only screen and (max-width: 420px) {
   .footer {
     height: 8rem;

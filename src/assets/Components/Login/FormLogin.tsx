@@ -144,7 +144,7 @@ const FormLogin: React.FC<FormLoginProps> = () => {
     <form onSubmit={handleSubmit}>
       <Card className={styles.card}>
         <Card.Body className='card-login'>
-          <Logo />
+          <Logo className={styles.logoMedium} />
           <Card.Title>Inicio de Sesión</Card.Title>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>Email</Form.Label>

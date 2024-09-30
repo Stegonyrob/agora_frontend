@@ -1,6 +1,6 @@
 export interface ITokenDTO {
   userId: number;
-  role: string;
+  roles: string;
   accessToken: string;
   refreshToken: string;
 }

@@ -1,7 +1,5 @@
 .logo-image2 {
   z-index: 100;
-  width: 5rem;
-  height: 5rem;
   margin-left: 1rem;
   margin-top: 0.7em;
 }
@@ -11,4 +9,19 @@
   z-index: -10;
   top: 0rem;
   left: 0rem;
+}
+
+.logoLarge {
+  width: 12rem;
+  height: 12rem;
+}
+
+.logoMedium {
+  width: 8rem;
+  height: 8rem;
+}
+
+.logoSmall {
+  width: 5rem;
+  height: 5rem;
 }

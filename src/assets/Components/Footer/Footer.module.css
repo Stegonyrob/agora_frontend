@@ -1,24 +1,23 @@
 .footer {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.8);
   height: 5.8rem;
   color: white;
-  text-justify: center;
-  justify-content: center;
+  align-items: center;
 }
 
 .footer .icon {
-  font-size: 2rem !important;
+  justify-items: center;
+  font-size: 2rem;
   padding: 1rem;
   color: white;
-  padding-top: 2rem;
 }
 
 .footer .text {
   font-size: 1rem;
   color: white;
-  text-align: end;
-  margin-right: 2rem;
-  margin-top: -1.5rem;
+  margin-left: 32rem;
+  margin-top: -2rem;
 }
 
 @media only screen and (max-width: 920px) {
