@@ -1,24 +1,47 @@
+
 import PropTypes from "prop-types";
-const Text = ({ content }: { content: string }) => (
+import { Row } from "react-bootstrap";
 
-) => (
-    <div className="mt-2 mb-4 mx-4">
-        <p className="text-sm text-justify">
-            {content.split(" ").map((str) => {
-                if (str.startsWith("#")) {
-                    return <a href={`/${str}`} className="text-blue-500">{str} </a>;
-                }
-                return str + " ";
-            })}</p>
-    </div>
-)
+import styles from './TextBody.module.scss';
 
-Text.propTypes = {
-    content: PropTypes.string.isRequired
+interface TextProps {
+
+    title: string;
+    message: string;
+    tags: string;
 }
+
+
+const Text: React.FC<TextProps> = ({ title, message, tags }) => {
+    return (
+        <div>
+            <Row>
+
+                <h2 className={styles.title}>{title}</h2>
+                <div className={styles.message}>
+                    <p className="text-sm text-justify">
+                        {message}
+                    </p>
+                    <p className={styles.tags}>
+                        {tags}
+                    </p>
+
+
+                </div>
+
+            </Row>
+        </div >
+
+    );
+}
+Text.propTypes = {
+    title: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+};
 
 Text.defaultProps = {
-    content: "Bienvenidos a Ágora Centro Educativo de Apoyo Especializado"
-}
+    title: "Algo Pasó",
+    message: "Bienvenidos a Ágora Centro Educativo de Apoyo Especializado",
+};
 
-export default Text
+export default Text;

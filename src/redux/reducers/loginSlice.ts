@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ITokenDTO } from "../../core/auth/ITokenDTO";
 
-interface LoginState {
+export interface LoginState {
   [x: string]: any;
   isLoggedIn: boolean;
   loggedUserId: number;
@@ -17,7 +17,7 @@ const initialState: LoginState = {
 
   JWTToken: {
     userId: 0,
-    role: "",
+    roles: "",
     accessToken: "",
     refreshToken: "",
   },
@@ -47,7 +47,7 @@ const loginSlice = createSlice({
       console.log("Updated sessionStorage: ", sessionStorage);
       state.isLoggedIn = true;
       state.loggedUserId = action.payload.userId;
-      state.loggedUserRole = action.payload.role;
+      state.loggedUserRole = action.payload.roles;
 
       console.log("Updated state: ", state);
 

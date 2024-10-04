@@ -11,9 +11,9 @@ interface CommentAccordianProps {
   comments: Comment[];
 }
 
-function CommentAccordian({ comments }: CommentAccordianProps) {
+function CommentAccordion({ comments }: CommentAccordianProps) {
   return (
-        <Accordion defaultActiveKey="0">
+    <Accordion defaultActiveKey="0">
       {comments.map((comment, index) => (
         <Accordion.Item eventKey={String(index)} key={index}>
           <Accordion.Header>{comment.name}</Accordion.Header>
@@ -26,4 +26,4 @@ function CommentAccordian({ comments }: CommentAccordianProps) {
   );
 }
 
-export default CommentAccordian;
+export default CommentAccordion;

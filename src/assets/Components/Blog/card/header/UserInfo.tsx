@@ -1,5 +1,7 @@
-
+import { ReactNode } from "react";
+import styles from './UserInfo.module.scss';
 interface UserInfo {
+    userId: ReactNode;
     username: string;
     time: string;
     location: string;
@@ -11,15 +13,15 @@ const UserInfo = ({ username, time, location }: UserInfo) => {
     };
 
     return (
-        <div className="flex flex-col ml-2">
+        <div className={styles.userInfo}>
             <a
                 href={normalizeUserLink()}
-                className="font-bold text-sm mb-0 leading-tight tracking-wide cursor-default hover:text-indigo-800"
+                className={styles.userName}
             >
                 {username}
             </a>
-            <p className="font-normal text-xs text-gray-600 mt-0">
-                {time} • {location}
+            <p className={styles.time}>
+                {time}  {location}
             </p>
         </div>
     );

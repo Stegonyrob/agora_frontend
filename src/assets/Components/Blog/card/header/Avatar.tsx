@@ -1,19 +1,33 @@
 import PropTypes from "prop-types";
-const DEFAULT_USER_PHOTO_URL = "../../../../Logo/agoraLogoTrasBlanco.png";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../../../src/redux/reducers/userSlice";
+import styles from './Avatar.module.scss';
+//const DEFAULT_USER_PHOTO_URL = "../../../../../../public/images/avatarGeneric.png";
+const DEFAULT_USER_PHOTO_URL = import.meta.env.VITE_DEFAULT_USER_PHOTO_URL;
 interface AvatarProps {
-    source: string,
-    url: string,
-    alt: string
+    source_avatar: string,
+    url_avatar: string,
+    alt_avatar: string,
+    userId: number
+
 }
 
-const Avatar = ({ source, url, alt }: AvatarProps) => {
+const Avatar = ({ userId }: AvatarProps) => {
+    const user = useSelector((state: RootState) => state.user);
+    if (!user) {
+        return null;
+    }
+    const source = user.source_avatar || DEFAULT_USER_PHOTO_URL;
+    const alt = user.username || DEFAULT_USER_PHOTO_URL;
+    const url = user.url_avatar || "avatarGeneric";
+
     return (
         <div>
             <a href={url}>
                 <img
                     src={source}
                     alt={alt}
-                    className="w-12 rounded-full cursor-pointer" />
+                    className={styles.imageAvatar} />
             </a>
         </div>
     )
@@ -28,7 +42,7 @@ Avatar.propTypes = {
 Avatar.defaultProps = {
     source: DEFAULT_USER_PHOTO_URL,
     alt: "random user photo",
-    url: "Menai-Ala-Eddine"
+    url: "avatarGeneric"
 }
 
 export default Avatar

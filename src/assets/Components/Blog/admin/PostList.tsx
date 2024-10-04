@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IPost } from '../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import PostsService from '../../../../core/posts/PostService';
+import Card from '../card/Card';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 interface PostList {
@@ -111,6 +112,8 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
           user={userId}
 
         />
+        <Card />
+
         {selectedPost && (
           <EditPostForm
             post={selectedPost}
