@@ -1,0 +1,15 @@
+.card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    min-width: 25rem;
+    min-height: 25rem;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    padding: 2rem;
+    color: azure !important;
+   
+}

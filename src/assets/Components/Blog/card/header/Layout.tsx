@@ -5,7 +5,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => (
-    <div className="flex w-full bg-white px-4">
+    <div >
         {/* El layout es un wrapper que contiene los elementos de la cabecera
       como el avatar, la informacion del usuario y el icono de mas.
       El contenedor de la cabecera se aplica un padding horizontal de 4

@@ -5,11 +5,11 @@ import { useSelector } from "react-redux"
 import { IPost } from "../../../../core/posts/IPost"
 import PostsService from "../../../../core/posts/PostService"
 import { RootState } from "../../../../redux/store"
+import styles from "./Card.module.scss"
 import Layout from "./LayoutCard"
 import Body from "./body/Body"
 import FooterAdmin from "./footer/admin/FooterAdmin"
 import Header from "./header/Header"
-
 interface CardProps {
     user: number;
     onSelect: (post: IPost) => void;
@@ -60,7 +60,7 @@ const Card: React.FC<CardProps> = ({ user, onSelect, onDelete }) => {
     };
 
     return (
-        <div className="w-full flex justify-center">
+        <div className={styles.card}>
             <Layout>
                 <Container>
                     <Row>

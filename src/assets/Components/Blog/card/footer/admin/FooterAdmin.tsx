@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
-import { InteractionAdmin, InteractionAdminCount } from "./InteractionAdmin";
+import { InteractionAdminArchive, InteractionAdminComment, InteractionAdminEdit, InteractionAdminReply, InteractionAdminUnarchive, } from "./InteractionAdmin";
+import { InteractionAdminCount } from "./InteractionAdminCount";
 import LayoutFooter from "./LayoutFooter";
+
+
 const loveIconFilled = import.meta.env.VITE_LOVE_ICON_FILLED;
 const initialLoveIcon: string | undefined = import.meta.env.VITE_LOVE_ICON;
 const archiveIcon = import.meta.env.VITE_ARCHIVE_ICON;
@@ -73,15 +76,12 @@ const FooterAdmin: React.FC<FooterAdminProps> = ({
     }
 
     return <LayoutFooter>
-        <InteractionAdminCount
-            icon={loveIcon ?? ""}
-            count={loveCount}
-            interact={love}
-            color={color} />
-        <InteractionAdmin icon={archiveIcon ?? ""} />
-        <InteractionAdmin icon={desArchiveIcon ?? ""} />
-        <InteractionAdmin icon={editIcon ?? ""} />
-        <InteractionAdmin icon={replyIcon ?? ""} />
+        <InteractionAdminCount icon="bi bi-heart" alt="Heart Icon" color="#f00" />
+        <InteractionAdminComment />
+        <InteractionAdminReply />
+        <InteractionAdminUnarchive />
+        <InteractionAdminArchive />
+        <InteractionAdminEdit />
     </LayoutFooter>
 
 }

@@ -1,4 +1,6 @@
 .icon {
-  width: 2rem;
+  font-size: 3rem;
   cursor: pointer;
+  color: azure;
+  margin: 2rem;
 }
