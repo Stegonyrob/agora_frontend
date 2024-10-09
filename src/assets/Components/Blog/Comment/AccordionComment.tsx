@@ -1,6 +1,6 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
-
+import InteractionAdminReply from './ReplyComment';
 interface Comment {
   id: number;
   name: string;
@@ -19,6 +19,7 @@ function CommentAccordion({ comments }: CommentAccordianProps) {
           <Accordion.Header>{comment.name}</Accordion.Header>
           <Accordion.Body>
             <Card.Text>{comment.comment}</Card.Text>
+            <InteractionAdminReply commentId={comment.id} />
           </Accordion.Body>
         </Accordion.Item>
       ))}
@@ -27,3 +28,7 @@ function CommentAccordion({ comments }: CommentAccordianProps) {
 }
 
 export default CommentAccordion;
+
+
+
+

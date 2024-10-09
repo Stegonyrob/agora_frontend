@@ -9,17 +9,20 @@ interface User {
   userId: number;
   username: string;
   role: string;
-
+  counter: number;
 }
+
+
 
 interface ButtonCommentProps {
   postId: number;
   userId: number;
   className?: string;
+  counter: number;
 }
 
 
-const ButtonComment: React.FC<ButtonCommentProps> = ({ postId, userId, className }) => {
+const ButtonComment: React.FC<ButtonCommentProps> = ({ postId, userId, className, counter }) => {
   const [show, setShow] = useState(false);
   const replyRepository = new ReplyRepository();
   const [commentCounter, setCommentCounter] = useState(0);

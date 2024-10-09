@@ -1,0 +1,19 @@
+.cardFooter {
+    align-items: center;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    background-color: transparent;
+
+
+    .social-icons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      margin-right: 1rem; 
+      color:azure;
+    }
+  }

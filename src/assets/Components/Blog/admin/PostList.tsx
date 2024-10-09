@@ -2,21 +2,22 @@ import { useEffect, useState } from 'react';
 import { IPost } from '../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import PostsService from '../../../../core/posts/PostService';
-import Card from '../card/Card';
+
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
-interface PostList {
+interface PostListProps {
   post: IPost[];
   onSelect: (post: IPost) => void;
   onDelete: (postId: string) => Promise<void>;
   onClose: () => void;
   onEdit: (post: IPost) => void;
   onCreate: (post: IPost) => void;
-
-  userId: number | null;
+  userId: number;
+  username: string;
 }
 
-const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
+const PostList = ({ userId, post }: PostListProps) => {
+
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
 
@@ -24,11 +25,15 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
 
   useEffect(() => {
     const loadPosts = async () => {
+      console.log("Begin loadPosts");
       try {
         const fetchedPosts = await apiPost.fetchPosts();
+        console.log("Posts fetched successfully. Data: ", fetchedPosts);
         setFetchedPosts(fetchedPosts);
       } catch (error) {
         console.error("Error loading posts: ", error);
+      } finally {
+        console.log("End loadPosts");
       }
     };
     loadPosts();
@@ -52,15 +57,31 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
     }
   };
 
-  const handleUpdate = async (updatedPost: IPost) => {
+  const handleUpdate = async (updatedPost: IPostDTO) => {
     try {
       const updatedPostData: IPostDTO = {
         title: updatedPost.title,
         message: updatedPost.message,
         id: 0,
-        creation_date: '',
-        postname: '',
-        userId: 0
+        creation_date: new Date(),
+        userId: 0,
+        location: '',
+        loves: 0,
+        comments: [],
+        isArchived: false,
+        tags: [],
+        images: [],
+
+        isPublished: false,
+        publishDate: '',
+        alt_image: '',
+        source_image: '',
+        alt_avatar: '',
+        source_avatar: '',
+        username: '',
+        role: '',
+        url_avatar: '',
+        category: ''
       };
       const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
       console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
@@ -79,9 +100,24 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
         title: newPost.title,
         message: newPost.message,
         id: newPost.id,
-        creation_date: newPost.creation_date ? newPost.creation_date.toString() : '',
-        postname: newPost.postname ? String(newPost.postname) : '',
-        userId: newPost.userId as number
+        creation_date: new Date(),
+        userId: newPost.userId as number,
+        location: '',
+        loves: 0,
+        comments: [],
+        isArchived: false,
+        category: '',
+        tags: [],
+        images: [],
+        isPublished: false,
+        publishDate: '',
+        alt_image: '',
+        source_image: '',
+        alt_avatar: '',
+        source_avatar: '',
+        username: '',
+        role: '',
+        url_avatar: ''
       };
 
       const createdPost = await apiPost.createPost(newPostData);
@@ -94,9 +130,24 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
     }
   };
 
-  const onSubmit = async (post: IPostDTO) => {
+  const onSubmit = async (post: IPost) => {
     if (post.id) {
-      await handleUpdate(post);
+      const updatedPost: IPostDTO = {
+        ...post,
+        creation_date: new Date(post.creation_date),
+        category: '', // Add this property
+        images: [], // Add this property
+        isPublished: false, // Add this property
+        publishDate: '', // Add this property
+        alt_image: '', // Add this property
+        source_image: '', // Add this property
+        alt_avatar: '', // Add this property
+        source_avatar: '', // Add this property
+        username: '', // Add this property
+        role: '', // Add this property
+        url_avatar: '', // Add this property
+      };
+      await handleUpdate(updatedPost);
     } else {
       await handleCreate(post);
     }
@@ -110,9 +161,9 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
           onSelect={handleSelect}
           onDelete={handleDelete}
           user={userId}
-
+          role={''}
         />
-        <Card />
+
 
         {selectedPost && (
           <EditPostForm

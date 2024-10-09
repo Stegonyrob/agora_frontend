@@ -24,6 +24,7 @@ export default class LoginService {
       console.log(userRole);
       return { accessToken, refreshToken, userId, role: userRole };
     } catch (error) {
+      //revisar por wque lelga undefine cuandos e extrae del token
       throw new Error("Error with API calling: " + error);
     }
   }

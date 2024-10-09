@@ -28,7 +28,6 @@ export default function Footer() {
             <a href="#"></a>
 
           </p>
-          <a href="https://www.flaticon.es/iconos-animados-gratis/carpeta" className={styles.text} title="carpeta iconos animados">Carpeta iconos animados creados por Freepik - Flaticon</a>
 
         </div>
       </div>

@@ -5,7 +5,7 @@ export interface LoginState {
   [x: string]: any;
   isLoggedIn: boolean;
   loggedUserId: number;
-  loggedUserRole: string;
+  loggedUserRole: string | null;
   JWTToken: ITokenDTO;
 }
 
@@ -17,9 +17,10 @@ const initialState: LoginState = {
 
   JWTToken: {
     userId: 0,
-    roles: "",
+    role: "",
     accessToken: "",
     refreshToken: "",
+    username: "",
   },
 };
 
@@ -44,25 +45,35 @@ const loginSlice = createSlice({
       console.log("Setting userId in sessionStorage: ", action.payload.userId);
       sessionStorage.setItem("userId", String(action.payload.userId));
 
+      const decodedToken = JSON.parse(
+        atob(action.payload.accessToken.split(".")[1])
+      );
+      console.log("Decoded token: ", decodedToken);
+
+      console.log("Setting role in sessionStorage: ", decodedToken.roles);
+      sessionStorage.setItem("role", decodedToken.roles);
+
       console.log("Updated sessionStorage: ", sessionStorage);
+
       state.isLoggedIn = true;
       state.loggedUserId = action.payload.userId;
-      state.loggedUserRole = action.payload.roles;
+      state.loggedUserRole = decodedToken.roles;
+
+      console.log(state.loggedUserRole);
 
       console.log("Updated state: ", state);
 
       console.log("Updated state and sessionStorage, login action complete");
     },
+
     logout: (state) => {
-      console.log("Clearing sessionStorage");
       sessionStorage.clear();
-      console.log("sessionStorage after clearing:", sessionStorage);
+
       state.isLoggedIn = false;
-      console.log("Setting isLoggedIn to false");
+
       state.loggedUserId = 0;
-      console.log("Setting loggedUserId to 0");
+
       state.loggedUserRole = "";
-      console.log("Setting loggedUserRole to empty string");
     },
   },
 });

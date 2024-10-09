@@ -1,0 +1,10 @@
+.cardPost {
+  align-items: center;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  background-color: transparent;
+  color: azure;
+}
