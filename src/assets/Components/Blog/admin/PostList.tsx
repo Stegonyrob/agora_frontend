@@ -6,7 +6,7 @@ import PostsService from '../../../../core/posts/PostService';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 interface PostListProps {
-  post: IPost[];
+  posts: IPost[];
   onSelect: (post: IPost) => void;
   onDelete: (postId: string) => Promise<void>;
   onClose: () => void;
@@ -14,9 +14,10 @@ interface PostListProps {
   onCreate: (post: IPost) => void;
   userId: number;
   username: string;
+  role: string;
 }
 
-const PostList = ({ userId, post }: PostListProps) => {
+const PostList = ({ userId, posts }: PostListProps) => {
 
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
@@ -40,14 +41,17 @@ const PostList = ({ userId, post }: PostListProps) => {
   }, []);
 
   const handleSelect = (post: IPost) => {
+    console.log("handleSelect called", post);
     setSelectedPost(post);
   };
 
   const handleClose = () => {
+    console.log("handleClose called");
     setSelectedPost(null);
   };
 
   const handleDelete = async (postId: string) => {
+    console.log("handleDelete called", postId);
     try {
       await apiPost.deletePost(Number(postId));
       console.log(`Post with ID: ${postId} deleted successfully.`);
@@ -58,6 +62,7 @@ const PostList = ({ userId, post }: PostListProps) => {
   };
 
   const handleUpdate = async (updatedPost: IPostDTO) => {
+    console.log("handleUpdate called", updatedPost);
     try {
       const updatedPostData: IPostDTO = {
         title: updatedPost.title,
@@ -95,6 +100,7 @@ const PostList = ({ userId, post }: PostListProps) => {
   };
 
   const handleCreate = async (newPost: IPost) => {
+    console.log("handleCreate called", newPost);
     try {
       const newPostData: IPostDTO = {
         title: newPost.title,
@@ -131,7 +137,9 @@ const PostList = ({ userId, post }: PostListProps) => {
   };
 
   const onSubmit = async (post: IPost) => {
+    console.log('onSubmit called', post);
     if (post.id) {
+      console.log('Updating post');
       const updatedPost: IPostDTO = {
         ...post,
         creation_date: new Date(post.creation_date),
@@ -145,10 +153,11 @@ const PostList = ({ userId, post }: PostListProps) => {
         source_avatar: '', // Add this property
         username: '', // Add this property
         role: '', // Add this property
-        url_avatar: '', // Add this property
+        url_avatar: '', // Add this property,
       };
       await handleUpdate(updatedPost);
     } else {
+      console.log('Creating post');
       await handleCreate(post);
     }
   };
@@ -156,6 +165,7 @@ const PostList = ({ userId, post }: PostListProps) => {
   return (
     <div>
       <div>
+
         <CardPosts
           posts={fetchedPosts}
           onSelect={handleSelect}
@@ -163,8 +173,6 @@ const PostList = ({ userId, post }: PostListProps) => {
           user={userId}
           role={''}
         />
-
-
         {selectedPost && (
           <EditPostForm
             post={selectedPost}

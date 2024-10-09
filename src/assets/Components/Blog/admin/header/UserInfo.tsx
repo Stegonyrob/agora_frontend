@@ -2,14 +2,18 @@ import { ReactNode } from "react";
 import styles from './UserInfo.module.scss';
 interface UserInfo {
     userId: ReactNode;
-    username: string;
+    userName: string;
     time: string;
     location: string;
 }
 
-const UserInfo = ({ username, time, location }: UserInfo) => {
+const UserInfo = ({ userName, time, location }: UserInfo) => {
     const normalizeUserLink = () => {
-        return username.replaceAll(" ", "-");
+        if (userName) {
+            return userName.replaceAll(" ", "-");
+        } else {
+            return "";
+        }
     };
 
     return (
@@ -18,7 +22,7 @@ const UserInfo = ({ username, time, location }: UserInfo) => {
                 href={normalizeUserLink()}
                 className={styles.userName}
             >
-                {username}
+                {userName}
             </a>
             <p className={styles.time}>
                 {time}  {location}

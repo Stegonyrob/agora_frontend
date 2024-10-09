@@ -3,5 +3,5 @@ export interface ITokenDTO {
   role: string;
   accessToken: string;
   refreshToken: string;
-  username: string;
+  userName: string;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { IPost } from "../../../../core/posts/IPost";
 import BodyPosts from "./body/BodyCardPosts";
@@ -17,31 +17,51 @@ interface CardPostsProps {
 }
 
 
-const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete }) => {
+const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete, posts }) => {
   console.log("CardPosts props: ", { user, onSelect, onDelete });
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
-  const [posts, setPosts] = useState<IPost[]>([]);
+  const [postsState, setPostsState] = useState<IPost[]>([]);
   const [commentCounter, setCommentCounter] = useState(0);
   const [tweetCounter, setTweetCounter] = useState(0);
   const [loveCounter, setLoveCounter] = useState(0);
 
+  console.log("CardPosts state: ", {
+    selectedPost,
+    show,
+    posts,
+    commentCounter,
+    tweetCounter,
+    loveCounter,
+  });
 
   const commentHandler = () => {
     console.log("Comment handler called");
-    setCommentCounter((prevState) => prevState + 1);
+    setCommentCounter((prevState) => {
+      console.log("Comment counter: ", prevState);
+      return prevState + 1;
+    });
   };
   const tweetHandler = () => {
     console.log("Tweet handler called");
-    setTweetCounter((prevState) => prevState + 1);
+    setTweetCounter((prevState) => {
+      console.log("Tweet counter: ", prevState);
+      return prevState + 1;
+    });
   };
   const loveHandler = () => {
     console.log("Love handler called");
-    setLoveCounter((prevState) => prevState + 1);
+    setLoveCounter((prevState) => {
+      console.log("Love counter: ", prevState);
+      return prevState + 1;
+    });
   };
 
 
+  useEffect(() => {
+    setPostsState(posts);
+  }, [posts]);
 
 
 
@@ -51,7 +71,7 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete }) => {
         {posts.map((post) => (
           <Col key={post.id}>
             <Card className={styles.cardPost}>
-              <HeaderPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} />
+              <HeaderPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} userName={""} />
               <BodyPosts posts={post} title={""} message={""} tags={""} />
               <FooterPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} />
             </Card>

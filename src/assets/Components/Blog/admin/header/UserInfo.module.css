@@ -1,0 +1,7 @@
+.userInfo {
+  display: flex;
+}
+
+.userInfo .userName {
+  color: yellow;
+}

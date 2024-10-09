@@ -1,14 +1,15 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import InteractionAdminReply from './ReplyComment';
-interface Comment {
+
+interface CommentType {
   id: number;
   name: string;
   comment: string;
 }
 
 interface CommentAccordianProps {
-  comments: Comment[];
+  comments: CommentType[];
 }
 
 function CommentAccordion({ comments }: CommentAccordianProps) {

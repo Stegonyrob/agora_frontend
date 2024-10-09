@@ -34,10 +34,10 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
       <Card.Footer className={styles.cardFooter}>
         <span className="social-icons">
           <i className="bi bi-heart" />
-          {posts.length > 0 && posts[0]?.loves?.length || 0}
+          {posts.length > 0 ? posts[0].id.toString() : user.toString()}
         </span>
         <ButtonComment postId={posts[0]?.id} userId={user} counter={posts[0]?.comments?.length || 0} />
-        <AccordionComment comments={posts.flatMap(post => post.comments || [])} />
+        <AccordionComment comments={[]} />
         {role === "admin" && (
           <span className="social-icons" >
             <i

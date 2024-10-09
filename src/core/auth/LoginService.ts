@@ -18,13 +18,12 @@ export default class LoginService {
       console.log(status);
       console.log(response.data);
 
-      const { accessToken, refreshToken, userId } = response.data;
+      const { accessToken, refreshToken, userId, userName } = response.data;
       const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
       const userRole = tokenPayload.role;
       console.log(userRole);
-      return { accessToken, refreshToken, userId, role: userRole };
+      return { accessToken, refreshToken, userId, role: userRole, userName };
     } catch (error) {
-      //revisar por wque lelga undefine cuandos e extrae del token
       throw new Error("Error with API calling: " + error);
     }
   }

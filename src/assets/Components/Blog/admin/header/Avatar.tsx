@@ -2,13 +2,15 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../../src/redux/reducers/userSlice";
 import styles from './Avatar.module.scss';
-//const DEFAULT_USER_PHOTO_URL = "../../../../../../public/images/avatarGeneric.png";
+
 const DEFAULT_USER_PHOTO_URL = import.meta.env.VITE_DEFAULT_USER_PHOTO_URL;
 interface AvatarProps {
     source_avatar: string,
     url_avatar: string,
     alt_avatar: string,
-    userId: number
+    userId: number,
+    userName: string,
+
 
 }
 

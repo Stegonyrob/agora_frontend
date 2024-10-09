@@ -16,6 +16,7 @@ interface HeaderPostsProps {
   onDelete: (postId: string) => Promise<void>;
   posts: IPost[];
   role: string;
+  userName: string;
 }
 
 const HeaderPosts: React.FC<HeaderPostsProps> = ({ user, onSelect, onDelete, posts }) => {
@@ -32,7 +33,7 @@ const HeaderPosts: React.FC<HeaderPostsProps> = ({ user, onSelect, onDelete, pos
         {posts.map((post) => (
           <Col key={post.id}>
             <Card className={styles.cardPost}>
-              <Avatar url_avatar={post.source_avatar} source_avatar={post.alt_avatar} userId={post.userId as number} alt_avatar={post.alt_avatar} />
+              <Avatar url_avatar={post.source_avatar} source_avatar={post.alt_avatar} userId={post.userId as number} alt_avatar={post.alt_avatar} userName={""} />
               <UserInfo userId={post.userId as number}
                 username={post.username}
                 time={typeof post.creation_date === 'string' ? new Date(post.creation_date).toLocaleDateString('en-US', {

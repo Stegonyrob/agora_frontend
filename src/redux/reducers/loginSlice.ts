@@ -20,7 +20,7 @@ const initialState: LoginState = {
     role: "",
     accessToken: "",
     refreshToken: "",
-    username: "",
+    userName: "",
   },
 };
 
