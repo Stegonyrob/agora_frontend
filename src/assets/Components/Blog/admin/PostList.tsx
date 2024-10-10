@@ -55,7 +55,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
     try {
       await apiPost.deletePost(Number(postId));
       console.log(`Post with ID: ${postId} deleted successfully.`);
-      setFetchedPosts(fetchedPosts.filter((post: { id: number; }) => post.id !== Number(postId)));
+      setFetchedPosts(fetchedPosts.filter((post: { postId: number; }) => post.postId !== Number(postId)));
     } catch (error) {
       console.error("Error deleting post: ", error);
     }
@@ -67,7 +67,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
       const updatedPostData: IPostDTO = {
         title: updatedPost.title,
         message: updatedPost.message,
-        id: 0,
+        postId: 0,
         creation_date: new Date(),
         userId: 0,
         location: '',
@@ -88,11 +88,11 @@ const PostList = ({ userId, posts }: PostListProps) => {
         url_avatar: '',
         category: ''
       };
-      const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
-      console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
+      const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.postId);
+      console.log(`Post with ID: ${updatedPost.postId} updated successfully.`);
       const message = updatedPostResponse.message || "Default message";
       alert(`Post editado exitosamente: ${message}`);
-      setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === updatedPost.id ? updatedPostResponse : post));
+      setFetchedPosts(fetchedPosts.map((post: IPost) => post.postId === updatedPost.postId ? updatedPostResponse : post));
     } catch (error) {
       console.error("Error updating post: ", error);
       alert(`No se pudo editar el post, por favor intentenlo más tarde, por favor disculpen las molestias`);
@@ -105,7 +105,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
       const newPostData: IPostDTO = {
         title: newPost.title,
         message: newPost.message,
-        id: newPost.id,
+        postId: newPost.postId,
         creation_date: new Date(),
         userId: newPost.userId as number,
         location: '',
@@ -127,7 +127,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
       };
 
       const createdPost = await apiPost.createPost(newPostData);
-      console.log(`Post with ID: ${createdPost.id} created successfully.`);
+      console.log(`Post with ID: ${createdPost.postId} created successfully.`);
       alert(`Post creado exitosamente`);
       setFetchedPosts([...fetchedPosts, createdPost]);
     } catch (error) {
@@ -138,7 +138,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
 
   const onSubmit = async (post: IPost) => {
     console.log('onSubmit called', post);
-    if (post.id) {
+    if (post.postId) {
       console.log('Updating post');
       const updatedPost: IPostDTO = {
         ...post,
@@ -172,6 +172,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
           onDelete={handleDelete}
           user={userId}
           role={''}
+          userName={''}
         />
         {selectedPost && (
           <EditPostForm

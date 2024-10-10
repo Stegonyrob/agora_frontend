@@ -1,5 +1,5 @@
 export interface IPostDTO {
-  id: number;
+  postId: number;
   title: string;
   message: string;
   creation_date: Date;

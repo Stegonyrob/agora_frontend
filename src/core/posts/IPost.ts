@@ -1,4 +1,5 @@
 export interface IPost {
+  length: number;
   location: string;
   loves: number;
   comments: Comment[];
@@ -7,7 +8,7 @@ export interface IPost {
   userId: number;
   creation_date: Date;
   message: string;
-  id: number;
+  postId: number;
   title: string;
   alt_image: string;
   source_image: string;

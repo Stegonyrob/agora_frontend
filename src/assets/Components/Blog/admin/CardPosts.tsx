@@ -14,6 +14,7 @@ interface CardPostsProps {
   onDelete: (postId: string) => Promise<void>;
   posts: IPost[];
   role: string;
+  userName: string;
 }
 
 
@@ -69,10 +70,10 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete, posts }
     <Container>
       <Row>
         {posts.map((post) => (
-          <Col key={post.id}>
+          <Col key={post.postId}>
             <Card className={styles.cardPost}>
-              <HeaderPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} userName={""} />
-              <BodyPosts posts={post} title={""} message={""} tags={""} />
+              <HeaderPosts userId={user} userName={""} />
+              <BodyPosts posts={post} title={""} message={""} tags={[]} />
               <FooterPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} />
             </Card>
           </Col>

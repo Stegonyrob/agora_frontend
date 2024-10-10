@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
+import { useSelector } from "react-redux";
+import { LoginState } from "../../../../../redux/reducers/loginSlice";
 import styles from './UserInfo.module.scss';
+
 interface UserInfo {
     userId: ReactNode;
     userName: string;
@@ -7,27 +10,25 @@ interface UserInfo {
     location: string;
 }
 
-const UserInfo = ({ userName, time, location }: UserInfo) => {
-    const normalizeUserLink = () => {
-        if (userName) {
-            return userName.replaceAll(" ", "-");
-        } else {
-            return "";
-        }
-    };
+const UserInfo = ({ time, location }: UserInfo) => {
+    const loggedUserName = useSelector((state: LoginState) => state.loggedUserName);
+
+    if (!loggedUserName) {
+        return null;
+    }
 
     return (
         <div className={styles.userInfo}>
             <a
-                href={normalizeUserLink()}
+                href={loggedUserName.replace(/\s/g, "-")}
                 className={styles.userName}
             >
-                {userName}
+                {loggedUserName}
             </a>
             <p className={styles.time}>
-                {time}  {location}
+                {time} {location}
             </p>
-        </div>
+        </div >
     );
 };
 

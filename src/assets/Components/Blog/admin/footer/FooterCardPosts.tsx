@@ -29,22 +29,24 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
 
   if (!isLoggedIn) return null;
 
+  const post = posts[0] || { postId: null, comments: [] };
+
   return (
     <Card className={styles.cardPost}>
       <Card.Footer className={styles.cardFooter}>
         <span className="social-icons">
           <i className="bi bi-heart" />
-          {posts.length > 0 ? posts[0].id.toString() : user.toString()}
+          {post.postId ? post.postId.toString() : user.toString()}
         </span>
-        <ButtonComment postId={posts[0]?.id} userId={user} counter={posts[0]?.comments?.length || 0} />
+        <ButtonComment postId={post.postId} userId={user} counter={post.comments.length} />
         <AccordionComment comments={[]} />
         {role === "admin" && (
           <span className="social-icons" >
             <i
-              className={posts.length > 0 && posts[0].isArchived ? "bi bi-file-earmark-arrow-down" : "bi bi-file-earmark-arrow-up"}
+              className={post.postId && post.isArchived ? "bi bi-file-earmark-arrow-down" : "bi bi-file-earmark-arrow-up"}
               onClick={() => {
-                console.log("Deleting post: ", posts[0]);
-                onDelete(posts.length > 0 ? posts[0].id.toString() : '');
+                console.log("Deleting post: ", post);
+                onDelete(post.postId ? post.postId.toString() : '');
               }}
             />
           </span>
@@ -52,8 +54,8 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
         {role === "admin" && (
           <span className="social-icons">
             <i className="bi bi-pencil-square" onClick={() => {
-              console.log("Selecting post: ", posts[0]);
-              onSelect(posts[0]);
+              console.log("Selecting post: ", post);
+              onSelect(post);
             }} />{" "}
           </span>
         )}

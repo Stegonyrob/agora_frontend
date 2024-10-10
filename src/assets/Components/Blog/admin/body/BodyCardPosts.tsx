@@ -11,7 +11,7 @@ interface BodyPostsProps {
   posts: IPost;
   title: string;
   message: string;
-  tags: string;
+  tags: string[];
 }
 
 const BodyPosts: React.FC<BodyPostsProps> = ({ posts }) => {

@@ -18,11 +18,16 @@ export default class LoginService {
       console.log(status);
       console.log(response.data);
 
-      const { accessToken, refreshToken, userId, userName } = response.data;
+      const { accessToken, refreshToken } = response.data;
       const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
-      const userRole = tokenPayload.role;
-      console.log(userRole);
-      return { accessToken, refreshToken, userId, role: userRole, userName };
+
+      return {
+        userId: response.data.userId,
+        role: tokenPayload.role,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        userName: response.data.username,
+      };
     } catch (error) {
       throw new Error("Error with API calling: " + error);
     }

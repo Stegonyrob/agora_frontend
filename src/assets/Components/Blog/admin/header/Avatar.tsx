@@ -20,7 +20,7 @@ const Avatar = ({ userId }: AvatarProps) => {
         return null;
     }
     const source = user.source_avatar || DEFAULT_USER_PHOTO_URL;
-    const alt = user.username || DEFAULT_USER_PHOTO_URL;
+    const alt = user.userName || DEFAULT_USER_PHOTO_URL;
     const url = user.url_avatar || "avatarGeneric";
 
     return (

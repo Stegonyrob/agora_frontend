@@ -12,7 +12,7 @@ export default function BlogView() {
   return (
     <div>
       <h2>Agora</h2>
-      <PostList post={[]} userId={userId} onSelect={function (post: IPost): void {
+      <PostList posts={[]} onSelect={function (post: IPost): void {
         throw new Error('Function not implemented.');
       }} onDelete={function (postId: string): Promise<void> {
         throw new Error('Function not implemented.');
@@ -22,19 +22,17 @@ export default function BlogView() {
         throw new Error('Function not implemented.');
       }} onCreate={function (post: IPost): void {
         throw new Error('Function not implemented.');
-      }} />
-      <PostForm onSubmit={(post: IPost) => {
-
-        return new Promise<void>((resolve) => {
-          console.log("Submitting post:", post);
-          resolve();
-        });
-      }} onClose={() => { }} show={false} />
-      <CardPosts posts={[]} user={userId} onSelect={function (post: IPost): void {
+      }} userId={0} username={''} role={''} />
+      <PostForm onClose={function (): void {
+        throw new Error('Function not implemented.');
+      }} onSubmit={function (post: IPost): Promise<void> {
+        throw new Error('Function not implemented.');
+      }} show={false} />
+      <CardPosts user={0} onSelect={function (post: IPost): void {
         throw new Error('Function not implemented.');
       }} onDelete={function (postId: string): Promise<void> {
         throw new Error('Function not implemented.');
-      }} />
+      }} posts={[]} role={''} userName={''} />
     </div>
   );
 }
