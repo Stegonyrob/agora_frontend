@@ -14,13 +14,18 @@ interface AvatarProps {
 
 }
 
-const Avatar = ({ userId }: AvatarProps) => {
+const Avatar = (AvatarProps: any) => {
+    const userId = sessionStorage.userId;
+    console.log(sessionStorage.userId)
+    const userName = sessionStorage.userName;
+    console.log(sessionStorage.userName)
+
     const user = useSelector((state: RootState) => state.user);
     if (!user) {
         return null;
     }
     const source = user.source_avatar || DEFAULT_USER_PHOTO_URL;
-    const alt = user.userName || DEFAULT_USER_PHOTO_URL;
+    const alt = userName || DEFAULT_USER_PHOTO_URL;
     const url = user.url_avatar || "avatarGeneric";
 
     return (

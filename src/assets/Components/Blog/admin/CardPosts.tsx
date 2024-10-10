@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
+import { ISession } from "../../../../core/auth/ISession";
 import { IPost } from "../../../../core/posts/IPost";
 import BodyPosts from "./body/BodyCardPosts";
 import styles from "./CardPosts.module.scss";
@@ -13,8 +14,8 @@ interface CardPostsProps {
   onSelect: (post: IPost) => void;
   onDelete: (postId: string) => Promise<void>;
   posts: IPost[];
-  role: string;
-  userName: string;
+
+  session: ISession[];
 }
 
 
@@ -27,7 +28,14 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete, posts }
   const [commentCounter, setCommentCounter] = useState(0);
   const [tweetCounter, setTweetCounter] = useState(0);
   const [loveCounter, setLoveCounter] = useState(0);
-
+  const userId = sessionStorage.userId;
+  console.log(sessionStorage.userId)
+  const userName = sessionStorage.userName;
+  console.log(sessionStorage.userName)
+  const userRole = sessionStorage.role;
+  console.log(sessionStorage.role)
+  const isLoggedIn = sessionStorage.isLoggedIn;
+  console.log(isLoggedIn)
   console.log("CardPosts state: ", {
     selectedPost,
     show,
@@ -72,9 +80,9 @@ const CardPosts: React.FC<CardPostsProps> = ({ user, onSelect, onDelete, posts }
         {posts.map((post) => (
           <Col key={post.postId}>
             <Card className={styles.cardPost}>
-              <HeaderPosts userId={user} userName={""} />
+              <HeaderPosts userId={userId} userName={userName} />
               <BodyPosts posts={post} title={""} message={""} tags={[]} />
-              <FooterPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} role={""} />
+              <FooterPosts user={user} onSelect={onSelect} onDelete={onDelete} posts={posts} />
             </Card>
           </Col>
         ))}

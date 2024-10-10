@@ -3,6 +3,7 @@ import { IPost } from '../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import PostsService from '../../../../core/posts/PostService';
 
+import { ISession } from '../../../../core/auth/ISession';
 import CardPosts from './CardPosts';
 import EditPostForm from './EditPostForm';
 interface PostListProps {
@@ -12,16 +13,22 @@ interface PostListProps {
   onClose: () => void;
   onEdit: (post: IPost) => void;
   onCreate: (post: IPost) => void;
-  userId: number;
-  username: string;
-  role: string;
+
+  session: ISession[];
 }
 
-const PostList = ({ userId, posts }: PostListProps) => {
+const PostList = ({ posts }: PostListProps) => {
 
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
-
+  const userId = sessionStorage.userId;
+  console.log(sessionStorage.userId)
+  const userName = sessionStorage.userName;
+  console.log(sessionStorage.userName)
+  const userRole = sessionStorage.role;
+  console.log(sessionStorage.role)
+  const isLoggedIn = sessionStorage.isLoggedIn;
+  console.log(isLoggedIn)
   const apiPost = new PostsService();
 
   useEffect(() => {
@@ -170,9 +177,7 @@ const PostList = ({ userId, posts }: PostListProps) => {
           posts={fetchedPosts}
           onSelect={handleSelect}
           onDelete={handleDelete}
-          user={userId}
-          role={''}
-          userName={''}
+          user={userId} session={[]}
         />
         {selectedPost && (
           <EditPostForm

@@ -1,29 +1,27 @@
 import { ReactNode } from "react";
-import { useSelector } from "react-redux";
-import { LoginState } from "../../../../../redux/reducers/loginSlice";
 import styles from './UserInfo.module.scss';
 
 interface UserInfo {
     userId: ReactNode;
-    userName: string;
+    loggedUserName: string;
     time: string;
     location: string;
 }
 
 const UserInfo = ({ time, location }: UserInfo) => {
-    const loggedUserName = useSelector((state: LoginState) => state.loggedUserName);
 
-    if (!loggedUserName) {
-        return null;
-    }
+    const userName = sessionStorage.userName;
+    console.log(sessionStorage.userName)
+
+
 
     return (
         <div className={styles.userInfo}>
             <a
-                href={loggedUserName.replace(/\s/g, "-")}
+                href={userName.replace(/\s/g, "-")}
                 className={styles.userName}
             >
-                {loggedUserName}
+                {userName}
             </a>
             <p className={styles.time}>
                 {time} {location}

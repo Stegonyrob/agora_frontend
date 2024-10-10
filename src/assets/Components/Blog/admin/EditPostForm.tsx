@@ -16,13 +16,25 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newPost = {
-      id: Number(post?.id) || 0,
+    const newPost: IPost = {
+      postId: Number(post?.postId) || 0,
       title: title,
       message: message,
-      creation_date: post?.creation_date || "default-date",
-      postname: post?.postname || "default-postname",
-      userId: post?.userId || "default-user-id",
+      creation_date: post?.creation_date || new Date(), // changed to Date type
+      userId: post?.userId || 0, // changed to number type
+      length: 0, // added missing property
+      location: '', // added missing property
+      loves: 0, // added missing property
+      comments: [], // added missing property
+      isArchived: false, // added missing property
+      tags: [], // added missing property
+      alt_image: '', // added missing property
+      source_image: '', // added missing property
+      alt_avatar: '', // added missing property
+      source_avatar: '', // added missing property
+      username: '', // added missing property
+      role: '', // added missing property
+      url_avatar: '', // added missing property
     };
     onSubmit(newPost);
   };
