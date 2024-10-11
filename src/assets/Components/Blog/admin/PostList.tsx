@@ -5,7 +5,7 @@ import PostsService from '../../../../core/posts/PostService';
 
 import { ISession } from '../../../../core/auth/ISession';
 import CardPosts from './CardPosts';
-import EditPostForm from './EditPostForm';
+import EditPostForm from './edit/EditPostForm';
 interface PostListProps {
   posts: IPost[];
   onSelect: (post: IPost) => void;
@@ -21,14 +21,15 @@ const PostList = ({ posts }: PostListProps) => {
 
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
   const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
+  const [showEditModal, setShowEditModal] = useState(false);
   const userId = sessionStorage.userId;
-  console.log(sessionStorage.userId)
+
   const userName = sessionStorage.userName;
-  console.log(sessionStorage.userName)
+
   const userRole = sessionStorage.role;
-  console.log(sessionStorage.role)
+
   const isLoggedIn = sessionStorage.isLoggedIn;
-  console.log(isLoggedIn)
+
   const apiPost = new PostsService();
 
   useEffect(() => {
@@ -48,13 +49,13 @@ const PostList = ({ posts }: PostListProps) => {
   }, []);
 
   const handleSelect = (post: IPost) => {
-    console.log("handleSelect called", post);
     setSelectedPost(post);
+    setShowEditModal(true);
   };
 
   const handleClose = () => {
-    console.log("handleClose called");
     setSelectedPost(null);
+    setShowEditModal(false);
   };
 
   const handleDelete = async (postId: string) => {
@@ -93,7 +94,7 @@ const PostList = ({ posts }: PostListProps) => {
         username: '',
         role: '',
         url_avatar: '',
-        category: ''
+
       };
       const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.postId);
       console.log(`Post with ID: ${updatedPost.postId} updated successfully.`);
@@ -119,7 +120,6 @@ const PostList = ({ posts }: PostListProps) => {
         loves: 0,
         comments: [],
         isArchived: false,
-        category: '',
         tags: [],
         images: [],
         isPublished: false,
@@ -150,7 +150,6 @@ const PostList = ({ posts }: PostListProps) => {
       const updatedPost: IPostDTO = {
         ...post,
         creation_date: new Date(post.creation_date),
-        category: '', // Add this property
         images: [], // Add this property
         isPublished: false, // Add this property
         publishDate: '', // Add this property
@@ -181,10 +180,10 @@ const PostList = ({ posts }: PostListProps) => {
         />
         {selectedPost && (
           <EditPostForm
-            post={selectedPost}
-            onSubmit={onSubmit}
+            post={selectedPost as IPostDTO}
+            onSubmit={handleUpdate}
             onClose={handleClose}
-            show={selectedPost !== null}
+            show={showEditModal}
           />
         )}
       </div>

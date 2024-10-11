@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { IPost } from '../../../../core/posts/IPost';
+import { IPost } from '../../../../../core/posts/IPost';
 import styles from './EditPostForm.module.scss';
 
 interface EditPostFormProps {
@@ -20,21 +20,23 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
       postId: Number(post?.postId) || 0,
       title: title,
       message: message,
-      creation_date: post?.creation_date || new Date(), // changed to Date type
-      userId: post?.userId || 0, // changed to number type
-      length: 0, // added missing property
-      location: '', // added missing property
-      loves: 0, // added missing property
-      comments: [], // added missing property
-      isArchived: false, // added missing property
-      tags: [], // added missing property
-      alt_image: '', // added missing property
-      source_image: '', // added missing property
-      alt_avatar: '', // added missing property
-      source_avatar: '', // added missing property
-      username: '', // added missing property
-      role: '', // added missing property
-      url_avatar: '', // added missing property
+      creation_date: post?.creation_date || new Date(),
+      userId: post?.userId || 0,
+      location: '',
+      loves: 0,
+      comments: [],
+      isArchived: false,
+      tags: [],
+      alt_image: '',
+      source_image: '',
+      alt_avatar: '',
+      source_avatar: '',
+      username: '',
+      role: '',
+      url_avatar: '',
+      images: [],
+      isPublished: false,
+      publishDate: ''
     };
     onSubmit(newPost);
   };

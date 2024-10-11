@@ -1,15 +1,17 @@
 export interface IPost {
-  length: number;
-  location: string;
-  loves: number;
-  comments: Comment[];
-  isArchived: boolean;
-  tags: string[];
-  userId: number;
-  creation_date: Date;
-  message: string;
   postId: number;
   title: string;
+  message: string;
+  creation_date: Date;
+  userId: number;
+  location: string;
+  loves: number;
+  comments: any[];
+  isArchived: boolean;
+  tags: string[];
+  images: string[];
+  isPublished: boolean;
+  publishDate: string;
   alt_image: string;
   source_image: string;
   alt_avatar: string;

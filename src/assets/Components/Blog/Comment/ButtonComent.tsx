@@ -61,7 +61,7 @@ const ButtonComment: React.FC<ButtonCommentProps> = ({ postId, userId, className
 
   return (
     <div className={styles.buttonWrapper}>
-      <span className="social-icons" style={{ width: "30px" }} onClick={handleShow}>
+      <span className={styles.socialIcons} onClick={handleShow}>
         <i className="bi bi-chat-text" onClick={() => setCommentCounter(prevState => prevState + 1)} />{" "}
         {commentCounter}
       </span>

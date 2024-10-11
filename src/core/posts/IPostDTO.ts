@@ -8,7 +8,6 @@ export interface IPostDTO {
   loves: number;
   comments: any[];
   isArchived: boolean;
-  category: string;
   tags: string[];
   images: string[];
   isPublished: boolean;

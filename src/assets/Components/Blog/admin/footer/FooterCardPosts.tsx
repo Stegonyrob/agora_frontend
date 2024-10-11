@@ -3,6 +3,7 @@ import { Card } from "react-bootstrap";
 import { IPost } from "../../../../../core/posts/IPost";
 import AccordionComment from "../../Comment/AccordionComment";
 import ButtonComment from "../../Comment/ButtonComent";
+import ButtonEdit from "../edit/ButtonEditPost";
 import styles from "./FooterCardPost.module.scss";
 
 
@@ -17,30 +18,28 @@ interface FooterPostsProps {
 
 const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, posts }) => {
   const isLoggedIn = sessionStorage.isLoggedIn;
-  console.log(isLoggedIn)
-  const userId = sessionStorage.userId;
-  console.log(sessionStorage.userId)
-  const userName = sessionStorage.userName;
-  console.log(sessionStorage.userName)
-  const userRole = sessionStorage.role;
-  console.log(sessionStorage.role)
 
-  console.log("FooterPosts props: ", { user, onSelect, onDelete, posts });
+  const userId = sessionStorage.userId;
+
+  const userName = sessionStorage.userName;
+
+  const userRole = sessionStorage.role;
+
 
 
 
   if (isLoggedIn && userRole === 'ROLE_ADMIN') {
     return (
-      <Card className={styles.cardPost}>
+      <Card className={styles.cardFooter} >
         <Card.Footer className={styles.cardFooter}>
 
-          <span className="social-icons">
+          <span className={styles.socialIcons}>
             <i className="bi bi-heart" />
             {posts.length.toString()}
           </span>
           <ButtonComment postId={0} userId={user} counter={posts.length} />
           <AccordionComment comments={[]} />
-          <span className="social-icons" >
+          <span className={styles.socialIcons}>
             <i
               className="bi bi-file-earmark-arrow-up"
               onClick={() => {
@@ -49,15 +48,10 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
               }}
             />
           </span>
-          <span className="social-icons" >
-
-            <i
-              className="bi bi-pencil-square"
-              onClick={() => {
-                console.log("Editing post: ", posts);
-                onSelect(posts[0]);
-              }}
-            />
+          <span className={styles.socialIcons}>
+            <ButtonEdit postId={0} userId={0} post={posts[0]} onSubmit={function (post: IPost): Promise<void> {
+              throw new Error("Function not implemented.");
+            }} />
           </span>
         </Card.Footer>
       </Card>
@@ -66,9 +60,9 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
 
   else if (isLoggedIn && userRole === 'ROLE_USER') {
     return (
-      <Card className={styles.cardPost}>
+      <Card className={styles.cardFooter}>
         <Card.Footer className={styles.cardFooter}>
-          <span className="social-icons">
+          <span className={styles.socialIcons}>
             <i className="bi bi-heart" />
             {posts.length.toString()}
           </span>

@@ -3,17 +3,15 @@
     margin-right: 1rem;
     margin-left: 1rem;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-content: center;
-    background-color: transparent;
+    background-color: transparent!important;
 
 
-    .social-icons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3rem;
-      margin-right: 1rem; 
-      color:azure;
+    .socialIcons {
+ 
+     font-size: 1.5rem;
+      margin-right: 3rem; 
+  color: azure;
     }
   }
