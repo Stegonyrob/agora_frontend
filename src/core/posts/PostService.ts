@@ -10,6 +10,8 @@ import { IPostDTO } from "./IPostDTO";
 // 3. Created Posts - createPost() 200 ok but null
 // 4. Delete Posts- deletePost() 200 ok 500
 // 5. Update Posts- updatePost() 202 ok
+// 6. Archive post archivePost use PATCH
+// 7. UnArchive post unarchivePost use PATCH
 export default class PostService {
   [x: string]: any;
   private uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
@@ -146,6 +148,54 @@ export default class PostService {
       console.error(`Error updating post: ${error.message}`);
       console.error("Error details:", error);
       throw new Error(`Error updating post: ${error.message}`);
+    }
+  }
+  // 6. Archive post archivePost use PATCH
+  async archivePost(id: number): Promise<void> {
+    console.log(`Attempting to archive post by id: ${id}`);
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      },
+    };
+
+    try {
+      console.log(`Sending ARCHIVE request to: ${this.uri}/${id}`);
+      console.log(`Request headers:`, config.headers);
+
+      // Cambiar a PATCH o PUT según tu API
+      await axios.patch(`${this.uri}/${id}`, { archived: true }, config);
+
+      console.log(`Post by id: ${id} archived successfully.`);
+    } catch (error: any) {
+      console.error(`Error archiving post: ${error.message}`);
+      console.error(`Error details:`, error);
+      throw new Error(`Error archiving post: ${error.message}`);
+    }
+  }
+  // 7. UnArchive post unarchivePost use PATCH
+  async unarchivePost(id: number): Promise<void> {
+    console.log(`Attempting to unarchive post by id: ${id}`);
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      },
+    };
+
+    try {
+      console.log(`Sending UNARCHIVE request to: ${this.uri}/${id}`);
+      console.log(`Request headers:`, config.headers);
+
+      // Cambiar a PATCH o PUT según tu API
+      await axios.patch(`${this.uri}/${id}`, { archived: false }, config);
+
+      console.log(`Post by id: ${id} unarchived successfully.`);
+    } catch (error: any) {
+      console.error(`Error unarchiving post: ${error.message}`);
+      console.error(`Error details:`, error);
+      throw new Error(`Error unarchiving post: ${error.message}`);
     }
   }
 }

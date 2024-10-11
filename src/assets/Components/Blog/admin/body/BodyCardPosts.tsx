@@ -15,14 +15,14 @@ interface BodyPostsProps {
 }
 
 const BodyPosts: React.FC<BodyPostsProps> = ({ posts }) => {
-  console.log('BodyPosts');
-  console.log('posts', posts);
+
   return (
     <Card className={styles.cardPost}>
       <Card.Body>
         <Card.Title>{posts.title}</Card.Title>
         <ImageBody post={posts} source={""} alt={""} />
         <Card.Text>{posts.message}</Card.Text>
+
       </Card.Body>
     </Card>
   );

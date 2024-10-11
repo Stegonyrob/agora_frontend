@@ -9,11 +9,11 @@ import EditPostForm from './edit/EditPostForm';
 interface PostListProps {
   posts: IPost[];
   onSelect: (post: IPost) => void;
-  onDelete: (postId: string) => Promise<void>;
+  onDelete: (postId: number) => Promise<void>;
   onClose: () => void;
   onEdit: (post: IPost) => void;
   onCreate: (post: IPost) => void;
-
+  onArchive: (postId: number) => Promise<void>
   session: ISession[];
 }
 
@@ -34,10 +34,10 @@ const PostList = ({ posts }: PostListProps) => {
 
   useEffect(() => {
     const loadPosts = async () => {
-      console.log("Begin loadPosts");
+
       try {
         const fetchedPosts = await apiPost.fetchPosts();
-        console.log("Posts fetched successfully. Data: ", fetchedPosts);
+
         setFetchedPosts(fetchedPosts);
       } catch (error) {
         console.error("Error loading posts: ", error);
@@ -58,7 +58,26 @@ const PostList = ({ posts }: PostListProps) => {
     setShowEditModal(false);
   };
 
-  const handleDelete = async (postId: string) => {
+  const handleArchive = async (postId: number) => {
+    console.log("handleArchive called", postId);
+    try {
+      await apiPost.archivePost(Number(postId));
+      console.log(`Post with ID: ${postId} archived successfully.`);
+      setFetchedPosts((prevPosts) =>
+        prevPosts.map((post: IPost) =>
+          post.postId !== Number(postId)
+            ? post
+            : { ...post, isArchived: true } as IPost
+        )
+      );
+    } catch (error) {
+      console.error("Error archiving post: ", error);
+
+    }
+  };
+
+
+  const handleDelete = async (postId: number) => {
     console.log("handleDelete called", postId);
     try {
       await apiPost.deletePost(Number(postId));
@@ -150,16 +169,16 @@ const PostList = ({ posts }: PostListProps) => {
       const updatedPost: IPostDTO = {
         ...post,
         creation_date: new Date(post.creation_date),
-        images: [], // Add this property
-        isPublished: false, // Add this property
-        publishDate: '', // Add this property
-        alt_image: '', // Add this property
-        source_image: '', // Add this property
-        alt_avatar: '', // Add this property
-        source_avatar: '', // Add this property
-        username: '', // Add this property
-        role: '', // Add this property
-        url_avatar: '', // Add this property,
+        images: [],
+        isPublished: false,
+        publishDate: '',
+        alt_image: '',
+        source_image: '',
+        alt_avatar: '',
+        source_avatar: '',
+        username: '',
+        role: '',
+        url_avatar: '',
       };
       await handleUpdate(updatedPost);
     } else {
@@ -176,6 +195,7 @@ const PostList = ({ posts }: PostListProps) => {
           posts={fetchedPosts}
           onSelect={handleSelect}
           onDelete={handleDelete}
+          onArchive={handleArchive}
           user={userId} session={[]}
         />
         {selectedPost && (

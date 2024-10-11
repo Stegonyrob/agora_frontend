@@ -11,18 +11,16 @@ import styles from "./FooterCardPost.module.scss";
 interface FooterPostsProps {
   user: number;
   onSelect: (post: IPost) => void;
-  onDelete: (postId: string) => Promise<void>;
+  onDelete: (postId: number) => Promise<void>;
+  onArchive: (postId: number) => Promise<void>;
   posts: IPost[];
 
 }
 
-const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, posts }) => {
+const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, onArchive, posts }) => {
   const isLoggedIn = sessionStorage.isLoggedIn;
-
   const userId = sessionStorage.userId;
-
   const userName = sessionStorage.userName;
-
   const userRole = sessionStorage.role;
 
 
@@ -43,8 +41,9 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
             <i
               className="bi bi-file-earmark-arrow-up"
               onClick={() => {
-                console.log("Deleting post: ", posts);
-                onDelete(posts[0].postId ? posts[0].postId.toString() : '');
+                console.log("Archiving post: ", posts);
+                const postId = posts[0]?.postId ?? 0;
+                onArchive(postId)
               }}
             />
           </span>
@@ -66,7 +65,7 @@ const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, onDelete, pos
             <i className="bi bi-heart" />
             {posts.length.toString()}
           </span>
-          <ButtonComment postId={0} userId={user} counter={posts.length} />
+          <ButtonComment postId={0} userId={user} counter={0} />
           <AccordionComment comments={[]} />
         </Card.Footer>
       </Card>

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IPost } from "../../core/posts/IPost";
 import { IPostDTO } from "../../core/posts/IPostDTO";
 import PostService from "../../core/posts/PostService";
@@ -51,7 +51,23 @@ export const deletePostById = createAsyncThunk(
     }
   }
 );
+// Assuming ProductService archive
+export const archivePostById = createAsyncThunk(
+  "posts/archivePostsById",
+  async (postsId: number, thunkAPI) => {
+    try {
+      const postsService = new PostService();
+      await postsService.patch(postsId);
 
+      return postsId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue({
+        message: "Unexpected error occurred during the posts delete",
+        error,
+      });
+    }
+  }
+);
 export const postsSlice = createSlice({
   name: "posts",
   initialState,
@@ -59,7 +75,30 @@ export const postsSlice = createSlice({
     getAllPosts: (state) => {
       state.isLoaded = false;
     },
-    // Define otros reducers síncronos aquí si los tienes
+    setAllPosts: (state, action: PayloadAction<IPost[]>) => {
+      state.posts = action.payload;
+      state.isLoaded = true;
+    },
+    deletePostById: (state, action: PayloadAction<number>) => {
+      const index = state.posts.findIndex(
+        (post) => post.postId === action.payload
+      );
+      if (index > -1) {
+        state.posts.splice(index, 1);
+      }
+    },
+    archivePostById: (state, action: PayloadAction<number>) => {
+      const post = state.posts.find((post) => post.postId === action.payload);
+      if (post) {
+        post.isArchived = true;
+      }
+    },
+    unarchivePostById: (state, action: PayloadAction<number>) => {
+      const post = state.posts.find((post) => post.postId === action.payload);
+      if (post) {
+        post.isArchived = false;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -79,7 +118,7 @@ export const postsSlice = createSlice({
       })
       .addCase(updateExistingPost.fulfilled, (state, action) => {
         const index = state.posts.findIndex(
-          (post) => post.id === action.payload.id
+          (post) => post.postId === action.payload.postId
         );
         if (index !== -1) {
           state.posts[index] = action.payload;
@@ -95,7 +134,7 @@ export const postsSlice = createSlice({
       })
       .addCase(deletePostById.fulfilled, (state, action) => {
         const postId = action.payload;
-        state.posts = state.posts.filter((post) => post.id !== postId);
+        state.posts = state.posts.filter((post) => post.postId !== postId);
         state.isLoaded = true;
       })
       .addCase(deletePostById.rejected, (state, action) => {
