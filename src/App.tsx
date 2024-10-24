@@ -67,8 +67,9 @@ const App = () => {
             <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} />} /></Route>
         </Routes>
 
-        <Footer />
+
       </Router>
+      <Footer />
     </SWRConfig>
   );
 };

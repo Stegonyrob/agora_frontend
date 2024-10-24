@@ -52,8 +52,7 @@ const Logo = () => {
       <img className={style.logoImageHome} src={logo} alt="Logo" />
       <canvas
         ref={canvasRef}
-        width={260}
-        height={260}
+
         className={style.logoCanvas}
       />
     </div>

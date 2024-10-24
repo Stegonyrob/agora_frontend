@@ -122,8 +122,8 @@ export default class PostService {
     }
   }
   // 5. Update Posts- updatePost() error 500
-  async updatePost(post: IPostDTO, id: number): Promise<IPost> {
-    console.log(`Updating post by id: ${id}`);
+  async updatePost(post: IPostDTO, postId: number): Promise<IPost> {
+    console.log(`Updating post by id: ${postId}`);
     console.log("Post DTO:", post);
     const config: AxiosRequestConfig = {
       headers: {
@@ -133,16 +133,16 @@ export default class PostService {
     };
 
     try {
-      console.log("Sending PUT request to:", `${this.uri}/${id}`);
+      console.log("Sending PUT request to:", `${this.uri}/${postId}`);
       console.log("Request body:", post);
       console.log("Request headers:", config.headers);
       const response: AxiosResponse = await axios.put(
-        `${this.uri}/${id}`,
+        `${this.uri}/${postId}`,
         post,
         config
       );
       console.log("Response:", response);
-      console.log(`Post by id: ${id} updated successfully.`);
+      console.log(`Post by id: ${postId} updated successfully.`);
       return response.data;
     } catch (error: any) {
       console.error(`Error updating post: ${error.message}`);

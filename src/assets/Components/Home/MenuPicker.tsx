@@ -25,7 +25,7 @@ const ColorPickerMenu = () => {
   const menuItemsJSX = menuItems.map((item, index) => {
     const isMobile = window.innerWidth <= 768;
     const deg = index * (360 / menuItems.length);
-    const transformStyle = active ? `rotate(${deg}deg) translate(${isMobile ? 8 : 12.5}rem)` : 'translate(0)';
+    const transformStyle = active ? `rotate(${deg}deg) translate(${isMobile ? 7 : 12.5}rem)` : 'translate(0)';
     const reverseDeg = -deg;
     return (
       <a

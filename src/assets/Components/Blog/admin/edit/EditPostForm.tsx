@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { IPost } from '../../../../../core/posts/IPost';
+import { IPostDTO } from '../../../../../core/posts/IPostDTO';
 import styles from './EditPostForm.module.scss';
 
 interface EditPostFormProps {
-  post: IPost;
-  onSubmit: (post: IPost) => Promise<void>;
+  post?: IPostDTO;
+  onSubmit: (post: IPostDTO) => void;
   onClose: () => void;
   show: boolean;
 }
@@ -42,26 +43,30 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
   };
 
   return (
-    <Modal show={show} onHide={onClose} className={styles.editPostForm}>
-      <Modal.Header closeButton>
-        <Modal.Title>Editar Post</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Título:
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-          </label>
-          <br />
-          <label>
-            Mensaje:
-            <textarea value={message.toString()} onChange={(e) => setMessage(e.target.value)} />
-          </label>
-          <br />
-          <Button type="submit" variant="primary">{post ? 'Actualizar Post' : 'Crear Post'}</Button>
-        </form>
-      </Modal.Body>
-    </Modal>
+    <div >
+      <Modal show={show} onHide={onClose} className={styles.modalCard}>
+
+        <Modal.Header className={styles.modalHeader} closeButton>
+          <Modal.Title >Formulario de Edición de los Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={styles.modalBody}>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Título:
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+            </label>
+            <br />
+            <label>
+              Mensaje:
+              <textarea value={message.toString()} onChange={(e) => setMessage(e.target.value)} />
+            </label>
+            <br />
+            <Button type="submit" variant="primary">{post ? 'Actualizar Post' : 'Crear Post'}</Button>
+          </form>
+        </Modal.Body>
+
+      </Modal>
+    </div>
   );
 };
 
