@@ -33,7 +33,7 @@ const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, userId, post, onSubmit 
 
     const handleClose = () => {
         console.log("Showing Edit Post modal");
-        setShow(true);
+        setShow(false);
     };
 
     const handleUpdate = async (updatedPost: IPostDTO) => {

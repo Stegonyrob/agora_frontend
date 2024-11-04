@@ -35,11 +35,26 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
     event.preventDefault();
     const newPost: IPostDTO = {
       id: 0,
-      creation_date: new Date().toISOString(),
-      postname: "New Post",
+      creation_date: new Date(),
+
       userId: 0,
       title: title,
       message: message,
+      location: '',
+      loves: 0,
+      comments: [],
+      isArchived: false,
+      tags: [],
+      images: [],
+      isPublished: false,
+      publishDate: '',
+      alt_image: '',
+      source_image: '',
+      alt_avatar: '',
+      source_avatar: '',
+      username: '',
+      role: '',
+      url_avatar: ''
     };
 
     console.log('Enviando este post al backend:', newPost);

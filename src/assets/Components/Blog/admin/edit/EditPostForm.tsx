@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { IPost } from '../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../core/posts/IPostDTO';
 import styles from './EditPostForm.module.scss';
 
@@ -14,11 +13,10 @@ interface EditPostFormProps {
 const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newPost: IPost = {
-      postId: Number(post?.postId) || 0,
+    const newPost: IPostDTO = {
+      id: Number(post?.id) || 0,
       title: title,
       message: message,
       creation_date: post?.creation_date || new Date(),

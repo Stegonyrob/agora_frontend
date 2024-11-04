@@ -45,7 +45,7 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
     try {
       await apiPost.deletePost(Number(postId));
       console.log(`Post with ID: ${postId} deleted successfully.`);
-      setFetchedPosts(fetchedPosts.filter((post: { postId: number; }) => post.postId !== Number(postId)));
+      setFetchedPosts(fetchedPosts.filter((post: { id: number; }) => post.id !== Number(postId)));
     } catch (error) {
       console.error("Error deleting post: ", error);
     }
@@ -56,7 +56,7 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
       const updatedPostData: IPostDTO = {
         title: updatedPost.title,
         message: updatedPost.message,
-        postId: updatedPost.postId,
+        id: updatedPost.id,
         userId: 0,
         location: '',
         loves: 0,
@@ -75,11 +75,11 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
         url_avatar: '',
         creation_date: new Date,
       };
-      const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.postId);
-      console.log(`Post with ID: ${updatedPost.postId} updated successfully.`);
+      const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
+      console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
       const message = updatedPostResponse.message || "Default message";
       alert(`Post editado exitosamente: ${message}`);
-      setFetchedPosts(fetchedPosts.map((post: IPost) => post.postId === updatedPost.postId ? updatedPostResponse : post));
+      setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === updatedPost.id ? updatedPostResponse : post));
     } catch (error) {
       console.error("Error updating post: ", error);
       alert(`No se pudo editar el post, por favor intentenlo más tarde, por favor disculpen las molestias`);
@@ -91,7 +91,7 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
       const newPostData: IPostDTO = {
         title: newPost.title,
         message: newPost.message,
-        postId: newPost.postId,
+        id: newPost.id,
         userId: newPost.userId as number,
         creation_date: new Date,
         location: '',
@@ -112,7 +112,7 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
       };
 
       const createdPost = await apiPost.createPost(newPostData);
-      console.log(`Post with ID: ${createdPost.postId} created successfully.`);
+      console.log(`Post with ID: ${createdPost.id} created successfully.`);
       alert(`Post creado exitosamente`);
       setFetchedPosts([...fetchedPosts, createdPost]);
     } catch (error) {
@@ -122,10 +122,28 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
   };
 
   const onSubmit = async (post: IPostDTO) => {
-    if (post.postId) {
-      await handleUpdate(post);
+    if (post === null || post === undefined) {
+      console.error("Error submitting post: post is null or undefined");
+      return;
+    }
+
+    if (post.id === null || post.id === undefined) {
+      console.error("Error submitting post: post.id is null or undefined");
+      return;
+    }
+
+    if (post.id) {
+      try {
+        await handleUpdate(post);
+      } catch (error) {
+        console.error("Error updating post: ", error);
+      }
     } else {
-      await handleCreate(post);
+      try {
+        await handleCreate(post);
+      } catch (error) {
+        console.error("Error creating post: ", error);
+      }
     }
   };
 
@@ -133,7 +151,7 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
     try {
       await apiPost.archivePost(postId);
       console.log(`Post with ID: ${postId} archived successfully.`);
-      setFetchedPosts(fetchedPosts.map((post: IPost) => post.postId === postId ? { ...post, isArchived: true } : post));
+      setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));
     } catch (error) {
       console.error("Error archiving post: ", error);
     }
