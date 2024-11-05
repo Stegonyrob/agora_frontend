@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import { ReactNode } from "react";
 import styles from './UserInfo.module.scss';
-
 interface UserInfo {
     userId: ReactNode;
     loggedUserName: string;
@@ -29,5 +29,10 @@ const UserInfo = ({ time, location }: UserInfo) => {
         </div >
     );
 };
-
+UserInfo.propTypes = {
+    userId: PropTypes.number.isRequired,
+    userName: PropTypes.string.isRequired,
+    time: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+}
 export default UserInfo;

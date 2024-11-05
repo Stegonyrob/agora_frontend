@@ -5,6 +5,7 @@ import Footer from './assets/Components/Footer/Footer';
 import './assets/scss/reset.scss';
 import Error404View from './assets/Views/404View';
 import AboutMeView from './assets/Views/AboutMeView';
+import AdminView from './assets/Views/AdminView';
 import AgoraView from './assets/Views/AgoraView';
 import BlogView from './assets/Views/BlogView';
 import HomeView from './assets/Views/HomeView';
@@ -65,6 +66,8 @@ const App = () => {
           </Route>
           <Route path="/Blog" element={<PrivateLayout />}>
             <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} />} /></Route>
+          <Route path="/Admin" element={<PrivateLayout />}>
+            <Route path="/Admin" element={<ProtectedRoute element={<AdminView />} />} /></Route>
         </Routes>
 
 

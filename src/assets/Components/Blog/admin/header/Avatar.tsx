@@ -44,6 +44,8 @@ Avatar.propTypes = {
     source: PropTypes.string.isRequired,
     alt: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
+    userId: PropTypes.number.isRequired,
+    userName: PropTypes.string.isRequired,
 }
 
 Avatar.defaultProps = {

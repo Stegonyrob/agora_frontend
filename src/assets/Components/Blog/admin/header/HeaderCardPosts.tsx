@@ -1,8 +1,8 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
 import Avatar from './Avatar';
+import styles from "./HeaderCardPosts.module.scss";
 import UserInfo from "./UserInfo";
-
 
 
 interface HeaderPostsProps {
@@ -14,9 +14,9 @@ const HeaderPosts: React.FC<HeaderPostsProps> = ({ userId, userName }) => {
   return (
     <Container>
       <Row>
-        <div>
-          <Avatar userId={userId} userName={userName} source_avatar={""} alt_avatar={""} url_avatar={""} />
-          <UserInfo userId={userId} userName={userName} time={""} location={""} />
+        <div className={styles.headerCardPosts}>
+          <Avatar userName={userName} source={""} alt={""} url={""} userId={0} />
+          <UserInfo time="" location="" userId={0} userName={userName} loggedUserName={""} />
         </div>
       </Row>
     </Container>

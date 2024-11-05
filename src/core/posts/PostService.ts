@@ -151,8 +151,7 @@ export default class PostService {
     }
   }
   // 6. Archive post archivePost use PATCH
-  async archivePost(id: number): Promise<void> {
-    console.log(`Attempting to archive post by id: ${id}`);
+  async archivePost(id: number): Promise<boolean> {
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -160,20 +159,24 @@ export default class PostService {
       },
     };
 
+    if (!id) {
+      throw new Error("Cannot archive post with null id");
+    }
+
+    if (!sessionStorage.getItem("accessToken")) {
+      throw new Error("Not logged in");
+    }
+
     try {
-      console.log(`Sending ARCHIVE request to: ${this.uri}/${id}`);
-      console.log(`Request headers:`, config.headers);
-
-      // Cambiar a PATCH o PUT según tu API
-      await axios.patch(`${this.uri}/${id}`, { archived: true }, config);
-
-      console.log(`Post by id: ${id} archived successfully.`);
+      await axios.put(`${this.uri}/${id}/archive`, { archived: true }, config);
+      return true;
     } catch (error: any) {
       console.error(`Error archiving post: ${error.message}`);
       console.error(`Error details:`, error);
-      throw new Error(`Error archiving post: ${error.message}`);
+      return false;
     }
   }
+
   // 7. UnArchive post unarchivePost use PATCH
   async unarchivePost(id: number): Promise<void> {
     console.log(`Attempting to unarchive post by id: ${id}`);

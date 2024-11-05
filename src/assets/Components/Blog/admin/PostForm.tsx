@@ -17,7 +17,7 @@ interface PostFormProps {
 }
 
 
-const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
+const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit }) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
   const [show, setShow] = useState(false);
@@ -82,7 +82,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose }) => {
         {post ? 'Actualizar Post' : 'Crear Post'}
       </Button>
 
-      <Modal show={show} onHide={handleClose} className={styles.postForm}>
+      <Modal show={show} onHide={onClose} className={styles.postForm}>
         <Modal.Header className={styles.postForm} closeButton>
           <Modal.Title>Nuevo Post</Modal.Title>
         </Modal.Header>
