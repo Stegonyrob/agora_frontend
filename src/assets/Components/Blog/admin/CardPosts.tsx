@@ -14,7 +14,8 @@ interface CardPostsProps {
   onDelete: (postId: number) => Promise<void>;
   onSubmit: (post: IPost) => void;
   posts: IPost[];
-  onArchive: (postId: number) => Promise<void>;
+  onArchive: (postId: number) => Promise<boolean>;
+  onUnarchive: (postId: number) => Promise<boolean>;
   session: ISession[];
   postId: number;
 }
@@ -26,6 +27,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
   onSubmit,
   posts,
   onArchive,
+  onUnarchive,
   postId,
 }) => {
 
@@ -67,7 +69,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
     <Container>
       <Row>
         {posts.map((post) => (
-          <Col key={post.postId}>
+          <Col key={post.id}>
             <Card className={styles.cardPost}>
               <HeaderPosts userId={userId} userName={userName} />
               <BodyPosts posts={post} title={""} message={""} tags={[]} />
@@ -77,7 +79,8 @@ const CardPosts: React.FC<CardPostsProps> = ({
                 onDelete={onDelete}
                 onSubmit={handleUpdate}
                 posts={posts}
-                onArchive={(postId) => Promise.resolve()}
+                onArchive={onArchive}
+                postId={postId}
 
               />
             </Card>

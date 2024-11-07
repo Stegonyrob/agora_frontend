@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { IPost } from "../../../../../core/posts/IPost";
 import styles from "../footer/FooterCardPost.module.scss";
 

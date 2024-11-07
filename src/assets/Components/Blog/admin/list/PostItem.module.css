@@ -1,0 +1,35 @@
+.card {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  background-color: transparent;
+  color: azure;
+}
+
+.card h5, .card p, .card div {
+  margin: 1rem;
+  text-align: center;
+}
+
+.card h5, .card h6, .card div, .card p {
+  width: 20%;
+}
+
+.card .message {
+  width: 70%;
+}
+
+.card .message .toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: azure;
+  margin-top: -1rem;
+}
+
+.card .actionList {
+  display: flex;
+  font-size: 2rem;
+}

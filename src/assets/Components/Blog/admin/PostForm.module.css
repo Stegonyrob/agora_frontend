@@ -4,7 +4,6 @@
 }
 
 .postForm .modal-content {
-  width: 50%;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -20,7 +19,6 @@
 
 .postForm input,
 .postForm textarea {
-  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;

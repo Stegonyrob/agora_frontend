@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { IPost } from '../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../core/posts/IPostDTO';
 import PostsService from '../../../../../core/posts/PostService';
-import PostForm from '../PostForm';
+import ButtonCreatePost from '../../admin/create/ButtonCreatePost';
 import PostCard from './PostItem';
 import styles from './PostListAdmin.module.scss';
 
@@ -20,6 +19,7 @@ interface PostList {
     onArchive: (postId: number) => Promise<boolean>;
     onUnarchive: (postId: number) => Promise<boolean>;
     onSubmit: (post: IPost) => void;
+    onHide: () => void;
 
 }
 
@@ -110,18 +110,6 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
             alert("No se pudo editar el post, por favor intentenlo más tarde, por favor disculpen las molestias");
         }
     };
-    const handleCreate = async (newPost: IPostDTO) => {
-        try {
-            const createdPost = await apiPost.createPost(newPost);
-            console.log(`Post with ID: ${createdPost.id} created successfully.`);
-            alert("Post creado exitosamente");
-            setFetchedPosts([...fetchedPosts, createdPost]);
-        } catch (error) {
-            console.error("Error creating post: ", error);
-            alert("No se pudo crear el post, por favor intentenlo más tarde, por favor disculpen las molestias");
-        }
-    };
-
     const onSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
         try {
             if (!event) {
@@ -186,19 +174,25 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
             console.error("Error archiving post: ", error);
         }
 
+    }; const handleCreate = async (newPost: IPostDTO) => {
+        try {
+            const createdPost = await apiPost.createPost(newPost);
+            console.log(`Post with ID: ${createdPost.id} created successfully.`);
+            alert("Post creado exitosamente");
+            setFetchedPosts([...fetchedPosts, createdPost]);
+            setShowForm(false); // Cerrar el modal después de crear
+        } catch (error) {
+            console.error("Error creating post: ", error);
+            alert("No se pudo crear el post, por favor intentenlo más tarde.");
+        }
     };
+
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
                 <h4 className={styles.title}>Lista de Posts</h4>
-                <Button variant="primary" onClick={handleCreatePost}>
-                    Crear Post
-                </Button>
-                {showForm && (
-                    <PostForm
-                        onClose={() => setShowForm(false)}
-                        onSubmit={async (post) => console.log(post)} show={false} />
-                )}
+                <ButtonCreatePost onSubmit={handleCreate} />
+
                 <div className={styles.panelBody}>
                     {fetchedPosts.map(post => (
                         <PostCard
@@ -206,16 +200,15 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                             post={post}
                             onSelect={handleSelect}
                             onDelete={handleDelete}
-                            onArchive={handleArchive}
-
-                            onUnarchive={handleUnArchive}
                             onSubmit={handleUpdate}
-
                             onEdit={handleUpdate}
-
                             userId={userId}
-                            postId={post.id} onCreate={function (): void {
-                                ;
+                            postId={post.id} onArchive={function (postId: number): Promise<boolean> {
+                                throw new Error('Function not implemented.');
+                            }} onUnArchive={function (postId: number): Promise<boolean> {
+                                throw new Error('Function not implemented.');
+                            }} onCreate={function (): void {
+                                throw new Error('Function not implemented.');
                             }} />
                     ))}
                 </div>
@@ -225,7 +218,6 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
 };
 
 export default PostListAdmin;
-
 
 // import { useEffect, useState } from 'react';
 // import { IPost } from '../../../../../core/posts/IPost';

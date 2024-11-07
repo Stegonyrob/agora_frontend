@@ -58,7 +58,7 @@ const ButtonUnArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit,
                     />
                 ) : (
                     <i
-                        className="bi bi-file-earmark-arrow-up"
+                        className="bi bi-file-earmark-arrow-down"
                         onClick={() => handleUnArchive(post as IPostDTO)}
                         style={{ cursor: "pointer" }}
                     />

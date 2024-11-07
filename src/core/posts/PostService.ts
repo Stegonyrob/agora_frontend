@@ -168,7 +168,12 @@ export default class PostService {
     }
 
     try {
-      await axios.put(`${this.uri}/${id}/archive`, { archived: true }, config);
+      const response = await axios.patch(
+        `${this.uri}/${id}/archive`,
+        { archived: true },
+        config
+      );
+      console.log(`Respuesta de la API:`, response);
       return true;
     } catch (error: any) {
       console.error(`Error archiving post: ${error.message}`);
