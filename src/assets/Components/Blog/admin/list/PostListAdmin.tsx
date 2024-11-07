@@ -98,7 +98,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 username: '',
                 role: '',
                 url_avatar: '',
-                creation_date: new Date(),
+                creationDate: new Date(),
             };
             const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
             console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
@@ -120,7 +120,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 id: 0,
                 title: '',
                 message: '',
-                creation_date: new Date(),
+                creationDate: new Date(),
                 userId: 0,
                 location: '',
                 loves: 0,
@@ -180,7 +180,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
             console.log(`Post with ID: ${createdPost.id} created successfully.`);
             alert("Post creado exitosamente");
             setFetchedPosts([...fetchedPosts, createdPost]);
-            setShowForm(false); // Cerrar el modal después de crear
+            setShowForm(false);
         } catch (error) {
             console.error("Error creating post: ", error);
             alert("No se pudo crear el post, por favor intentenlo más tarde.");

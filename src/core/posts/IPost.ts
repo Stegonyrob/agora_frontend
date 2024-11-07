@@ -2,7 +2,7 @@ export interface IPost {
   id: number;
   title: string;
   message: string;
-  creation_date: Date;
+  creationDate: Date;
   userId: number;
   location: string;
   loves: number;

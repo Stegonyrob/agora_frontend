@@ -6,7 +6,6 @@ import { IPostDTO } from '../../../../../../../core/posts/IPostDTO';
 import PostService from '../../../../../../../core/posts/PostService';
 import { RootState } from '../../../../../../../redux/store';
 import styles from './PostForm.module.scss';
-
 interface PostFormProps {
   post?: IPost;
   onClose: () => void;
@@ -19,15 +18,23 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
   const [message, setMessage] = useState(post?.message || '');
   const role = useSelector((state: RootState) => state.login.loggedUserRole);
   const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
-
+  const currentDate = new Date();
+  const day = currentDate.getDate().toString().padStart(2, '0');
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  const year = currentDate.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
   const apiPost = new PostService();
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!title || !message) {
+      alert('Título y mensaje son campos obligatorios.');
+      return;
+    }
+
     const newPost: IPostDTO = {
-      id: post ? post.id : 0, // Si es un nuevo post, el ID será 0
-      creation_date: new Date(),
-      userId: 0, // Ajusta según tu lógica
+      id: post?.id || 0,
+      creationDate: new Date(),
+      userId: 1,
       title,
       message,
       location: '',
@@ -48,18 +55,14 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
     };
 
     try {
-      if (!newPost.title || !newPost.message) {
-        throw new Error('Título y mensaje son campos obligatorios.');
-      }
-
       await apiPost.createPost(newPost);
-      alert(`Post creado con éxito.`);
-      onClose(); // Cierra el modal después de crear
+      alert('Post creado con éxito.');
+      onClose();
+      setTitle('');
+      setMessage('');
     } catch (error) {
       console.error('Error al crear el post:', error);
-      if (error instanceof Error) {
-        alert(`No se pudo crear el post: ${error.message}. Inténtelo de nuevo más tarde.`);
-      }
+      alert(`No se pudo crear el post: ${error instanceof Error ? error.message : 'Error desconocido'}. Inténtelo de nuevo más tarde.`);
     }
   };
 
