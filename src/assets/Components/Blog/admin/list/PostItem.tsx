@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { IPost } from '../../../../../core/posts/IPost';
-import ButtonEditPost from '../../admin/edit/ButtonEditPost';
-import ButtonArchive from '../archive/ButtonArchivePost';
-import ButtonUnArchive from '../archive/ButtonUnArchive';
+import ButtonArchive from '../button/archive/ButtonArchivePost';
+import ButtonUnArchive from '../button/archive/ButtonUnArchive';
+import ButtonEditPost from '../button/edit/ButtonEditPost';
+import ImagePost from './ImagePost';
 import styles from './PostItem.module.scss';
 interface PostCardProps {
     post: IPost;
@@ -30,6 +31,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
         <div className={styles.card}>
             <h5>Post ID: {post?.id ?? 'No hay ID'}</h5>
             <p>{post?.creation_date?.toLocaleString() ?? '--/--/--'}</p>
+            <ImagePost post={post} source={''} alt={''} />
             <h6>{post?.title ?? 'No hay título'}</h6>
             <p className={styles.message}>
                 {showFullText ? post?.message : messagePreview}
@@ -41,7 +43,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
 
             <div className={styles.actionList}>
 
+
                 <ButtonEditPost post={post} onSubmit={onEdit} userId={post?.userId ?? 0} label="Edit" postId={post?.id ?? 0} />
+
                 <ButtonArchive
                     post={post}
                     onArchive={(postId: number) => (isArchived ? onUnArchive : onArchive)?.(post?.id ?? 0)}
@@ -59,8 +63,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
                     onUnArchive={onUnArchive}
                 />
 
-            </div>
 
+            </div>
         </div>
     );
 };

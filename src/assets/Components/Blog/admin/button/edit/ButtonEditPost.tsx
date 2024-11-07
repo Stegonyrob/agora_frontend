@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import { IPost } from "../../../../../core/posts/IPost";
-import { IPostDTO } from "../../../../../core/posts/IPostDTO";
-import styles from '../footer/FooterCardPost.module.scss';
+import { IPost } from "../../../../../../core/posts/IPost";
+import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
+import styles from '../ButtonIcons.module.scss';
 import EditPostForm from "./EditPostForm";
 
 interface User {

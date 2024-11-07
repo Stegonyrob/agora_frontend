@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IPost } from '../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../core/posts/IPostDTO';
 import PostsService from '../../../../../core/posts/PostService';
-import ButtonCreatePost from '../../admin/create/ButtonCreatePost';
+import ButtonCreatePost from '../button/create/ButtonCreatePost';
 import PostCard from './PostItem';
 import styles from './PostListAdmin.module.scss';
 

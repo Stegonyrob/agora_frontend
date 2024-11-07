@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IPost } from '../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import PostsService from '../../../../core/posts/PostService';
-import EditPostForm from '../admin/edit/EditPostForm';
+import EditPostForm from './button/edit/EditPostForm';
 import CardPosts from './CardPosts';
 interface PostList {
   post: IPost[];

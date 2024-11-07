@@ -2,8 +2,8 @@ import { useSelector } from 'react-redux';
 import { IPost } from '../../core/posts/IPost';
 import { RootState } from '../../redux/store';
 import CardPosts from '../Components/Blog/admin/CardPosts';
-import PostForm from '../Components/Blog/admin/PostForm';
 import PostList from '../Components/Blog/admin/PostList';
+import PostForm from '../Components/Blog/admin/button/create/modal/PostForm';
 
 export default function BlogView() {
   const accessToken = useSelector((state: RootState) => state.login.accessToken);

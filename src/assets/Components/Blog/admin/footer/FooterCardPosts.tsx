@@ -4,8 +4,8 @@ import { IPost } from '../../../../../core/posts/IPost';
 import { IPostDTO } from "../../../../../core/posts/IPostDTO";
 import AccordionComment from "../../Comment/AccordionComment";
 import ButtonComment from "../../Comment/ButtonComent";
-import ButtonArchive from "../archive/ButtonArchivePost";
-import ButtonEdit from "../edit/ButtonEditPost";
+import ButtonArchive from "../button/archive/ButtonArchivePost";
+import ButtonEdit from "../button/edit/ButtonEditPost";
 import styles from "./FooterCardPost.module.scss";
 
 

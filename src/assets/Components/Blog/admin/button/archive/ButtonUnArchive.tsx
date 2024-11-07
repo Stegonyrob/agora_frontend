@@ -1,14 +1,14 @@
 // ButtonUnarchive.tsx
 import React, { useState } from "react";
-import { IPost } from "../../../../../core/posts/IPost";
-import styles from '../footer/FooterCardPost.module.scss';
+import { IPost } from "../../../../../../core/posts/IPost";
+import styles from '../ButtonIcons.module.scss';
 
 interface ButtonUnarchiveProps {
     post: IPost;
     onUnarchive: (postId: number) => Promise<boolean>;
 }
 
-import { IPostDTO } from "../../../../../core/posts/IPostDTO";
+import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
 
 
 interface ButtonArchiveProps {

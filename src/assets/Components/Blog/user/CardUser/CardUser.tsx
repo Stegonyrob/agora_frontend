@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Container, Row } from 'react-bootstrap';
 import { Post } from 'types';
-import PostForm from '../../admin/PostForm';
+import PostForm from '../../../Generals/Input/button/create/modal/PostForm';
 import AvatarComponent from './AvatarComponent';
 
 import styles from './CardUser.module.scss';

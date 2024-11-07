@@ -7,12 +7,17 @@
   color: azure;
 }
 
-.card h5, .card p, .card div {
+.card h5,
+.card p,
+.card div {
   margin: 1rem;
   text-align: center;
 }
 
-.card h5, .card h6, .card div, .card p {
+.card h5,
+.card h6,
+.card div,
+.card p {
   width: 20%;
 }
 

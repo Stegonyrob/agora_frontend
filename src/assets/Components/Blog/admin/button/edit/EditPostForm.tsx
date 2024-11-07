@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { IPostDTO } from '../../../../../core/posts/IPostDTO';
+import { IPostDTO } from '../../../../../../core/posts/IPostDTO';
 import styles from './EditPostForm.module.scss';
 
 interface EditPostFormProps {

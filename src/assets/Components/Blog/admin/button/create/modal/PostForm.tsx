@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { IPost } from '../../../../core/posts/IPost';
-import { IPostDTO } from '../../../../core/posts/IPostDTO';
-import PostService from '../../../../core/posts/PostService';
-import { RootState } from '../../../../redux/store';
+import { IPost } from '../../../../../../../core/posts/IPost';
+import { IPostDTO } from '../../../../../../../core/posts/IPostDTO';
+import PostService from '../../../../../../../core/posts/PostService';
+import { RootState } from '../../../../../../../redux/store';
 import styles from './PostForm.module.scss';
 
 interface PostFormProps {

@@ -1,0 +1,39 @@
+.postForm {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: azure;
+  .modal-content {
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .modal-header {
+    color: white;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  input,
+  textarea {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 1rem;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { IPost } from "../../../../../core/posts/IPost";
-import { IPostDTO } from "../../../../../core/posts/IPostDTO";
-import PostForm from "../../admin/PostForm";
+import { IPost } from "../../../../../../core/posts/IPost";
+import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
 import styles from './ButtonCreatePost.module.scss';
+import PostForm from "./modal/PostForm";
 
 interface ButtonCreatePostProps {
     onSubmit: (post: IPost) => Promise<void>;
