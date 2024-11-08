@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { thunk } from "redux-thunk";
 import alertsReducer from "./reducers/alertsSlice";
 
+import imagesSlice from "../core/images/imageStore";
 import loginReducer from "./reducers/loginSlice";
 import logoutReducer from "./reducers/logoutSlice";
 import postsReducer from "./reducers/postsSlice";
@@ -15,6 +16,7 @@ const store = configureStore({
     login: loginReducer,
     alerts: alertsReducer,
     text: textSlice,
+    images: imagesSlice,
     posts: postsReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),

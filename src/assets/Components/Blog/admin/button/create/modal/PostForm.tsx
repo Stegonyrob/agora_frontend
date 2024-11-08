@@ -5,6 +5,7 @@ import { IPost } from '../../../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../../../core/posts/IPostDTO';
 import PostService from '../../../../../../../core/posts/PostService';
 import { RootState } from '../../../../../../../redux/store';
+import ButtonAddImage from '../../image/ButtonAddImage';
 import styles from './PostForm.module.scss';
 interface PostFormProps {
   post?: IPost;
@@ -78,6 +79,11 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </label>
           <br />
+
+          <ButtonAddImage onImageSelected={(imageSrc, imageTitle) => {
+            // Aquí puedes agregar la lógica para manejar la imagen seleccionada
+            console.log(imageSrc, imageTitle);
+          }} />
           <label>
             Mensaje:
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} required />

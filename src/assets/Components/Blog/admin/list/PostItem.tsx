@@ -30,7 +30,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
     return (
         <div className={styles.card}>
             <h5>Post ID: {post?.id ?? 'No hay ID'}</h5>
-            <p>{post?.creation_date?.toLocaleString() ?? '--/--/--'}</p>
+            <p>{post?.creationDate?.toLocaleString() ?? '--/--/--'}</p>
             <ImagePost post={post} source={''} alt={''} />
             <h6>{post?.title ?? 'No hay título'}</h6>
             <p className={styles.message}>
