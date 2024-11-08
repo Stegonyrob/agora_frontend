@@ -152,7 +152,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
         }
 
         try {
-            const result = await apiPost.archivePost(postId);
+            const result = await apiPost.archivePost(fetchedPosts[postId], postId);
             if (result) {
                 console.log(`Post with ID: ${postId} archived successfully.`);
                 setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));

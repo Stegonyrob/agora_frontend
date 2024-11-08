@@ -1,6 +1,10 @@
+// ButtonUnarchive.tsx
 import React, { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
+import PostService from "../../../../../../core/posts/PostService";
 import styles from '../ButtonIcons.module.scss';
+
+
 
 interface ButtonArchiveProps {
     postId: number;
@@ -11,9 +15,12 @@ interface ButtonArchiveProps {
     label: string;
 }
 
-const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, onArchive, label }) => {
-    const [archived, setArchived] = useState(false);
+const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, onArchive }) => {
+    const apiPost = new PostService();
+    console.log("ButtonArchive: userId", userId);
+    console.log("ButtonArchive: post", post);
 
+    const [archived, setArchived] = useState(false);
     const handleArchive = async () => {
         console.log("ButtonArchive: handleArchive called");
         if (post === null || post === undefined) {
@@ -23,7 +30,7 @@ const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, o
 
         try {
             const postId = post.id;
-            const result = await onArchive(postId);
+            const result = await apiPost.archivePost(post, postId);
             if (result) {
                 console.log(`Post con ID ${postId} archivado correctamente`);
                 setArchived(true);
@@ -38,21 +45,16 @@ const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, o
     return (
         <div className={styles.socialIcons}>
             <span className={styles.socialIcons}>
-                {archived ? (
-                    <i
-                        className="bi bi-file-earmark-check"
-                        style={{ cursor: "pointer", color: "green" }}
-                    />
-                ) : (
-                    <i
-                        className="bi bi-file-earmark-arrow-up"
-                        onClick={handleArchive}
-                        style={{ cursor: "pointer" }}
-                    />
-                )}
+
+                <i
+                    className="bi bi-file-earmark-arrow-up"
+                    onClick={handleArchive}
+                    style={{ cursor: "pointer" }}
+                />
             </span>
         </div>
     );
 };
+
 
 export default ButtonArchive;

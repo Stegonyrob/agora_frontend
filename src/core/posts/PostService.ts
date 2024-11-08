@@ -13,7 +13,6 @@ import { IPostDTO } from "./IPostDTO";
 // 6. Archive post archivePost use PATCH
 // 7. UnArchive post unarchivePost use PATCH
 export default class PostService {
-  [x: string]: any;
   private uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
   // 1. Get posts - fetchPosts() 200ok
   async fetchPosts(): Promise<IPost[]> {
@@ -151,7 +150,9 @@ export default class PostService {
     }
   }
   // 6. Archive post archivePost use PATCH
-  async archivePost(id: number): Promise<boolean> {
+  async archivePost(post: IPostDTO, postId: number): Promise<IPost> {
+    console.log(`Updating post by id: ${postId}`);
+    console.log("Post DTO:", post);
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -159,31 +160,27 @@ export default class PostService {
       },
     };
 
-    if (!id) {
-      throw new Error("Cannot archive post with null id");
-    }
-
-    if (!sessionStorage.getItem("accessToken")) {
-      throw new Error("Not logged in");
-    }
-
     try {
-      const response = await axios.patch(
-        `${this.uri}/${id}/archive`,
-        { archived: true },
+      console.log("Sending PATCH request to:", `${this.uri}/${postId}/archive`);
+      console.log("Request body:", post);
+      console.log("Request headers:", config.headers);
+      const response: AxiosResponse = await axios.patch(
+        `${this.uri}/${postId}/archive`,
+        post,
         config
       );
-      console.log(`Respuesta de la API:`, response);
-      return true;
+      console.log("Response:", response);
+      console.log(`Post by id: ${postId} archived successfully.`);
+      return response.data;
     } catch (error: any) {
       console.error(`Error archiving post: ${error.message}`);
-      console.error(`Error details:`, error);
-      return false;
+      console.error("Error details:", error);
+      throw new Error(`Error archiving post: ${error.message}`);
     }
   }
 
   // 7. UnArchive post unarchivePost use PATCH
-  async unarchivePost(id: number): Promise<void> {
+  async unArchivePost(id: number): Promise<void> {
     console.log(`Attempting to unarchive post by id: ${id}`);
     const config: AxiosRequestConfig = {
       headers: {

@@ -3,55 +3,44 @@ import React, { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
 import styles from '../ButtonIcons.module.scss';
 
-interface ButtonUnarchiveProps {
+
+import PostService from "../../../../../../core/posts/PostService";
+interface ButtonUnArchiveProps {
     post: IPost;
-    onUnarchive: (postId: number) => Promise<boolean>;
-}
-
-import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
-
-
-interface ButtonArchiveProps {
     postId: number;
     userId: number;
-    post?: IPost;
     onUnArchive: (postId: number) => Promise<boolean>;
     onSubmit: (post: IPost) => void;
     label: string;
 }
 
-const ButtonUnArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, onUnArchive }) => {
-
-    console.log("ButtonArchive: userId", userId);
-    console.log("ButtonArchive: post", post);
 
 
-    const [unarchived, setUnArchived] = useState(false);
-    const handleUnArchive = async (archivePost: IPostDTO) => {
-        console.log("ButtonUnArchive: handleUnArchive called");
-        if (post === null || post === undefined) {
-            console.error("ButtonUnArchive: post is null or undefined");
-            return;
-        }
 
+
+
+const ButtonUnArchive: React.FC<ButtonUnArchiveProps> = ({ userId, post, onSubmit, onUnArchive }) => {
+    const apiPost = new PostService();
+    console.log("ButtonUnArchive: post", post);
+
+
+    const [unArchived, setUnArchived] = useState(false);
+    const handleUnArchive = async () => {
+        if (post === null || post === undefined) return;
+        const postId = post.id;
         try {
-            const postId = post.id;
-            const result = await onUnArchive(postId);
-            if (result) {
-                console.log(`Post con ID ${postId} archivado correctamente`);
-                setUnArchived(true);
-            } else {
-                console.error(`Error archivando post con ID ${postId}`);
-            }
+            await apiPost.unArchivePost(postId);
+            setUnArchived(true);
         } catch (error) {
-            console.error(`Error archivando post: ${error}`);
+            console.error("Error unarchiving post: ", error);
         }
     };
+
 
     return (
         <div className={styles.socialIcons}>
             <span className={styles.socialIcons}>
-                {unarchived ? (
+                {unArchived ? (
                     <i
                         className="bi bi-file-earmark-check"
                         style={{ cursor: "pointer", color: "green" }}
@@ -59,7 +48,7 @@ const ButtonUnArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit,
                 ) : (
                     <i
                         className="bi bi-file-earmark-arrow-down"
-                        onClick={() => handleUnArchive(post as IPostDTO)}
+                        onClick={handleUnArchive}
                         style={{ cursor: "pointer" }}
                     />
                 )}
