@@ -37,18 +37,14 @@ const ButtonUnArchive: React.FC<ButtonUnArchiveProps> = ({
     return (
         <div className={styles.socialIcons}>
             <span className={styles.socialIcons}>
-                {unArchived ? (
-                    <i
-                        className="bi bi-file-earmark-check"
-                        style={{ cursor: "pointer", color: "green" }}
-                    />
-                ) : (
-                    <i
-                        className="bi bi-file-earmark-arrow-down"
-                        onClick={handleUnArchive}
-                        style={{ cursor: "pointer" }}
-                    />
-                )}
+
+
+                <i
+                    className="bi bi-file-earmark-arrow-down"
+                    onClick={handleUnArchive}
+                    style={{ cursor: "pointer" }}
+                />
+
             </span>
         </div>
     );
