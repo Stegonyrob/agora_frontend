@@ -1,4 +1,3 @@
-// ButtonUnarchive.tsx
 import React, { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
 import PostService from "../../../../../../core/posts/PostService";
@@ -30,7 +29,7 @@ const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, o
 
         try {
             const postId = post.id;
-            const result = await apiPost.archivePost(post, postId);
+            const result = await apiPost.archivePost(postId, true);
             if (result) {
                 console.log(`Post con ID ${postId} archivado correctamente`);
                 setArchived(true);

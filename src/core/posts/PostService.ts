@@ -67,7 +67,7 @@ export default class PostService {
       throw new Error(`Error fetching post by id: ${error.message}`);
     }
   }
-  // 3. Created Posts - createPost() 200 ok but null
+  // 3. Created Posts - createPost() 200 ok
   async createPost(newPost: IPostDTO): Promise<IPost> {
     console.log("Creating post...");
     console.log("newPost:", newPost);
@@ -120,7 +120,7 @@ export default class PostService {
       throw new Error(`Error deleting post: ${error.message}`);
     }
   }
-  // 5. Update Posts- updatePost() error 500
+  // 5. Update Posts- updatePost()200 ok
   async updatePost(post: IPostDTO, postId: number): Promise<IPost> {
     console.log(`Updating post by id: ${postId}`);
     console.log("Post DTO:", post);
@@ -150,57 +150,52 @@ export default class PostService {
     }
   }
   // 6. Archive post archivePost use PATCH
-  async archivePost(post: IPostDTO, postId: number): Promise<IPost> {
-    console.log(`Updating post by id: ${postId}`);
-    console.log("Post DTO:", post);
+  async archivePost(id: number, archive: boolean): Promise<boolean> {
     const config: AxiosRequestConfig = {
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
       },
     };
 
     try {
-      console.log("Sending PATCH request to:", `${this.uri}/${postId}/archive`);
-      console.log("Request body:", post);
-      console.log("Request headers:", config.headers);
-      const response: AxiosResponse = await axios.patch(
-        `${this.uri}/${postId}/archive`,
-        post,
+      const response = await axios.patch(
+        `${this.uri}/${id}/archive?archive=${archive}`,
+        null,
         config
       );
       console.log("Response:", response);
-      console.log(`Post by id: ${postId} archived successfully.`);
-      return response.data;
+      console.log(`Post by id: ${id} archive status updated to ${archive}.`);
+      return true; // Return true if successful
     } catch (error: any) {
-      console.error(`Error archiving post: ${error.message}`);
-      console.error("Error details:", error);
-      throw new Error(`Error archiving post: ${error.message}`);
+      console.error(`Error updating archive status of post: ${error.message}`);
+      console.error(`Error details:`, error);
+      throw new Error(
+        `Error updating archive status of post: ${error.message}`
+      );
     }
   }
-
   // 7. UnArchive post unarchivePost use PATCH
-  async unArchivePost(id: number): Promise<void> {
-    console.log(`Attempting to unarchive post by id: ${id}`);
+  async unArchivePost(id: number, archive: boolean): Promise<boolean> {
     const config: AxiosRequestConfig = {
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
       },
     };
 
     try {
-      console.log(`Sending UNARCHIVE request to: ${this.uri}/${id}`);
-      console.log(`Request headers:`, config.headers);
-
-      // Cambiar a PATCH o PUT según tu API
-      await axios.patch(`${this.uri}/${id}`, { archived: false }, config);
-
-      console.log(`Post by id: ${id} unarchived successfully.`);
+      const response = await axios.patch(
+        `${this.uri}/${id}/archive?archive=${archive}`,
+        null,
+        config
+      );
+      console.log(`Post by id: ${id} archive status updated to ${archive}.`);
+      return true;
     } catch (error: any) {
-      console.error(`Error unarchiving post: ${error.message}`);
+      console.error(`Error updating archive status of post: ${error.message}`);
       console.error(`Error details:`, error);
-      throw new Error(`Error unarchiving post: ${error.message}`);
+      throw new Error(
+        `Error updating archive status of post: ${error.message}`
+      );
     }
   }
 }

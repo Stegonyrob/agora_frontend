@@ -146,13 +146,19 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
     };
 
     const handleArchive = async (postId: number): Promise<void> => {
-        if (postId === null || postId === undefined) {
+        if (postId == null) {
             console.error("Error archiving post: postId is null or undefined");
             return;
         }
 
         try {
-            const result = await apiPost.archivePost(fetchedPosts[postId], postId);
+            const post = fetchedPosts.find((post: IPost) => post.id === postId);
+            if (!post) {
+                console.error(`Error archiving post: Post with ID: ${postId} not found`);
+                return;
+            }
+
+            const result = await apiPost.archivePost(postId, true);
             if (result) {
                 console.log(`Post with ID: ${postId} archived successfully.`);
                 setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));
@@ -167,7 +173,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
 
     const handleUnArchive = async (postId: number): Promise<void> => {
         try {
-            await apiPost.unArchivePost(postId);
+            await apiPost.unArchivePost(postId, false);
             console.log(`Post with ID: ${postId} archived successfully.`);
             setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));
         } catch (error) {
