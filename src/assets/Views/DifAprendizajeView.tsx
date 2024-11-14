@@ -1,10 +1,11 @@
+
 import CardText from "../Components/Card/CardText";
 import styles from './scss/Views.module.scss';
-export default function TeaView() {
+export default function DiciultadAprendizajeView() {
   return (
     <div className={styles.container}>
-      <h2>Condición del Espectro Autista</h2>
-      <CardText ids={['7', '8']} />
+      <h2>Dificultades en el Aprendizaje</h2>
+      <CardText ids={['11', '12']} />
     </div>
   );
 }

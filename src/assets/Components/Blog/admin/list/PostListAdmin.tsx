@@ -12,7 +12,7 @@ interface PostList {
     onDelete: (postId: number) => Promise<void>;
     onClose: () => void;
     onEdit: (post: IPost) => void;
-    onCreate: (post: IPost) => void;
+    onCreate: (newPost: IPostDTO) => Promise<void>
     userId: number | null;
     postId: number;
 
@@ -98,7 +98,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 username: '',
                 role: '',
                 url_avatar: '',
-                creationDate: new Date(),
+
             };
             const updatedPostResponse = await apiPost.updatePost(updatedPostData, updatedPost.id);
             console.log(`Post with ID: ${updatedPost.id} updated successfully.`);
@@ -120,7 +120,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 id: 0,
                 title: '',
                 message: '',
-                creationDate: new Date(),
+
                 userId: 0,
                 location: '',
                 loves: 0,
@@ -145,51 +145,89 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
         }
     };
 
-    const handleArchive = async (postId: number): Promise<void> => {
-        if (postId == null) {
-            console.error("Error archiving post: postId is null or undefined");
-            return;
-        }
-
+    const handleArchive = async (postId: number): Promise<boolean> => {
         try {
             const post = fetchedPosts.find((post: IPost) => post.id === postId);
             if (!post) {
                 console.error(`Error archiving post: Post with ID: ${postId} not found`);
-                return;
+                return false;
             }
 
             const result = await apiPost.archivePost(postId, true);
             if (result) {
                 console.log(`Post with ID: ${postId} archived successfully.`);
                 setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));
+                return true;
             } else {
                 console.error(`Failed to archive post with ID: ${postId}`);
+                return false;
             }
         } catch (error) {
             console.error("Error archiving post: ", error);
+            return false;
         }
     };
 
 
-    const handleUnArchive = async (postId: number): Promise<void> => {
+    const handleUnArchive = async (postId: number): Promise<boolean> => {
         try {
             await apiPost.unArchivePost(postId, false);
-            console.log(`Post with ID: ${postId} archived successfully.`);
-            setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: true } : post));
+            console.log(`Post with ID: ${postId} unarchived successfully.`);
+            setFetchedPosts(fetchedPosts.map((post: IPost) => post.id === postId ? { ...post, isArchived: false } : post));
+            return true;
         } catch (error) {
-            console.error("Error archiving post: ", error);
+            console.error("Error unarchiving post: ", error);
+            return false;
+        }
+    };
+
+    const handleCreate = async (newPost: IPostDTO | null | undefined) => {
+        if (newPost == null) {
+            console.error("Error creating post: newPost is null or undefined");
+            return;
         }
 
-    }; const handleCreate = async (newPost: IPostDTO) => {
         try {
             const createdPost = await apiPost.createPost(newPost);
+            if (createdPost == null || createdPost.id == null) {
+                console.error("Error creating post: createdPost is null or undefined or createdPost.id is null or undefined");
+                return;
+            }
+
+            console.log(`Post with ID: ${createdPost.id} created successfully.`);
+            setFetchedPosts([...fetchedPosts, createdPost]);
+        } catch (error) {
+            console.error("Error creating post: ", error);
+        }
+        if (newPost == null) {
+            console.error("Error creating post: newPost is null or undefined");
+            return;
+        }
+
+        try {
+            const createdPost = await apiPost.createPost(newPost);
+            if (createdPost == null || createdPost.id == null) {
+                console.error("Error creating post: createdPost is null or undefined or createdPost.id is null or undefined");
+                return;
+            }
+
+            if (isNaN(createdPost.id)) {
+                console.error("Error creating post: createdPost.id is not a number");
+                return;
+            }
+
             console.log(`Post with ID: ${createdPost.id} created successfully.`);
             alert("Post creado exitosamente");
             setFetchedPosts([...fetchedPosts, createdPost]);
             setShowForm(false);
         } catch (error) {
-            console.error("Error creating post: ", error);
-            alert("No se pudo crear el post, por favor intentenlo más tarde.");
+            if (error instanceof Error) {
+                console.error("Error creating post: ", error);
+                alert(`No se pudo crear el post: ${error.message}. Inténtelo de nuevo más tarde.`);
+            } else {
+                console.error("Error creating post: unknown error");
+                alert("No se pudo crear el post, por favor intentenlo más tarde.");
+            }
         }
     };
 
@@ -208,14 +246,10 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                             onDelete={handleDelete}
                             onSubmit={handleUpdate}
                             onEdit={handleUpdate}
-                            userId={userId}
-                            postId={post.id} onArchive={function (postId: number): Promise<boolean> {
-                                throw new Error('Function not implemented.');
-                            }} onUnArchive={function (postId: number): Promise<boolean> {
-                                throw new Error('Function not implemented.');
-                            }} onCreate={function (): void {
-                                throw new Error('Function not implemented.');
-                            }} />
+                            userId={userId} onArchive={handleArchive} onUnArchive={handleUnArchive} postId={0} onCreate={handleCreate}
+
+
+                        />
                     ))}
                 </div>
             </div>

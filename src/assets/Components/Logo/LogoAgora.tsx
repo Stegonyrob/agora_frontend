@@ -24,19 +24,21 @@ const Logo = () => {
     canvas.addEventListener('mousemove', handleMouseMove);
 
     const handleBodyMouseMove = (event: MouseEvent) => {
-      let circle = document.createElement('span');
-      let x = event.clientX;
-      let y = event.clientY;
-      circle.className = style.circle;
-      circle.style.left = x + "px";
-      circle.style.top = y + "px";
-      let size = Math.random() * 100;
-      circle.style.width = 1 + size + "px";
-      circle.style.height = 1 + size + "px";
-      document.body.appendChild(circle);
-      setTimeout(function () {
-        circle.remove();
-      }, 3800);
+      setTimeout(() => {
+        let circle = document.createElement('span');
+        let x = event.clientX;
+        let y = event.clientY;
+        circle.className = style.circle;
+        circle.style.left = x + "px";
+        circle.style.top = y + "px";
+        let size = Math.random() * 100;
+        circle.style.width = 1 + size + "px";
+        circle.style.height = 1 + size + "px";
+        document.body.appendChild(circle);
+        setTimeout(function () {
+          circle.remove();
+        }, 3800);
+      }, 100);
     };
 
     document.body.addEventListener('mousemove', handleBodyMouseMove);

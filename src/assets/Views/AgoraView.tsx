@@ -1,11 +1,11 @@
 import CardText from "../Components/Card/CardText";
-import './scss/AgoraView.scss';
+import styles from './scss/Views.module.scss';
 export default function AgoraView() {
   return (
-    <div>
+    <div className={styles.container}>
       <h2>Ágora</h2>
       <CardText ids={['1', '2']} />
-   
+
     </div>
   );
 }

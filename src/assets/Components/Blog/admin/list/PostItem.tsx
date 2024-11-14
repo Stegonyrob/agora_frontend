@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { IPost } from '../../../../../core/posts/IPost';
+import { IPostDTO } from '../../../../../core/posts/IPostDTO';
 import ButtonArchive from '../button/archive/ButtonArchivePost';
-import ButtonUnArchive from '../button/archive/ButtonUnArchive';
+
 import ButtonEditPost from '../button/edit/ButtonEditPost';
 import ImagePost from './ImagePost';
 import styles from './PostItem.module.scss';
+
 interface PostCardProps {
     post: IPost;
     onEdit: (post: IPost) => void;
@@ -15,7 +17,7 @@ interface PostCardProps {
     onSubmit: (post: IPost) => void;
     userId: number;
     postId: number;
-    onCreate: () => void;
+    onCreate: (newPost: IPostDTO) => Promise<void>;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, postId, onCreate }) => {
@@ -24,7 +26,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
     const isArchived = post?.isArchived ?? false;
 
     const toggleText = () => {
-        setShowFullText(prev => !prev);
+        if (post) {
+            setShowFullText(prev => !prev);
+        }
+    };
+
+    if (!post) {
+        return null;
+    }
+    const handleChange = () => {
+        console.log('SVG clicked!');
     };
 
     return (
@@ -38,34 +49,26 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
                 {post?.message.length > 200 && !showFullText && '...'}<button onClick={toggleText} className={styles.toggleButton}>
                     <i className={`bi ${showFullText ? 'bi-dash' : 'bi-plus'}`}></i>
                 </button>
-
             </p>
 
-            <div className={styles.actionList}>
+            <ButtonEditPost post={post} onSubmit={onEdit} userId={post?.userId ?? 0} label="Edit" postId={post?.id ?? 0} />
+            <ButtonArchive
+                post={post}
+                onArchive={async (postId: number) => {
+                    const result = await onArchive(postId);
+                    if (result) {
+                        post.isArchived = true; // Actualiza el estado local
+                    }
+                    return result; // Return the boolean result
+                }}
+                userId={post?.userId ?? 0}
+                postId={post?.id ?? 0}
+                onSubmit={(post: IPost) => console.log(post)}
+                label={isArchived ? 'Unarchive' : 'Archive'}
+            />
 
-
-                <ButtonEditPost post={post} onSubmit={onEdit} userId={post?.userId ?? 0} label="Edit" postId={post?.id ?? 0} />
-
-                <ButtonArchive
-                    post={post}
-                    onArchive={(postId: number) => (isArchived ? onUnArchive : onArchive)?.(post?.id ?? 0)}
-                    userId={post?.userId ?? 0}
-                    postId={post?.id ?? 0}
-                    onSubmit={(post: IPost) => console.log(post)}
-                    label={isArchived ? 'Unarchive' : 'Archive'}
-                />
-                <ButtonUnArchive
-                    postId={post?.id ?? 0}
-                    onSubmit={(post: IPost) => console.log(post)}
-                    label="Unarchive"
-                    userId={post?.userId ?? 0}
-                    post={post}
-                    onUnArchive={onUnArchive}
-                />
-
-
-            </div>
         </div>
+
     );
 };
 

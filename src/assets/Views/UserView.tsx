@@ -1,19 +1,19 @@
 import React from 'react';
-import { Post } from '../../types/types';
-import { CardPostUser } from '../Components/Blog/user/CardPostUser/CardPostUser';
-import ProfileForm from '../Components/Profile/ProfileForm';
 
+import { IPost } from '../../core/posts/IPost';
+import ProfileForm from '../Components/Profile/ProfileForm';
+import styles from './scss/Views.module.scss';
 interface UserViewProps {
-    posts: Post[];
+    posts: IPost[];
     onDeletePost: (postId: string) => void;
-    onEditPost: (post: Post) => void;
+    onEditPost: (post: IPost) => void;
 }
 
 const UserView: React.FC<UserViewProps> = ({ posts }) => {
     return (
-        <div>
+        <div className={styles.container}>
             <ProfileForm />
-            <CardPostUser children={<CardPostUser children={undefined} postId={''} />} postId="a-valid-post-id" />
+
         </div>
     );
 };

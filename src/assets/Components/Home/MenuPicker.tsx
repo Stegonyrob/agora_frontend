@@ -16,10 +16,10 @@ const ColorPickerMenu = () => {
     { name: "Servicios", path: "/Services" },
     { name: "Blog", path: "/Blog" },
     { name: "Ágora", path: "/Agora" },
-    { name: "TEA", path: "/Tea" },
+    { name: "CEA/TEA", path: "/Tea" },
     { name: "Tda/Tdh", path: "/Tda_Tdh" },
-    { name: "T.Aprendizaje", path: "/Aprendizaje" },
-    { name: "T.Madurativo", path: "/Madurativo" }
+    { name: "D.Aprendizaje", path: "/Aprendizaje" },
+    { name: "C.Desarrollo", path: "/Desarrollo" },
   ];
   const colors = ["rgba(215, 149, 216, 0.99)", "rgba(253, 217, 45, 1)", "rgba(74, 160, 73, 1)", "rgba(182, 159, 222, 1)"];
   const menuItemsJSX = menuItems.map((item, index) => {

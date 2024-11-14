@@ -8,6 +8,8 @@ import AboutMeView from './assets/Views/AboutMeView';
 import AdminView from './assets/Views/AdminView';
 import AgoraView from './assets/Views/AgoraView';
 import BlogView from './assets/Views/BlogView';
+import CondicionesDesarrolloView from './assets/Views/CondDesarrolloView';
+import DificultadAprendizajeView from './assets/Views/DifAprendizajeView';
 import HomeView from './assets/Views/HomeView';
 import LoginView from './assets/Views/LoginView';
 import NeurodiversityView from './assets/Views/NeurodiversityView';
@@ -15,8 +17,6 @@ import RegisterView from './assets/Views/RegisterView';
 import ServiceView from './assets/Views/ServiceView';
 import Tda_TdhView from './assets/Views/Tda_TdhView';
 import TeaView from './assets/Views/TeaView';
-import TransAprendizajeView from './assets/Views/TransAprendizajeView';
-import TransMadurativoView from './assets/Views/TransMadurativoView';
 import PrivateLayout from './routes/PrivateLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicLayout from './routes/PublicLayout';
@@ -43,17 +43,17 @@ const App = () => {
           <Route path="/Agora" element={<PrivateLayout />}>
             <Route path="" element={<AgoraView />} />
           </Route>
-          <Route path="/Tea" element={<PrivateLayout />}>
+          <Route path="/Cea" element={<PrivateLayout />}>
             <Route path="" element={<TeaView />} />
           </Route>
           <Route path="/Tda_Tdh" element={<PrivateLayout />}>
             <Route path="" element={<Tda_TdhView />} />
           </Route>
           <Route path="/Aprendizaje" element={<PrivateLayout />}>
-            <Route path="" element={<TransAprendizajeView />} />
+            <Route path="" element={<DificultadAprendizajeView />} />
           </Route>
-          <Route path="/Madurativo" element={<PrivateLayout />}>
-            <Route path="" element={<TransMadurativoView />} />
+          <Route path="/Desarrollo" element={<PrivateLayout />}>
+            <Route path="" element={<CondicionesDesarrolloView />} />
           </Route>
           <Route path="/Login" element={<PrivateLayout />}>
             <Route path="" element={<LoginView />} />

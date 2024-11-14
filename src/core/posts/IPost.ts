@@ -2,7 +2,6 @@ export interface IPost {
   id: number;
   title: string;
   message: string;
-  creationDate: Date;
   userId: number;
   location: string;
   loves: number;
@@ -11,7 +10,6 @@ export interface IPost {
   tags: string[];
   images: string[];
   isPublished: boolean;
-  publishDate: string;
   alt_image: string;
   source_image: string;
   alt_avatar: string;
