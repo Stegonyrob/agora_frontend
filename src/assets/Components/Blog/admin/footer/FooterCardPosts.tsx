@@ -17,17 +17,7 @@ interface FooterPostsProps {
 }
 
 const FooterPosts: React.FC<FooterPostsProps> = ({ user, onSelect, posts, postId }) => {
-  console.log("FooterPosts: posts", posts);
-  console.log("FooterPosts: user", user);
-  console.log("FooterPosts: isLoggedIn", sessionStorage.isLoggedIn);
-  console.log("FooterPosts: userId", sessionStorage.userId);
-  console.log("FooterPosts: userName", sessionStorage.userName);
-  console.log("FooterPosts: userRole", sessionStorage.role);
 
-  const isLoggedIn = sessionStorage.isLoggedIn;
-  const userId = sessionStorage.userId;
-  const userName = sessionStorage.userName;
-  const userRole = sessionStorage.role;
 
 
   return (

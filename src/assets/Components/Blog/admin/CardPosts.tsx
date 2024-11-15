@@ -10,11 +10,10 @@ import HeaderPosts from "./header/HeaderCardPosts";
 interface CardPostsProps {
   user: number;
   onSelect: (post: IPost) => void;
-  onDelete: (postId: number) => Promise<void>;
-  onSubmit: (post: IPost) => void;
+
+
   posts: IPost[];
-  onArchive: (postId: number) => Promise<boolean>;
-  onUnarchive: (postId: number) => Promise<boolean>;
+
   session: ISession[];
   postId: number;
 }
@@ -23,7 +22,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
   user,
   onSelect,
 
-  onSubmit,
+
   posts,
 
   postId,
@@ -67,7 +66,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
         {posts.map((post) => (
           <Col key={post.id}>
             <Card className={styles.cardPost}>
-              <HeaderPosts userId={userId} userName={userName} />
+              <HeaderPosts userId={userId} userName={userName} post={post} />
               <BodyPosts posts={post} title={""} message={""} tags={[]} />
               <FooterPosts
                 user={user}

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { IPost } from '../../../../core/posts/IPost';
-import PostsService from '../../../../core/posts/PostService';
-import CardPosts from './CardPosts';
+import { useEffect, useState } from "react";
+import { IPost } from "../../../../core/posts/IPost";
+import PostsService from "../../../../core/posts/PostService";
+import CardPosts from "./CardPosts";
 interface PostList {
   post: IPost[];
   onSelect: (post: IPost) => void;
@@ -39,28 +39,16 @@ const PostList = ({ userId }: { userId: number }, { post }: PostList) => {
     setSelectedPost(null);
   };
 
-
-
-
-
   return (
     <div>
       <div>
         <CardPosts
           posts={fetchedPosts}
           onSelect={handleSelect}
-
-          user={userId} session={[]}
-          postId={0} onDelete={function (postId: number): Promise<void> {
-            throw new Error('Function not implemented.');
-          }} onSubmit={function (post: IPost): void {
-            throw new Error('Function not implemented.');
-          }} onArchive={function (postId: number): Promise<boolean> {
-            throw new Error('Function not implemented.');
-          }} onUnarchive={function (postId: number): Promise<boolean> {
-            throw new Error('Function not implemented.');
-          }} />
-
+          user={userId}
+          session={[]}
+          postId={0}
+        />
       </div>
     </div>
   );

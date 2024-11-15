@@ -1,8 +1,11 @@
+import { ReactNode } from "react";
+
 export interface IPost {
+  [x: string]: ReactNode;
   id: number;
   title: string;
   message: string;
-  userId: number;
+  creatorId: number;
   location: string;
   loves: number;
   comments: any[];
@@ -14,7 +17,8 @@ export interface IPost {
   source_image: string;
   alt_avatar: string;
   source_avatar: string;
-  username: string;
+  creatorName: string;
   role: string;
   url_avatar: string;
+  createdAt: string;
 }

@@ -12,13 +12,15 @@ const UserInfo = ({ time, location }: UserInfo) => {
 
     const userName = sessionStorage.userName;
     console.log(sessionStorage.userName)
+    const userId = sessionStorage.userId;
+    console.log(sessionStorage.userId)
 
 
 
     return (
         <div className={styles.userInfo}>
             <a
-                href={userName.replace(/\s/g, "-")}
+                href={`/Profile/${userId}`}
                 className={styles.userName}
             >
                 {userName}

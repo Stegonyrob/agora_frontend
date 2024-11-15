@@ -1,24 +1,25 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
+import { IPost } from "../../../../../core/posts/IPost";
 import Avatar from './Avatar';
 import styles from "./HeaderCardPosts.module.scss";
-import UserInfo from "./UserInfo";
+import PostInfo from "./PostInfo";
 
 
 interface HeaderPostsProps {
   userId: number;
   userName: string;
+  post: IPost;
 }
 
-const HeaderPosts: React.FC<HeaderPostsProps> = ({ userId, userName }) => {
+const HeaderPosts: React.FC<HeaderPostsProps> = ({ userId, userName, post }) => {
   return (
     <Container>
       <Row>
         <div className={styles.headerCardPosts}>
           <Avatar userName={userName} source={""} alt={""} url={""} userId={0} />
-          <UserInfo time="" location="" userId={0} userName={userName} loggedUserName={""} />
-        </div>
-      </Row>
+          <PostInfo creatorId={post.creatorId} creatorName={post.creatorName} time={post.createdAt} location={post.location} />
+        </div></Row>
     </Container>
   );
 };
