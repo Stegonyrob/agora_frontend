@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { ISession } from "../../../../core/auth/ISession";
 import { IPost } from "../../../../core/posts/IPost";
-import { IPostDTO } from '../../../../core/posts/IPostDTO';
 import BodyPosts from "./body/BodyCardPosts";
 import styles from "./CardPosts.module.scss";
 import FooterPosts from "./footer/FooterCardPosts";
@@ -23,11 +22,10 @@ interface CardPostsProps {
 const CardPosts: React.FC<CardPostsProps> = ({
   user,
   onSelect,
-  onDelete,
+
   onSubmit,
   posts,
-  onArchive,
-  onUnarchive,
+
   postId,
 }) => {
 
@@ -42,9 +40,7 @@ const CardPosts: React.FC<CardPostsProps> = ({
   const userName = sessionStorage.userName;
   const userRole = sessionStorage.role;
   const isLoggedIn = sessionStorage.isLoggedIn;
-  const handleUpdate = async (updatedPost: IPostDTO) => {
-    await onSubmit(updatedPost);
-  };
+
   const commentHandler = () => {
     setCommentCounter((prevState) => {
       return prevState + 1;
@@ -76,10 +72,9 @@ const CardPosts: React.FC<CardPostsProps> = ({
               <FooterPosts
                 user={user}
                 onSelect={onSelect}
-                onDelete={onDelete}
-                onSubmit={handleUpdate}
+
                 posts={posts}
-                onArchive={onArchive}
+
                 postId={postId}
 
               />

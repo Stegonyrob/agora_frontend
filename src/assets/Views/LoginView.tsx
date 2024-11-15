@@ -1,19 +1,23 @@
+import { useState } from 'react';
 import FormLogin from '../Components/Login/FormLogin';
 import styles from './scss/Views.module.scss';
 export default function LoginView() {
+  const [login, setLogin] = useState<boolean>(false);
+  const [register, setRegister] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [role, setRole] = useState<string>('');
+
   return (
     <div className={styles.container}>
-      <FormLogin setLogin={function (value: boolean): void {
-        throw new Error('Function not implemented.');
-      }} setRegister={function (value: boolean): void {
-        throw new Error('Function not implemented.');
-      }} setUserId={function (value: string): void {
-        throw new Error('Function not implemented.');
-      }} setUserName={function (value: string): void {
-        throw new Error('Function not implemented.');
-      }} setRole={function (value: string): void {
-        throw new Error('Function not implemented.');
-      }} />
+      <FormLogin
+        setLogin={setLogin}
+        setRegister={setRegister}
+        setUserId={setUserId}
+        setUserName={setUserName}
+        setRole={setRole}
+      />
     </div>
   );
 }
+

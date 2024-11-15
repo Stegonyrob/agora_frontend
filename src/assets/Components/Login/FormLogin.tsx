@@ -37,7 +37,28 @@ const FormLogin: React.FC<FormLoginProps> = () => {
       const userName = username
       const response = await loginService.post({ username, password });
       dispatch(login(response));
-      navigate('/blog', { state: { userId: String(response.userId) } });
+      console.log(response)
+
+      const accessToken = response.accessToken;
+      console.log(response.accessToken)
+
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('refreshToken', response.refreshToken);
+
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('userId', String(response.userId));
+      sessionStorage.setItem('userName', userName);
+      sessionStorage.setItem('role', accessToken);
+      const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+      console.log(tokenPayload.roles);
+      if (tokenPayload.roles === 'ROLE_ADMIN') {
+        navigate('/admin', { state: { userId: String(response.userId) } });
+      } else if (tokenPayload.roles === 'ROLE_USER') {
+        navigate('/blog', { state: { userId: String(response.userId) } });
+      } else {
+        console.error('Unexpected user role:', response.role);
+      }
+
     } catch (error) {
       console.error('Error:', error);
     }
