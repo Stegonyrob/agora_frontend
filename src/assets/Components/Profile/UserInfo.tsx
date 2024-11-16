@@ -1,14 +1,15 @@
 import PropTypes from "prop-types";
 import { ReactNode } from "react";
+import ButtonAjustProfile from "../Blog/admin/button/ajust/ButtonAjustProfile";
+import Avatar from "../Blog/admin/header/Avatar";
 import styles from './UserInfo.module.scss';
 interface UserInfo {
     userId: ReactNode;
     loggedUserName: string;
-    time: string;
-    location: string;
+
 }
 
-const UserInfo = ({ time, location }: UserInfo) => {
+const UserInfo = ({ }: UserInfo) => {
 
     const userName = sessionStorage.userName;
     console.log(sessionStorage.userName)
@@ -17,18 +18,23 @@ const UserInfo = ({ time, location }: UserInfo) => {
 
 
 
+    const onAjust = (userId: number) => {
+        window.location.href = `/Profile/${userId}`;
+        return Promise.resolve(true);
+    };
+
     return (
         <div className={styles.userInfo}>
+            <Avatar userName={userName} source={""} alt={""} url={""} userId={0} />
             <a
                 href={`/Profile/${userId}`}
                 className={styles.userName}
             >
                 {userName}
             </a>
-            <p className={styles.time}>
-                {time} {location}
-            </p>
+            <ButtonAjustProfile userId={userId} onAjust={onAjust} label={""} />
         </div >
+
     );
 };
 UserInfo.propTypes = {

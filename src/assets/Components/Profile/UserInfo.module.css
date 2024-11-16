@@ -10,12 +10,12 @@
   margin-top: 5%;
   margin-bottom: 1%;
   text-align: center;
-  .userName {
-    font-size: 2rem;
-    margin-left: 70%;
-    color: azure;
-    cursor: pointer;
-    text-decoration-line: none;
-  }
-  
+}
+
+.userInfo .userName {
+  font-size: 2rem;
+  margin-left: 70%;
+  color: azure;
+  cursor: pointer;
+  text-decoration-line: none;
 }
