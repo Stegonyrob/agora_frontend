@@ -13,10 +13,12 @@ import DificultadAprendizajeView from './assets/Views/DifAprendizajeView';
 import HomeView from './assets/Views/HomeView';
 import LoginView from './assets/Views/LoginView';
 import NeurodiversityView from './assets/Views/NeurodiversityView';
+import ProfileView from './assets/Views/ProfileView';
 import RegisterView from './assets/Views/RegisterView';
 import ServiceView from './assets/Views/ServiceView';
 import Tda_TdhView from './assets/Views/Tda_TdhView';
 import TeaView from './assets/Views/TeaView';
+import { IPost } from './core/posts/IPost';
 import PrivateLayout from './routes/PrivateLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicLayout from './routes/PublicLayout';
@@ -68,6 +70,12 @@ const App = () => {
             <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} />} /></Route>
           <Route path="/Admin" element={<PrivateLayout />}>
             <Route path="/Admin" element={<ProtectedRoute element={<AdminView />} />} /></Route>
+          <Route path="/Profile" element={<PrivateLayout />}>
+            <Route path="/Profile" element={<ProtectedRoute element={<ProfileView posts={[]} onDeletePost={function (postId: string): void {
+              throw new Error('Function not implemented.');
+            }} onEditPost={function (post: IPost): void {
+              throw new Error('Function not implemented.');
+            }} />} />} /></Route>
         </Routes>
 
 

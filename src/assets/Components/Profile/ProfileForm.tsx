@@ -4,7 +4,8 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { useParams } from 'react-router-dom';
 import { profileUser } from '../../../services/profile.api';
-import AvatarComponent from '../Blog/user/CardUser/AvatarComponent';
+
+import Avatar from '../Blog/admin/header/Avatar';
 import styles from './ProfileForm.module.scss';
 interface ProfileFormProps {
   setLogin: (value: boolean) => void;
@@ -13,7 +14,7 @@ interface ProfileFormProps {
   setUserName: (value: string) => void;
   setRole: (value: string) => void;
 
-  // No props for now
+
 }
 
 function ProfileForm() {
@@ -58,7 +59,7 @@ function ProfileForm() {
         <Card.Body>
           <Card.Title>Formulario de Perfil</Card.Title>
 
-          <AvatarComponent avatar={avatar} />
+          <Avatar userName={firstName} source={""} alt={""} url={""} userId={0} />
           <Form.Group className="mb-3" controlId="formFirstName">
             <Form.Label>Nombre</Form.Label>
             <Form.Control type="text" placeholder="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} required

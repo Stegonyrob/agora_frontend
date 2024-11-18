@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { ReactNode } from "react";
-import ButtonAjustProfile from "../Blog/admin/button/ajust/ButtonAjustProfile";
+import ButtonAdjustProfile from "../Blog/admin/button/adjust/ButtonAdjustProfile";
 import Avatar from "../Blog/admin/header/Avatar";
 import styles from './UserInfo.module.scss';
 interface UserInfo {
@@ -18,7 +18,7 @@ const UserInfo = ({ }: UserInfo) => {
 
 
 
-    const onAjust = (userId: number) => {
+    const onAdjust = (userId: number) => {
         window.location.href = `/Profile/${userId}`;
         return Promise.resolve(true);
     };
@@ -32,7 +32,7 @@ const UserInfo = ({ }: UserInfo) => {
             >
                 {userName}
             </a>
-            <ButtonAjustProfile userId={userId} onAjust={onAjust} label={""} />
+            <ButtonAdjustProfile userId={userId} onAdjust={onAdjust} label={""} />
         </div >
 
     );
