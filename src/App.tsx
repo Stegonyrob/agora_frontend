@@ -18,7 +18,6 @@ import RegisterView from './assets/Views/RegisterView';
 import ServiceView from './assets/Views/ServiceView';
 import Tda_TdhView from './assets/Views/Tda_TdhView';
 import TeaView from './assets/Views/TeaView';
-import { IPost } from './core/posts/IPost';
 import PrivateLayout from './routes/PrivateLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicLayout from './routes/PublicLayout';
@@ -32,50 +31,47 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/*" element={<PublicLayout />} />
-          <Route path="/Logout" element={<Navigate to="/" replace />} />
-          <Route path="/AboutMe" element={<PrivateLayout />}>
+          <Route path="/logout" element={<Navigate to="/" replace />} />
+          <Route path="/aboutMe" element={<PrivateLayout />}>
             <Route path="" element={<AboutMeView />} />
           </Route>
-          <Route path="/Neurodiversity" element={<PrivateLayout />}>
+          <Route path="/neurodiversity" element={<PrivateLayout />}>
             <Route path="" element={<NeurodiversityView />} />
           </Route>
-          <Route path="/Services" element={<PrivateLayout />}>
+          <Route path="/services" element={<PrivateLayout />}>
             <Route path="" element={<ServiceView />} />
           </Route>
-          <Route path="/Agora" element={<PrivateLayout />}>
+          <Route path="/agora" element={<PrivateLayout />}>
             <Route path="" element={<AgoraView />} />
           </Route>
-          <Route path="/Cea" element={<PrivateLayout />}>
+          <Route path="/cea" element={<PrivateLayout />}>
             <Route path="" element={<TeaView />} />
           </Route>
-          <Route path="/Tda_Tdh" element={<PrivateLayout />}>
+          <Route path="/tda_Tdh" element={<PrivateLayout />}>
             <Route path="" element={<Tda_TdhView />} />
           </Route>
-          <Route path="/Aprendizaje" element={<PrivateLayout />}>
+          <Route path="/aprendizaje" element={<PrivateLayout />}>
             <Route path="" element={<DificultadAprendizajeView />} />
           </Route>
-          <Route path="/Desarrollo" element={<PrivateLayout />}>
+          <Route path="/desarrollo" element={<PrivateLayout />}>
             <Route path="" element={<CondicionesDesarrolloView />} />
           </Route>
-          <Route path="/Login" element={<PrivateLayout />}>
+          <Route path="/login" element={<PrivateLayout />}>
             <Route path="" element={<LoginView />} />
           </Route>
-          <Route path="/Register" element={<PrivateLayout />}>
+          <Route path="/register" element={<PrivateLayout />}>
             <Route path="" element={<RegisterView />} />
           </Route>
-          <Route path="/Error404" element={<PrivateLayout />}>
+          <Route path="/error404" element={<PrivateLayout />}>
             <Route path="" element={<Error404View />} />
           </Route>
-          <Route path="/Blog" element={<PrivateLayout />}>
-            <Route path="/Blog" element={<ProtectedRoute element={<BlogView />} />} /></Route>
-          <Route path="/Admin" element={<PrivateLayout />}>
-            <Route path="/Admin" element={<ProtectedRoute element={<AdminView />} />} /></Route>
-          <Route path="/Profile" element={<PrivateLayout />}>
-            <Route path="/Profile" element={<ProtectedRoute element={<ProfileView posts={[]} onDeletePost={function (postId: string): void {
-              throw new Error('Function not implemented.');
-            }} onEditPost={function (post: IPost): void {
-              throw new Error('Function not implemented.');
-            }} />} />} /></Route>
+          <Route path="/blog" element={<PrivateLayout />}>
+            <Route path="/blog" element={<ProtectedRoute element={<BlogView />} />} /></Route>
+          <Route path="/admin" element={<PrivateLayout />}>
+            <Route path="/admin" element={<ProtectedRoute element={<AdminView />} />} /></Route>
+          <Route path="/profile" element={<PrivateLayout />}>
+            <Route path="/profile/:userId" element={<ProtectedRoute element={<ProfileView posts={[]} />} />}
+            /></Route>
         </Routes>
 
 

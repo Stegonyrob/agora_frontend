@@ -9,10 +9,6 @@ interface PostInfoProps {
 }
 
 const PostInfo: React.FC<PostInfoProps> = ({ time, location, creatorId, creatorName }) => {
-    console.log("PostInfo: creatorId", creatorId);
-    console.log("PostInfo: creatorName", creatorName);
-    console.log("PostInfo: time", time);
-    console.log("PostInfo: location", location);
     return (
         <div className={styles.userInfo}>
             <a

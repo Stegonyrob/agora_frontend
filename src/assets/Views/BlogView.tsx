@@ -10,7 +10,7 @@ export default function BlogView() {
   return (
     <div className={styles.container}>
       <h2>Ágora</h2>
-      <UserInfo userId={userId} userName={""} loggedUserName={''} location={''} time={''} />
+      <UserInfo userId={userId} userName={""} loggedUserName={''} location={''} time={''} profile={undefined} />
       <PostList userId={0} />
     </div>
   );

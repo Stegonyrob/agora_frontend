@@ -35,37 +35,27 @@ export const updateExistingPost = createAsyncThunk(
 );
 
 // Assuming ProductService is a class with a static method delete
-export const deletePostById = createAsyncThunk(
-  "posts/deletePostsById",
-  async (postsId: number, thunkAPI) => {
-    try {
-      const postsService = new PostService();
-      await postsService.delete(postsId);
-
-      return postsId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue({
-        message: "Unexpected error occurred during the posts delete",
-        error,
-      });
-    }
+export const deletedExistingPost = createAsyncThunk(
+  "posts/deletedExistingPost",
+  async (
+    { postId, deletedPostData }: { postId: number; deletedPostData: IPostDTO },
+    thunkAPI
+  ) => {
+    const postService = new PostService();
+    const response = await postService.deletePost(deletedPostData, postId);
+    return response;
   }
 );
 // Assuming ProductService archive
-export const archivePostById = createAsyncThunk(
+export const archivePost = createAsyncThunk(
   "posts/archivePostsById",
-  async (postsId: number, thunkAPI) => {
-    try {
-      const postsService = new PostService();
-      await postsService.patch(postsId);
-
-      return postsId;
-    } catch (error) {
-      return thunkAPI.rejectWithValue({
-        message: "Unexpected error occurred during the posts delete",
-        error,
-      });
-    }
+  async (
+    { postId, archivePostData }: { postId: number; archivePostData: IPostDTO },
+    thunkAPI
+  ) => {
+    const postService = new PostService();
+    const response = await postService.deletePost(archivePostData, postId);
+    return response;
   }
 );
 export const postsSlice = createSlice({
@@ -124,22 +114,6 @@ export const postsSlice = createSlice({
           state.posts[index] = action.payload;
         }
         state.isLoaded = true;
-      })
-      .addCase(updateExistingPost.rejected, (state, action) => {
-        console.error("Failed to update existing post:", action.error.message);
-        state.isLoaded = false;
-      })
-      .addCase(deletePostById.pending, (state) => {
-        state.isLoaded = false;
-      })
-      .addCase(deletePostById.fulfilled, (state, action) => {
-        const postId = action.payload;
-        state.posts = state.posts.filter((post) => post.postId !== postId);
-        state.isLoaded = true;
-      })
-      .addCase(deletePostById.rejected, (state, action) => {
-        console.error("Failed to delete post:", action.error.message);
-        state.isLoaded = false;
       });
   },
 });

@@ -1,38 +1,41 @@
 import PropTypes from "prop-types";
-import { ReactNode } from "react";
-import ButtonAdjustProfile from "../Blog/admin/button/adjust/ButtonAdjustProfile";
+import React from "react";
+import ButtonEditProfile from "../Blog/admin/button/profile/ButtonEditProfile";
 import Avatar from "../Blog/admin/header/Avatar";
 import styles from './UserInfo.module.scss';
 interface UserInfo {
-    userId: ReactNode;
+    userId: number;
     loggedUserName: string;
-
+    profile: any;
 }
 
-const UserInfo = ({ }: UserInfo) => {
+const UserInfo = ({ loggedUserName, profile }: UserInfo) => {
 
-    const userName = sessionStorage.userName;
-    console.log(sessionStorage.userName)
-    const userId = sessionStorage.userId;
-    console.log(sessionStorage.userId)
+    const userName = sessionStorage.userName ?? "";
+    console.log(sessionStorage.userName);
+    const userId = sessionStorage.userId ?? "";
+
+    console.log(userId);
 
 
 
-    const onAdjust = (userId: number) => {
-        window.location.href = `/Profile/${userId}`;
-        return Promise.resolve(true);
-    };
+
+
 
     return (
         <div className={styles.userInfo}>
-            <Avatar userName={userName} source={""} alt={""} url={""} userId={0} />
-            <a
-                href={`/Profile/${userId}`}
-                className={styles.userName}
-            >
-                {userName}
-            </a>
-            <ButtonAdjustProfile userId={userId} onAdjust={onAdjust} label={""} />
+            {userName && (
+                <React.Fragment>
+                    <Avatar userName={userName} userId={userId} alt_avatar={""} source_avatar={""} url_avatar={""} source={""} />
+                    <a
+                        href={`/profile/${userId}`}
+                        className={styles.userName}
+                    >
+                        {userName}
+                    </a>
+                    <ButtonEditProfile onSubmit={() => { }} userId={userId} userName={userName} profile={profile} label={"Editar Perfil"} />
+                </React.Fragment>
+            )}
         </div >
 
     );

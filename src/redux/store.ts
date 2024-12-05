@@ -6,6 +6,7 @@ import imagesSlice from "../core/images/imageStore";
 import loginReducer from "./reducers/loginSlice";
 import logoutReducer from "./reducers/logoutSlice";
 import postsReducer from "./reducers/postsSlice";
+import profileSlice from "./reducers/profileSlice";
 import textSlice from "./reducers/textSlice";
 import userReducer from "./reducers/userSlice";
 
@@ -18,6 +19,7 @@ const store = configureStore({
     text: textSlice,
     images: imagesSlice,
     posts: postsReducer,
+    profile: profileSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

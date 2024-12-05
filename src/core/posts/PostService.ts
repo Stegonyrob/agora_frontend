@@ -99,9 +99,9 @@ export default class PostService {
     }
   }
   // 4. Delete Posts- deletePost()200 ok
-  async deletePost(id: number): Promise<void> {
-    console.log(`Attempting to delete post by id: ${id}`);
-    console.log(`Deleting post by id: ${id}`);
+  async deletePost(post: IPostDTO, postId: number): Promise<IPost> {
+    console.log(`Deleting post by id: ${postId}`);
+    console.log("Post DTO:", post);
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -110,13 +110,19 @@ export default class PostService {
     };
 
     try {
-      console.log(`Sending DELETE request to: ${this.uri}/${id}`);
-      console.log(`Request headers:`, config.headers);
-      await axios.delete(`${this.uri}/${id}`, config);
-      console.log(`Post by id: ${id} deleted successfully.`);
+      console.log("Sending DELETE request to:", `${this.uri}/${postId}`);
+      console.log("Request body:", post);
+      console.log("Request headers:", config.headers);
+      const response: AxiosResponse = await axios.delete(
+        `${this.uri}/${postId}`,
+        config
+      );
+      console.log("Response:", response);
+      console.log(`Post by id: ${postId} deleted successfully.`);
+      return response.data;
     } catch (error: any) {
       console.error(`Error deleting post: ${error.message}`);
-      console.error(`Error details:`, error);
+      console.error("Error details:", error);
       throw new Error(`Error deleting post: ${error.message}`);
     }
   }

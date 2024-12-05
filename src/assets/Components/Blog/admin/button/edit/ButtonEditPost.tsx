@@ -10,19 +10,23 @@ interface User {
     username: string;
     role: string;
     counter: number;
+    creatorId: number;
+    creatorName: string;
+
 }
 
 
 
 interface ButtonEditProps {
     postId: number;
-    userId: number;
+    creatorId: number;
+    creatorName: string;
     post?: IPost;
-    onSubmit: (post: IPost) => void;
+    onSubmit: (post: IPostDTO) => void;
     label: string;
 }
 
-const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, userId, post, onSubmit }) => {
+const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, creatorId, post, onSubmit }) => {
     const [show, setShow] = useState(false);
 
     const handleShow = () => {
@@ -37,7 +41,7 @@ const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, userId, post, onSubmit 
     };
 
     const handleUpdate = async (updatedPost: IPostDTO) => {
-        await onSubmit(updatedPost);
+        onSubmit(updatedPost);
     };
     return (
         <div className={styles.socialIcons}>

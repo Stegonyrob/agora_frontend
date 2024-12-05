@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { IPostDTO } from '../../../../../../core/posts/IPostDTO';
-import styles from './EditPostForm.module.scss';
+import styles from './EditModalForm.module.scss';
 
 interface EditPostFormProps {
   post?: IPostDTO;
@@ -19,8 +19,7 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
       id: Number(post?.id) || 0,
       title: title,
       message: message,
-      creation_date: post?.creation_date || new Date(),
-      userId: post?.userId || 0,
+      creatorId: post?.creatorId || 0,
       location: '',
       loves: 0,
       comments: [],
@@ -30,12 +29,13 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
       source_image: '',
       alt_avatar: '',
       source_avatar: '',
-      username: '',
+      creatorName: '',
       role: '',
       url_avatar: '',
       images: [],
       isPublished: false,
-      publishDate: ''
+      createdAt: '',
+
     };
     onSubmit(newPost);
   };
