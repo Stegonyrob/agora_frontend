@@ -41,7 +41,7 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
   };
 
   return (
-    <div >
+    <div className={styles.modalContainer}>
       <Modal show={show} onHide={onClose} className={styles.modalCard}>
 
         <Modal.Header className={styles.modalHeader} closeButton>

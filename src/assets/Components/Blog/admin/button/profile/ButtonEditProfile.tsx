@@ -21,7 +21,7 @@ interface ButtonEditProps {
     userId: number;
     userName: string;
     profile: IProfile | null;
-    onSubmit: (updatedProfile: IProfileDTO) => void;
+    onSubmit: (profile: IProfileDTO) => void;
     label: string;
 }
 
@@ -56,10 +56,7 @@ const ButtonEditProfile: React.FC<ButtonEditProps> = ({ userId, userName, onSubm
     };
 
     const handleUpdate = async (updatedProfile: IProfileDTO) => {
-        if (!selectedProfile) {
-            console.error("Error updating profile: selectedProfile is null");
-            return;
-        }
+        await apiProfile.updateProfile(userId, updatedProfile);
         onSubmit(updatedProfile);
     };
 

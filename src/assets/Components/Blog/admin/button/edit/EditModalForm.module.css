@@ -1,41 +1,55 @@
+.modalHeader {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  color: azure;
+}
+
+.modalHeader .modalTitle {
+  font-size: 3rem;
+  margin-left: 10rem;
+}
+
 .modalBody {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem;
   color: azure;
+  width: 50rem;
 }
 
-.modalHeader {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: azure;
-}
-
-input, textarea {
-  width: 29rem;
+.modalBody input,
+.modalBody textarea {
+  width: 45rem;
   background-color: rgba(133, 124, 124, 0.8);
   margin-top: 1rem;
   color: azure;
-  padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
+  margin: 1rem;
+  margin-left: -0.5rem;
 }
 
-textarea {
+.modalBody textarea {
   text-align: justify;
   height: 30rem;
+  color: #f8f4f4;
 }
 
-button {
+.modalBody label {
+  margin-left: 2rem;
+}
+
+.modalBody button {
   padding: 1rem 2rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #007bff;
+  background-color: #4400ff;
   color: white;
   font-size: 1rem;
-  margin-left: 11rem;
+  margin-left: 19.5rem;
   cursor: pointer;
 }
 
-button:hover {
+.modalBody button:hover {
   background-color: #0056b3;
 }
