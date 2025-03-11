@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 # env
 .env
+
+# Ignore validation utils file
+src/utils/validationUtils.ts

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ITokenDTO } from '../../../core/auth/ITokenDTO';
 import LoginService from '../../../core/auth/LoginService';
 import { login } from '../../../redux/reducers/loginSlice';
+import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
@@ -21,14 +22,6 @@ const FormLogin: React.FC<FormLoginProps> = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Función para validar los inputs del formulario
-  const validateInput = (input: string) => {
-    // Expresión regular que permite solo caracteres alfanuméricos, guiones bajos, puntos y arrobas
-    const regex = /^[a-zA-Z0-9_@.-]*$/;
-    // Retorna true si el input coincide con la expresión regular, de lo contrario false
-    return regex.test(input);
-  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

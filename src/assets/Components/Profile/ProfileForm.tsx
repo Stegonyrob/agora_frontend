@@ -3,9 +3,11 @@ import Avatar from '@/assets/Components/Blog/admin/header/Avatar';
 import styles from '@/assets/Components/Blog/admin/button/edit/EditModalForm.module.scss';
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
+import { validateInput } from '@/utils/validationUtils';
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
+
 interface ProfileFormProps {
   profile: IProfile | null;
   onSelect: (profile: IProfile) => void;
@@ -14,9 +16,6 @@ interface ProfileFormProps {
   show: boolean;
   userId: number;
 }
-
-
-
 
 const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormProps) => {
   const [profileDTOState, setProfileDTOState] = useState<IProfileDTO>(
@@ -40,7 +39,13 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('Form submitted');
+    // Validar los inputs antes de enviarlos al servidor
+    if (!validateInput(profileDTOState.firstName) || !validateInput(profileDTOState.lastName1) || !validateInput(profileDTOState.lastName2) || !validateInput(profileDTOState.relationship) || !validateInput(profileDTOState.email) || !validateInput(profileDTOState.city) || !validateInput(profileDTOState.country) || !validateInput(profileDTOState.phone) || !validateInput(profileDTOState.password) || !validateInput(profileDTOState.confirmPassword)) {
+      // Si los inputs no son válidos, mostrar una alerta y detener el proceso
+      alert('Invalid input detected.');
+      return;
+    }
+
     const newProfile: IProfileDTO = {
       id: profile?.id || 0,
       firstName: profileDTOState.firstName || '',
@@ -259,9 +264,6 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
     </div>
   );
 };
-
-
-
 
 export default ProfileForm;
 

@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import React, { useState } from "react";
 
 import { IPost } from "../../../../../../core/posts/IPost";
@@ -41,6 +42,10 @@ const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, creatorId, post, onSubm
     };
 
     const handleUpdate = async (updatedPost: IPostDTO) => {
+        // Sanitize inputs
+        updatedPost.title = DOMPurify.sanitize(updatedPost.title);
+        updatedPost.message = DOMPurify.sanitize(updatedPost.message);
+
         onSubmit(updatedPost);
     };
     return (

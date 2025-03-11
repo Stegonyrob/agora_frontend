@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { IPostDTO } from '../../../../../../core/posts/IPostDTO';
@@ -15,10 +16,15 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
   const [message, setMessage] = useState(post?.message || '');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // Sanitize inputs
+    const sanitizedTitle = DOMPurify.sanitize(title);
+    const sanitizedMessage = DOMPurify.sanitize(message);
+
     const newPost: IPostDTO = {
       id: Number(post?.id) || 0,
-      title: title,
-      message: message,
+      title: sanitizedTitle,
+      message: sanitizedMessage,
       creatorId: post?.creatorId || 0,
       location: '',
       loves: 0,

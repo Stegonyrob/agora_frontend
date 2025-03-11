@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import React, { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
 import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
@@ -26,7 +27,15 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit }) => {
     };
 
     const handleCreate = async (newPost: IPostDTO) => {
-        await onSubmit(newPost);
+        // Sanitize inputs
+        newPost.title = DOMPurify.sanitize(newPost.title);
+        newPost.message = DOMPurify.sanitize(newPost.message);
+
+        const post: IPost = {
+            ...newPost,
+            // Add any additional properties required by IPost here
+        };
+        await onSubmit(post);
         handleClose();
     };
 

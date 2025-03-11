@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { registerUser } from '../../../services/users.api';
+import { validateInput } from '../../../utils/validationUtils';
 import styles from './RegisterForm.module.scss';
 
 function RegisterForm() {
@@ -12,9 +13,14 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // Validar los inputs antes de enviarlos al servidor
+    if (!validateInput(username) || !validateInput(email) || !validateInput(password) || !validateInput(confirmPassword)) {
+      // Si los inputs no son válidos, mostrar una alerta y detener el proceso
+      alert('Invalid input detected.');
+      return;
+    }
 
     const userData = {
       username,

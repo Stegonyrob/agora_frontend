@@ -1,8 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { validateInput } from '../../../utils/validationUtils';
 import ButtonEditProfile from "../Blog/admin/button/profile/ButtonEditProfile";
 import Avatar from "../Blog/admin/header/Avatar";
 import styles from './UserInfo.module.scss';
+
 interface UserInfo {
     userId: number;
     loggedUserName: string;
@@ -17,10 +19,11 @@ const UserInfo = ({ loggedUserName, profile }: UserInfo) => {
 
     console.log(userId);
 
-
-
-
-
+    // Validar los inputs antes de usarlos
+    if (!validateInput(userName) || !validateInput(userId)) {
+        console.error('Invalid input detected.');
+        return null;
+    }
 
     return (
         <div className={styles.userInfo}>
