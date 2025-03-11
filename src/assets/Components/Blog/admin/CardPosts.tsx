@@ -8,24 +8,17 @@ import FooterPosts from "./footer/FooterCardPosts";
 import HeaderPosts from "./header/HeaderCardPosts";
 
 interface CardPostsProps {
-  user: number;
+  userId: number;
   onSelect: (post: IPost) => void;
-
-
   posts: IPost[];
-
   session: ISession[];
-  postId: number;
+  id: number;
 }
 
 const CardPosts: React.FC<CardPostsProps> = ({
-  user,
   onSelect,
-
-
   posts,
-
-  postId,
+  id,
 }) => {
 
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
@@ -69,13 +62,10 @@ const CardPosts: React.FC<CardPostsProps> = ({
               <HeaderPosts userId={userId} userName={userName} post={post} />
               <BodyPosts posts={post} title={""} message={""} tags={[]} />
               <FooterPosts
-                user={user}
+                userId={userId}
                 onSelect={onSelect}
-
                 posts={posts}
-
-                postId={postId}
-
+                postId={post.id}
               />
             </Card>
           </Col>

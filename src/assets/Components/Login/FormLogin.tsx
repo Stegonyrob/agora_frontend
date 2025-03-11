@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -23,8 +22,22 @@ const FormLogin: React.FC<FormLoginProps> = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Función para validar los inputs del formulario
+  const validateInput = (input: string) => {
+    // Expresión regular que permite solo caracteres alfanuméricos, guiones bajos, puntos y arrobas
+    const regex = /^[a-zA-Z0-9_@.-]*$/;
+    // Retorna true si el input coincide con la expresión regular, de lo contrario false
+    return regex.test(input);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // Validar los inputs antes de enviarlos al servidor
+    if (!validateInput(username) || !validateInput(password)) {
+      // Si los inputs no son válidos, mostrar una alerta y detener el proceso
+      alert('Invalid input detected.');
+      return;
+    }
     try {
       const loginService = new LoginService();
       const tokenDTO: ITokenDTO = {
@@ -34,23 +47,26 @@ const FormLogin: React.FC<FormLoginProps> = () => {
         refreshToken: '',
         userName: '',
       };
-      const userName = username
+      const userName = username;
+      // Enviar los datos al servidor solo si son válidos
       const response = await loginService.post({ username, password });
       dispatch(login(response));
-      console.log(response)
+      console.log(response);
 
       const accessToken = response.accessToken;
-      console.log(response.accessToken)
+      console.log(response.accessToken);
 
+      // Almacenar los tokens y otros datos en sessionStorage
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('refreshToken', response.refreshToken);
-
-      sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('userId', String(response.userId));
       sessionStorage.setItem('userName', userName);
       sessionStorage.setItem('role', accessToken);
+
+      // Decodificar el payload del token para obtener los roles del usuario
       const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
       console.log(tokenPayload.roles);
+      // Redirigir al usuario según su rol
       if (tokenPayload.roles === 'ROLE_ADMIN') {
         navigate('/admin', { state: { userId: String(response.userId) } });
       } else if (tokenPayload.roles === 'ROLE_USER') {

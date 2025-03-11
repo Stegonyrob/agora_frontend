@@ -11,18 +11,12 @@ import IProfileDTO from "./IProfileDTO";
 // 4. Delete Profile - deleteProfile()
 // 5.
 // 6. Update Profile byEmail - updateProfileByEmail()
-// 7. Get post Profile for profile - getFavoriteProfile()
-// 8. Add post Profile for profile - addFavoriteProfile()
-// 9. Delete post Profile for profile - deleteFavoriteProfile()
-// 10. Update post Profile for profile - upDateFavoriteComment()
-
 // Environment Variables for API Endpoints
 //api/v1/any/users'
 export default class ProfileService {
   // 1. Get All Profile User - Allows users to register a profile
 
   private uri: string = import.meta.env.VITE_API_ENDPOINT_USERS;
-
   // 0. Get Authenticated Config - getAuthenticatedConfig()
   private async getAuthenticatedConfig(): Promise<AxiosRequestConfig> {
     const isAuthenticated = store.getState().login.isLoggedIn;
@@ -126,39 +120,6 @@ export default class ProfileService {
 
     const userId = sessionStorage.getItem("userId");
     const response = await axios.get(
-      `${this.uri}/profile/favorite/${userId}`,
-      config
-    );
-    return response.data;
-  }
-
-  // 8. Add favorite Post for profile - addFavoriteProfile()
-  async addPostFavoriteProfile(): Promise<any> {
-    const config = await this.getAuthenticatedConfig();
-    const userId = sessionStorage.getItem("userId");
-    const response = await axios.post(
-      `${this.uri}/profile/favorite/${userId}`,
-      config
-    );
-    return response.data;
-  }
-
-  // 9. Delete favorite Post for profile - deleteFavoriteProfile()
-  async deletePostFavoriteProfile(): Promise<any> {
-    const config = await this.getAuthenticatedConfig();
-    const userId = sessionStorage.getItem("userId");
-    const response = await axios.delete(
-      `${this.uri}/profile/favorite/${userId}`,
-      config
-    );
-    return response.data;
-  }
-
-  // 10. Update favorite Post for profile - upDateFavoriteComment()
-  async updatePostFavoriteProfile(): Promise<any> {
-    const config = await this.getAuthenticatedConfig();
-    const userId = sessionStorage.getItem("userId");
-    const response = await axios.put(
       `${this.uri}/profile/favorite/${userId}`,
       config
     );
