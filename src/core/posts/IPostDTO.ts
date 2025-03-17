@@ -2,7 +2,7 @@ export interface IPostDTO {
   id: number;
   title: string;
   message: string;
-  creatorId: number;
+  userId: number;
   location: string;
   loves: number;
   comments: any[];
@@ -14,8 +14,7 @@ export interface IPostDTO {
   source_image: string;
   alt_avatar: string;
   source_avatar: string;
-  creatorName: string;
+  userName: string;
   role: string;
   url_avatar: string;
-  createdAt: string;
 }

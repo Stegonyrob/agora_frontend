@@ -12,6 +12,8 @@ interface PostFormProps {
   onClose: () => void;
   onSubmit: (post: IPost) => Promise<void>;
   show: boolean;
+  userId: number;
+  userName: string;
 }
 
 const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) => {
@@ -34,8 +36,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
 
     const newPost: IPostDTO = {
       id: post?.id || 0,
-      creationDate: new Date(),
-      userId: 1,
+      userName: post?.userName || '',
       title,
       message,
       location: '',
@@ -45,14 +46,24 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
       tags: [],
       images: [],
       isPublished: false,
-      publishDate: '',
       alt_image: '',
       source_image: '',
       alt_avatar: '',
       source_avatar: '',
-      username: '',
+      userId: post?.userId || 0,
       role: '',
       url_avatar: ''
+    };
+
+    if (isAuthenticated) {
+      newPost.userId = role === 'admin' ? 0 : 1;
+      newPost.userName = role === 'admin' ? 'admin' : 'user';
+      newPost.role = role === 'admin' ? 'admin' : 'user';
+      newPost.url_avatar = role === 'admin' ? 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=identicon' : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm';
+    }
+
+    if (post) {
+
     };
 
     try {

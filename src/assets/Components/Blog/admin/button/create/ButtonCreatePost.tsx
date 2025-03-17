@@ -7,9 +7,11 @@ import PostForm from "./modal/PostForm";
 
 interface ButtonCreatePostProps {
     onSubmit: (post: IPost) => Promise<void>;
+    userId: number;
+    userName: string;
 }
 
-const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit }) => {
+const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId, userName }) => {
     const [show, setShow] = useState(false);
 
     const handleShow = () => {
@@ -26,17 +28,41 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit }) => {
         setShow(false);
     };
 
-    const handleCreate = async (newPost: IPostDTO) => {
+    const handleCreate = async (newPost: IPostDTO | null | undefined) => {
+        if (newPost == null) {
+            console.error("Error creating post: newPost is null or undefined");
+            return;
+        }
+
         // Sanitize inputs
-        newPost.title = DOMPurify.sanitize(newPost.title);
-        newPost.message = DOMPurify.sanitize(newPost.message);
+        newPost.title = DOMPurify.sanitize(newPost.title) || '';
+        newPost.message = DOMPurify.sanitize(newPost.message) || '';
+
+        const userRole = sessionStorage.getItem("userRole");
+        if (userRole !== "admin") {
+            console.error("Only administrators can create posts.");
+            alert("Only administrators can create posts.");
+            return;
+        }
 
         const post: IPost = {
             ...newPost,
-            // Add any additional properties required by IPost here
+            userId,
+            userName
         };
-        await onSubmit(post);
-        handleClose();
+
+        try {
+            await onSubmit(post);
+            handleClose();
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error("Error creating post: ", error);
+                alert(`No se pudo crear el post: ${error.message}. Inténtelo de nuevo más tarde.`);
+            } else {
+                console.error("Error creating post: unknown error");
+                alert("No se pudo crear el post, por favor intentenlo más tarde.");
+            }
+        }
     };
 
     return (
@@ -45,8 +71,7 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit }) => {
             <PostForm
                 onSubmit={handleCreate}
                 onClose={handleClose}
-                show={show}
-            />
+                show={show} userId={0} userName={''} />
 
         </div>
     );
