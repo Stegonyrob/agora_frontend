@@ -43,7 +43,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
             <h5>Post ID: {post?.id ?? 'No hay ID'}</h5>
             <p>{post?.creationDate?.toLocaleString() ?? '--/--/--'}</p>
             <ImagePost post={post} source={''} alt={''} />
-            <h6>{post?.title ?? 'No hay título'}</h6>
+            <h5>{post?.title ?? 'No hay título'}</h5>
             <p className={styles.message}>
                 {showFullText ? post?.message : messagePreview}
                 {post?.message.length > 200 && !showFullText && '...'}<button onClick={toggleText} className={styles.toggleButton}>
@@ -51,8 +51,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
                 </button>
             </p>
 
-            <ButtonEditPost post={post} onSubmit={onEdit} userId={post?.userId ?? 0} label="Edit" postId={post?.id ?? 0} />
-            <ButtonArchive
+            <ButtonEditPost
+                post={post}
+                onSubmit={(postDTO: IPostDTO) => onEdit(postDTO as IPost)}
+                userId={post?.userId ?? 0}
+                label="Edit"
+                postId={post?.id ?? 0} userName={''} /><ButtonArchive
                 post={post}
                 onArchive={async (postId: number) => {
                     const result = await onArchive(postId);

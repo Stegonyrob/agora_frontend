@@ -20,16 +20,22 @@ interface User {
 
 interface ButtonEditProps {
     postId: number;
-    creatorId: number;
-    creatorName: string;
+    userId: number;
+    userName: string;
     post?: IPost;
     onSubmit: (post: IPostDTO) => void;
     label: string;
 }
 
-const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, creatorId, post, onSubmit }) => {
+const ButtonEdit: React.FC<ButtonEditProps> = ({ postId, post, onSubmit }) => {
     const [show, setShow] = useState(false);
-
+    const userRole = sessionStorage.getItem("role");
+    const userName = sessionStorage.getItem("userName");
+    const userId = sessionStorage.getItem("userId");
+    console.log("userName:", userName);
+    console.log("userId:", userId);
+    console.log("userRole:", userRole);
+    console.log("ButtonArchive: userId", userId);
     const handleShow = () => {
         console.log("Showing Edit Post modal");
         setShow(true);

@@ -5,17 +5,24 @@ import styles from '../ButtonIcons.module.scss';
 
 
 
+
 interface ButtonArchiveProps {
     postId: number;
-    userId: number;
+    userId: number | null;
     post?: IPost;
     onArchive: (postId: number) => Promise<boolean>;
     onSubmit: (post: IPost) => void;
     label: string;
 }
 
-const ButtonArchive: React.FC<ButtonArchiveProps> = ({ userId, post, onSubmit, onArchive }) => {
+const ButtonArchive: React.FC<ButtonArchiveProps> = ({ post, onSubmit, onArchive }) => {
     const apiPost = new PostService();
+    const userRole = sessionStorage.getItem("role");
+    const userName = sessionStorage.getItem("userName");
+    const userId = sessionStorage.getItem("userId");
+    console.log("userName:", userName);
+    console.log("userId:", userId);
+    console.log("userRole:", userRole);
     console.log("ButtonArchive: userId", userId);
 
 

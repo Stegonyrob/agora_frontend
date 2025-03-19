@@ -39,7 +39,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList,) => {
     console.log("userId:", userId);
     console.log("userRole:", userRole);
     // Verificar si el usuario es admin
-    if (userRole !== "admin") {
+    if (userRole !== "ROLE_ADMIN") {
         console.error("Access denied: Only administrators can access this page.");
         alert("Acceso denegado: Solo los administradores pueden acceder a esta página.");
         return null; // Evitar renderizar el componente si no es admin
