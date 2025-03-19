@@ -24,7 +24,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
     const [showFullText, setShowFullText] = useState(false);
     const messagePreview = post?.message?.slice(0, 200) ?? '';
     const isArchived = post?.isArchived ?? false;
-
+    console.log('PostCard:', post);
     const toggleText = () => {
         if (post) {
             setShowFullText(prev => !prev);
@@ -41,7 +41,23 @@ const PostCard: React.FC<PostCardProps> = ({ post, onEdit, onDelete, onArchive, 
     return (
         <div className={styles.card}>
             <h5>Post ID: {post?.id ?? 'No hay ID'}</h5>
-            <p>{post?.creationDate?.toLocaleString() ?? '--/--/--'}</p>
+            <p>
+                {post?.creationDate && Array.isArray(post.creationDate)
+                    ? new Date(
+                        post.creationDate[0], // Año
+                        post.creationDate[1] - 1, // Mes (0-indexado en JavaScript)
+                        post.creationDate[2], // Día
+                        post.creationDate[3] || 0, // Hora
+                        post.creationDate[4] || 0, // Minuto
+                        post.creationDate[5] || 0, // Segundo
+                        post.creationDate[6] || 0 // Milisegundo
+                    ).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                    })
+                    : '--/--/--'}
+            </p>
             <ImagePost post={post} source={''} alt={''} />
             <h5>{post?.title ?? 'No hay título'}</h5>
             <p className={styles.message}>
