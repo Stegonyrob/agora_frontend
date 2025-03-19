@@ -70,7 +70,7 @@ export default class PostService {
   // 3. Created Posts - createPost() 200 ok
   async createPost(newPost: IPostDTO): Promise<IPost> {
     console.log("Creating post...");
-    console.log("newPost:", newPost);
+    console.log("newPost before adding userId:", newPost);
 
     const config: AxiosRequestConfig = {
       headers: {
@@ -85,7 +85,8 @@ export default class PostService {
       throw new Error("User ID is missing from session storage.");
     }
     newPost.userId = parseInt(userId, 10);
-    console.log("User ID:", userId);
+    newPost.userName = sessionStorage.getItem("userName") || "";
+    console.log("newPost after adding userId:", newPost);
 
     try {
       console.log("Sending POST request to:", this.uri);

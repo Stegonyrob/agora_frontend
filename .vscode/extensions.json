@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "zhuyunfei.monica-ssr-tools"
+        "zhuyunfei.monica-ssr-tools",
+        "wallabyjs.console-ninja"
     ]
 }

@@ -16,21 +16,40 @@ interface PostList {
     onCreate: (newPost: IPostDTO) => Promise<void>
     userId: number | null;
     postId: number;
-
     onArchive: (postId: number) => Promise<boolean>;
     onUnarchive: (postId: number) => Promise<boolean>;
     onSubmit: (post: IPost) => void;
     onHide: () => void;
-
+    role: string | null;
+    userName: string | null;
+    userRole: string | null;
 }
 
 
 
-const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
+const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList,) => {
     const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
     const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
     const [showForm, setShowForm] = React.useState(false);
 
+    // Obtener userId y userRole desde sessionStorage
+    const userRole = sessionStorage.getItem("role");
+    const userName = sessionStorage.getItem("userName");
+    console.log("userName:", userName);
+    console.log("userId:", userId);
+    console.log("userRole:", userRole);
+    // Verificar si el usuario es admin
+    if (userRole !== "admin") {
+        console.error("Access denied: Only administrators can access this page.");
+        alert("Acceso denegado: Solo los administradores pueden acceder a esta página.");
+        return null; // Evitar renderizar el componente si no es admin
+    }
+
+
+
+    console.log("userId:", userId);
+    console.log("userRole:", userRole);
+    console.log("userName:", userName);
     const handleCreatePost = () => {
         setShowForm(true);
     };
@@ -87,9 +106,9 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
 
                     role: postToDelete.role,
                     url_avatar: postToDelete.url_avatar,
-                    creatorId: postToDelete.creatorId,
-                    creatorName: postToDelete.creatorName,
-                    createdAt: postToDelete.createdAt,
+                    userId: postToDelete.userId,
+                    userName: postToDelete.userName,
+
                 };
                 await apiPost.deletePost(postDTO, postId);
             } else {
@@ -129,9 +148,9 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 source_image: '',
                 alt_avatar: '',
                 source_avatar: '',
-                creatorId: 0,
-                creatorName: '',
-                createdAt: '',
+                userId: 0,
+                userName: '',
+
                 role: '',
                 url_avatar: '',
 
@@ -169,9 +188,9 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
                 source_image: '',
                 alt_avatar: '',
                 source_avatar: '',
-                creatorId: 0,
-                creatorName: '',
-                createdAt: '',
+                userId: 0,
+                userName: '',
+
                 role: '',
                 url_avatar: ''
             };
@@ -263,7 +282,7 @@ const PostListAdmin = ({ userId }: { userId: number }, { post }: PostList) => {
         <div className={styles.container}>
             <div className={styles.panel}>
                 <h4 className={styles.title}>Lista de Posts</h4>
-                <ButtonCreatePost onSubmit={handleCreate} />
+                <ButtonCreatePost onSubmit={handleCreate} userId={userId} userName={''} userRole={''} />
 
                 <div className={styles.panelBody}>
                     {fetchedPosts.map(post => (

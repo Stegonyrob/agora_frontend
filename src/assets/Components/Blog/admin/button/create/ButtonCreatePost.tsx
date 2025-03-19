@@ -9,11 +9,12 @@ interface ButtonCreatePostProps {
     onSubmit: (post: IPost) => Promise<void>;
     userId: number;
     userName: string;
+    userRole: string;
 }
 
-const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId, userName }) => {
+const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId }) => {
     const [show, setShow] = useState(false);
-
+    console.log("ButtonCreatePostProps:", { onSubmit, userId });
     const handleShow = () => {
         console.log("Showing Create Post modal");
         setShow(true);
@@ -38,6 +39,8 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId, u
         newPost.title = DOMPurify.sanitize(newPost.title) || '';
         newPost.message = DOMPurify.sanitize(newPost.message) || '';
 
+        const userName = sessionStorage.getItem("userName");
+        console.log("userName:", userName);
         const userRole = sessionStorage.getItem("userRole");
         if (userRole !== "admin") {
             console.error("Only administrators can create posts.");
@@ -48,7 +51,7 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId, u
         const post: IPost = {
             ...newPost,
             userId,
-            userName
+            userName: userName || '',
         };
 
         try {
@@ -71,7 +74,7 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId, u
             <PostForm
                 onSubmit={handleCreate}
                 onClose={handleClose}
-                show={show} userId={0} userName={''} />
+                show={show} userId={userId} userName={''} />
 
         </div>
     );

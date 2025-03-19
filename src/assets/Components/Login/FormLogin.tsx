@@ -54,10 +54,11 @@ const FormLogin: React.FC<FormLoginProps> = () => {
       sessionStorage.setItem('refreshToken', response.refreshToken);
       sessionStorage.setItem('userId', String(response.userId));
       sessionStorage.setItem('userName', userName);
-      sessionStorage.setItem('role', accessToken);
+
 
       // Decodificar el payload del token para obtener los roles del usuario
       const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+      sessionStorage.setItem('role', tokenPayload.roles);
       console.log(tokenPayload.roles);
       // Redirigir al usuario según su rol
       if (tokenPayload.roles === 'ROLE_ADMIN') {
