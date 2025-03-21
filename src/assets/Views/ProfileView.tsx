@@ -1,58 +1,94 @@
-import React from 'react';
+import ProfileForm from "@/assets/Components/Profile/ProfileForm";
+import { IPost } from "@/core/posts/IPost";
+import IProfile from "@/core/profiles/IProfile";
+import IProfileDTO from "@/core/profiles/IProfileDTO";
+import ProfileService from "@/core/profiles/ProfileService";
+import React, { useEffect, useState } from "react";
+import Profile from "../Components/Profile/Profile";
+import styles from "./scss/Views.module.scss";
 
-import ProfileForm from '@/assets/Components/Profile/ProfileForm';
-import { IPost } from '@/core/posts/IPost';
-
-import IProfileDTO from '@/core/profiles/IProfileDTO';
-import styles from './scss/Views.module.scss';
 interface ProfileProps {
     posts: IPost[];
-    onDeletePost?: (postId: string) => void;
-    onEditPost?: (post: IPost) => void;
 }
 
-
 const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
-    console.log('ProfileView: Initial render');
     const [login, setLogin] = React.useState<boolean>(false);
     const [register, setRegister] = React.useState<boolean>(false);
-    const [userId, setUserId] = React.useState<number>(0);
-    const [userName, setUserName] = React.useState<string>('');
 
-    React.useEffect(() => {
-        if (!posts) {
-            console.warn('ProfileView: posts prop is null or undefined');
-        } else {
-            console.log('ProfileView: posts prop has been updated', posts);
+    const [userName, setUserName] = React.useState<string>("John Doe");
+    const [showProfileForm, setShowProfileForm] = React.useState<boolean>(false);
+    const [profile, setProfile] = useState<IProfile | null>(null);
+
+    const profileService = new ProfileService();
+
+    // Obtener el userId desde sessionStorage
+    const userId = sessionStorage.getItem("userId");
+
+    useEffect(() => {
+        if (userId) {
+            fetchProfileData(parseInt(userId, 10));
         }
-    }, [posts]);
+    }, [userId]);
 
-    console.log('ProfileView: Current state:', { login, register, userId, userName });
+    const fetchProfileData = async (id: number) => {
+        if (!id) {
+            console.error("Invalid user ID");
+            return;
+        }
 
-    const handleSubmit = (profileDTO: IProfileDTO) => {
-        console.log('ProfileView: handleSubmit called with profileDTO:', profileDTO);
         try {
-            if (!profileDTO) {
-                throw new Error('ProfileView: profileDTO is null or undefined');
+            const fetchedProfile = await profileService.fetchProfileById(id);
+            if (!fetchedProfile) {
+                console.error("Profile data not found");
+                return;
             }
-            console.log('ProfileView: onSubmit profileDTO:', profileDTO);
+            setProfile(fetchedProfile);
         } catch (error) {
-            console.error('ProfileView handleSubmit error:', error);
+            console.error("Error fetching profile data:", error);
+        }
+    };
+
+    const handleOpenProfileForm = () => setShowProfileForm(true);
+    const handleCloseProfileForm = () => setShowProfileForm(false);
+
+    const handleSubmit = async (updatedProfile: IProfileDTO) => {
+        if (!profile) {
+            console.error("Profile not found");
+            return;
+        }
+
+        try {
+            const updatedData = await profileService.updateProfile(profile.id, updatedProfile);
+            setProfile(updatedData);
+            setShowProfileForm(false);
+        } catch (error) {
+            console.error("Error updating profile:", error);
         }
     };
 
     return (
         <div className={styles.container}>
+            <h1>Perfil de Usuario</h1>
+            {profile ? (
+                <Profile profile={profile} onEdit={handleOpenProfileForm} />
+            ) : (
+                <p>No profile data available.</p>
+            )}
+
             <ProfileForm
-                userId={userId}
+                userId={parseInt(userId || "", 10)}
                 setLogin={setLogin}
                 setRegister={setRegister}
-                setUserId={setUserId}
                 setUserName={setUserName}
                 onSubmit={handleSubmit}
                 profileDTO={undefined}
+                profile={profile}
+                onSelect={(profile: IProfile) => console.log("Profile selected:", profile)}
+                onClose={handleCloseProfileForm}
+                show={showProfileForm}
+                setRole={(value: React.SetStateAction<string>) => console.log("Role set:", value)}
+                setUserId={(value: React.SetStateAction<number>) => console.log("User ID set:", value)}
             />
-
         </div>
     );
 };

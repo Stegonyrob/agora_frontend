@@ -9,14 +9,19 @@ import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 
 interface ProfileFormProps {
+  userId: number;
+  setLogin: React.Dispatch<React.SetStateAction<boolean>>;
+  setRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  setUserId: React.Dispatch<React.SetStateAction<number>>;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
+  onSubmit: (profileDTO: IProfileDTO) => void;
+  profileDTO: IProfileDTO | undefined;
   profile: IProfile | null;
   onSelect: (profile: IProfile) => void;
-  onSubmit: (updatedProfile: IProfileDTO) => void;
   onClose: () => void;
   show: boolean;
-  userId: number;
+  setRole: (value: React.SetStateAction<string>) => void;
 }
-
 const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormProps) => {
   const [profileDTOState, setProfileDTOState] = useState<IProfileDTO>(
     profile ? { ...profile } as IProfileDTO : { id: 0, firstName: '', lastName1: '', lastName2: '', relationship: '', email: '', avatar: '', city: '', country: '', phone: '', password: '', confirmPassword: '' }
@@ -106,7 +111,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Primer Apellido :
               <input
@@ -120,7 +125,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Segundo Apellido:
               <input
@@ -134,7 +139,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Parentesco:
               <input
@@ -148,7 +153,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Email:
               <input
@@ -162,7 +167,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Imagen de perfil:
               <Avatar
@@ -184,7 +189,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Ciudad:
               <input
@@ -198,7 +203,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               País:
               <input
@@ -212,7 +217,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Teléfono:
               <input
@@ -226,7 +231,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Contraseña:
               <input
@@ -240,7 +245,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <label>
               Confirmar contraseña:
               <input
@@ -254,7 +259,7 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
                 }
               />
             </label>
-            <br />
+
             <Button type="submit" variant="primary">
               {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
             </Button>
