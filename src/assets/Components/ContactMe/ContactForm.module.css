@@ -1,0 +1,49 @@
+.form {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: azure;
+  width: 91%;
+  margin-left: 2.8rem;
+  margin-bottom: 10rem;
+}
+
+.form label {
+  font-size: 2rem;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  background-color: rgba(133, 124, 124, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  margin: 1rem;
+  font-size: 1.5rem;
+}
+
+.form textarea {
+  text-align: justify;
+  height: 5rem;
+  color: #f8f4f4;
+  width: 52rem;
+}
+
+.form label {
+  margin: 2rem;
+}
+
+.form button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  margin-left: 35rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+}
+
+.form button:hover {
+  background-color: #0056b3;
+}

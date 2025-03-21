@@ -1,56 +1,69 @@
-import { FormEvent, useState } from 'react';
-
-interface FormState {
- name: string;
- email: string;
- message: string;
-}
-
+import contactService from "@/core/contact/contactService";
+import React, { FormEvent, useState } from "react";
+import styles from './ContactForm.module.scss';
 const ContactForm: React.FC = () => {
- const [formState, setFormState] = useState<FormState>({
-    name: '',
-    email: '',
-    message: '',
- });
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
- const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const [status, setStatus] = useState<string | null>(null);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-    setFormState(prevState => ({ ...prevState, [name]: value }));
- };
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  };
 
- const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    // Aquí es donde se produce el efecto secundario: enviamos la información del formulario
-    await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formState),
-    });
+    try {
+      await contactService.sendContactForm(formState);
+      setStatus("Mensaje enviado exitosamente.");
+      setFormState({ name: "", email: "", message: "" }); // Limpiar el formulario
+    } catch (error) {
+      setStatus("Error al enviar el mensaje. Inténtalo nuevamente.");
+    }
+  };
 
-    // Limpiamos el formulario después de enviar la información
-    setFormState({ name: '', email: '', message: '' });
- };
+  return (
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <label>
+        Nombre*:
+        <input
+          type="text"
+          name="name"
+          value={formState.name}
+          onChange={handleChange}
+          required
+        />
+      </label>
 
- return (
-    <form onSubmit={handleSubmit}>
+
       <label>
-        Name:
-        <input type="text" name="name" value={formState.name} onChange={handleChange} />
+        Correo Electrónico*:
+        <input
+          type="email"
+          name="email"
+          value={formState.email}
+          onChange={handleChange}
+          required
+        />
       </label>
       <label>
-        Email:
-        <input type="email" name="email" value={formState.email} onChange={handleChange} />
+        Mensaje*:
+        <textarea
+          name="message"
+          value={formState.message}
+          onChange={handleChange}
+          required
+        />
       </label>
-      <label>
-        Message:
-        <textarea name="message" value={formState.message} onChange={handleChange} />
-      </label>
-      <button type="submit">Send</button>
+      <button type="submit">Enviar</button>
+      {status && <p>{status}</p>}
     </form>
- );
+  );
 };
 
 export default ContactForm;
