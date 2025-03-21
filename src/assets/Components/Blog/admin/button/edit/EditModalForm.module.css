@@ -1,55 +1,50 @@
-.modalHeader {
+.modalCard {
+  position: fixed;
+  bottom: 15%;
+}
+
+.modalCard .modalHeader {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem;
   color: azure;
-}
-
-.modalHeader .modalTitle {
   font-size: 3rem;
-  margin-left: 10rem;
+  text-align: center;
 }
 
-.modalBody {
+.modalCard .modalBody {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem;
   color: azure;
   width: 50rem;
 }
 
-.modalBody input,
-.modalBody textarea {
+.modalCard .modalBody input,
+.modalCard .modalBody textarea {
   width: 45rem;
   background-color: rgba(133, 124, 124, 0.8);
-  margin-top: 1rem;
-  color: azure;
-  margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
-  margin: 1rem;
   margin-left: -0.5rem;
+  padding: 0.8rem;
 }
 
-.modalBody textarea {
+.modalCard .modalBody textarea {
   text-align: justify;
   height: 30rem;
   color: #f8f4f4;
 }
 
-.modalBody label {
+.modalCard .modalBody label {
   margin-left: 2rem;
 }
 
-.modalBody button {
+.modalCard .modalBody button {
   padding: 1rem 2rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #4400ff;
-  color: white;
   font-size: 1rem;
   margin-left: 19.5rem;
   cursor: pointer;
 }
 
-.modalBody button:hover {
+.modalCard .modalBody button:hover {
   background-color: #0056b3;
 }
