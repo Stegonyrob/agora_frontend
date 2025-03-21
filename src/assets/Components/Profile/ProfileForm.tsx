@@ -272,6 +272,3 @@ const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormPr
 
 export default ProfileForm;
 
-
-
-

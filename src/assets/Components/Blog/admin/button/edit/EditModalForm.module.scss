@@ -25,12 +25,11 @@ input,
 textarea {
   width: 45rem;
   background-color: rgba(133, 124, 124, 0.8);
-
   border: 1px solid #ccc;
   border-radius: 0.5rem;
-
   margin-left: -0.5rem;
   padding: 0.8rem;
+  margin-bottom: 1rem;
 }
 textarea {
   text-align: justify;
@@ -43,8 +42,8 @@ label{
 
 button {
   padding: 1rem 2rem;
-  font-size: 1rem;
-  margin-left: 19.5rem;
+  font-size: 1.7rem;
+  margin-left: 17rem;
 
   cursor: pointer;
 

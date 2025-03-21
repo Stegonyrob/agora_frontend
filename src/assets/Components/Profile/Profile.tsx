@@ -13,7 +13,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
 
     return (
         <div className={styles.profileContainer}>
-            <img className={styles.image} src={profile.avatar} alt="Profile Avatar" />
+            <img className={styles.avatar} src={profile.avatar} alt="Profile Avatar" />
             <p><strong>Nombre:</strong> {profile.firstName} </p>
             <p><strong>Primer Apellido:</strong> </p>
             <p><strong>Segundo Apellido:</strong> {profile.lastName2}</p>
