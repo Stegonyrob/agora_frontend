@@ -7,7 +7,10 @@
   text-shadow: none;
   transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
   background-color: #000;
-  /* Cambia el color de fondo a negro */
+  color: azure;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  cursor: pointer;
 }
 
 .container .buttonCreate:hover {

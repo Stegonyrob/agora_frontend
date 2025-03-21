@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import styles from './ButtonAddImage.module.scss';
 interface ButtonAddImageProps {
     onImageSelected: (imageSrc: string, imageTitle: string) => void;
 }
@@ -22,9 +22,8 @@ const ButtonAddImage: React.FC<ButtonAddImageProps> = ({ onImageSelected }) => {
     };
 
     return (
-        <div>
-
-            <input type="file" className="file-upload-input" onChange={handleImageChange} />
+        <div className={styles.buttonAddImage}>
+            <input type="file" className={styles.buttonAddImage} onChange={handleImageChange} />
         </div>
     );
 };

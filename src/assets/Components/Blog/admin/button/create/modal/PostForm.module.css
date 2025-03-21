@@ -4,51 +4,48 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  
-  .modal-content {
-    margin: 0 auto;
-    padding: 2rem;
-    width: 50rem;
-    justify-content: center;
-    align-items: center;
+}
 
-  }
-  .modal-title,.modal-body {
- 
-    font-size: 5rem;
-  }
-input,
-textarea {
+.postForm .modal-content {
+  margin: 0 auto;
+  padding: 2rem;
+  width: 50rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.postForm .modal-title, .postForm .modal-body {
+  font-size: 5rem;
+}
+
+.postForm input,
+.postForm textarea {
   width: 45rem;
   background-color: rgba(133, 124, 124, 0.8);
   border: 1px solid #ccc;
   border-radius: 0.5rem;
- 
   padding: 0.8rem;
-  margin : 1rem;
-  font-size:1.5rem;
+  margin: 1rem;
+  font-size: 1.5rem;
 }
-textarea {
+
+.postForm textarea {
   text-align: justify;
   height: 30rem;
   color: #f8f4f4;
 }
-label{
+
+.postForm label {
   margin: 1rem;
 }
 
-
-button {
+.postForm button {
   padding: 1rem 2rem;
   font-size: 1rem;
   margin-left: 19.5rem;
-
   cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-}
 }
 
+.postForm button:hover {
+  background-color: #0056b3;
+}

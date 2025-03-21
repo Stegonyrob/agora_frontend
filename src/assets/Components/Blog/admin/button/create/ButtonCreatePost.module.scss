@@ -7,7 +7,11 @@
   outline-offset: 0px;
   text-shadow: none;
   transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
-  background-color: #000; /* Cambia el color de fondo a negro */
+  background-color: #000; 
+  color: azure;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  cursor: pointer;
 }
 
 .buttonCreate:hover {

@@ -79,7 +79,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
   };
 
   return (
-    <Modal show={show} onHide={onClose} className={styles.postForm}>
+    <Modal dark size="lg" show={show} onHide={onClose} className={styles.postForm}>
       <Modal.Header className={styles.postForm} closeButton>
         <Modal.Title>{post ? 'Editar Post' : 'Crear Post'}</Modal.Title>
       </Modal.Header>
@@ -92,7 +92,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           <br />
 
           <ButtonAddImage onImageSelected={(imageSrc, imageTitle) => {
-            // Aquí puedes agregar la lógica para manejar la imagen seleccionada
+            // Aquí se tiene que  agregar la lógica para manejar la imagen seleccionada
             console.log(imageSrc, imageTitle);
           }} />
           <label>
