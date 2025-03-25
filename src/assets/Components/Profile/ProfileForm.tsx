@@ -1,274 +1,202 @@
-import Avatar from '@/assets/Components/Blog/admin/header/Avatar';
-
 import styles from '@/assets/Components/Blog/admin/button/edit/EditModalForm.module.scss';
+import Avatar from '@/assets/Components/Blog/admin/header/Avatar';
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
 import { validateInput } from '@/utils/validationUtils';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 
 interface ProfileFormProps {
+  profile: IProfileDTO;
+  onSelect?: (profile: IProfile) => void; // Add this if needed
+  onSubmit: (updatedProfile: IProfileDTO) => Promise<void>;
+  onClose: () => void;
+  show: boolean;
   userId: number;
   setLogin: React.Dispatch<React.SetStateAction<boolean>>;
   setRegister: React.Dispatch<React.SetStateAction<boolean>>;
   setUserId: React.Dispatch<React.SetStateAction<number>>;
   setUserName: React.Dispatch<React.SetStateAction<string>>;
-  onSubmit: (profileDTO: IProfileDTO) => void;
-  profileDTO: IProfileDTO | undefined;
-  profile: IProfile | null;
-  onSelect: (profile: IProfile) => void;
-  onClose: () => void;
-  show: boolean;
-  setRole: (value: React.SetStateAction<string>) => void;
 }
-const ProfileForm = ({ userId, profile, onSubmit, onClose, show }: ProfileFormProps) => {
-  const [profileDTOState, setProfileDTOState] = useState<IProfileDTO>(
-    profile ? { ...profile } as IProfileDTO : { id: 0, firstName: '', lastName1: '', lastName2: '', relationship: '', email: '', avatar: '', city: '', country: '', phone: '', password: '', confirmPassword: '' }
-  );
-  const [firstName, setFirstName] = useState('');
-  const [lastName1, setLastName1] = useState('');
-  const [lastName2, setLastName2] = useState('');
-  const [relationship, setRelationship] = useState('');
-  const [email, setEmail] = useState('');
-  const [avatar, setAvatar] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
-  console.log('User ID:', userId);
-  console.log('First Name:', firstName);
-  console.log('ProfileForm profileDTOState:', profileDTOState);
+const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, show }) => {
+  const [formState, setFormState] = useState<IProfileDTO>({
+    id: 0,
+    firstName: "",
+    lastName1: "",
+    lastName2: "",
+    relationship: "",
+    email: "",
+    avatar: "",
+    city: "",
+    country: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Sincronizar los datos del perfil con el estado del formulario
+  useEffect(() => {
+    if (profile) {
+      setFormState(profile);
+    }
+  }, [profile]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Validar los inputs antes de enviarlos al servidor
-    if (!validateInput(profileDTOState.firstName) || !validateInput(profileDTOState.lastName1) || !validateInput(profileDTOState.lastName2) || !validateInput(profileDTOState.relationship) || !validateInput(profileDTOState.email) || !validateInput(profileDTOState.city) || !validateInput(profileDTOState.country) || !validateInput(profileDTOState.phone) || !validateInput(profileDTOState.password) || !validateInput(profileDTOState.confirmPassword)) {
-      // Si los inputs no son válidos, mostrar una alerta y detener el proceso
+    if (!validateInput(formState.firstName) || !validateInput(formState.lastName1) || !validateInput(formState.email)) {
       alert('Invalid input detected.');
       return;
     }
 
-    const newProfile: IProfileDTO = {
-      id: profile?.id || 0,
-      firstName: profileDTOState.firstName || '',
-      lastName1: profileDTOState.lastName1 || '',
-      lastName2: profileDTOState.lastName2 || '',
-      relationship: profileDTOState.relationship || '',
-      email: profileDTOState.email || '',
-      avatar: profileDTOState.avatar || '',
-      city: profileDTOState.city || '',
-      country: profileDTOState.country || '',
-      phone: profileDTOState.phone || '',
-      password: profileDTOState.password || '',
-      confirmPassword: profileDTOState.confirmPassword || '',
-    };
-    console.log('New Profile:', newProfile);
-
-    if (newProfile.password !== newProfile.confirmPassword) {
-      alert('Las contraseñas no coinciden');
-      console.log('Password mismatch');
-      return;
-    }
-
     try {
-      onSubmit(newProfile);
-      console.log('Profile submitted successfully');
+      await onSubmit(formState);
+      onClose();
     } catch (error) {
-      console.error('Error submitting profile:', error);
-      alert('Error al actualizar el perfil');
+      console.error('Error submitting the form:', error);
+      alert('Error al enviar el formulario.');
     }
   };
 
   return (
-    <div>
-      <Modal
-        size="lg"
-        centered
-        show={show}
-        onHide={onClose}
-        className={styles.modalCard}
-      >
-        <Modal.Header className={styles.modalHeader} closeButton>
-          <Modal.Title className={styles.modalTitle}>
-            Formulario de Edición de Perfil
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className={styles.modalBody}>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Nombre:
-              <input
-                type="text"
-                value={profileDTOState.firstName || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    firstName: e.target.value,
-                  })
-                }
-              />
-            </label>
+    <Modal
+      size="lg"
+      centered
+      show={show}
+      onHide={onClose}
+      className={styles.modalCard}
+    >
+      <Modal.Header className={styles.modalHeader} closeButton>
+        <Modal.Title className={styles.modalTitle}>
+          Formulario de Edición de Perfil
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className={styles.modalBody}>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="firstName">Nombre:</label>
+          <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            value={formState.firstName || ''}
+            onChange={handleChange}
+            required
+          />
 
-            <label>
-              Primer Apellido :
-              <input
-                type="text"
-                value={profileDTOState.lastName1 || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    lastName1: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="lastName1">Primer Apellido:</label>
+          <input
+            id="lastName1"
+            type="text"
+            name="lastName1"
+            value={formState.lastName1 || ''}
+            onChange={handleChange}
+            required
+          />
 
-            <label>
-              Segundo Apellido:
-              <input
-                type="text"
-                value={profileDTOState.lastName2 || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    lastName2: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="lastName2">Segundo Apellido:</label>
+          <input
+            id="lastName2"
+            type="text"
+            name="lastName2"
+            value={formState.lastName2 || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Parentesco:
-              <input
-                type="text"
-                value={profileDTOState.relationship || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    relationship: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="relationship">Parentesco:</label>
+          <input
+            id="relationship"
+            type="text"
+            name="relationship"
+            value={formState.relationship || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Email:
-              <input
-                type="text"
-                value={profileDTOState.email || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    email: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={formState.email || ''}
+            onChange={handleChange}
+            required
+          />
 
-            <label>
-              Imagen de perfil:
-              <Avatar
-                source_avatar={profileDTOState.avatar || ''}
-                url_avatar={profileDTOState.avatar || ''}
-                alt_avatar={profileDTOState.avatar || ''}
-                userId={userId}
-                userName={profileDTOState.firstName || ''}
-                source={''}
-              />
-              <input
-                type="text"
-                value={profileDTOState.avatar || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    avatar: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="avatar">Imagen de perfil:</label>
+          <Avatar
+            source_avatar={formState.avatar || ''}
+            url_avatar={formState.avatar || ''}
+            alt_avatar={formState.avatar || ''}
+            userId={formState.id}
+            userName={formState.firstName || ''}
+            source={''}
+          />
+          <input
+            id="avatar"
+            type="text"
+            name="avatar"
+            value={formState.avatar || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Ciudad:
-              <input
-                type="text"
-                value={profileDTOState.city || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    city: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="city">Ciudad:</label>
+          <input
+            id="city"
+            type="text"
+            name="city"
+            value={formState.city || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              País:
-              <input
-                type="text"
-                value={profileDTOState.country || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    country: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="country">País:</label>
+          <input
+            id="country"
+            type="text"
+            name="country"
+            value={formState.country || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Teléfono:
-              <input
-                type="text"
-                value={profileDTOState.phone || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    phone: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="phone">Teléfono:</label>
+          <input
+            id="phone"
+            type="text"
+            name="phone"
+            value={formState.phone || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Contraseña:
-              <input
-                type="password"
-                value={profileDTOState.password || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    password: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="password">Contraseña:</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            value={formState.password || ''}
+            onChange={handleChange}
+          />
 
-            <label>
-              Confirmar contraseña:
-              <input
-                type="password"
-                value={profileDTOState.confirmPassword || ''}
-                onChange={(e) =>
-                  setProfileDTOState({
-                    ...profileDTOState,
-                    confirmPassword: e.target.value,
-                  })
-                }
-              />
-            </label>
+          <label htmlFor="confirmPassword">Confirmar contraseña:</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formState.confirmPassword || ''}
+            onChange={handleChange}
+          />
 
-            <Button type="submit" variant="primary">
-              {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
-            </Button>
-          </form>
-        </Modal.Body>
-      </Modal>
-    </div>
+          <Button type="submit" variant="primary">
+            {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
+          </Button>
+        </form>
+      </Modal.Body>
+    </Modal>
   );
 };
 
 export default ProfileForm;
-

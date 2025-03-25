@@ -35,6 +35,7 @@ const ButtonEditProfile: React.FC<ButtonEditProps> = ({ userId, userName, onSubm
         const loadProfile = async () => {
             try {
                 const fetchedProfileById = await apiProfile.fetchProfileById(userId);
+                console.log("estos son los datos:", fetchedProfileById); // Verifica los datos cargados
                 setSelectedProfile(fetchedProfileById);
             } catch (error) {
                 console.error("Error loading profile: ", error);
@@ -79,6 +80,10 @@ const ButtonEditProfile: React.FC<ButtonEditProps> = ({ userId, userName, onSubm
                     onClose={handleCloseModal}
                     show={showModal}
                     userId={userId}
+                    setLogin={() => console.log("Set login")}
+                    setRegister={() => console.log("Set register")}
+                    setUserId={() => console.log("Set user ID")}
+                    setUserName={() => console.log("Set user name")}
                 />
             )}
         </div>
