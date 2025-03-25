@@ -1,7 +1,51 @@
 .modalCard {
-    
-    position: fixed;
-    
-    bottom: 15%;
+ position: fixed;
+ bottom: 15%;
 
+.modalHeader {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  color: azure;
+  font-size: 1.5rem;
+
+  }
+
+.modalBody {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  color: azure;
+  width: 50rem;
+ 
+
+input,
+textarea {
+  width: 45rem;
+  background-color: rgba(133, 124, 124, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+
+  padding: 0.8rem;
+  margin: 1rem;
+}
+textarea {
+  text-align: justify;
+  height: 30rem;
+  color: #f8f4f4;
+}
+label{
+  margin-left: 2rem;
+}
+
+button {
+  padding: 1rem 2rem;
+  font-size: 1.7rem;
+  margin-left: 17rem;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+}   
 }
