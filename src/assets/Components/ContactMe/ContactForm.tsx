@@ -1,6 +1,7 @@
 import contactService from "@/core/contact/contactService";
 import React, { FormEvent, useState } from "react";
 import styles from './ContactForm.module.scss';
+
 const ContactForm: React.FC = () => {
   const [formState, setFormState] = useState({
     name: "",
@@ -15,8 +16,24 @@ const ContactForm: React.FC = () => {
     setFormState((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const validateInput = (input: string): boolean => {
+    // Evitar caracteres maliciosos como SQL o scripts
+    const forbiddenChars = /['"<>;(){}]/;
+    return !forbiddenChars.test(input) && input.trim().length > 0;
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+
+    // Validar los campos del formulario
+    if (
+      !validateInput(formState.name) ||
+      !validateInput(formState.email) ||
+      !validateInput(formState.message)
+    ) {
+      setStatus("Por favor, revisa los campos. Hay caracteres no permitidos.");
+      return;
+    }
 
     try {
       await contactService.sendContactForm(formState);
@@ -40,7 +57,6 @@ const ContactForm: React.FC = () => {
         />
       </label>
 
-
       <label>
         Correo Electrónico*:
         <input
@@ -51,6 +67,7 @@ const ContactForm: React.FC = () => {
           required
         />
       </label>
+
       <label>
         Mensaje*:
         <textarea
@@ -60,6 +77,7 @@ const ContactForm: React.FC = () => {
           required
         />
       </label>
+
       <button type="submit">Enviar</button>
       {status && <p>{status}</p>}
     </form>
