@@ -11,8 +11,6 @@ import swrConfig from "./swrConfig";
 import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";
 import AgoraView from "@/assets/Views/AgoraView";
-import CondicionesDesarrolloView from "@/assets/Views/CondDesarrolloView";
-import DificultadAprendizajeView from "@/assets/Views/DifAprendizajeView";
 import HomeView from "@/assets/Views/HomeView";
 import LoginView from "@/assets/Views/LoginView";
 import NeurodiversityView from "@/assets/Views/NeurodiversityView";
@@ -24,6 +22,8 @@ import TeaView from "@/assets/Views/TeaView";
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
 import BlogView from "@/assets/Views/BlogView";
+import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
+import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
 
 const App: React.FC = () => {
@@ -40,8 +40,8 @@ const App: React.FC = () => {
             <Route path="agora" element={<AgoraView />} />
             <Route path="cea" element={<TeaView />} />
             <Route path="tda_Tdh" element={<Tda_TdhView />} />
-            <Route path="aprendizaje" element={<DificultadAprendizajeView />} />
-            <Route path="desarrollo" element={<CondicionesDesarrolloView />} />
+            <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
+            <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
             <Route path="login" element={<LoginView />} />
             <Route path="register" element={<RegisterView />} />
             <Route path="*" element={<Error404View />} />

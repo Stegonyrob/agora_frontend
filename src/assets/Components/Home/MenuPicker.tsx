@@ -18,10 +18,11 @@ const ColorPickerMenu = () => {
     { name: "Ágora", path: "/Agora" },
     { name: "CEA/TEA", path: "/Tea" },
     { name: "Tda/Tdh", path: "/Tda_Tdh" },
-    { name: "D.Aprendizaje", path: "/Aprendizaje" },
-    { name: "C.Desarrollo", path: "/Desarrollo" },
+    { name: "D.Aprendizaje", path: "/LearningDifficulties" },
+    { name: "C.Desarrollo", path: "/DevelopmentConditions" },
+    { name: "Tr.Comunicación", path: "/Communication" },
   ];
-  const colors = ["rgba(215, 149, 216, 0.99)", "rgba(253, 217, 45, 1)", "rgba(74, 160, 73, 1)", "rgba(182, 159, 222, 1)"];
+  const colors = ["rgba(215, 149, 216, 0.99)", "rgba(253, 217, 45, 1)", "rgba(74, 160, 73, 1)", "rgba(182, 159, 222, 1)", "rgba(210, 120, 222, 1)"];
   const menuItemsJSX = menuItems.map((item, index) => {
     const isMobile = window.innerWidth <= 768;
     const deg = index * (360 / menuItems.length);

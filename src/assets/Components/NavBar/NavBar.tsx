@@ -29,10 +29,9 @@ function NavBar() {
               <NavDropdown.Item href="/Neurodiversity">¿Qué es?</NavDropdown.Item>
               <NavDropdown.Item href="/Tea">Cea/Tea</NavDropdown.Item>
               <NavDropdown.Item href="/Tda_Tdh">Tda_Tdh</NavDropdown.Item>
-              <NavDropdown.Item href="/Aprendizaje">Dificultades del Aprendizaje</NavDropdown.Item>
-              <NavDropdown.Item href="/Desarrollo">Condiciones del Desarrollo</NavDropdown.Item>
-              <NavDropdown.Item href="/Comunicación">Transtornos de la Comunicación</NavDropdown.Item>
-            </NavDropdown>
+              <NavDropdown.Item href="/LearningDifficulties">Dificultades del Aprendizaje</NavDropdown.Item>
+              <NavDropdown.Item href="/DevelopmentConditions">Condiciones del Desarrollo</NavDropdown.Item>
+              <NavDropdown.Item href="/Communication">Trastornos de la Comunicación</NavDropdown.Item>  </NavDropdown>
             <Nav.Link href="/AboutMe">Sobre Mi</Nav.Link>
             <NavDropdown title="Blog" id="basic-nav-dropdown">
               <NavDropdown.Item href="/Blog">Blog</NavDropdown.Item>
