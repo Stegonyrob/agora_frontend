@@ -25,7 +25,6 @@ import BlogView from "@/assets/Views/BlogView";
 import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
-
 const App: React.FC = () => {
   return (
     <SWRConfig value={swrConfig}>
@@ -52,24 +51,17 @@ const App: React.FC = () => {
             <PrivateLayout>
               <ProtectedRoute element={<BlogView />} />
             </PrivateLayout>
-          }>
-          </Route>
-          <Route
-            path="/admin"
-            element={
-              <PrivateLayout>
-                <ProtectedRoute element={<AdminView />} />
-              </PrivateLayout>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateLayout>
-                <ProtectedRoute element={<ProfileView posts={[]} />} />
-              </PrivateLayout>
-            }
-          />
+          } />
+          <Route path="/admin" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminView />} />
+            </PrivateLayout>
+          } />
+          <Route path="/profile" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<ProfileView posts={[]} />} />
+            </PrivateLayout>
+          } />
 
           {/* Redirección de logout */}
           <Route path="/logout" element={<Navigate to="/" replace />} />

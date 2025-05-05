@@ -31,64 +31,98 @@ function CardText({ ids }: CardTextProps) {
   }, []);
 
   return (
-
-
-    <div >
+    <div>
       {isLoading ? (
-        <Card.Body >
-          <Card.Text className={styles.skeleton} >
-            <Placeholder as={Card.Text} animation="glow" >
-              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginBottom: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
-            </Placeholder>
-            <Placeholder as={Card.Text} animation="glow" >
-              <Placeholder xs={4} style={{ width: '10rem', height: '10rem', float: `left`, marginLeft: '2rem', marginTop: '2rem', marginBottom: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem', marginTop: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={9} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
-              <Placeholder xs={11} style={{ marginLeft: '2rem' }} />
-            </Placeholder>
+        <Card.Body>
+          <Card.Text className={styles.skeleton}>
+            <Placeholder
+              as={Card.Text}
+              animation="glow"
+              style={{ marginLeft: "3rem" }}
+            >
+              <Placeholder
+                xs={4}
+                style={{
+                  width: "10rem",
+                  height: "10rem",
+                  float: `left`,
+                  marginLeft: "3rem",
+                  marginBottom: "2rem",
+                  marginRight: "3rem",
+                }}
+              />
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
+              <Placeholder xs={10} style={{ marginLeft: "2.5rem" }} />
+              <Placeholder
+                xs={10}
+                style={{
+                  marginLeft: "2.5rem",
+                  marginBottom: "2rem",
+                  marginTop: "0.8rem",
+                }}
+              />
+            </Placeholder>{" "}  <Placeholder
+              as={Card.Text}
+              animation="glow"
+              style={{ marginLeft: "3rem" }}
+            >
+              <Placeholder
+                xs={4}
+                style={{
+                  width: "10rem",
+                  height: "10rem",
+                  float: `left`,
+                  marginLeft: "3rem",
+                  marginBottom: "2rem",
+                  marginRight: "3rem",
+                }}
+              />
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />{" "}
+              <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
+              <Placeholder xs={10} style={{ marginLeft: "2.5rem" }} />
+              <Placeholder
+                xs={10}
+                style={{
+                  marginLeft: "2.5rem",
+                  marginBottom: "2rem",
+                  marginTop: "0.8rem",
+                }}
+              />
+            </Placeholder>{" "}
           </Card.Text>
-
         </Card.Body>
       ) : (
         <div className={styles.cardContainer}>
-          {texts.filter((text: TextItem) => ids.includes(text.id)).map((currentText: TextItem, index: number) => (
-            <div key={currentText.id} className={styles.cardText}>
-              <Card.Img
-                className={styles.cardImage}
-                src={currentText.image}
-                alt={currentText.description}
-                onError={handleImgLoadingError}
-                style={{ float: index % 2 === 0 ? 'left' : 'right' }}
-              />
-              <Card.Body>
-                <Card.Text className={styles.cardDescription}>
-                  {currentText.description}
-                </Card.Text>
-              </Card.Body>
-            </div>
-          ))}
+          {texts
+            .filter((text: TextItem) => ids.includes(text.id))
+            .map((currentText: TextItem, index: number) => (
+              <div key={currentText.id} className={styles.cardText}>
+                <Card.Img
+                  className={styles.cardImage}
+                  src={currentText.image}
+                  alt={currentText.description}
+                  onError={handleImgLoadingError}
+                  style={{ float: index % 2 === 0 ? "left" : "right" }}
+                />
+                <Card.Body>
+                  <Card.Text className={styles.cardDescription}>
+                    {currentText.description}
+                  </Card.Text>
+                </Card.Body>
+              </div>
+            ))}
         </div>
       )}
     </div>
-
-
   );
 }
 

@@ -1,4 +1,7 @@
+import AdminNavBar from "@/assets/Components/NavBar/AdminNavBar";
 import NavBar from "@/assets/Components/NavBar/NavBar";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 interface PrivateLayoutProps {
@@ -6,11 +9,13 @@ interface PrivateLayoutProps {
 }
 
 const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
+    const { loggedUserRole } = useSelector((state: RootState) => state.login);
+
     return (
         <div>
             {/* Layout content */}
             {/* Barra de navegación para usuarios autenticados */}
-            <NavBar />
+            {loggedUserRole === "ROLE_ADMIN" ? <AdminNavBar /> : <NavBar />}
 
             {/* Contenido de las páginas privadas */}
             <Outlet />
