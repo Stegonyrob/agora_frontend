@@ -1,8 +1,17 @@
+import { logout } from '@/redux/reducers/loginSlice';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import Logo from '../Logo/LogoSimply';
 import styles from './NavBar.module.scss';
 
 function NavBar() {
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    // Optionally, redirect to login page after logout
+    window.location.href = '/login';
+  };
   return (
     <Navbar expand="lg" className="navbar  border-bottom border-body" data-bs-theme="dark" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
       <Container>
@@ -29,7 +38,7 @@ function NavBar() {
               <NavDropdown.Item href="/Blog">Blog</NavDropdown.Item>
               <NavDropdown.Item href="/Login">Login</NavDropdown.Item>
               <NavDropdown.Item href="/Register">Registro</NavDropdown.Item>
-              <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
 
           </Nav>

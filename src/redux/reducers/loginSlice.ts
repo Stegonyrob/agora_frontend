@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ITokenDTO } from "../../core/auth/ITokenDTO";
 
 export interface LoginState {
-  [x: string]: any;
   isLoggedIn: boolean;
   loggedUserId: number;
   loggedUserRole: string | null;
@@ -12,9 +11,8 @@ export interface LoginState {
 
 const initialState: LoginState = {
   isLoggedIn: false,
-
-  loggedUserRole: "",
   loggedUserId: 0,
+  loggedUserRole: "",
   loggedUserName: "",
   JWTToken: {
     userId: 0,
@@ -30,40 +28,54 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action: PayloadAction<ITokenDTO>) => {
-      state.JWTToken = action.payload;
-      sessionStorage.setItem("accessToken", action.payload.accessToken);
-      sessionStorage.setItem("refreshToken", action.payload.refreshToken);
-      sessionStorage.setItem("userId", String(action.payload.userId));
+      try {
+        state.JWTToken = action.payload;
+        sessionStorage.setItem("accessToken", action.payload.accessToken);
+        sessionStorage.setItem("refreshToken", action.payload.refreshToken);
+        sessionStorage.setItem("userId", String(action.payload.userId));
 
-      const decodedToken = JSON.parse(
-        atob(action.payload.accessToken.split(".")[1])
-      );
-      sessionStorage.setItem("role", decodedToken.roles);
-      sessionStorage.setItem("userName", decodedToken.username);
-      sessionStorage.setItem("isLoggedIn", decodedToken.isLoggedIn);
-      state.isLoggedIn = true;
-      state.loggedUserId = action.payload.userId;
-      state.loggedUserRole = decodedToken.roles;
-      state.loggedUserName = decodedToken.username;
+        const decodedToken = JSON.parse(
+          atob(action.payload.accessToken.split(".")[1])
+        );
+        sessionStorage.setItem("role", decodedToken.roles);
+        sessionStorage.setItem("userName", decodedToken.username);
+        sessionStorage.setItem("isLoggedIn", decodedToken.isLoggedIn);
+        state.isLoggedIn = true;
+        state.loggedUserId = action.payload.userId;
+        state.loggedUserRole = decodedToken.roles;
+        state.loggedUserName = decodedToken.username;
 
-      console.log(state.loggedUserRole);
-      console.log(state.loggedUserName);
-      console.log("Updated state: ", state);
-      console.log(state.isLoggedIn);
-      console.log("Updated state and sessionStorage, login action complete");
+        console.log("Login successful. Updated state:", state);
+      } catch (error) {
+        console.error("Error during login:", error);
+        // Handle login failure (e.g., show an error message to the user)
+      }
     },
 
     logout: (state) => {
-      console.log("Redux logout action, clearing session storage");
-      document.cookie = "";
-      sessionStorage.clear();
-      console.log("Session storage cleared, setting state to logged out");
-      state.isLoggedIn = false;
-      console.log("Setting loggedUserId to 0");
-      state.loggedUserId = 0;
-      console.log("Setting loggedUserRole to ''");
-      state.loggedUserRole = "";
-      console.log("Updated state: ", state);
+      try {
+        console.log("Redux logout action, clearing session storage");
+        document.cookie = "";
+        sessionStorage.clear();
+        console.log("Session storage cleared, setting state to logged out");
+
+        state.isLoggedIn = false;
+        state.loggedUserId = 0;
+        state.loggedUserRole = "";
+        state.loggedUserName = "";
+        state.JWTToken = {
+          userId: 0,
+          role: "",
+          accessToken: "",
+          refreshToken: "",
+          userName: "",
+        };
+
+        console.log("Logout completed. Updated state:", state);
+      } catch (error) {
+        console.error("Error during logout:", error);
+        // Handle logout failure (e.g., show an error message to the user)
+      }
     },
   },
 });

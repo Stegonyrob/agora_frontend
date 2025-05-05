@@ -1,16 +1,21 @@
 import NavBar from "@/assets/Components/NavBar/NavBar";
-import React from "react";
 import { Outlet } from "react-router-dom";
 
-const PrivateLayout: React.FC = () => {
+interface PrivateLayoutProps {
+    children: React.ReactNode;
+}
+
+const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
     return (
-        <>
+        <div>
+            {/* Layout content */}
             {/* Barra de navegación para usuarios autenticados */}
             <NavBar />
 
             {/* Contenido de las páginas privadas */}
             <Outlet />
-        </>
+            {children}
+        </div>
     );
 };
 

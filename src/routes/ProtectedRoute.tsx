@@ -1,5 +1,4 @@
 import { RootState } from "@/redux/store";
-import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -8,12 +7,12 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
-    const { user } = useSelector((state: RootState) => state.login);
+    const { isLoggedIn } = useSelector((state: RootState) => state.login);
 
-    const isAuthenticated = user !== null;
-    console.log("isAuthenticated:", isAuthenticated);
+    console.log("isLoggedIn:", isLoggedIn);
 
-    return isAuthenticated ? element : <Navigate to="/login" replace />;
+    // Si no está autenticado, redirige a /login
+    return isLoggedIn ? element : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

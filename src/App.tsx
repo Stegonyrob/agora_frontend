@@ -48,15 +48,28 @@ const App: React.FC = () => {
           </Route>
 
           {/* Rutas privadas */}
-          <Route path="/blog" element={<PrivateLayout />}>
-            <Route path="" element={<ProtectedRoute element={<BlogView />} />} />
+          <Route path="/blog" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<BlogView />} />
+            </PrivateLayout>
+          }>
           </Route>
-          <Route path="/admin" element={<PrivateLayout />}>
-            <Route path="" element={<ProtectedRoute element={<AdminView />} />} />
-          </Route>
-          <Route path="/profile" element={<PrivateLayout />}>
-            <Route path=":userId" element={<ProtectedRoute element={<ProfileView posts={[]} />} />} />
-          </Route>
+          <Route
+            path="/admin"
+            element={
+              <PrivateLayout>
+                <ProtectedRoute element={<AdminView />} />
+              </PrivateLayout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateLayout>
+                <ProtectedRoute element={<ProfileView posts={[]} />} />
+              </PrivateLayout>
+            }
+          />
 
           {/* Redirección de logout */}
           <Route path="/logout" element={<Navigate to="/" replace />} />
