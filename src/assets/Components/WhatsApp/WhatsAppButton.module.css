@@ -1,0 +1,111 @@
+@charset "UTF-8";
+.whatsappContainer {
+  position: fixed;
+  bottom: 5.2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.whatsappButton {
+  background-color: #25d366;
+  /* Color verde de WhatsApp */
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  /* Hacerlo circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.whatsappButton:hover {
+  transform: scale(1.1);
+  /* Efecto de zoom al pasar el mouse */
+}
+
+.whatsappButton .icon {
+  font-size: 3rem;
+  /* Tamaño del ícono */
+}
+
+.whatsappPopup {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 300px;
+  background-color: #ffffff;
+  /* Fondo blanco */
+  border: 1px solid #ddd;
+  /* Borde gris claro */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra */
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popupHeader {
+  display: flex;
+  align-items: center;
+  background-color: #25d366;
+  /* Color verde de WhatsApp */
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.popupHeader .icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.popupHeader .closeButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.popupBody {
+  padding: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.popupBody p {
+  margin: 0 0 10px;
+}
+
+.popupBody .chatButton {
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #25d366;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.popupBody .chatButton:hover {
+  background-color: #1da851;
+}

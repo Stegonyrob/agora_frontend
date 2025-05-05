@@ -8,11 +8,20 @@ class ContactService {
   private apiUrl: string;
 
   constructor() {
-    this.apiUrl = "http://localhost:8080/api/contact"; // Cambia la URL si es necesario
+    console.log("Initializing ContactService constructor");
+    this.apiUrl = "http://localhost:8080/api/v1/all/contact";
+    console.log("API URL set to:", this.apiUrl);
   }
 
   async sendContactForm(data: ContactFormData): Promise<void> {
+    if (!data) {
+      throw new Error("No data provided for contact form submission");
+    }
+
+    console.log("Sending contact form data:", data);
+
     try {
+      console.log("Calling fetch with:", this.apiUrl);
       const response = await fetch(this.apiUrl, {
         method: "POST",
         headers: {
@@ -21,11 +30,23 @@ class ContactService {
         body: JSON.stringify(data),
       });
 
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
-        throw new Error("Error al enviar el formulario de contacto");
+        console.log("Error response is not OK. Getting error text.");
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(
+          "Error al enviar el formulario de contacto: " + errorText
+        );
       }
+
+      console.log("Contact form sent successfully.");
     } catch (error) {
-      console.error("Error en ContactService:", error);
+      console.error(
+        "Error en ContactService:",
+        error instanceof Error ? error.message : error
+      );
       throw error;
     }
   }
