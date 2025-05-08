@@ -2,24 +2,29 @@
   width: 95%;
   margin: auto;
   padding: 1rem;
-margin-bottom: 5rem;
+  margin-bottom: 5rem;
+  display: flex;
+  flex-direction: column;
   .cardText {
     background-color: rgba(0, 0, 0, 0.9);
     padding: 2.5rem;
     margin: auto;
     color: white;
-  
+
     .cardImage {
       max-width: 15rem;
-   margin: 1rem;
-
-   border-radius: 1rem;
-
+      margin: 2rem;
+      border-radius: 1rem;
+    }
+    .cardTitle {
+      font-size: 2rem;
+      margin: 1rem;
+      text-align: left;
     }
 
     .cardDescription {
       text-align: justify;
-      margin-left: 1rem;
+      margin-left: 2rem;
       padding: 1rem;
     }
   }

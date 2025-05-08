@@ -6,12 +6,12 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Placeholder from "react-bootstrap/Placeholder";
-import { useSelector } from "react-redux";
 import styles from "./CardText.module.scss";
+
 
 interface CardTextProps {
   ids: string[];
-  endpoint: string; // Endpoint para cargar los textos específicos de la vista
+  endpoint: string;
 }
 
 function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
@@ -19,7 +19,10 @@ function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>)
 }
 
 function CardText({ ids, endpoint }: CardTextProps) {
-  const { loggedUserRole } = useSelector((state: any) => state.login);
+  console.log("Rendering CardText component");
+  const userRole = sessionStorage.role;
+  const isLoggedIn = sessionStorage.isLoggedIn;
+
   const [texts, setTexts] = useState<ITextItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -27,8 +30,10 @@ function CardText({ ids, endpoint }: CardTextProps) {
 
   useEffect(() => {
     const fetchTexts = async () => {
+      console.log("Fetching texts...");
       try {
         const data = await new TextService().fetchTexts();
+        console.log("Fetched texts:", data);
         setTexts(data);
       } catch (error) {
         console.error("Error fetching texts:", error);
@@ -41,17 +46,25 @@ function CardText({ ids, endpoint }: CardTextProps) {
   }, [endpoint]);
 
   const handleEdit = (text: ITextItem) => {
+    console.log("Editing text:", text);
     setCurrentText(text);
     setShowModal(true);
   };
 
   const handleSave = async () => {
+    console.log("Saving text:", currentText);
     if (currentText) {
       try {
         const updatedText = await new TextService().updateText(
           currentText.id,
-          currentText
+          {
+            ...currentText,
+            title: typeof currentText.title === "string" ? currentText.title : "",
+            content: "",
+            author: ""
+          }
         );
+        console.log("Updated text:", updatedText);
         setTexts((prevTexts) =>
           prevTexts.map((text) =>
             text.id === updatedText.id ? updatedText : text
@@ -65,6 +78,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log("Changing input:", e.target.name, e.target.value);
     if (currentText) {
       setCurrentText({ ...currentText, [e.target.name]: e.target.value });
     }
@@ -104,16 +118,19 @@ function CardText({ ids, endpoint }: CardTextProps) {
               <div key={currentText.id} className={styles.cardText}>
                 <Card.Img
                   className={styles.cardImage}
-                  src={currentText.image}
-                  alt={currentText.description}
+                  src={currentText.image || ""}
+                  alt={currentText.description || "Default description"}
                   onError={handleImgLoadingError}
                   style={{ float: index % 2 === 0 ? "left" : "right" }}
                 />
                 <Card.Body>
+                  <Card.Title className={styles.cardTitle}>
+                    {currentText.title}
+                  </Card.Title>
                   <Card.Text className={styles.cardDescription}>
                     {currentText.description}
                   </Card.Text>
-                  {loggedUserRole === "admin" && (
+                  {userRole === "ROLE_ADMIN" && (
                     <Button
                       variant="primary"
                       onClick={() => handleEdit(currentText)}
@@ -140,7 +157,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
                 <Form.Control
                   type="text"
                   name="image"
-                  value={currentText.image}
+                  value={currentText.image || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -150,7 +167,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
                   as="textarea"
                   rows={3}
                   name="description"
-                  value={currentText.description}
+                  value={currentText.description || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
