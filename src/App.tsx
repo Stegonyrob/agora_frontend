@@ -25,6 +25,7 @@ import BlogView from "@/assets/Views/BlogView";
 import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
+import EventsView from "./assets/Views/EventsView";
 const App: React.FC = () => {
   return (
     <SWRConfig value={swrConfig}>
@@ -44,6 +45,7 @@ const App: React.FC = () => {
             <Route path="login" element={<LoginView />} />
             <Route path="register" element={<RegisterView />} />
             <Route path="*" element={<Error404View />} />
+            <Route path="events" element={<EventsView />} />
           </Route>
 
           {/* Rutas privadas */}

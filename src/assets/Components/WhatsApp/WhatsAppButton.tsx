@@ -1,11 +1,20 @@
 import { FloatingWhatsApp } from "./FloatingWhatsApp";
 
 
-/**
- * Repo: https://github.com/awran5/react-floating-whatsapp
- */
+interface WhatsAppButtonProps {
+    phoneNumber: string;
+    welcomeMessage: string;
+    initialMessage: string;
+    delay: number;
+}
 
-export default function WhatsAppButton() {
+export default function WhatsAppButton(props: WhatsAppButtonProps) {
+    const { phoneNumber, welcomeMessage, initialMessage, delay } = props;
+    const handleClick = () => {
+        const message = `${welcomeMessage} ${initialMessage}`;
+        const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+        window.open(url, "_blank");
+    };
     return (
         <div className="App">
             <FloatingWhatsApp

@@ -1,12 +1,16 @@
 import React from "react";
+import CardEvent from "../Components/Events/CardEvents";
+const handleSelectEvent = (event: any) => {
+    console.log("Selected event:", event);
+};
 
-const EventsView: React.FC = () => {
+const EventView: React.FC = () => {
     return (
         <div>
             <h1>Events</h1>
-            <p>Welcome to the Events page. Here you can find all the upcoming events.</p>
+            <CardEvent onSelect={handleSelectEvent} />
         </div>
     );
 };
 
-export default EventsView;
+export default EventView;

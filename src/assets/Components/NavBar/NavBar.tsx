@@ -25,6 +25,7 @@ function NavBar() {
             <Nav.Link href="/">Inicio</Nav.Link>
             <Nav.Link href="/Agora">Agora</Nav.Link>
             <Nav.Link href="/Services">Servicios</Nav.Link>
+            <Nav.Link href="/Events">Eventos</Nav.Link>
             <NavDropdown title="Neurodiversidad" id="basic-nav-dropdown">
               <NavDropdown.Item href="/Neurodiversity">¿Qué es?</NavDropdown.Item>
               <NavDropdown.Item href="/Tea">Cea/Tea</NavDropdown.Item>
