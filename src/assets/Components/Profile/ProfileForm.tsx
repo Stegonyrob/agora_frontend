@@ -1,4 +1,4 @@
-import Avatar from '@/assets/Components/Blog/admin/header/Avatar';
+import Avatar from '@/assets/Components/Generals/Card/header/Avatar';
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
 import { validateInput } from '@/utils/validationUtils';

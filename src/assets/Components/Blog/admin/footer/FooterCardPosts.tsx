@@ -11,7 +11,7 @@ import styles from "./FooterCardPost.module.scss";
 interface FooterPostsProps {
   userId: number;
   onSelect: (post: IPost) => void;
-  showComments: boolean;
+
   posts: IPost[];
   postId: number;
   onLove?: () => void;

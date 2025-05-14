@@ -18,7 +18,7 @@ import RegisterView from "@/assets/Views/RegisterView";
 import ServiceView from "@/assets/Views/ServiceView";
 import Tda_TdhView from "@/assets/Views/Tda_TdhView";
 import TeaView from "@/assets/Views/TeaView";
-
+import TestingView from "./assets/Views/TestingView";
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
 import BlogView from "@/assets/Views/BlogView";
@@ -26,11 +26,15 @@ import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView"
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
 import EventsView from "./assets/Views/EventsView";
+
 const App: React.FC = () => {
   return (
     <SWRConfig value={swrConfig}>
       <Router>
         <Routes>
+          {/* Vista de prueba */}
+          <Route path="/test" element={<TestingView />} />
+          {/* Vista de error 404 */}
           {/* Rutas públicas */}
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<HomeView />} />

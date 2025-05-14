@@ -1,0 +1,31 @@
+@charset "UTF-8";
+.cardGeneral {
+  margin: 1rem 0;
+  border: 1px solid #444;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+  /* Fondo oscuro */
+  color: #f5f5f5;
+  /* Texto claro */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #2c2c2c;
+  /* Fondo más oscuro para el encabezado */
+  border-bottom: 1px solid #444;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #2c2c2c;
+  /* Fondo más oscuro para el footer */
+  border-top: 1px solid #444;
+}

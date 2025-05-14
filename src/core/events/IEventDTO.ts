@@ -17,4 +17,7 @@ export interface IEventDTO {
   userName: string;
   role: string;
   url_avatar: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,0 +1,24 @@
+.cardEvent {
+  margin: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.largeImage {
+  width: 100%;
+  height: auto;
+}
+
+.selectButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selectButton:hover {
+  background-color: #0056b3;
+}

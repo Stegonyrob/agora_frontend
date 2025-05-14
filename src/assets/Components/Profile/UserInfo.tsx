@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { validateInput } from '../../../utils/validationUtils';
 import ButtonEditProfile from "../Blog/admin/button/profile/ButtonEditProfile";
-import Avatar from "../Blog/admin/header/Avatar";
+import Avatar from "../Generals/Card/header/Avatar";
 import styles from './UserInfo.module.scss';
 
 interface UserInfo {

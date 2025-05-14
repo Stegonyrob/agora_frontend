@@ -4,7 +4,7 @@ import { IPost } from "../../../../../core/posts/IPost";
 import styles from "./BodyCardPosts.module.scss";
 
 import PropTypes from "prop-types";
-import ImageBody from "../../../Blog/admin/body/ImageBody";
+import ImageBody from "../../../Generals/Card/body/ImageBody";
 
 
 interface BodyPostsProps {

@@ -6,6 +6,13 @@ import styles from './scss/Views.module.scss';
 export default function BlogView() {
   const accessToken = useSelector((state: RootState) => state.login.accessToken);
   const userId = accessToken ? parseInt(accessToken, 10) : 0;
+  const userName = sessionStorage.getItem("userName");
+  const userRole = sessionStorage.getItem("role");
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+  console.log("BlogView: isLoggedIn", isLoggedIn);
+  console.log("BlogView: userId", userId);
+  console.log("BlogView: userName", userName);
+  console.log("BlogView: userRole", userRole);
 
   return (
     <div className={styles.container}>

@@ -147,12 +147,25 @@ function CardText({ ids, endpoint }: CardTextProps) {
       {/* Modal for Editing */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editar Texto</Modal.Title>
+          <Modal.Title>Edición de Contenido web</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {currentText && (
             <Form>
               <Form.Group controlId="formImage">
+
+                <Form.Group controlId="formTitle" className="mt-3">
+                  <Form.Label>Titúlo</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    name="title"
+                    value={typeof currentText.title === "string" || typeof currentText.title === "number" ? currentText.title : ""}
+
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
                 <Form.Label>Imagen</Form.Label>
                 <Form.Control
                   type="text"

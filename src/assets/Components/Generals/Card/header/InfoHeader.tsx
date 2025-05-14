@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import styles from './PostInfo.module.scss';
+import styles from './InfoHeader.module.scss';
 
 interface PostInfoProps {
     time: string;
@@ -9,11 +9,12 @@ interface PostInfoProps {
 }
 
 const PostInfo: React.FC<PostInfoProps> = ({ time, location, creatorId, creatorName }) => {
+    console.log("Rendering PostInfo component");
+    console.log("Props received:", { time, location, creatorId, creatorName });
+
     return (
         <div className={styles.userInfo}>
-            <a
-                className={styles.userName}
-            >
+            <a className={styles.userName}>
                 {creatorName}
             </a>
             <p className={styles.time}>

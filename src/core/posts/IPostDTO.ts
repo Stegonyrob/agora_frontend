@@ -1,4 +1,7 @@
 export interface IPostDTO {
+  updatedAt: string;
+  createdAt: string;
+  description: string;
   id: number;
   title: string;
   message: string;
