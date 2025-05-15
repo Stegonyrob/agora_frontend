@@ -2,22 +2,30 @@ import React, { useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { ITokenDTO } from '../../../core/auth/ITokenDTO';
 import LoginService from '../../../core/auth/LoginService';
 import { login } from '../../../redux/reducers/loginSlice';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
 
-interface FormLoginProps {
-  setLogin: (value: boolean) => void;
-  setRegister: (value: boolean) => void;
-  setUserId: (value: string) => void;
-  setUserName: (value: string) => void;
-  setRole: (value: string) => void;
+// Utilidad para decodificar el JWT
+function parseJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return {};
+  }
 }
 
-const FormLogin: React.FC<FormLoginProps> = () => {
+const FormLogin: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -25,52 +33,68 @@ const FormLogin: React.FC<FormLoginProps> = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Validar los inputs antes de enviarlos al servidor
+    console.log('Form submission started.');
+
     if (!validateInput(username) || !validateInput(password)) {
-      // Si los inputs no son válidos, mostrar una alerta y detener el proceso
+      console.log('Invalid input detected.');
       alert('Invalid input detected.');
       return;
     }
+
     try {
+      console.log('Attempting login with username:', username);
       const loginService = new LoginService();
-      const tokenDTO: ITokenDTO = {
-        userId: 0,
-        role: '',
-        accessToken: '',
-        refreshToken: '',
-        userName: '',
-      };
-      const userName = username;
-      // Enviar los datos al servidor solo si son válidos
       const response = await loginService.post({ username, password });
-      dispatch(login(response));
-      console.log(response);
 
-      const accessToken = response.accessToken;
-      console.log(response.accessToken);
+      console.log('Login successful, processing response.');
+      const jwtData = parseJwt(response.accessToken);
+      const role = typeof jwtData.roles === "string" ? jwtData.roles : "";
+      const userName = typeof jwtData.username === "string" ? jwtData.username : "";
 
-      // Almacenar los tokens y otros datos en sessionStorage
-      sessionStorage.setItem('accessToken', accessToken);
+      console.log('Storing session data.');
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('accessToken', response.accessToken);
       sessionStorage.setItem('refreshToken', response.refreshToken);
       sessionStorage.setItem('userId', String(response.userId));
       sessionStorage.setItem('userName', userName);
+      sessionStorage.setItem('role', role);
+      sessionStorage.setItem("viewAsUser", "false");
+      console.log('Session data:', {
+        isLoggedIn: sessionStorage.getItem('isLoggedIn'),
+        accessToken: sessionStorage.getItem('accessToken'),
+        refreshToken: sessionStorage.getItem('refreshToken'),
+        userId: sessionStorage.getItem('userId'),
+        userName: sessionStorage.getItem('userName'),
+        role: sessionStorage.getItem('role'),
+        viewAsUser: sessionStorage.getItem("viewAsUser"),
+      });
+      console.log("sessionStorage", sessionStorage);
+      console.log('Session data stored successfully.');
+      console.log(sessionStorage.getItem('viewAsUser'));
 
+      console.log('Dispatching login to Redux.');
 
-      // Decodificar el payload del token para obtener los roles del usuario
-      const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
-      sessionStorage.setItem('role', tokenPayload.roles);
-      console.log(tokenPayload.roles);
-      // Redirigir al usuario según su rol
-      if (tokenPayload.roles === 'ROLE_ADMIN') {
+      dispatch(login({
+        userId: response.userId,
+        role,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userName,
+      }));
+
+      console.log('Navigating based on role.');
+      if (role === 'ROLE_ADMIN') {
+        console.log('Redirecting to admin dashboard.');
         navigate('/admin', { state: { userId: String(response.userId) } });
-      } else if (tokenPayload.roles === 'ROLE_USER') {
+      } else if (role === 'ROLE_USER') {
+        console.log('Redirecting to blog.');
         navigate('/blog', { state: { userId: String(response.userId) } });
       } else {
-        console.error('Unexpected user role:', response.role);
+        console.error('Unexpected user role:', role);
       }
-
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error during login process:', error);
+      alert('Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
 

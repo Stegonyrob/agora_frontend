@@ -4,7 +4,7 @@ export default function AgoraView() {
   return (
     <div className={styles.container}>
       <h2>Ágora</h2>
-      <CardText ids={['1', '2']} />
+      <CardText ids={['1', '2']} endpoint={""} />
 
     </div>
   );

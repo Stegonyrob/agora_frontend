@@ -1,7 +1,4 @@
-import { ReactNode } from "react";
-
 export interface IPost {
-  [x: string]: ReactNode;
   id: number;
   title: string;
   message: string;
@@ -20,4 +17,9 @@ export interface IPost {
   userName: string;
   role: string;
   url_avatar: string;
+  creationDate: string;
+  updatedAt: string;
+  createdAt: string;
+  description: string;
+  ondelete: () => void;
 }

@@ -1,0 +1,37 @@
+// NavigationMenu.module.scss
+.menuGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.menuItem {
+    width: 10rem;
+    height: 8rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow 0.2s, background 0.2s;
+    background: #f5f5f5;
+    overflow: hidden;
+    &:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        filter: brightness(0.95);
+    }
+}
+
+.label {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+}

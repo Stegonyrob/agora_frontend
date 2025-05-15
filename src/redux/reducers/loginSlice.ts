@@ -1,84 +1,64 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ITokenDTO } from "../../core/auth/ITokenDTO";
 
 export interface LoginState {
   isLoggedIn: boolean;
   loggedUserId: number;
-  loggedUserRole: string | null;
+  loggedUserRole: string;
   loggedUserName: string;
-  JWTToken: ITokenDTO;
+  accessToken: string;
+  refreshToken: string;
 }
 
+interface LoginPayload {
+  userId: number;
+  role: string;
+  userName: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+// Inicializa el estado desde sessionStorage para persistencia en la sesión
 const initialState: LoginState = {
-  isLoggedIn: false,
-  loggedUserId: 0,
-  loggedUserRole: "",
-  loggedUserName: "",
-  JWTToken: {
-    userId: 0,
-    role: "",
-    accessToken: "",
-    refreshToken: "",
-    userName: "",
-  },
+  isLoggedIn: sessionStorage.getItem("isLoggedIn") === "true",
+  loggedUserId: Number(sessionStorage.getItem("userId")) || 0,
+  loggedUserRole: sessionStorage.getItem("role") || "",
+  loggedUserName: sessionStorage.getItem("userName") || "",
+  accessToken: sessionStorage.getItem("accessToken") || "",
+  refreshToken: sessionStorage.getItem("refreshToken") || "",
 };
 
 const loginSlice = createSlice({
   name: "login",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<ITokenDTO>) => {
-      try {
-        state.JWTToken = action.payload;
-        sessionStorage.setItem("accessToken", action.payload.accessToken);
-        sessionStorage.setItem("refreshToken", action.payload.refreshToken);
-        sessionStorage.setItem("userId", String(action.payload.userId));
-
-        const decodedToken = JSON.parse(
-          atob(action.payload.accessToken.split(".")[1])
-        );
-        sessionStorage.setItem("role", decodedToken.roles);
-        sessionStorage.setItem("userName", decodedToken.username);
-        sessionStorage.setItem("isLoggedIn", decodedToken.isLoggedIn);
-        state.isLoggedIn = true;
-        state.loggedUserId = action.payload.userId;
-        state.loggedUserRole = decodedToken.roles;
-        state.loggedUserName = decodedToken.username;
-
-        console.log("Login successful. Updated state:", state);
-      } catch (error) {
-        console.error("Error during login:", error);
-        // Handle login failure (e.g., show an error message to the user)
-      }
+    login: (state, action: PayloadAction<LoginPayload>) => {
+      state.isLoggedIn = true;
+      state.loggedUserId = action.payload.userId;
+      state.loggedUserRole = action.payload.role;
+      state.loggedUserName = action.payload.userName;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      // También actualiza sessionStorage para mantener sincronía
+      sessionStorage.setItem("isLoggedIn", "true");
+      sessionStorage.setItem("userId", String(action.payload.userId));
+      sessionStorage.setItem("role", action.payload.role);
+      sessionStorage.setItem("userName", action.payload.userName);
+      sessionStorage.setItem("accessToken", action.payload.accessToken);
+      sessionStorage.setItem("refreshToken", action.payload.refreshToken);
     },
-
     logout: (state) => {
-      try {
-        console.log("Redux logout action, clearing session storage");
-        document.cookie = "";
-        sessionStorage.clear();
-        console.log("Session storage cleared, setting state to logged out");
-
-        state.isLoggedIn = false;
-        state.loggedUserId = 0;
-        state.loggedUserRole = "";
-        state.loggedUserName = "";
-        state.JWTToken = {
-          userId: 0,
-          role: "",
-          accessToken: "",
-          refreshToken: "",
-          userName: "",
-        };
-
-        console.log("Logout completed. Updated state:", state);
-      } catch (error) {
-        console.error("Error during logout:", error);
-        // Handle logout failure (e.g., show an error message to the user)
-      }
+      state.isLoggedIn = false;
+      state.loggedUserId = 0;
+      state.loggedUserRole = "";
+      state.loggedUserName = "";
+      state.accessToken = "";
+      state.refreshToken = "";
+      sessionStorage.clear();
     },
   },
 });
 
 export const { login, logout } = loginSlice.actions;
 export default loginSlice.reducer;
+export const selectIsLoggedIn = (state: { login: LoginState }) =>
+  state.login.isLoggedIn;

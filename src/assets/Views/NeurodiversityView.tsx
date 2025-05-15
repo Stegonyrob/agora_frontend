@@ -5,7 +5,7 @@ export default function NeurodiversityView() {
   return (
     <div className={styles.container}>
       <h2>Neurodiversidad</h2>
-      <CardText ids={['5', '6']} />
+      <CardText ids={['5', '6']} endpoint={""} />
     </div>
   );
 }

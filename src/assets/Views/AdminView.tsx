@@ -1,16 +1,10 @@
-import PostListAdmin from '../Components/Blog/admin/list/PostListAdmin';
-import styles from './scss/Views.module.scss';
+import AdminDashboardMenu from '../Components/Blog/admin/dashboard/AdminDashboardMenu';
 
-const AdminView = () => {
-   // Obtener el nombre del usuario desde sessionStorage
-   const userName = sessionStorage.getItem('userName') || 'Usuario';
+const AdminHomeView = () => (
+   <div>
+      <AdminDashboardMenu />
+      {/* Aquí puedes renderizar otras cosas del dashboard si lo necesitas */}
+   </div>
+);
 
-   return (
-      <div className={styles.container}>
-         <h1>Bienvenido, {userName}</h1>
-         <PostListAdmin userId={1} />
-      </div>
-   );
-};
-
-export default AdminView;
+export default AdminHomeView;

@@ -1,5 +1,5 @@
 import { ITextItem } from "@/core/texts/ITextItem";
-import TextService from "@/core/texts/TextsService"; // Importa el servicio
+import TextService from "@/core/texts/TextsService";
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -8,32 +8,33 @@ import Modal from "react-bootstrap/Modal";
 import Placeholder from "react-bootstrap/Placeholder";
 import styles from "./CardText.module.scss";
 
-
 interface CardTextProps {
   ids: string[];
   endpoint: string;
+  asviewAsUser?: boolean;
 }
 
 function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
   e.currentTarget.src = "../../img/agoraLogo.png";
 }
 
-function CardText({ ids, endpoint }: CardTextProps) {
-  console.log("Rendering CardText component");
-  const userRole = sessionStorage.role;
-  const isLoggedIn = sessionStorage.isLoggedIn;
+const CardText: React.FC<CardTextProps> = ({ ids, endpoint }) => {
+  // Obtención de roles y modo usuario
+  const userRole = sessionStorage.getItem("role");
+  const viewAsUser = sessionStorage.getItem("viewAsUser") === "true";
+  const isAdmin = userRole === "ROLE_ADMIN";
 
+  // Estados
   const [texts, setTexts] = useState<ITextItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [currentText, setCurrentText] = useState<ITextItem | null>(null);
 
+  // Fetch de textos
   useEffect(() => {
     const fetchTexts = async () => {
-      console.log("Fetching texts...");
       try {
         const data = await new TextService().fetchTexts();
-        console.log("Fetched texts:", data);
         setTexts(data);
       } catch (error) {
         console.error("Error fetching texts:", error);
@@ -41,18 +42,16 @@ function CardText({ ids, endpoint }: CardTextProps) {
         setIsLoading(false);
       }
     };
-
     fetchTexts();
   }, [endpoint]);
 
+  // Handlers
   const handleEdit = (text: ITextItem) => {
-    console.log("Editing text:", text);
     setCurrentText(text);
     setShowModal(true);
   };
 
   const handleSave = async () => {
-    console.log("Saving text:", currentText);
     if (currentText) {
       try {
         const updatedText = await new TextService().updateText(
@@ -64,7 +63,6 @@ function CardText({ ids, endpoint }: CardTextProps) {
             author: ""
           }
         );
-        console.log("Updated text:", updatedText);
         setTexts((prevTexts) =>
           prevTexts.map((text) =>
             text.id === updatedText.id ? updatedText : text
@@ -78,17 +76,17 @@ function CardText({ ids, endpoint }: CardTextProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log("Changing input:", e.target.name, e.target.value);
     if (currentText) {
       setCurrentText({ ...currentText, [e.target.name]: e.target.value });
     }
   };
 
+  // Render
   return (
     <div>
       {isLoading ? (
         <Card.Body>
-          <Card.Text className={styles.skeleton}>
+          <div className={styles.skeleton}>
             <Placeholder
               as={Card.Text}
               animation="glow"
@@ -99,7 +97,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
                 style={{
                   width: "10rem",
                   height: "10rem",
-                  float: `left`,
+                  float: "left",
                   marginLeft: "3rem",
                   marginBottom: "2rem",
                   marginRight: "3rem",
@@ -108,7 +106,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
               <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
               <Placeholder xs={8} style={{ marginLeft: "2rem" }} />
             </Placeholder>
-          </Card.Text>
+          </div>
         </Card.Body>
       ) : (
         <div className={styles.cardContainer}>
@@ -128,9 +126,13 @@ function CardText({ ids, endpoint }: CardTextProps) {
                     {currentText.title}
                   </Card.Title>
                   <Card.Text className={styles.cardDescription}>
-                    {currentText.description}
+                    {typeof currentText.description === "string"
+                      ? currentText.description.split('\n').map((line, i) => (
+                        <span key={i}>{line}<br /></span>
+                      ))
+                      : currentText.description}
                   </Card.Text>
-                  {userRole === "ROLE_ADMIN" && (
+                  {isAdmin && !viewAsUser && (
                     <Button
                       variant="primary"
                       onClick={() => handleEdit(currentText)}
@@ -144,7 +146,7 @@ function CardText({ ids, endpoint }: CardTextProps) {
         </div>
       )}
 
-      {/* Modal for Editing */}
+      {/* Modal de edición */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edición de Contenido web</Modal.Title>
@@ -153,24 +155,26 @@ function CardText({ ids, endpoint }: CardTextProps) {
           {currentText && (
             <Form>
               <Form.Group controlId="formImage">
-
-                <Form.Group controlId="formTitle" className="mt-3">
-                  <Form.Label>Titúlo</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    name="title"
-                    value={typeof currentText.title === "string" || typeof currentText.title === "number" ? currentText.title : ""}
-
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-
                 <Form.Label>Imagen</Form.Label>
                 <Form.Control
                   type="text"
                   name="image"
                   value={currentText.image || ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="formTitle" className="mt-3">
+                <Form.Label>Título</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="title"
+                  value={
+                    typeof currentText.title === "string" ||
+                      typeof currentText.title === "number"
+                      ? currentText.title
+                      : ""
+                  }
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -198,6 +202,6 @@ function CardText({ ids, endpoint }: CardTextProps) {
       </Modal>
     </div>
   );
-}
+};
 
 export default CardText;

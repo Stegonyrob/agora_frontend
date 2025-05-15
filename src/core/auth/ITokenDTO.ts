@@ -4,4 +4,5 @@ export interface ITokenDTO {
   accessToken: string;
   refreshToken: string;
   userName: string;
+  isLoggedIn: boolean;
 }

@@ -2,8 +2,8 @@ import Footer from "@/assets/Components/Footer/Footer";
 import PrivateLayout from "@/routes/PrivateLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import PublicLayout from "@/routes/PublicLayout";
-import React from "react";
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { SWRConfig } from "swr";
 import swrConfig from "./swrConfig";
 
@@ -25,57 +25,78 @@ import BlogView from "@/assets/Views/BlogView";
 import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
+import { useDispatch } from "react-redux";
 import EventsView from "./assets/Views/EventsView";
-
+// Make sure the path below matches the actual location of loginSlice.ts
+// Update the path below to the correct relative path where loginSlice.ts is located
+import { login as setLogin } from "./redux/reducers/loginSlice";
 const App: React.FC = () => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    if (isLoggedIn) {
+      dispatch(setLogin({
+        userId: Number(sessionStorage.getItem('userId')) || 0,
+        role: sessionStorage.getItem('role') || "",
+        accessToken: sessionStorage.getItem('accessToken') || "",
+        refreshToken: sessionStorage.getItem('refreshToken') || "",
+        userName: sessionStorage.getItem('userName') || ""
+      }));
+    }
+  }, [dispatch, location.pathname]);
+
   return (
     <SWRConfig value={swrConfig}>
-      <Router>
-        <Routes>
-          {/* Vista de prueba */}
-          <Route path="/test" element={<TestingView />} />
-          {/* Vista de error 404 */}
-          {/* Rutas públicas */}
-          <Route path="/" element={<PublicLayout />}>
-            <Route index element={<HomeView />} />
-            <Route path="aboutMe" element={<AboutMeView />} />
-            <Route path="neurodiversity" element={<NeurodiversityView />} />
-            <Route path="services" element={<ServiceView />} />
-            <Route path="agora" element={<AgoraView />} />
-            <Route path="cea" element={<TeaView />} />
-            <Route path="tda_Tdh" element={<Tda_TdhView />} />
-            <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
-            <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
-            <Route path="login" element={<LoginView />} />
-            <Route path="register" element={<RegisterView />} />
-            <Route path="*" element={<Error404View />} />
-            <Route path="events" element={<EventsView />} />
-          </Route>
 
-          {/* Rutas privadas */}
-          <Route path="/blog" element={
-            <PrivateLayout>
-              <ProtectedRoute element={<BlogView />} />
-            </PrivateLayout>
-          } />
-          <Route path="/admin" element={
-            <PrivateLayout>
-              <ProtectedRoute element={<AdminView />} />
-            </PrivateLayout>
-          } />
-          <Route path="/profile" element={
-            <PrivateLayout>
-              <ProtectedRoute element={<ProfileView posts={[]} />} />
-            </PrivateLayout>
-          } />
+      <Routes>
+        {/* Vista de prueba */}
+        <Route path="/test" element={<TestingView />} />
+        {/* Vista de error 404 */}
+        {/* Rutas públicas */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<HomeView />} />
+          <Route path="aboutMe" element={<AboutMeView />} />
+          <Route path="neurodiversity" element={<NeurodiversityView />} />
+          <Route path="services" element={<ServiceView />} />
+          <Route path="agora" element={<AgoraView />} />
+          <Route path="cea" element={<TeaView />} />
+          <Route path="tda_Tdh" element={<Tda_TdhView />} />
+          <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
+          <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
+          <Route path="login" element={<LoginView />} />
+          <Route path="register" element={<RegisterView />} />
+          <Route path="*" element={<Error404View />} />
+          <Route path="events" element={<EventsView />} />
+        </Route>
 
-          {/* Redirección de logout */}
-          <Route path="/logout" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
+        {/* Rutas privadas */}
+        <Route path="/blog" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<BlogView />} />
+          </PrivateLayout>
+        } />
+        <Route path="/admin" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<AdminView />} />
+          </PrivateLayout>
+        } />
+        <Route path="/profile" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<ProfileView posts={[]} />} />
+          </PrivateLayout>
+        } />
+
+        {/* Redirección de logout */}
+        <Route path="/logout" element={<Navigate to="/" replace />} />
+      </Routes>
+
       <Footer />
     </SWRConfig>
   );
 };
 
 export default App;
+
+
