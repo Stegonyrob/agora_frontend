@@ -54,9 +54,9 @@ const CardPosts: React.FC<CardPostsProps> = ({ onSelect, posts, isEvent = false 
         id: post.id,
         title: post.title,
         message: post.message,
-        description: typeof post.description === "string" ? post.description : String(post.description ?? ""),
-        image: typeof post.image === "string" ? post.image : String(post.image ?? ""),
-        customContent: post.customContent, // Optional, if available in `IPost`
+        description: typeof post.description === "string" ? post.description : post.description !== undefined && post.description !== null ? String(post.description) : "", // Ensure description is a string),
+        image: typeof post.image === "string" ? post.image : "", // Ensure image is a string""),
+        customContent: post.customContent,
         customButtons: (
           <div>
             <button onClick={commentHandler}>Comment</button>

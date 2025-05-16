@@ -4,6 +4,7 @@ import { IPost } from "@/core/posts/IPost";
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import CardGeneral from "./CardGeneral";
+import styles from "./CardGeneralContainer.module.scss";
 
 
 
@@ -56,13 +57,14 @@ const CardGeneralContainer: React.FC<CardGeneralContainerProps> = ({
     }, [items]);
 
     return (
-        <Container>
+        <Container className={styles.container}>
             <Row>
                 {itemsState.map((item) => {
                     console.log("CardGeneralContainer: itemsState.map: item", item);
                     return (
                         <Col key={item.id}>
                             <CardGeneral
+                                className={styles.cardGeneral}
                                 type={type}
                                 isLoggedIn={isLoggedIn}
                                 headerProps={{

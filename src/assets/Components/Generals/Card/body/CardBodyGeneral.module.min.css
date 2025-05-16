@@ -1,1 +1,1 @@
-.cardBody{padding:1rem;font-size:1rem;display:flex;flex-direction:column;align-content:space-around;justify-content:space-between;align-items:center;background-color:#2c2c2c;color:azure}.cardBody .cardText{text-justify:distribute-all-lines;text-align:justify}
+.cardBody{align-items:center;margin-right:1rem;margin-left:1rem;display:flex;justify-content:space-around;align-content:center;background-color:none;color:azure}.cardBody .cardText{text-justify:distribute-all-lines;text-align:justify}

@@ -24,7 +24,7 @@ const ImageBody: React.FC<ImageBodyProps> = ({ type, source, alt, post, event })
                 src={imageSource}
                 alt={alt}
                 style={imageStyle} // Aplica el estilo dinámico
-                className={style.imagePost}
+                className={style.imageBody}
             />
         </div>
     );

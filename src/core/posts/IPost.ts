@@ -1,4 +1,5 @@
 export interface IPost {
+  [x: string]: any;
   id: number;
   title: string;
   message: string;
@@ -8,7 +9,7 @@ export interface IPost {
   comments: any[];
   isArchived: boolean;
   tags: string[];
-  images: string[];
+  image: string[];
   isPublished: boolean;
   alt_image: string;
   source_image: string;

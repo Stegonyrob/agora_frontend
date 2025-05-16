@@ -7,14 +7,15 @@ import CardFooterGeneral from "./footer/CardFooterGeneral";
 import CardHeaderGeneral from "./header/CardHeaderGeneral";
 
 interface CardGeneralProps {
-    type: "post" | "event";
-    isLoggedIn: boolean;
+    className?: string;
+    type: "post" | "event"
+    isLoggedIn: boolean
     headerProps: {
         title: string;
         subtitle: string;
         imageUrl: string;
         customContent?: React.ReactNode;
-    };
+    }
     bodyProps: {
         type: "post" | "event";
         title: string;
@@ -22,7 +23,7 @@ interface CardGeneralProps {
         description: string;
         image: string;
         customContent?: React.ReactNode;
-    };
+    }
     footerProps: {
         userId: number;
         postId: number;
@@ -31,15 +32,7 @@ interface CardGeneralProps {
         showFavoriteButton: boolean;
         comments: any[];
         customButtons?: React.ReactNode;
-    };
-    customButtons?: React.ReactNode;
-    onSelect?: () => void;
-    onLove?: () => void;
-    showComments?: boolean;
-    showFavoriteButton?: boolean;
-    comments?: any[];
-    customContent?: React.ReactNode;
-
+    }
 }
 
 
@@ -65,7 +58,7 @@ const CardGeneral: React.FC<CardGeneralProps> = ({
     return (
         <Card className={styles.cardGeneral}>
             <CardHeaderGeneral {...headerProps} title={headerProps.title} />
-            <CardBodyGeneral {...bodyProps} />
+            <CardBodyGeneral type={undefined} {...bodyProps} />
             <CardFooterGeneral {...footerProps} />
         </Card>
     );

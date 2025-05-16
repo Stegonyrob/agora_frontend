@@ -1,4 +1,4 @@
-.cardPost {
+.cardGEneral {
   width: 100%;
   min-width: 25rem;
   min-height: 25rem;
@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-.cardPost .cardFooter {
+.cardGEneral .cardFooter {
   align-items: center;
   margin-right: 1rem;
   margin-left: 1rem;
@@ -19,20 +19,8 @@
   align-content: center;
 }
 
-.cardPost .button {
+.button {
   align-items: baseline;
   margin-right: 1rem;
   margin-left: 1rem;
-}
-
-.cardEvent {
-  width: 100%;
-  min-width: 25rem;
-  min-height: 25rem;
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 2rem;
-  color: azure !important;
-  margin-top: 5rem;
-  margin-bottom: 8rem;
-  text-align: center;
 }

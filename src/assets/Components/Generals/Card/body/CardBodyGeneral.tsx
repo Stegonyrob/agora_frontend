@@ -11,7 +11,7 @@ interface CardBodyGeneralProps {
     message?: string;
     description?: string;
     image?: string;
-    alt?: string; // Add this line
+    alt?: string;
     customContent?: React.ReactNode;
     post: IPost;
     event?: IEvent;
@@ -25,7 +25,7 @@ const CardBodyGeneral: React.FC<CardBodyGeneralProps> = ({ type, title, message,
             <Card.Body className={styles.cardBody}>
                 <ImageBody source={image || ''} alt={''} type={"post"} />
                 <Card.Text className={styles.cardText}>{type === "post" ? message : description}</Card.Text>
-                {customContent && <div>{customContent}</div>}
+
             </Card.Body>
         </Card>
     );
