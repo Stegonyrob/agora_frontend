@@ -17,4 +17,7 @@ export interface IEvent {
   userName: string;
   role: string;
   url_avatar: string;
+  creationDate: string;
+  favoritesCount: number;
+  attendentsCount: number;
 }

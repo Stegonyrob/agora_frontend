@@ -1,0 +1,131 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap");
+
+// Variables SCSS para un mejor manejo y consistencia
+$gray-darkest: #f8f9fa;
+$gray-darker: #e9ecef;
+$gray-dark: #dee2e6;
+$gray-light: #ced4da;
+$gray-lighter: #adb5bd;
+$gray-lightest: #6c757d;
+$background: #212529;
+$surface: #343a40;
+$card-background-color: #212121;
+
+// Color para la sombra de hover (ej. lila)
+$hover-glow-color: #9c27b0; // Un tono de lila, puedes ajustarlo
+
+
+
+
+.container{
+    display: grid;
+    gap:1rem;
+    grid-auto-rows: 32rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(35rem), 1fr)); 
+ grid-auto-flow: dense;
+ margin: 5rem;
+
+    padding: 2rem;
+    justify-items: center;
+    align-items: center;
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(min(20rem), 1fr)); 
+      margin: 0;
+
+      padding: 2rem;
+    }
+
+.article{
+ 
+    padding: 2rem;
+    background-color: $background;
+    border-radius: 0.2rem;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.16);
+    transition: all 150ms ease-in-out;
+    margin :5rem;
+    &:hover {
+      box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.36);
+      transform: translateY(-6px);
+    }
+}
+
+.card {
+  background-color: $card-background-color;
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.16);
+  width: 100%;
+  min-width: 25rem;
+  min-height: 25rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.2rem;
+
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+  align-items: center; 
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.16), /* Sombra original */
+              0 0 0 0 $hover-glow-color; 
+  &:hover {
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.36), /* Sombra original más pronunciada */
+                0 0 20px 5px $hover-glow-color; /* Glow lila: ajusta 20px (blur) y 5px (spread) */
+    transform: translateY(-6px);
+  }
+
+  // Contenido interno de la tarjeta, anidado
+  .header {
+    .thumbnail {
+      width: 100%;
+      border-radius: 2px;
+    }
+  }
+
+
+  .body {
+    width: 100%;
+    min-width: 25rem;
+    min-height: 25rem;
+    padding: 2rem;
+    margin-top: 5rem;
+    margin-bottom: 8rem;
+    text-align: center;
+  
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: $gray-light;
+      font-weight: 400;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $gray-darkest;
+    }
+
+    .description {
+      font-size: 0.9rem;
+      color: $gray-light;
+      font-weight: 400;
+      line-height: 1.5rem;
+    }
+
+    .tags {
+      width: 100%;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+
+      .tag-item {
+        font-family: "Open Sans", "Ubuntu", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background-color: $surface;
+        padding: 0.3rem 0.4rem;
+        border-radius: 2px;
+        box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.25);
+        color: $gray-darkest;
+      }
+    }
+  }
+}
+}   
+

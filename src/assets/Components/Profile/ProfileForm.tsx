@@ -1,10 +1,11 @@
-import Avatar from '@/assets/Components/Generals/Card/header/Avatar';
+
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
 import { validateInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
+import Avatar from './Avatar';
 import styles from './ProfileForm.module.scss';
 
 interface ProfileFormProps {

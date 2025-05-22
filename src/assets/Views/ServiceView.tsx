@@ -1,4 +1,4 @@
-import CardText from "../Components/Card/CardText";
+import CardText from "../Components/Card/text/CardText";
 import styles from './scss/Views.module.scss';
 export default function ServiceView() {
   return (
