@@ -3,7 +3,7 @@ import AdminDashboardMenu from '../Components/Blog/admin/dashboard/AdminDashboar
 const AdminHomeView = () => (
    <div>
       <AdminDashboardMenu />
-      {/* Aquí puedes renderizar otras cosas del dashboard si lo necesitas */}
+
    </div>
 );
 

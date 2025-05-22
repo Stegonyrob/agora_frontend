@@ -8,13 +8,12 @@ export default function PostsView() {
   const userRole = sessionStorage.getItem("role");
   const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
 
-
-
   return (
     <div>
       <h2>Publicaciones</h2>
 
       <PostList userId={null} />
+
 
     </div>
   );

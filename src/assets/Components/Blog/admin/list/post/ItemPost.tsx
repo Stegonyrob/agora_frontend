@@ -3,20 +3,20 @@ import { IPost } from '../../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../../core/posts/IPostDTO';
 import ItemGeneric from '../generic/ItemGeneric';
 interface ItemPostProps {
-    post: IPost;
-    onEdit: (post: IPost) => void;
-
-    onArchive: (postId: number) => Promise<boolean>;
-    onUnArchive: (postId: number) => Promise<boolean>;
-    onSelect: (post: IPost) => void;
-    onSubmit: (post: IPost) => void;
-    userId: number;
-    onCreate: (newPost: IPostDTO) => Promise<void>;
+    post: IPost
+    onEdit: (post: IPost) => void
+    onArchive: (postId: number) => Promise<boolean>
+    onUnArchive: (postId: number) => Promise<boolean>
+    onSelect: (post: IPost) => void
+    onSubmit: (post: IPost) => void
+    userId: number
+    onCreate: (newPost: IPostDTO) => Promise<void>
+    onDelete: (postId: number) => Promise<void>
 }
 
 const ItemPost: React.FC<ItemPostProps> = (props) => {
     const { post, ...rest } = props;
-    // No pasamos onDelete porque los posts no se borran, solo se archivan/desarchivan
+
     return (
         <ItemGeneric
             item={post}

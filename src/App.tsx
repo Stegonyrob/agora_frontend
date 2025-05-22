@@ -26,9 +26,13 @@ import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView"
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
 import { useDispatch } from "react-redux";
+import AdminEventView from "./assets/Views/AdminEventView";
 import EventsView from "./assets/Views/EventsView";
-// Make sure the path below matches the actual location of loginSlice.ts
-// Update the path below to the correct relative path where loginSlice.ts is located
+
+
+
+import AdminPostView from "./assets/Views/AdminPostView";
+import { IEvent } from "./core/events/IEvent";
 import { login as setLogin } from "./redux/reducers/loginSlice";
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -67,7 +71,9 @@ const App: React.FC = () => {
           <Route path="login" element={<LoginView />} />
           <Route path="register" element={<RegisterView />} />
           <Route path="*" element={<Error404View />} />
-          <Route path="events" element={<EventsView />} />
+          <Route path="events" element={<EventsView userId={null} events={[]} onSelect={function (event: IEvent): void {
+            throw new Error("Function not implemented.");
+          }} />} />
         </Route>
 
         {/* Rutas privadas */}
@@ -81,6 +87,22 @@ const App: React.FC = () => {
             <ProtectedRoute element={<AdminView />} />
           </PrivateLayout>
         } />
+
+
+        <Route path="/admin/posts" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<AdminPostView userId={0} />} />
+          </PrivateLayout>
+        } />
+
+
+        <Route path="/admin/events" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<AdminEventView userId={0} />} />
+          </PrivateLayout>
+        } />
+
+
         <Route path="/profile" element={
           <PrivateLayout>
             <ProtectedRoute element={<ProfileView posts={[]} />} />

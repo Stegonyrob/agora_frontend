@@ -137,7 +137,7 @@ const adminMenuItems: NavMenuItem[] = [
     {
         key: "eventos-admin",
         label: "Eventos (Admin)",
-        path: "/events",
+        path: "/admin/events",
         background: "/images/bg-events.jpg",
         role: "ROLE_ADMIN",
         viewAsUser: false,
@@ -152,7 +152,7 @@ const adminMenuItems: NavMenuItem[] = [
     {
         key: "blog-admin",
         label: "Blog (Admin)",
-        path: "/blog",
+        path: "/admin/posts",
         background: "/images/bg-blog.jpg",
         role: "ROLE_ADMIN",
         viewAsUser: false,
@@ -201,12 +201,7 @@ const adminMenuItems: NavMenuItem[] = [
         background: "/images/bg-register.jpg",
         viewAsUser: true,
     },
-    {
-        key: "testing",
-        label: "Testing",
-        path: "/test",
-        background: "/images/bg-test.jpg",
-    },
+
 ];
 
 const AdminDashboardMenu = () => <NavigationMenu items={adminMenuItems} />;

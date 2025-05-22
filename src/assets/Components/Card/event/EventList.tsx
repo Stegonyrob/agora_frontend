@@ -1,38 +1,45 @@
 import React, { useEffect, useState } from "react";
-import EventsService from "../../../../core/events/EventService"; // Servicio para obtener eventos
+import EventService from "../../../../core/events/EventService";
 import { IEvent } from "../../../../core/events/IEvent"; // Asumiendo que tienes una interfaz para eventos
 import CardItem from "../card/CardItem";
 
 interface EventListProps {
     userId: number | null;
     events: IEvent[];
+    onSelect: (event: IEvent) => void;
 
 }
 
-const EventList: React.FC<EventListProps> = ({ events }) => {
-    const [fetchedEvents, setFetchedEvents] = useState<IEvent[]>([]);
-
-    const apiEvent = new EventsService();
+const EventList: React.FC<EventListProps> = ({ onSelect }) => {
+    const [events, setEvents] = useState<IEvent[]>([]); // Estado para almacenar los eventos
+    const [isLoading, setIsLoading] = useState(true); // Estado para manejar la carga
 
     useEffect(() => {
-        const loadEvents = async () => {
+        const fetchEvents = async () => {
             try {
-                const fetchedEvents = await apiEvent.fetchEvents();
-                setFetchedEvents(fetchedEvents);
+                const eventService = new EventService();
+                const fetchedEvents = await eventService.fetchEvents(); // Llama al servicio para obtener los eventos
+                setEvents(fetchedEvents);
             } catch (error) {
-                console.error("Error loading events: ", error);
+                console.error("Error fetching events:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
-        loadEvents();
+
+        fetchEvents();
     }, []);
 
+    if (isLoading) {
+        return <p>Loading events...</p>; // Muestra un mensaje de carga mientras se obtienen los eventos
+    }
     const handleSelect = (item: any) => {
         console.log("Selected event:", item);
     };
 
     return (
         <div>
-            {fetchedEvents.map((event) => (
+            {events.map((event) => (
                 <CardItem
                     key={event.id}
                     type="event"

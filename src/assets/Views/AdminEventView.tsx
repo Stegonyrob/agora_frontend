@@ -146,3 +146,4 @@ const AdminEventView = ({ userId }: { userId: number }) => {
         </div>
     );
 };
+export default AdminEventView;
