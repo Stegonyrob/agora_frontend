@@ -40,13 +40,16 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
       url_avatar: "",
       images: [],
       isPublished: false,
+      updatedAt: "",
+      createdAt: "",
+      description: ""
     };
     onSubmit(newPost);
   };
 
   return (
     <div className={styles.Container}>
-      <Modal size="lg" centered dark show={show} onHide={onClose} className={styles.modalCard}>
+      <Modal size="lg" centered show={show} onHide={onClose} className={styles.modalCard}>
         <Modal.Header className={styles.modalHeader} closeButton>
           <Modal.Title>Formulario de Edición de los Post</Modal.Title>
         </Modal.Header>

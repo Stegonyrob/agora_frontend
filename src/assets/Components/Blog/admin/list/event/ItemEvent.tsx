@@ -21,7 +21,7 @@ const ItemEvent: React.FC<ItemEventProps> = (props) => {
             item={event}
             id={event.id}
             title={event.title}
-            message={event.description !== undefined && event.description !== null ? String(event.description) : ""}
+            message={event.message}
             creationDate={event.creationDate}
             isArchived={event.isArchived}
             images={event.images}

@@ -1,7 +1,6 @@
-// ListAdmin.tsx
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
-
+import styles from './ListAdmin.module.scss';
 interface ListAdminProps<T> {
     items: T[];
     type: 'post' | 'event';
@@ -30,36 +29,37 @@ const ListAdmin = <T extends { id: number }>(props: ListAdminProps<T>) => {
     } = props;
 
     return (
-        <div>
-            {items.map(item =>
-                type === 'post' ? (
-                    <ItemPost
-                        key={item.id}
-                        post={item as any}
-                        onSelect={onSelect as (post: any) => void}
-                        onDelete={onDelete}
-                        onEdit={onEdit as (post: any) => void}
-                        onArchive={onArchive}
-                        onUnArchive={onUnArchive}
-                        onSubmit={onSubmit as (post: any) => void}
-                        userId={userId}
-                        onCreate={onCreate}
-                    />
-                ) : (
-                    <ItemEvent
-                        key={item.id}
-                        event={item as any}
-                        onSelect={onSelect as (event: any) => void}
-                        onDelete={onDelete}
-                        onEdit={onEdit as (event: any) => void}
-                        onArchive={onArchive}
-                        onUnArchive={onUnArchive}
-                        onSubmit={onSubmit as (event: any) => void}
-                        userId={userId}
-                        onCreate={onCreate}
-                    />
-                )
-            )}
+        <div className={styles.container}>
+            <div className={styles.panel}>
+                {items.map(item =>
+                    type === 'post' ? (
+                        <ItemPost
+                            key={item.id}
+                            post={item as any}
+                            onSelect={onSelect as (post: any) => void}
+                            onDelete={onDelete}
+                            onEdit={onEdit as (post: any) => void}
+                            onArchive={onArchive}
+                            onUnArchive={onUnArchive}
+                            onSubmit={onSubmit as (post: any) => void}
+                            userId={userId}
+                            onCreate={onCreate} id={0} title={''} postId={0} />
+                    ) : (
+                        <ItemEvent
+                            key={item.id}
+                            event={item as any}
+                            onSelect={onSelect as (event: any) => void}
+                            onDelete={onDelete}
+                            onEdit={onEdit as (event: any) => void}
+                            onArchive={onArchive}
+                            onUnArchive={onUnArchive}
+                            onSubmit={onSubmit as (event: any) => void}
+                            userId={userId}
+                            onCreate={onCreate}
+                        />
+                    )
+                )}
+            </div>
         </div>
     );
 };

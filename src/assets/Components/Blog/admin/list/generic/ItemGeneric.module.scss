@@ -5,33 +5,34 @@
   align-content: center;
   background-color: transparent;
   color: azure;
-  h5,
-  p,
-  div {
-    margin: 1rem;
+  width: 100%;
+   h5,  h6,  div,  p {
+    width: 100%;
     text-align: center;
-  }
-  h5,
-  h6,
-  div,
-  p {
-    width: 20%;
+  max-width: 5rem;
+ 
+  margin: 2rem;
   }
   .message {
-    width: 70%;
-    .toggleButton {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 2rem;
-      color: azure;
-      margin-top: -1rem;
-    }
+    min-width: 25%;
+    max-width: 50%;
+    text-align: center;
+    font-size: 1.5rem;
+    color: azure;
+    margin: 0;
+    padding: 3rem;
+    margin-right:20rem;
+   
+    
   }
-  .actionList {
-    display: flex;
-    font-size: 2rem;
  
-
-}
+  .toggleButton {
+ 
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 2rem;
+    color: azure;
+  
+  }
   }

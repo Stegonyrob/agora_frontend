@@ -1,6 +1,11 @@
+import DOMPurify from 'dompurify';
 import { useState } from 'react';
+import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
+import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import styles from './ItemGeneric.module.scss';
 
+import type { IEvent } from '../../../../../../core/events/IEvent';
+import type { IPost } from '../../../../../../core/posts/IPost';
 interface ItemGenericProps<T> {
     item: T;
     id: number;
@@ -8,10 +13,7 @@ interface ItemGenericProps<T> {
     message: string;
     creationDate?: any;
     isArchived?: boolean;
-    onEdit: (item: T) => void;
-    onDelete: (id: number) => Promise<void>;
-    onArchive: (id: number) => Promise<boolean>;
-    onUnArchive: (id: number) => Promise<boolean>;
+
     onSelect: (item: T) => void;
     onSubmit: (item: T) => void;
     userId: number;
@@ -20,17 +22,14 @@ interface ItemGenericProps<T> {
     images?: any[];
 }
 
-const ItemGeneric = <T extends { id: number; message: string; title: string; isArchived?: boolean; creationDate?: any }>({
+
+const ItemGeneric = <T extends IPost | IEvent>({
     item,
     id,
     title,
     message,
     creationDate,
     isArchived,
-    onEdit,
-    onDelete,
-    onArchive,
-    onUnArchive,
     onSelect,
     onSubmit,
     userId,
@@ -43,6 +42,15 @@ const ItemGeneric = <T extends { id: number; message: string; title: string; isA
     const archived = isArchived ?? false;
 
     const toggleText = () => setShowFullText(prev => !prev);
+    // Generic update handler for both post and event
+    const handleUpdate = async (updatedItem: any) => {
+        // Sanitize inputs if they exist
+        if (updatedItem.title) updatedItem.title = DOMPurify.sanitize(updatedItem.title);
+        if (updatedItem.message) updatedItem.message = DOMPurify.sanitize(updatedItem.message);
+
+        onSubmit(updatedItem);
+    };
+
 
     return (
         <div className={styles.card}>
@@ -67,7 +75,14 @@ const ItemGeneric = <T extends { id: number; message: string; title: string; isA
             {/* Renderiza imágenes si existen */}
             {images && images.length > 0 && (
                 <div>
-                    {/* Aquí puedes mapear y mostrar las imágenes */}
+                    {images.map((image, index) => (
+                        <img
+                            key={index}
+                            src={image}
+                            alt={`Imagen ${index + 1}`}
+                            className={styles.image}
+                        />
+                    ))}
                 </div>
             )}
             <h5>{title ?? 'No hay título'}</h5>
@@ -78,13 +93,20 @@ const ItemGeneric = <T extends { id: number; message: string; title: string; isA
                     <i className={`bi ${showFullText ? 'bi-dash' : 'bi-plus'}`}></i>
                 </button>
             </p>
-            {/* Aquí puedes renderizar los botones de acción que necesites */}
-            {/* Ejemplo: */}
-            <button onClick={() => onEdit(item)}>Editar</button>
-            <button onClick={() => onDelete(id)}>Eliminar</button>
-            <button onClick={() => archived ? onUnArchive(id) : onArchive(id)}>
-                {archived ? 'Desarchivar' : 'Archivar'}
-            </button>
+            <ButtonEditGeneric
+                type={type}
+                item={item}
+                onSubmit={handleUpdate}
+            />
+            <ButtonArchiveGeneric
+                type={type}
+                item={item as any}
+                onArchive={async (id: number) => {
+
+                    return Promise.resolve(true);
+                }}
+            />
+
         </div>
     );
 };

@@ -53,7 +53,6 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             const eventDTO: IEventDTO = {
                 title: event.title,
                 location: event.location,
-                comments: Array.isArray(event.comments) ? event.comments : [],
                 alt_avatar: typeof event.alt_avatar === "string" ? event.alt_avatar : "",
                 source_avatar: typeof event.source_avatar === "string" ? event.source_avatar : "",
                 description: typeof event.description === "string" ? event.description : (event.description ? String(event.description) : ""),
@@ -67,11 +66,11 @@ const AdminEventView = ({ userId }: { userId: number }) => {
                 isPublished: false,
                 alt_image: "",
                 source_image: "",
-                userName: "",
-                role: "",
                 url_avatar: "",
                 createdAt: "",
-                updatedAt: ""
+                updatedAt: "",
+                date: "",
+                link: ""
             };
             const updatedEvent = await eventService.updateEvent(event.id, eventDTO);
             const updatedEvents = fetchedEvents.map((e) => (e.id === updatedEvent.id ? updatedEvent : e));

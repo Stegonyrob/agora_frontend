@@ -26,11 +26,14 @@ export default class EventService {
           },
         }
       );
-      console.log("Events fetched successfully:", response.data);
+      console.log("Response Data:", response.data);
+      console.log("Events fetched successfully.");
       return response.data;
     } catch (error: any) {
       console.error("Error fetching events:", error.message);
       throw new Error(`Error fetching events: ${error.message}`);
+    } finally {
+      console.log("End fetching events.");
     }
   }
 

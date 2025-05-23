@@ -3,13 +3,11 @@
   align-items: center;
   width: 100%;
   justify-content: space-between;
-
-
-.buttons {
-  display: flex;
-  gap: 1rem;
-  margin-left: -25rem; // Esto empuja los botones a la derecha
-  align-items: center;
 }
 
+.card .buttons {
+  display: flex;
+  gap: 1rem;
+  margin-left: -25rem;
+  align-items: center;
 }

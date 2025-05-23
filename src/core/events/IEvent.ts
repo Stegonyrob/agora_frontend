@@ -5,7 +5,6 @@ export interface IEvent {
   id: number;
   title: string;
   message: string;
-  userId: number;
   location: string;
   loves: number;
   isArchived: boolean;
@@ -14,8 +13,6 @@ export interface IEvent {
   isPublished: boolean;
   alt_image: string;
   source_image: string;
-  userName: string;
-  role: string;
   url_avatar: string;
   creationDate: string;
   favoritesCount: number;

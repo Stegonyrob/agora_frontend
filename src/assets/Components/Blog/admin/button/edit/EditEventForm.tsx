@@ -17,8 +17,8 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
     const [place, setPlace] = useState(event?.place || "");
     const [date, setDate] = useState(event?.date || "");
     const [link, setLink] = useState(event?.link || "");
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
         // Sanitize inputs
         const sanitizedTitle = DOMPurify.sanitize(title);
@@ -29,12 +29,7 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
             title: sanitizedTitle,
             message: sanitizedMessage,
             userId: event?.userId || 0,
-
-            date: date,
-            link: link,
-
             loves: 0,
-
             isArchived: false,
             tags: [],
             alt_image: "",
@@ -46,13 +41,20 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
             url_avatar: "",
             images: [],
             isPublished: false,
+            location: "",
+            comments: [],
+            description: "",
+            createdAt: "",
+            updatedAt: "",
+            date: "",
+            link: ""
         };
         onSubmit(newEvent);
     };
 
     return (
         <div className={styles.Container}>
-            <Modal size="lg" centered dark show={show} onHide={onClose} className={styles.modalCard}>
+            <Modal size="lg" centered show={show} onHide={onClose} className={styles.modalCard}>
                 <Modal.Header className={styles.modalHeader} closeButton>
                     <Modal.Title>Formulario de Edición de los Eventos</Modal.Title>
                 </Modal.Header>
