@@ -36,13 +36,13 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
             source_image: "",
             alt_avatar: "",
             source_avatar: "",
-            userName: "",
-            role: "",
+
+
             url_avatar: "",
             images: [],
             isPublished: false,
             location: "",
-            comments: [],
+
             description: "",
             createdAt: "",
             updatedAt: "",

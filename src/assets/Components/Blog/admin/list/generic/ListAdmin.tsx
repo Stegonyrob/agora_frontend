@@ -1,3 +1,4 @@
+import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
 import styles from './ListAdmin.module.scss';
@@ -31,6 +32,7 @@ const ListAdmin = <T extends { id: number }>(props: ListAdminProps<T>) => {
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
+                <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
                 {items.map(item =>
                     type === 'post' ? (
                         <ItemPost

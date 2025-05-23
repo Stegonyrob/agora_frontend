@@ -52,7 +52,10 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
       source_avatar: '',
       userId: post?.userId || 0,
       role: '',
-      url_avatar: ''
+      url_avatar: '',
+      updatedAt: '',
+      createdAt: '',
+      description: ''
     };
 
     if (isAuthenticated) {

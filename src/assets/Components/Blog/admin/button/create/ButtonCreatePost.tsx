@@ -1,7 +1,6 @@
 import DOMPurify from 'dompurify';
 import React, { useState } from "react";
 import { IPost } from "../../../../../../core/posts/IPost";
-import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
 import styles from './ButtonCreatePost.module.scss';
 import PostForm from "./modal/PostForm";
 
@@ -29,15 +28,15 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId })
         setShow(false);
     };
 
-    const handleCreate = async (newPost: IPostDTO | null | undefined) => {
-        if (newPost == null) {
-            console.error("Error creating post: newPost is null or undefined");
+    const handleCreate = async (post: IPost) => {
+        if (!post) {
+            console.error("Error creating post: post is null or undefined");
             return;
         }
 
         // Sanitize inputs
-        newPost.title = DOMPurify.sanitize(newPost.title) || '';
-        newPost.message = DOMPurify.sanitize(newPost.message) || '';
+        post.title = DOMPurify.sanitize(post.title) || '';
+        post.message = DOMPurify.sanitize(post.message) || '';
 
         const userName = sessionStorage.getItem("userName");
         console.log("userName:", userName);
@@ -48,11 +47,8 @@ const ButtonCreatePost: React.FC<ButtonCreatePostProps> = ({ onSubmit, userId })
             return;
         }
 
-        const post: IPost = {
-            ...newPost,
-            userId,
-            userName: userName || '',
-        };
+        post.userId = userId;
+        post.userName = userName || '';
 
         try {
             await onSubmit(post);

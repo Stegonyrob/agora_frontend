@@ -66,14 +66,22 @@ const AdminPostView = ({ userId }: { userId: number }) => {
     };
 
     const handleCreate = async (newPost: IPostDTO) => {
+        console.log("Initiating post creation process...");
         try {
+            console.log("Creating new post:", newPost);
             const postService = new PostService();
-            const createdPost = await postService.createPost(newPost);
-            setFetchedPosts((prev) => [...prev, createdPost]);
+            await postService.createPost(newPost);
+            console.log("Post created successfully. Fetching updated posts list...");
+            const updatedPosts = await postService.fetchPosts();
+            console.log("Updated posts fetched:", updatedPosts);
+            setFetchedPosts(updatedPosts);
         } catch (error) {
             console.error("Error creating post:", error);
         }
     };
+
+
+
 
     const handleArchive = async (postId: number): Promise<boolean> => {
         try {

@@ -121,12 +121,17 @@ const AdminEventView = ({ userId }: { userId: number }) => {
     const handleCreateEvent = async (newEvent: IEventDTO) => {
         try {
             const eventService = new EventService();
-            const createdEvent = await eventService.createEvent(newEvent);
-            setFetchedEvents([...fetchedEvents, createdEvent]);
+            await eventService.createEvent(newEvent);
+            // Vuelve a cargar la lista completa
+            const updatedEvents = await eventService.fetchEvents();
+            setFetchedEvents(updatedEvents);
         } catch (error) {
             console.error("Error creating event:", error);
         }
     };
+
+
+
 
     return (
         <div>

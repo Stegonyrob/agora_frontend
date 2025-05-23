@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import EventService from "../../../../../../../core/events/EventService";
 import { IEvent } from "../../../../../../../core/events/IEvent";
 import { IEventDTO } from "../../../../../../../core/events/IEventDTO";
-import { RootState } from "../../../../../../../redux/store";
 import ButtonAddImage from "../../image/ButtonAddImage";
-import styles from "./EventForm.module.scss";
+import styles from "./PostForm.module.scss";
 
 interface EventFormProps {
     event?: IEvent;
@@ -16,16 +14,26 @@ interface EventFormProps {
     userId: number;
     userName: string;
 }
-
 const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show }) => {
     const [title, setTitle] = useState(event?.title || "");
     const [description, setDescription] = useState(event?.description || "");
-    const role = useSelector((state: RootState) => state.login.loggedUserRole);
-    const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
+
+    // Recupera los datos del usuario desde sessionStorage
+    const userRole = sessionStorage.getItem("role");
+    const userId = Number(sessionStorage.getItem("userId")) || 0;
+    const userName = sessionStorage.getItem("userName") || "";
+
     const apiEvent = new EventService();
 
     const handleSubmit = async (eventForm: React.FormEvent<HTMLFormElement>) => {
         eventForm.preventDefault();
+
+        // Solo permite admins
+        if (userRole !== "ROLE_ADMIN") {
+            alert("Solo los administradores pueden crear eventos.");
+            return;
+        }
+
         if (!title || !description) {
             alert("Título y descripción son campos obligatorios.");
             return;
@@ -33,17 +41,14 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
 
         const newEvent: IEventDTO = {
             id: event?.id || 0,
-            userName: event?.userName || "",
             title,
             description: String(description),
             location: "",
             isArchived: false,
             tags: [],
             images: [],
-            userId: event?.userId || 0,
             message: "",
             loves: 0,
-            comments: [],
             isPublished: false,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -52,14 +57,11 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             alt_avatar: "",
             source_avatar: "",
             url_avatar: "",
-            role: role || "",
+            date: "",
+            link: "",
+            userId: userId,
 
         };
-
-        if (isAuthenticated) {
-            newEvent.userId = role === "admin" ? 0 : 1;
-            newEvent.userName = role === "admin" ? "admin" : "user";
-        }
 
         try {
             await apiEvent.createEvent(newEvent);
@@ -77,7 +79,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
     };
 
     return (
-        <Modal dark size="lg" show={show} onHide={onClose} className={styles.eventForm}>
+        <Modal size="lg" show={show} onHide={onClose} className={styles.eventForm}>
             <Modal.Header className={styles.eventForm} closeButton>
                 <Modal.Title>{event ? "Editar Evento" : "Crear Evento"}</Modal.Title>
             </Modal.Header>

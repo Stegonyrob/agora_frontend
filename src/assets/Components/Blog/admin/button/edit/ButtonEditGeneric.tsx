@@ -56,7 +56,6 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                 <EditEventForm
                     event={{
                         ...(item as IEvent),
-                        comments: (item as any).comments ?? [],
                         alt_avatar: (item as any).alt_avatar ?? "",
                         source_avatar: (item as any).source_avatar ?? "",
                         description: (item as any).description ?? "",
@@ -64,6 +63,7 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                         updatedAt: (item as any).updatedAt ?? new Date().toISOString(),
                         date: (item as any).date ?? new Date().toISOString(),
                         link: (item as any).link ?? "",
+                        userId: (item as any).userId ?? 0,
                     }}
                     onSubmit={onSubmit}
                     onClose={handleClose}
