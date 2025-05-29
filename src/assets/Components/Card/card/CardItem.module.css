@@ -88,14 +88,15 @@
   line-height: 1.5rem;
 }
 
-.container .card .body .tags {
+.container .card .body .tags, .container .card .body .date {
   width: 100%;
   display: flex;
   gap: 0.4rem;
   align-items: center;
+  color: azure;
 }
 
-.container .card .body .tags .tag-item {
+.container .card .body .tags .tag-item, .container .card .body .date .tag-item {
   font-family: "Open Sans", "Ubuntu", sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
@@ -104,4 +105,36 @@
   border-radius: 2px;
   box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.25);
   color: #f8f9fa;
+}
+
+.container .card .body .footer {
+  width: 100%;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 1rem;
+  color: azure;
+}
+
+.container .footer {
+  width: 100%;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 1rem;
+  color: azure;
+}
+
+.container .footer .author {
+  font-family: "Open Sans", "Ubuntu", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f8f9fa;
+}
+
+.container .footer .date {
+  font-family: "Open Sans", "Ubuntu", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #6c757d;
 }

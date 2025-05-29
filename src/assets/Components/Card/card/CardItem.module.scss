@@ -108,11 +108,12 @@ $hover-glow-color: #9c27b0; // Un tono de lila, puedes ajustarlo
       line-height: 1.5rem;
     }
 
-    .tags {
+    .tags, .date {
       width: 100%;
       display: flex;
       gap: 0.4rem;
       align-items: center;
+      color:azure;
 
       .tag-item {
         font-family: "Open Sans", "Ubuntu", sans-serif;
@@ -125,7 +126,37 @@ $hover-glow-color: #9c27b0; // Un tono de lila, puedes ajustarlo
         color: $gray-darkest;
       }
     }
+    .footer {
+      width: 100%;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      margin-top: 1rem;
+      color:azure;
   }
 }
 }   
 
+.footer {
+  width: 100%;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 1rem;
+  color: azure;
+
+  .author {
+    font-family: "Open Sans", "Ubuntu", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $gray-darkest;
+  }
+
+  .date {
+    font-family: "Open Sans", "Ubuntu", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: $gray-lightest;
+  }
+}
+}

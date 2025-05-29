@@ -5,39 +5,40 @@
   border-radius: 50%;
   overflow: hidden;
   box-shadow: 0 0 40px 10px rgba(255, 255, 255, 0.1) inset, 0 2px 8px 0 rgba(0, 0, 0, 0.1) inset, 0 0 32px 0 rgba(0, 0, 0, 0.1), 0 12px 48px 0 rgba(60, 60, 60, 0.13), 0 1.5px 8px 0 rgba(0, 0, 0, 0.06);
-  background: radial-gradient(circle at 60% 35%, rgba(255, 255, 255, 0.22) 0%, transparent 60%), radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 80%), linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(161, 141, 141, 0.07) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(2.5px) saturate(1.2);
+  background: radial-gradient(circle at 50% 20%, rgba(255, 0, 0, 0.5) 0%, transparent 40%), radial-gradient(circle at 30% 80%, rgba(0, 255, 0, 0.5) 0%, transparent 50%), linear-gradient(145deg, rgba(0, 0, 255, 0.3) 0%, rgba(255, 255, 0, 0.3) 100%);
+  backdrop-filter: blur(2.8px) saturate(1.8);
 }
 
 .logoPickerContainer::before {
   content: '';
   position: absolute;
-  top: 8%;
-  left: 18%;
-  width: 64%;
-  height: 28%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 80%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 3;
-  filter: blur(1.2px);
+  z-index: 4;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 70%, transparent 100%);
+  filter: blur(10px);
   opacity: 0.7;
+  transition: opacity 0.3s;
 }
 
 .logoPickerContainer::after {
   content: '';
   position: absolute;
-  bottom: 8%;
-  right: 18%;
-  width: 44%;
-  height: 18%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
+  top: 4%;
+  left: 4%;
+  width: 92%;
+  height: 92%;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 3;
-  filter: blur(1px);
-  opacity: 0.5;
+  z-index: 1;
+  box-shadow: 0 0 32px 12px rgba(255, 255, 255, 0.35), 0 0 24px 8px rgba(200, 200, 200, 0.9);
+  opacity: 0.95;
+  filter: blur(2.5px);
+  transition: opacity 0.3s;
 }
 
 .logoPickerContainer:hover .clickMe {
@@ -57,6 +58,7 @@
   opacity: 0.96;
   background: transparent;
   pointer-events: none;
+  z-index: 3;
 }
 
 .logoPickerImage {
@@ -68,7 +70,7 @@
   z-index: 2;
 }
 
-/* Mensaje "Click Me" exclusivo para LogoPicker */
+/* Mensaje "Click Me" */
 .clickMe {
   position: absolute;
   bottom: 10%;
@@ -96,7 +98,7 @@
   pointer-events: none;
   box-shadow: 2px 2px 2px #489dcf, -2px -2px 2px #62d5ff;
   transform: translate(-50%, -50%);
-  animation: blow 6s linear infinite;
+  animation: blow 10s linear infinite;
 }
 
 .circle-out {

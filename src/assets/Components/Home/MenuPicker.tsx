@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Logo from '../Logo/LogoAgora';
+import LogoPicker from '../Logo/LogoPicker';
 import styles from './MenuPicker.module.scss';
 
 
@@ -15,18 +15,30 @@ const ColorPickerMenu = () => {
     { name: "Sobre Mí", path: "/AboutMe" },
     { name: "Servicios", path: "/Services" },
     { name: "Blog", path: "/Blog" },
+    { name: "Eventos", path: "/Events" },
     { name: "Ágora", path: "/Agora" },
-    { name: "CEA/TEA", path: "/Tea" },
+    { name: "CEA/TEA", path: "/Cea" },
     { name: "Tda/Tdh", path: "/Tda_Tdh" },
-    { name: "D.Aprendizaje", path: "/LearningDifficulties" },
-    { name: "C.Desarrollo", path: "/DevelopmentConditions" },
-    { name: "Tr.Comunicación", path: "/Communication" },
+    { name: "Dif.Aprendizaje", path: "/LearningDifficulties" },
+    { name: "Cond.Desarrollo", path: "/DevelopmentConditions" },
+    { name: "Trans.Comunicación", path: "/Communication" },
   ];
-  const colors = ["rgba(215, 149, 216, 0.99)", "rgba(253, 217, 45, 1)", "rgba(74, 160, 73, 1)", "rgba(182, 159, 222, 1)", "rgba(210, 120, 222, 1)"];
+  const colors = [
+    "rgba(255, 105, 180, 0.95)",   // rosa intenso
+    "rgba(255, 230, 80, 0.95)",    // amarillo intenso
+    "rgba(80, 255, 180, 0.95)",    // verde menta intenso
+    "rgba(255, 167, 38, 0.95)",    // naranja intenso
+    "rgba(150, 120, 255, 0.95)",   // lila intenso
+    "rgba(255, 120, 120, 0.95)",   // coral intenso
+    "rgba(255, 220, 60, 0.95)",    // crema intenso
+    "rgba(80, 255, 200, 0.95)",    // verde agua intenso
+    "rgba(255, 200, 221, 0.95)",   // rosa pastel
+    "rgba(197, 255, 221, 0.95)"    // verde menta pastel
+  ];
   const menuItemsJSX = menuItems.map((item, index) => {
     const isMobile = window.innerWidth <= 768;
     const deg = index * (360 / menuItems.length);
-    const transformStyle = active ? `rotate(${deg}deg) translate(${isMobile ? 7 : 12.5}rem)` : 'translate(0)';
+    const transformStyle = active ? `rotate(${deg}deg) translate(${isMobile ? 7 : 15.5}rem)` : 'translate(0)';
     const reverseDeg = -deg;
     return (
       <a
@@ -47,8 +59,15 @@ const ColorPickerMenu = () => {
 
   return (
     <div className={styles.colorPickerMenuContainer}>
-      <div className={`${styles.centralPicker} ${active ? 'active' : ''}`} onClick={toggleMenu}>
-        <Logo />
+      <div
+        className={`${styles.centralPicker} ${active ? styles.active : ''}`}
+        onClick={toggleMenu}
+        tabIndex={0}
+        aria-label="Abrir menú de navegación"
+        role="button"
+      >
+        <LogoPicker />
+        <span className={styles.clickMe}>Click Me</span>
       </div>
       <div className={styles.menuItemsContainer}>{menuItemsJSX}</div>
     </div>

@@ -1,0 +1,132 @@
+.logoPickerContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 40px 10px rgba(255,255,255,0.10) inset,
+    0 2px 8px 0 rgba(0,0,0,0.10) inset,
+    0 0 32px 0 rgba(0,0,0,0.10),
+    0 12px 48px 0 rgba(60,60,60,0.13),
+    0 1.5px 8px 0 rgba(0,0,0,0.06);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,0,0,0.5) 0%, transparent 40%),
+    radial-gradient(circle at 30% 80%, rgba(0,255,0,0.5) 0%, transparent 50%),
+    linear-gradient(145deg, rgba(0,0,255,0.3) 0%, rgba(255,255,0,0.3) 100%);
+  backdrop-filter: blur(2.8px) saturate(1.8);
+
+  // Difuminado por encima de la imagen
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 4;
+    background: radial-gradient(circle, rgba(255,255,255,0.45) 70%, transparent 100%);
+    filter: blur(10px);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+
+  // Difuminado por debajo de la imagen
+  &::after {
+    content: '';
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    width: 92%;
+    height: 92%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    box-shadow: 0 0 32px 12px rgba(255,255,255,0.35), 
+                0 0 24px 8px rgba(200, 200, 200, 0.9);
+    opacity: 0.95;
+    filter: blur(2.5px);
+    transition: opacity 0.3s;
+  }
+
+  &:hover .clickMe {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+.logoPickerImage,
+.logoPickerCanvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.96;
+  background: transparent;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.logoPickerImage {
+  z-index: 1;
+  box-shadow: 0 0 10px rgba(0,0,0,0.12);
+}
+
+.logoPickerCanvas {
+  z-index: 2;
+}
+
+/* Mensaje "Click Me" */
+.clickMe {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+  color: #fff;
+  background: rgba(0,0,0,0.35);
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 10;
+}
+
+/* Animaciones decorativas */
+.circle, .span {
+  height: 1px;
+  width: 1px;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  box-shadow: 2px 2px 2px #489dcf, -2px -2px 2px #62d5ff;
+  transform: translate(-50%, -50%);
+  animation: blow 10s linear infinite; // Más lento (antes 6s)
+}
+
+.circle-out {
+  transform: translate(-50%, -1000%);
+  opacity: 0;
+  filter: hue-rotate(720deg);
+}
+
+@keyframes blow {
+  0% {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -1000%);
+    opacity: 0;
+    filter: hue-rotate(720deg);
+  }
+}

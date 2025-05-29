@@ -10,6 +10,7 @@ import { IEventDTO } from "./IEventDTO";
 // 5. Delete event - deleteEvent()
 // 6. Archive event - archiveEvent()
 // 7. Unarchive event - unarchiveEvent()
+// 8. Register attendee to event (Public)
 
 export default class EventService {
   private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENTS;
@@ -170,6 +171,26 @@ export default class EventService {
       console.error(`Error unarchiving event with ID ${id}:`, error.message);
       throw new Error(
         `Error unarchiving event with ID ${id}: ${error.message}`
+      );
+    }
+  }
+  // 8. Register attendee to event (Public)
+  async registerAttendee(
+    eventId: number,
+    attendee: { nombre: string; correo: string; telefono: string }
+  ) {
+    try {
+      const response = await axios.post(
+        `${this.uri}/${eventId}/attendees`,
+        attendee,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || "Error registrando asistente"
       );
     }
   }

@@ -17,7 +17,6 @@ import NeurodiversityView from "@/assets/Views/NeurodiversityView";
 import RegisterView from "@/assets/Views/RegisterView";
 import ServiceView from "@/assets/Views/ServiceView";
 import Tda_TdhView from "@/assets/Views/Tda_TdhView";
-import TeaView from "@/assets/Views/TeaView";
 
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
@@ -31,7 +30,9 @@ import EventsView from "./assets/Views/EventsView";
 
 
 
+import CeaView from "@/assets/Views/CeaView";
 import AdminPostView from "./assets/Views/AdminPostView";
+import TrasComunicationView from './assets/Views/TrasCommunication';
 import { IEvent } from "./core/events/IEvent";
 import { login as setLogin } from "./redux/reducers/loginSlice";
 const App: React.FC = () => {
@@ -64,13 +65,14 @@ const App: React.FC = () => {
           <Route path="neurodiversity" element={<NeurodiversityView />} />
           <Route path="services" element={<ServiceView />} />
           <Route path="agora" element={<AgoraView />} />
-          <Route path="cea" element={<TeaView />} />
+          <Route path="cea" element={<CeaView />} />
           <Route path="tda_Tdh" element={<Tda_TdhView />} />
           <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
           <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
           <Route path="login" element={<LoginView />} />
           <Route path="register" element={<RegisterView />} />
           <Route path="*" element={<Error404View />} />
+          <Route path="communication" element={<TrasComunicationView />} />
           <Route path="events" element={<EventsView userId={null} events={[]} onSelect={function (event: IEvent): void {
             throw new Error("Function not implemented.");
           }} />} />

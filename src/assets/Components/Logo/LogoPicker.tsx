@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import logo from './agoraLogoTras.png';
-import style from './Logo.module.scss';
+import logo from './agorinnegro2.jpg';
+import style from './LogoPicker.module.scss';
 
-const Logo = () => {
+const LogoPicker = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -18,11 +18,12 @@ const Logo = () => {
       context?.clearRect(0, 0, canvas.width, canvas.height);
       if (context) context.font = '1.5rem Arial';
       if (context) context.fillStyle = 'white';
-      context?.fillText('Click Me!!!', offsetX, offsetY);
+      context?.fillText('Click Me!', offsetX, offsetY);
     };
 
     canvas.addEventListener('mousemove', handleMouseMove);
 
+    // Burbuja más lenta: aumenta el delay y la duración
     const handleBodyMouseMove = (event: MouseEvent) => {
       setTimeout(() => {
         let circle = document.createElement('span');
@@ -31,14 +32,14 @@ const Logo = () => {
         circle.className = style.circle;
         circle.style.left = x + "px";
         circle.style.top = y + "px";
-        let size = Math.random() * 100;
+        let size = Math.random() * 80 + 20; // burbujas más uniformes
         circle.style.width = 1 + size + "px";
         circle.style.height = 1 + size + "px";
         document.body.appendChild(circle);
         setTimeout(function () {
           circle.remove();
-        }, 3800);
-      }, 100);
+        }, 6000); // burbuja más lenta (antes 3800)
+      }, 300); // delay más largo (antes 100)
     };
 
     document.body.addEventListener('mousemove', handleBodyMouseMove);
@@ -50,15 +51,17 @@ const Logo = () => {
   }, []);
 
   return (
-    <div className={style.logoContainer}>
-      <img className={style.logoImageHome} src={logo} alt="Logo" />
+    <div className={style.logoPickerContainer}>
+      <img className={style.logoPickerImage} src={logo} alt="Logo" />
       <canvas
         ref={canvasRef}
-
-        className={style.logoCanvas}
+        className={style.logoPickerCanvas}
+        width={320}
+        height={320}
       />
+      <span className={style.clickMe}>Click Me</span>
     </div>
   );
 };
 
-export default Logo;
+export default LogoPicker;

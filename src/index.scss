@@ -1,19 +1,26 @@
 @import "../src/assets/scss/reset.scss";
 /* global.css */
+@import url('https://fonts.googleapis.com/css2?family=Viaoda+Libre&display=swap'); //font-family: "Viadoda Libre", serif;me gusta
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");//font-family: "Nunito", serif;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");//font-family: "Roboto", serif;
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");//font-family: "Open Sans", serif;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");//font-family: "Monserrat", serif;
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap");//font-family: "Caveat", cursive;
+@import url('https://fonts.googleapis.com/css2?family=Aladin&family=Viaoda+Libre&display=swap');//font-family: "Aladin", cursive; me gusta 
+@import url("https://fonts.googleapis.com/css2?family=Aladin&display=swap");//font-family: "Aladin", cursive;
 
-@import url("https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Pompiere&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Pompiere&display=swap");//font-family: "Overlock", serif; font-family: "Pompiere", cursive; me gusta overlock
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
 body {
   background-image: url(../public/images/fondo.jpg);
-  font-family: "Pompiere", serif;
-  font-size: 1.5rem;
+  font-family: "Overlock", serif; 
+  font-size: 1.6rem;
   line-height: 1.5;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   height: 100%;
-
+//" o ""
   h1 {
     font-size: 4rem;
   }

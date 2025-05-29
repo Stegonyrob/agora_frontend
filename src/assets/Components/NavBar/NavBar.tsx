@@ -1,69 +1,204 @@
-import { logout } from '@/redux/reducers/loginSlice';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import Logo from '../Logo/LogoSimply';
-import styles from './NavBar.module.scss';
+import { logout } from "@/redux/reducers/loginSlice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import LogoNavBar from "../Logo/LogoNavBar";
+import styles from "./NavBar.module.scss";
 
 function NavBar() {
   const dispatch = useDispatch();
   const isAdmin = sessionStorage.role === "ROLE_ADMIN";
-  const viewAsUser = sessionStorage.viewAsUser === "true";
-  const handleLogout = () => {
-    // Limpia sessionStorage
-    sessionStorage.clear();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState({ neuro: false, session: false });
 
-    // Limpia cookies (esto borra todas las cookies del dominio actual)
+  const currentPath = window.location.pathname;
+
+  const handleLogout = () => {
+    sessionStorage.clear();
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
-
-    // Despacha la acción de Redux
     dispatch(logout());
   };
 
+  const toggleDropdown = (name: "neuro" | "session") => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <Navbar expand="lg" className="navbar  border-bottom border-body" data-bs-theme="dark" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
-      <Container>
-        <Navbar.Brand href="#home">
-          <Logo className={styles.logoSmall} />
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav variant="underline" defaultActiveKey="/home" className="ms-auto">
-            <Nav.Link href="/">Inicio</Nav.Link>
-            <Nav.Link href="/Agora">Agora</Nav.Link>
-            <Nav.Link href="/Services">Servicios</Nav.Link>
-            <Nav.Link href="/Events">Eventos</Nav.Link>
-            <NavDropdown title="Neurodiversidad" id="basic-nav-dropdown">
-              <NavDropdown.Item href="/Neurodiversity">¿Qué es?</NavDropdown.Item>
-              <NavDropdown.Item href="/Tea">Cea/Tea</NavDropdown.Item>
-              <NavDropdown.Item href="/Tda_Tdh">Tda_Tdh</NavDropdown.Item>
-              <NavDropdown.Item href="/LearningDifficulties">Dificultades del Aprendizaje</NavDropdown.Item>
-              <NavDropdown.Item href="/DevelopmentConditions">Condiciones del Desarrollo</NavDropdown.Item>
-              <NavDropdown.Item href="/Communication">Trastornos de la Comunicación</NavDropdown.Item>
-            </NavDropdown>
-            <Nav.Link href="/AboutMe">Sobre Mi</Nav.Link>
-            <NavDropdown title="Blog" id="basic-nav-dropdown">
-              <NavDropdown.Item href="/Blog">Blog</NavDropdown.Item>
-              <NavDropdown.Item href="/Login">Login</NavDropdown.Item>
-              <NavDropdown.Item href="/Register">Registro</NavDropdown.Item>
-              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
-            </NavDropdown>
-            {isAdmin && (
-              <Nav.Link
-                href="/admin"
-                className={styles.adminDashboardLink}
-                onClick={() => sessionStorage.removeItem("viewAsUser")}
-              >
-                Volver al Dashboard Admin
-              </Nav.Link>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+    <nav className={styles.navBar}>
+      <div className={styles.logoContainer}>
+        <a href="/">
+          <LogoNavBar className={styles.logoSmall} />
+        </a>
+      </div>
+      <button
+        className={styles.hamburger}
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label="Abrir menú"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+      <ul className={`${styles.navLinks} ${menuOpen ? styles.open : ""}`}>
+        <li>
+          <a
+            href="/"
+            onClick={closeMenu}
+            className={currentPath === "/" ? styles.active : ""}
+          >Inicio</a>
+        </li>
+        <li>
+          <a
+            href="/Agora"
+            onClick={closeMenu}
+            className={currentPath === "/Agora" ? styles.active : ""}
+          >Agora</a>
+        </li>
+        <li>
+          <a
+            href="/Services"
+            onClick={closeMenu}
+            className={currentPath === "/Services" ? styles.active : ""}
+          >Servicios</a>
+        </li>
+        <li>
+          <a
+            href="/Events"
+            onClick={closeMenu}
+            className={currentPath === "/Events" ? styles.active : ""}
+          >Eventos</a>
+        </li>
+        <li
+          className={styles.dropdown}
+          onMouseEnter={() => setDropdownOpen(d => ({ ...d, neuro: true }))}
+          onMouseLeave={() => setDropdownOpen(d => ({ ...d, neuro: false }))}
+        >
+          <button
+            onClick={() => toggleDropdown("neuro")}
+            className={`${styles.dropbtn} ${["/Neurodiversity", "/Tea", "/Tda_Tdh", "/LearningDifficulties", "/DevelopmentConditions", "/Communication"].includes(currentPath) ? styles.active : ""}`}
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen.neuro}
+          >
+            Neurodiversidad
+          </button>
+          <ul className={`${styles.dropdownContent} ${dropdownOpen.neuro ? styles.show : ""}`}>
+            <li>
+              <a
+                href="/Neurodiversity"
+                onClick={closeMenu}
+                className={currentPath === "/Neurodiversity" ? styles.active : ""}
+              >¿Qué es?</a>
+            </li>
+            <li>
+              <a
+                href="/Cea"
+                onClick={closeMenu}
+                className={currentPath === "/Tea" ? styles.active : ""}
+              >Cea/Tea</a>
+            </li>
+            <li>
+              <a
+                href="/Tda_Tdh"
+                onClick={closeMenu}
+                className={currentPath === "/Tda_Tdh" ? styles.active : ""}
+              >Tda_Tdh</a>
+            </li>
+            <li>
+              <a
+                href="/LearningDifficulties"
+                onClick={closeMenu}
+                className={currentPath === "/LearningDifficulties" ? styles.active : ""}
+              >Dificultades del Aprendizaje</a>
+            </li>
+            <li>
+              <a
+                href="/DevelopmentConditions"
+                onClick={closeMenu}
+                className={currentPath === "/DevelopmentConditions" ? styles.active : ""}
+              >Condiciones del Desarrollo</a>
+            </li>
+            <li>
+              <a
+                href="/Communication"
+                onClick={closeMenu}
+                className={currentPath === "/Communication" ? styles.active : ""}
+              >Trastornos de la Comunicación</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a
+            href="/AboutMe"
+            onClick={closeMenu}
+            className={currentPath === "/AboutMe" ? styles.active : ""}
+          >Sobre Mi</a>
+        </li>
+        <li>
+          <a
+            href="/Blog"
+            onClick={closeMenu}
+            className={currentPath === "/Blog" ? styles.active : ""}
+          >Blog</a>
+        </li>
+        <li
+          className={styles.dropdown}
+          onMouseEnter={() => setDropdownOpen(d => ({ ...d, session: true }))}
+          onMouseLeave={() => setDropdownOpen(d => ({ ...d, session: false }))}
+        >
+          <button
+            onClick={() => toggleDropdown("session")}
+            className={`${styles.dropbtn} ${["/Login", "/Register"].includes(currentPath) ? styles.active : ""}`}
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen.session}
+          >
+            Inicio de Sesión
+          </button>
+          <ul className={`${styles.dropdownContent} ${dropdownOpen.session ? styles.show : ""}`}>
+            <li>
+              <a
+                href="/Login"
+                onClick={closeMenu}
+                className={currentPath === "/Login" ? styles.active : ""}
+              >Login</a>
+            </li>
+            <li>
+              <a
+                href="/Register"
+                onClick={closeMenu}
+                className={currentPath === "/Register" ? styles.active : ""}
+              >Registro</a>
+            </li>
+            <li>
+              <button onClick={() => { handleLogout(); closeMenu(); }}>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </li>
+        {isAdmin && (
+          <li>
+            <a
+              href="/admin"
+              className={styles.adminDashboardLink}
+              onClick={() => {
+                sessionStorage.removeItem("viewAsUser");
+                closeMenu();
+              }}
+            >
+              Volver al Dashboard Admin
+            </a>
+          </li>
+        )}
+      </ul>
+    </nav>
   );
 }
 

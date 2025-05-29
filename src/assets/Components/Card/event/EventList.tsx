@@ -40,7 +40,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
     return (
         <div>
             {events.map((event) => (
-                <CardItem
+                <><CardItem
                     key={event.id}
                     type="event"
                     id={event.id}
@@ -52,8 +52,8 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                     attendentsCount={event.attendentsCount}
                     user={event.user}
                     onSelect={handleSelect}
-                    location={event.location}
-                />
+                    location={event.location} /></>
+
             ))}
         </div>
     );

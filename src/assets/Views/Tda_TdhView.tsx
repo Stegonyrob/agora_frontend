@@ -5,7 +5,7 @@ export default function TdaTdhView() {
   return (
     <div className={styles.container}>
       <h2>Trastorno de Deficit de Atención con y sin Hiperactividad Tda/Tdh</h2>
-      <CardText ids={['9', '10']} />
+      <CardText ids={['10', '11']} endpoint={""} />
     </div>
   );
 }
