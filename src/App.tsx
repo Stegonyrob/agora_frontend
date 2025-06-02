@@ -32,6 +32,7 @@ import EventsView from "./assets/Views/EventsView";
 
 import CeaView from "@/assets/Views/CeaView";
 import AdminPostView from "./assets/Views/AdminPostView";
+import TermsView from "./assets/Views/TermsView";
 import TrasComunicationView from './assets/Views/TrasCommunication';
 import { IEvent } from "./core/events/IEvent";
 import { login as setLogin } from "./redux/reducers/loginSlice";
@@ -76,6 +77,7 @@ const App: React.FC = () => {
           <Route path="events" element={<EventsView userId={null} events={[]} onSelect={function (event: IEvent): void {
             throw new Error("Function not implemented.");
           }} />} />
+          <Route path="legal/:type" element={<TermsView />} />
         </Route>
 
         {/* Rutas privadas */}

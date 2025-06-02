@@ -118,9 +118,12 @@ export default function Footer() {
                 <div className={styles.footerMenu}>
                   <ul>
                     <li><a href="/">Inicio</a></li>
-                    <li><a href="#">Términos</a></li>
-                    <li><a href="#">Privacidad</a></li>
-                    <li><a href="#">Política</a></li>
+                    <li><a href="/legal/terms">Términos</a></li>
+                    <li><a href="/legal/privacy">Privacidad</a></li>
+                    <li><a href="/legal/cookies">Política de cookies</a></li>
+
+
+
                   </ul>
                 </div>
               </div>

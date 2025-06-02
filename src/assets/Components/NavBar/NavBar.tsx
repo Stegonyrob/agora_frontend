@@ -1,205 +1,176 @@
-import { logout } from "@/redux/reducers/loginSlice";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import LogoNavBar from "../Logo/LogoNavBar";
+import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
 import styles from "./NavBar.module.scss";
+import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
 
 function NavBar() {
-  const dispatch = useDispatch();
-  const isAdmin = sessionStorage.role === "ROLE_ADMIN";
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState({ neuro: false, session: false });
+    const [click, setClick] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState("");
 
-  const currentPath = window.location.pathname;
+    const handleClick = () => setClick(!click);
+    const closeMenu = () => setClick(false);
+    const handleDropdown = (name: string) => {
+        setOpenDropdown(openDropdown === name ? "" : name);
+    };
+    const [grayScale, setGrayScale] = useState(false);
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    dispatch(logout());
-  };
+    useEffect(() => {
+        document.body.style.filter = grayScale ? "grayscale(100%)" : "none";
+        return () => {
+            document.body.style.filter = "none";
+        };
+    }, [grayScale]);
 
-  const toggleDropdown = (name: "neuro" | "session") => {
-    setDropdownOpen((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
-  };
+    return (
+        <nav className={styles.navbar}>
+            <div className={styles.navContainer}>
+                <div className={styles.logoAndToggle}>
+                    <NavLink to="/" className={styles.navLogo} onClick={closeMenu}>
+                        <LogoNavBar className={styles.logoSmall} />
+                    </NavLink>
+                    <span className={styles.specialIcon}>
+                        <ToggleGrayScaleButton
+                            checked={grayScale}
+                            onChange={() => setGrayScale(prev => !prev)}
+                        />
+                    </span>
+                </div>
+                <div className={styles.navIcon} onClick={handleClick}>
+                    {click ? (
+                        <span className={styles.icon}>
+                            <HamburgetMenuClose />
+                        </span>
+                    ) : (
+                        <span className={styles.icon}>
+                            <HamburgetMenuOpen />
+                        </span>
+                    )}
+                </div>
 
-  const closeMenu = () => setMenuOpen(false);
-
-  return (
-    <nav className={styles.navBar}>
-      <div className={styles.logoContainer}>
-        <a href="/">
-          <LogoNavBar className={styles.logoSmall} />
-        </a>
-      </div>
-      <button
-        className={styles.hamburger}
-        onClick={() => setMenuOpen((open) => !open)}
-        aria-label="Abrir menú"
-      >
-        <span />
-        <span />
-        <span />
-      </button>
-      <ul className={`${styles.navLinks} ${menuOpen ? styles.open : ""}`}>
-        <li>
-          <a
-            href="/"
-            onClick={closeMenu}
-            className={currentPath === "/" ? styles.active : ""}
-          >Inicio</a>
-        </li>
-        <li>
-          <a
-            href="/Agora"
-            onClick={closeMenu}
-            className={currentPath === "/Agora" ? styles.active : ""}
-          >Agora</a>
-        </li>
-        <li>
-          <a
-            href="/Services"
-            onClick={closeMenu}
-            className={currentPath === "/Services" ? styles.active : ""}
-          >Servicios</a>
-        </li>
-        <li>
-          <a
-            href="/Events"
-            onClick={closeMenu}
-            className={currentPath === "/Events" ? styles.active : ""}
-          >Eventos</a>
-        </li>
-        <li
-          className={styles.dropdown}
-          onMouseEnter={() => setDropdownOpen(d => ({ ...d, neuro: true }))}
-          onMouseLeave={() => setDropdownOpen(d => ({ ...d, neuro: false }))}
-        >
-          <button
-            onClick={() => toggleDropdown("neuro")}
-            className={`${styles.dropbtn} ${["/Neurodiversity", "/Tea", "/Tda_Tdh", "/LearningDifficulties", "/DevelopmentConditions", "/Communication"].includes(currentPath) ? styles.active : ""}`}
-            aria-haspopup="true"
-            aria-expanded={dropdownOpen.neuro}
-          >
-            Neurodiversidad
-          </button>
-          <ul className={`${styles.dropdownContent} ${dropdownOpen.neuro ? styles.show : ""}`}>
-            <li>
-              <a
-                href="/Neurodiversity"
-                onClick={closeMenu}
-                className={currentPath === "/Neurodiversity" ? styles.active : ""}
-              >¿Qué es?</a>
-            </li>
-            <li>
-              <a
-                href="/Cea"
-                onClick={closeMenu}
-                className={currentPath === "/Tea" ? styles.active : ""}
-              >Cea/Tea</a>
-            </li>
-            <li>
-              <a
-                href="/Tda_Tdh"
-                onClick={closeMenu}
-                className={currentPath === "/Tda_Tdh" ? styles.active : ""}
-              >Tda_Tdh</a>
-            </li>
-            <li>
-              <a
-                href="/LearningDifficulties"
-                onClick={closeMenu}
-                className={currentPath === "/LearningDifficulties" ? styles.active : ""}
-              >Dificultades del Aprendizaje</a>
-            </li>
-            <li>
-              <a
-                href="/DevelopmentConditions"
-                onClick={closeMenu}
-                className={currentPath === "/DevelopmentConditions" ? styles.active : ""}
-              >Condiciones del Desarrollo</a>
-            </li>
-            <li>
-              <a
-                href="/Communication"
-                onClick={closeMenu}
-                className={currentPath === "/Communication" ? styles.active : ""}
-              >Trastornos de la Comunicación</a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a
-            href="/AboutMe"
-            onClick={closeMenu}
-            className={currentPath === "/AboutMe" ? styles.active : ""}
-          >Sobre Mi</a>
-        </li>
-        <li>
-          <a
-            href="/Blog"
-            onClick={closeMenu}
-            className={currentPath === "/Blog" ? styles.active : ""}
-          >Blog</a>
-        </li>
-        <li
-          className={styles.dropdown}
-          onMouseEnter={() => setDropdownOpen(d => ({ ...d, session: true }))}
-          onMouseLeave={() => setDropdownOpen(d => ({ ...d, session: false }))}
-        >
-          <button
-            onClick={() => toggleDropdown("session")}
-            className={`${styles.dropbtn} ${["/Login", "/Register"].includes(currentPath) ? styles.active : ""}`}
-            aria-haspopup="true"
-            aria-expanded={dropdownOpen.session}
-          >
-            Inicio de Sesión
-          </button>
-          <ul className={`${styles.dropdownContent} ${dropdownOpen.session ? styles.show : ""}`}>
-            <li>
-              <a
-                href="/Login"
-                onClick={closeMenu}
-                className={currentPath === "/Login" ? styles.active : ""}
-              >Login</a>
-            </li>
-            <li>
-              <a
-                href="/Register"
-                onClick={closeMenu}
-                className={currentPath === "/Register" ? styles.active : ""}
-              >Registro</a>
-            </li>
-            <li>
-              <button onClick={() => { handleLogout(); closeMenu(); }}>
-                Logout
-              </button>
-            </li>
-          </ul>
-        </li>
-        {isAdmin && (
-          <li>
-            <a
-              href="/admin"
-              className={styles.adminDashboardLink}
-              onClick={() => {
-                sessionStorage.removeItem("viewAsUser");
-                closeMenu();
-              }}
-            >
-              Volver al Dashboard Admin
-            </a>
-          </li>
-        )}
-      </ul>
-    </nav>
-  );
+                <ul className={click ? `${styles.navMenu} ${styles.active}` : styles.navMenu}>
+                    <li className={styles.navItem}>
+                        <NavLink
+                            to="/"
+                            className={styles.navLinks}
+                            onClick={closeMenu}
+                        >
+                            Inicio
+                        </NavLink>
+                    </li>
+                    {/* Dropdown 1: Nosotros */}
+                    <li
+                        className={`${styles.navItem} ${styles.dropdown}`}
+                        onMouseEnter={() => setOpenDropdown("nosotros")}
+                        onMouseLeave={() => setOpenDropdown("")}
+                    >
+                        <button
+                            className={`${styles.navLinks} ${styles.dropbtn}`}
+                            onClick={() => handleDropdown("nosotros")}
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === "nosotros"}
+                            type="button"
+                        >
+                            Nosotros
+                        </button>
+                        <ul className={openDropdown === "nosotros" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                            <li>
+                                <NavLink to="/agora" className={styles.dropdownLink} onClick={closeMenu}>Ágora</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/services" className={styles.dropdownLink} onClick={closeMenu}>Nuestros Servicios</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/aboutme" className={styles.dropdownLink} onClick={closeMenu}>Sobre Mi</NavLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li className={styles.navItem}>
+                        <NavLink
+                            to="/events"
+                            className={styles.navLinks}
+                            onClick={closeMenu}
+                        >
+                            Eventos
+                        </NavLink>
+                    </li>
+                    {/* Dropdown 2: Neurodiversidad */}
+                    <li
+                        className={`${styles.navItem} ${styles.dropdown}`}
+                        onMouseEnter={() => setOpenDropdown("neuro")}
+                        onMouseLeave={() => setOpenDropdown("")}
+                    >
+                        <button
+                            className={`${styles.navLinks} ${styles.dropbtn}`}
+                            onClick={() => handleDropdown("neuro")}
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === "neuro"}
+                            type="button"
+                        >
+                            Neurodiversidad
+                        </button>
+                        <ul className={openDropdown === "neuro" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                            <li>
+                                <NavLink to="/neurodiversity" className={styles.dropdownLink} onClick={closeMenu}>¿Qué es?</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/tea" className={styles.dropdownLink} onClick={closeMenu}>Cea/Tea</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/tda_tdh" className={styles.dropdownLink} onClick={closeMenu}>Tda_Tdh</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/learningdifficulties" className={styles.dropdownLink} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/developmentconditions" className={styles.dropdownLink} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/communication" className={styles.dropdownLink} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
+                            </li>
+                        </ul>
+                    </li>
+                    <li className={styles.navItem}>
+                        <NavLink
+                            to="/blog"
+                            className={styles.navLinks}
+                            onClick={closeMenu}
+                        >
+                            Blog
+                        </NavLink>
+                    </li>
+                    {/* Dropdown 3: Inicio de Sesión */}
+                    <li
+                        className={`${styles.navItem} ${styles.dropdown}`}
+                        onMouseEnter={() => setOpenDropdown("sesion")}
+                        onMouseLeave={() => setOpenDropdown("")}
+                    >
+                        <button
+                            className={`${styles.navLinks} ${styles.dropbtn}`}
+                            onClick={() => handleDropdown("sesion")}
+                            aria-haspopup="true"
+                            aria-expanded={openDropdown === "sesion"}
+                            type="button"
+                        >
+                            Inicio de Sesión
+                        </button>
+                        <ul className={openDropdown === "sesion" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                            <li>
+                                <NavLink to="/login" className={styles.dropdownLink} onClick={closeMenu}>Login</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/register" className={styles.dropdownLink} onClick={closeMenu}>Registro</NavLink>
+                            </li>
+                            <li>
+                                <button className={styles.dropdownLink} onClick={closeMenu}>Logout</button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    );
 }
 
 export default NavBar;

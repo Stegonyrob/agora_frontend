@@ -1,155 +1,209 @@
-.navBar {
-  background: #23272f;
-  color: #fff;
+.navbar {
+  background: #0c0c0c;
+  height: 80px;
   display: flex;
   align-items: center;
-  height: 6rem;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 100;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.navContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
   justify-content: space-between;
 }
 
-.logoContainer {
+.logoAndToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navLogo {
+  color: #f5b921;
+  font-size: 2rem;
+  text-decoration: none;
   display: flex;
   align-items: center;
 }
 
 .logoSmall {
-  height: 3.5rem;
+  height: 5rem;
 }
 
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.hamburger span {
-  display: block;
-  height: 0.3rem;
-  width: 100%;
-  background: #fff;
-  margin: 0.3rem 0;
-  border-radius: 2px;
-  transition: 0.3s;
-}
-
-.navLinks {
+.specialIcon {
+  margin-left: 0;
   display: flex;
   align-items: center;
+}
+
+.navIcon {
+  display: none;
+  color: #f5b921;
+  position: absolute;
+  right: 2rem;
+  top: 2rem;
+  cursor: pointer;
+  z-index: 30;
+}
+
+@media (max-width: 960px) {
+  .navIcon {
+    display: block;
+    top: 50%;
+    right: 0;
+    transform: translate(-100%, -50%);
+    width: 2rem;
+    height: 2rem;
+    color: #ffdd40;
+  }
+}
+
+.navMenu {
+  display: flex;
   list-style: none;
+  align-items: center;
   margin: 0;
   padding: 0;
-  font-size: 1.5rem;
-  gap: 1.5rem;
 }
 
-.navLinks li {
+.navItem {
   position: relative;
 }
 
-.navLinks a,
-.dropbtn {
+.navLinks, .dropbtn {
   color: #fff;
   text-decoration: none;
+  padding: 0.5rem 1.2rem;
   background: none;
   border: none;
-  font: inherit;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navLinks:hover, .dropbtn:hover, .dropdownContent .dropdownLink:hover {
+  background: #0c0c0c;
+  color: #ffdd40;
+}
+
+.active {
+  color: #ffdd40;
+  background: #0c0c0c;
   border-radius: 4px;
-}
-
-.navLinks a:hover,
-.dropbtn:hover,
-.dropdownContent li button:hover {
-  background: #343a40;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.dropbtn {
-  display: flex;
-  align-items: center;
 }
 
 .dropdownContent {
   display: none;
   position: absolute;
-  top: 2.8rem;
+  background: #0c0c0c;
+  min-width: 180px;
   left: 0;
-  background: #23272f;
-  min-width: 220px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  top: 100%;
   border-radius: 0 0 8px 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 10;
-  flex-direction: column;
   padding: 0.5rem 0;
 }
 
-.dropdownContent li {
-  width: 100%;
+.dropdown:hover .dropdownContent,
+.dropdownContent.show {
+  display: block;
 }
 
-.dropdownContent a,
-.dropdownContent button {
-  width: 100%;
-  text-align: left;
+.dropdownContent .dropdownLink {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  display: block;
   background: none;
   border: none;
-  color: #fff;
-  padding: 0.7rem 1.2rem;
-  font-size: 1.1rem;
+  text-align: left;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
 }
 
-.show {
-  display: flex;
-}
-
-.adminDashboardLink {
-  color: #ffb347;
-  font-weight: bold;
-}
-
-@media (max-width: 900px) {
-  .navBar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 0 0.5rem;
-  }
-  .hamburger {
-    display: flex;
-    margin-left: auto;
-  }
-  .navLinks {
+@media (max-width: 960px) {
+  .navMenu {
     flex-direction: column;
-    background: #23272f;
+    width: 100%;
     position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100vw;
-    max-width: 100vw;
-    padding: 1rem 0;
-    gap: 0.5rem;
-    display: none;
+    top: 80px;
+    left: -110%;
+    background: #0c0c0c;
+    transition: left 0.5s;
+    z-index: 15;
+    align-items: flex-start;
   }
-  .navLinks.open {
-    display: flex;
+  .navMenu.active {
+    left: 0;
+  }
+  .navItem {
+    width: 100%;
+    text-align: center;
+  }
+  .navLinks, .dropbtn {
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem;
   }
   .dropdownContent {
     position: static;
+    min-width: 100%;
     box-shadow: none;
     border-radius: 0;
-    min-width: 100%;
+  }
+  .grayScaleButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    display: flex;
+    align-items: center;
+    transition: filter 0.3s;
+  }
+  .grayScaleButton:hover, .grayScaleButton:focus {
+    filter: brightness(1.2);
+  }
+  .toggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  .toggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .infinityIcon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toggleSwitch input:checked + .slider {
+    background-color: #2196F3;
   }
 }

@@ -9,19 +9,14 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  define: {
-    "process.env": process.env,
-    "process.env.VITE_LOVE_ICON_FILLED": JSON.stringify(
-      process.env.VITE_LOVE_ICON_FILLED
-    ),
-    "process.env.VITE_LOVE_ICON": JSON.stringify(process.env.VITE_LOVE_ICON),
-    "process.env.VITE_ARCHIVE_ICON": JSON.stringify(
-      process.env.VITE_ARCHIVE_ICON
-    ),
-    "process.env.VITE_UNARCHIVE_ICON": JSON.stringify(
-      process.env.VITE_UNARCHIVE_ICON
-    ),
-    "process.env.VITE_EDIT_ICON": JSON.stringify(process.env.VITE_EDIT_ICON),
-    "process.env.VITE_REPLY_ICON": JSON.stringify(process.env.VITE_REPLY_ICON),
+  server: {
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });
