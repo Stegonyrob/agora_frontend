@@ -1,13 +1,10 @@
 import styles from '@/assets/Components/Blog/admin/button/ButtonIcons.module.scss';
 import EventFavoriteService from '@/core/favorites/EventFavoriteService';
 import PostFavoriteService from '@/core/favorites/PostFavoriteService';
-import { IPost } from '@/core/posts/IPost';
 import { useEffect, useState } from 'react';
 
 interface LikeButtonProps {
     userId: number;
-    onSelect: (post: IPost) => void;
-    posts: IPost[];
     postId: number;
     requireLogin?: boolean;
     type: 'post' | 'event';
@@ -15,14 +12,11 @@ interface LikeButtonProps {
 
 const LikeButton: React.FC<LikeButtonProps> = ({
     userId,
-    onSelect,
-    posts,
     postId,
     requireLogin = false,
     type
 }) => {
     const [isLiked, setIsLiked] = useState(false);
-    const [animate, setAnimate] = useState(false);
 
     const favoriteService =
         type === 'event'
@@ -43,9 +37,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({
                     const liked = response.includes(userId);
                     setIsLiked(liked);
                 })
-                .catch((error: unknown) => {
-                    console.error("Error fetching favorite:", error);
-                });
+                .catch(() => setIsLiked(false));
         }
         // Para eventos, no hay getFavorite, así que no hacemos nada
     }, [postId, userId, type, isAuthenticated]);
@@ -57,19 +49,9 @@ const LikeButton: React.FC<LikeButtonProps> = ({
                 return;
             }
 
-            favoriteService.giveLike(postId, userId)
-                .then(() => {
-                    setIsLiked(true);
-                    setAnimate(true);
-                })
-                .catch((error: unknown) => console.error("Error liking:", error));
+            favoriteService.giveLike(postId, userId).then(() => setIsLiked(true));
         } else if (type === 'event') {
-            (favoriteService as EventFavoriteService).giveLike(postId)
-                .then(() => {
-                    setIsLiked(true);
-                    setAnimate(true);
-                })
-                .catch((error: unknown) => console.error("Error liking event:", error));
+            (favoriteService as EventFavoriteService).giveLike(postId).then(() => setIsLiked(true));
         }
     };
 
@@ -80,49 +62,28 @@ const LikeButton: React.FC<LikeButtonProps> = ({
                 return;
             }
 
-            favoriteService.removeLike(postId, userId)
-                .then(() => {
-                    setIsLiked(false);
-                    setAnimate(true);
-                })
-                .catch((error: unknown) => console.error("Error disliking:", error));
+            favoriteService.removeLike(postId, userId).then(() => setIsLiked(false));
         } else if (type === 'event') {
-            (favoriteService as EventFavoriteService).removeLike(postId)
-                .then(() => {
-                    setIsLiked(false);
-                    setAnimate(true);
-                })
-                .catch((error: unknown) => console.error("Error disliking event:", error));
+            (favoriteService as EventFavoriteService).removeLike(postId).then(() => setIsLiked(false));
         }
-    };
-
-    const handleAnimationEnd = () => {
-        setAnimate(false);
     };
 
     if (type === 'post' && !isAuthenticated) return null;
 
     return (
         <button
-            className={styles.heartWrapper}
+            className={styles.heartButton}
             onClick={e => {
                 e.stopPropagation();
-                if (isLiked) {
-                    handleDislike();
-                } else {
-                    handleLike();
-                }
-                const selectedPost = posts.find(post => post.id === postId);
-                if (onSelect && selectedPost) {
-                    onSelect(selectedPost);
-                }
+                isLiked ? handleDislike() : handleLike();
             }}
             aria-label="Favorito"
             type="button"
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
         >
             <i
-                className={`fa${isLiked ? 's' : 'r'} fa-heart ${isLiked ? styles.backgroundHeart : ''}`}
-                onAnimationEnd={handleAnimationEnd}
+                className={`fa${isLiked ? 's' : 'r'} fa-heart`}
+                style={{ color: isLiked ? 'red' : 'white', fontSize: 28 }}
             />
         </button>
     );
