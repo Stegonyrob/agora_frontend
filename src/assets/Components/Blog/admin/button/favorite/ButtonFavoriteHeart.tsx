@@ -1,68 +1,130 @@
 import styles from '@/assets/Components/Blog/admin/button/ButtonIcons.module.scss';
-import FavoriteService from '@/core/favorites/favoriteService';
+import EventFavoriteService from '@/core/favorites/EventFavoriteService';
+import PostFavoriteService from '@/core/favorites/PostFavoriteService';
 import { IPost } from '@/core/posts/IPost';
 import { useEffect, useState } from 'react';
+
 interface LikeButtonProps {
     userId: number;
     onSelect: (post: IPost) => void;
-
     posts: IPost[];
     postId: number;
+    requireLogin?: boolean;
+    type: 'post' | 'event';
 }
 
-const LikeButton: React.FC<LikeButtonProps> = ({ userId, onSelect, posts, postId }) => {
-    const [likes, setLikes] = useState<number[]>([]);
+const LikeButton: React.FC<LikeButtonProps> = ({
+    userId,
+    onSelect,
+    posts,
+    postId,
+    requireLogin = false,
+    type
+}) => {
     const [isLiked, setIsLiked] = useState(false);
-    const favoriteService = new FavoriteService();
+    const [animate, setAnimate] = useState(false);
+
+    const favoriteService =
+        type === 'event'
+            ? new EventFavoriteService()
+            : new PostFavoriteService();
+
+    const isAuthenticated = !!userId && userId !== 0;
 
     useEffect(() => {
-        console.log("Fetching favorite post for postId:", postId);
-        favoriteService.getFavoritePost(postId)
-            .then(response => {
-                console.log("Fetched likes:", response);
-                setLikes(response);
-                setIsLiked(response.includes(userId));
-            })
-            .catch(error => {
-                console.error("Error fetching favorite post:", error);
-            });
-    }, [postId, userId]);
+        if (type === 'post') {
+            if (!isAuthenticated) {
+                setIsLiked(false);
+                return;
+            }
+            // @ts-expect-error: getFavorite solo existe en PostFavoriteService
+            favoriteService.getFavorite(postId, userId)
+                .then((response: number[]) => {
+                    const liked = response.includes(userId);
+                    setIsLiked(liked);
+                })
+                .catch((error: unknown) => {
+                    console.error("Error fetching favorite:", error);
+                });
+        }
+        // Para eventos, no hay getFavorite, así que no hacemos nada
+    }, [postId, userId, type, isAuthenticated]);
 
     const handleLike = () => {
-        console.log("Liking postId:", postId);
-        favoriteService.giveLike(postId, userId)
-            .then(response => {
-                console.log("Updated likes after liking:", response);
-                setLikes(response);
-                setIsLiked(true);
-            })
-            .catch(error => {
-                console.error("Error liking post:", error);
-            });
+        if (type === 'post') {
+            if (!isAuthenticated) {
+                alert("Debes iniciar sesión para dar like.");
+                return;
+            }
+
+            favoriteService.giveLike(postId, userId)
+                .then(() => {
+                    setIsLiked(true);
+                    setAnimate(true);
+                })
+                .catch((error: unknown) => console.error("Error liking:", error));
+        } else if (type === 'event') {
+            (favoriteService as EventFavoriteService).giveLike(postId)
+                .then(() => {
+                    setIsLiked(true);
+                    setAnimate(true);
+                })
+                .catch((error: unknown) => console.error("Error liking event:", error));
+        }
     };
 
     const handleDislike = () => {
-        console.log("Disliking postId:", postId);
-        favoriteService.removeLike(postId, userId)
-            .then(response => {
-                console.log("Updated likes after disliking:", response);
-                setLikes(response);
-                setIsLiked(false);
-            })
-            .catch(error => {
-                console.error("Error disliking post:", error);
-            });
+        if (type === 'post') {
+            if (!isAuthenticated) {
+                alert("Debes iniciar sesión para quitar el like.");
+                return;
+            }
+
+            favoriteService.removeLike(postId, userId)
+                .then(() => {
+                    setIsLiked(false);
+                    setAnimate(true);
+                })
+                .catch((error: unknown) => console.error("Error disliking:", error));
+        } else if (type === 'event') {
+            (favoriteService as EventFavoriteService).removeLike(postId)
+                .then(() => {
+                    setIsLiked(false);
+                    setAnimate(true);
+                })
+                .catch((error: unknown) => console.error("Error disliking event:", error));
+        }
     };
 
+    const handleAnimationEnd = () => {
+        setAnimate(false);
+    };
+
+    if (type === 'post' && !isAuthenticated) return null;
+
     return (
-        <div className={styles.socialIcons}>
-            {isLiked ? (
-                <i className="bi bi-heart-fill" style={{ color: 'red' }} onClick={handleDislike} />
-            ) : (
-                <i className="bi bi-heart" onClick={handleLike} />
-            )}
-            <span>{likes.length} </span>
-        </div>
+        <button
+            className={styles.heartWrapper}
+            onClick={e => {
+                e.stopPropagation();
+                if (isLiked) {
+                    handleDislike();
+                } else {
+                    handleLike();
+                }
+                const selectedPost = posts.find(post => post.id === postId);
+                if (onSelect && selectedPost) {
+                    onSelect(selectedPost);
+                }
+            }}
+            aria-label="Favorito"
+            type="button"
+        >
+            <i
+                className={`fa${isLiked ? 's' : 'r'} fa-heart ${isLiked ? styles.backgroundHeart : ''}`}
+                onAnimationEnd={handleAnimationEnd}
+            />
+        </button>
     );
 };
 

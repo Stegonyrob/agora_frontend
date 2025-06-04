@@ -1,15 +1,16 @@
 import AttendeeService from "@/core/attendees/AttendeeService";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 import ReCAPTCHA from "react-google-recaptcha";
-
+import styles from "./ButtonAttendee.module.scss";
 interface ButtonAttendeeProps {
     eventId: number;
     onRegister?: () => void;
+    maxCapacity: number; // Add maxCapacity as a required prop
 }
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 const sanitizeInput = (input: string) => input.replace(/[<>'";]/g, "").trim();
-
-const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister }) => {
+const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister, maxCapacity }) => {
     const [showModal, setShowModal] = useState(false);
     const [form, setForm] = useState({ nombre: "", correo: "", telefono: "" });
     const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister }) 
     const [userAttendeeId, setUserAttendeeId] = useState<number | null>(null);
     const [alreadyRegistered, setAlreadyRegistered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [attendees, setAttendees] = useState(0);
     // Busca si el usuario ya está registrado por correo/teléfono
     const checkIfRegistered = async (correo: string, telefono: string) => {
         try {
@@ -41,6 +43,16 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister }) 
         }
     };
 
+    useEffect(() => {
+        const fetchAttendees = async () => {
+            const attendeeService = new AttendeeService();
+            const list = await attendeeService.getAttendees(eventId);
+            setAttendees(list.length);
+        };
+        fetchAttendees();
+    }, [eventId, success]);
+
+    const availableSpots = Math.max(maxCapacity - attendees, 0);
     // Handler for ReCAPTCHA change
     const handleCaptchaChange = (token: string | null) => {
         setCaptchaToken(token);
@@ -121,10 +133,25 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister }) 
     };
 
     return (
-        <>
-            <button onClick={handleOpenModal}>
-                Asistir al evento
-            </button>
+
+        <div className={styles.attendeeBlock}>
+            <div className={styles.counters}>
+                <span className={styles.attendees}>
+                    <i className="bi bi-people-fill"></i> {attendees} asistentes
+                </span>
+                <span className={availableSpots > 0 ? styles.available : styles.full}>
+                    {availableSpots > 0
+                        ? `🟢 ${availableSpots} lugares`
+                        : "🔴 Evento lleno"}
+                </span>
+            </div>
+            <Button
+                className={styles.attendButton}
+                onClick={handleOpenModal}
+                disabled={availableSpots === 0}
+            >
+                {availableSpots > 0 ? "Asistir" : "Lleno"}
+            </Button>
             {showModal && (
                 <div style={{
                     position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
@@ -189,8 +216,9 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister }) 
                         )}
                     </form>
                 </div>
-            )}
-        </>
+            )
+            }
+        </div>
     );
 };
 

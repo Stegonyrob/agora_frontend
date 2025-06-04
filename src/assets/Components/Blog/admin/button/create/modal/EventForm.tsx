@@ -17,6 +17,7 @@ interface EventFormProps {
 const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show }) => {
     const [title, setTitle] = useState(event?.title || "");
     const [description, setDescription] = useState(event?.description || "");
+    const [images, setImages] = useState<string[]>(event?.images || []);
 
     // Recupera los datos del usuario desde sessionStorage
     const userRole = sessionStorage.getItem("role");
@@ -24,6 +25,16 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
     const userName = sessionStorage.getItem("userName") || "";
 
     const apiEvent = new EventService();
+
+    // Maneja la selección de imágenes desde ButtonAddImage
+    const handleImageSelected = (imageSrc: string, imageTitle: string) => {
+        setImages((prev) => [...prev, imageSrc]);
+    };
+
+    // Elimina una imagen del array
+    const handleRemoveImage = (idx: number) => {
+        setImages(images.filter((_, i) => i !== idx));
+    };
 
     const handleSubmit = async (eventForm: React.FormEvent<HTMLFormElement>) => {
         eventForm.preventDefault();
@@ -46,7 +57,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             location: "",
             isArchived: false,
             tags: [],
-            images: [],
+            images,
             message: "",
             loves: 0,
             isPublished: false,
@@ -60,7 +71,6 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             date: "",
             link: "",
             userId: userId,
-
         };
 
         try {
@@ -69,6 +79,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             onClose();
             setTitle("");
             setDescription("");
+            setImages([]);
         } catch (error) {
             console.error("Error al crear el evento:", error);
             alert(
@@ -97,11 +108,16 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
                     <br />
 
                     <ButtonAddImage
-                        onImageSelected={(imageSrc, imageTitle) => {
-                            // Aquí se tiene que agregar la lógica para manejar la imagen seleccionada
-                            console.log(imageSrc, imageTitle);
-                        }}
+                        onImageSelected={handleImageSelected}
                     />
+                    <div className={styles.imagePreviewContainer}>
+                        {images.map((img, idx) => (
+                            <div key={idx} className={styles.imagePreview}>
+                                <img src={img} alt={`preview-${idx}`} width={80} />
+                                <button type="button" onClick={() => handleRemoveImage(idx)}>Eliminar</button>
+                            </div>
+                        ))}
+                    </div>
                     <label>
                         Descripción:
                         <textarea

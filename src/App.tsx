@@ -2,11 +2,12 @@ import Footer from "@/assets/Components/Footer/Footer";
 import PrivateLayout from "@/routes/PrivateLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import PublicLayout from "@/routes/PublicLayout";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { SWRConfig } from "swr";
 import swrConfig from "./swrConfig";
-
 // Vistas públicas
 import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";

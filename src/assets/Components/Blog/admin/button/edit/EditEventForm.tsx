@@ -17,6 +17,29 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
     const [place, setPlace] = useState(event?.place || "");
     const [date, setDate] = useState(event?.date || "");
     const [link, setLink] = useState(event?.link || "");
+    const [images, setImages] = useState<string[]>(event?.images || []);
+
+    // Manejar selección de imágenes
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files);
+            const readers = filesArray.map(file => {
+                return new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+            Promise.all(readers).then(imgs => setImages([...images, ...imgs]));
+        }
+    };
+
+    // Eliminar imagen
+    const handleRemoveImage = (idx: number) => {
+        setImages(images.filter((_, i) => i !== idx));
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -24,30 +47,18 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
         const sanitizedTitle = DOMPurify.sanitize(title);
         const sanitizedMessage = DOMPurify.sanitize(message);
 
+        if (!event || typeof event.id !== "number") {
+            throw new Error("El evento original debe tener un id válido.");
+        }
         const newEvent: IEventDTO = {
-            id: event?.id || 0,
+            ...event,
+            id: event.id, // Ensure id is always present and a number
             title: sanitizedTitle,
             message: sanitizedMessage,
-            userId: event?.userId || 0,
-            loves: 0,
-            isArchived: false,
-            tags: [],
-            alt_image: "",
-            source_image: "",
-            alt_avatar: "",
-            source_avatar: "",
-
-
-            url_avatar: "",
-            images: [],
-            isPublished: false,
-            location: "",
-
-            description: "",
-            createdAt: "",
-            updatedAt: "",
-            date: "",
-            link: ""
+            place,
+            date,
+            link,
+            images,
         };
         onSubmit(newEvent);
     };
@@ -72,7 +83,7 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
                         <label>
                             Mensaje:
                             <textarea
-                                value={message.toString()}
+                                value={message}
                                 onChange={(e) => setMessage(e.target.value)}
                             />
                         </label>
@@ -104,6 +115,23 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
                             />
                         </label>
                         <br />
+                        <label>
+                            Imágenes:
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageChange}
+                            />
+                        </label>
+                        <div className={styles.imagePreviewContainer}>
+                            {images.map((img, idx) => (
+                                <div key={idx} className={styles.imagePreview}>
+                                    <img src={img} alt={`preview-${idx}`} width={80} />
+                                    <button type="button" onClick={() => handleRemoveImage(idx)}>Eliminar</button>
+                                </div>
+                            ))}
+                        </div>
                         <Button type="submit" variant="primary">
                             {event ? "Actualizar Evento" : "Crear Evento"}
                         </Button>

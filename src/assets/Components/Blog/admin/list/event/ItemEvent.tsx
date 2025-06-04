@@ -1,6 +1,7 @@
 import React from 'react';
 import { IEvent } from '../../../../../../core/events/IEvent';
 import ItemGeneric from '../generic/ItemGeneric';
+import ImageEvent from './ImageEvent';
 
 interface ItemEventProps {
     event: IEvent;
@@ -17,17 +18,20 @@ interface ItemEventProps {
 const ItemEvent: React.FC<ItemEventProps> = (props) => {
     const { event, ...rest } = props;
     return (
-        <ItemGeneric
-            item={event}
-            id={event.id}
-            title={event.title}
-            message={event.message}
-            creationDate={event.creationDate}
-            isArchived={event.isArchived}
-            images={event.images}
-            type="event"
-            {...rest}
-        />
+        <div>
+            <ImageEvent event={event} />
+            <ItemGeneric
+                item={event}
+                id={event.id}
+                title={event.title}
+                message={event.message}
+                creationDate={event.creationDate}
+                isArchived={event.isArchived}
+                images={event.images}
+                type="event"
+                {...rest}
+            />
+        </div>
     );
 };
 

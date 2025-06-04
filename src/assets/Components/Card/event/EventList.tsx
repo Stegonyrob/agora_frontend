@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import EventService from "../../../../core/events/EventService";
 import { IEvent } from "../../../../core/events/IEvent"; // Asumiendo que tienes una interfaz para eventos
 import CardItem from "../card/CardItem";
+import styles from "../card/CardItem.module.scss";
 
 interface EventListProps {
     userId: number | null;
     events: IEvent[];
     onSelect: (event: IEvent) => void;
+
 
 }
 
@@ -38,22 +40,24 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
     };
 
     return (
-        <div>
+        <div className={styles.container}>
             {events.map((event) => (
-                <><CardItem
-                    key={event.id}
-                    type="event"
-                    id={event.id}
-                    title={event.title}
-                    description={event.message}
-                    creationDate={event.creationDate}
-                    favoritesCount={event.favoritesCount}
-                    images={event.images}
-                    attendentsCount={event.attendentsCount}
-                    user={event.user}
-                    onSelect={handleSelect}
-                    location={event.location} /></>
-
+                <div className={styles.article} key={event.id}>
+                    <CardItem
+                        key={event.id}
+                        type="event"
+                        id={event.id}
+                        title={event.title}
+                        description={event.message}
+                        creationDate={event.creationDate}
+                        favoritesCount={event.favoritesCount}
+                        images={event.images}
+                        attendentsCount={event.attendentsCount}
+                        user={event.user}
+                        onSelect={handleSelect}
+                        location={event.location}
+                    />
+                </div>
             ))}
         </div>
     );

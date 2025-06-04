@@ -1,29 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './ButtonAddImage.module.scss';
+
 interface ButtonAddImageProps {
     onImageSelected: (imageSrc: string, imageTitle: string) => void;
 }
 
 const ButtonAddImage: React.FC<ButtonAddImageProps> = ({ onImageSelected }) => {
-    const [imageSrc, setImageSrc] = useState('');
-    const [imageTitle, setImageTitle] = useState('');
-
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImageSrc(e.target?.result as string);
-
-                onImageSelected(imageSrc, imageTitle);
-            };
-
-            reader.readAsDataURL(event.target.files[0]);
+        if (event.target.files) {
+            Array.from(event.target.files).forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const src = e.target?.result as string;
+                    onImageSelected(src, file.name);
+                };
+                reader.readAsDataURL(file);
+            });
         }
     };
 
     return (
         <div className={styles.buttonAddImage}>
-            <input type="file" className={styles.buttonAddImage} onChange={handleImageChange} />
+            <input
+                type="file"
+                className={styles.buttonAddImage}
+                onChange={handleImageChange}
+                multiple
+                accept="image/*"
+            />
         </div>
     );
 };

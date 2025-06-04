@@ -1,7 +1,6 @@
 import DOMPurify from "dompurify";
 import React, { useState } from "react";
 import { IEvent } from "../../../../../../core/events/IEvent";
-import { IEventDTO } from "../../../../../../core/events/IEventDTO";
 import styles from "./ButtonCreateEvent.module.scss";
 import EventForm from "./modal/EventForm";
 
@@ -29,30 +28,22 @@ const ButtonCreateEvent: React.FC<ButtonCreateEventProps> = ({ onSubmit, userId 
         setShow(false);
     };
 
-    const handleCreate = async (newEvent: IEventDTO | null | undefined) => {
-        if (newEvent == null) {
-            console.error("Error creating event: newEvent is null or undefined");
+    const handleCreate = async (event: IEvent) => {
+        if (!event) {
+            console.error("Error creating event: event is null or undefined");
             return;
         }
 
         // Sanitize inputs
-        newEvent.title = DOMPurify.sanitize(newEvent.title) || "";
-        newEvent.description = DOMPurify.sanitize(newEvent.description) || "";
+        event.title = DOMPurify.sanitize(event.title) || "";
+        event.description = DOMPurify.sanitize(String(event.description ?? "")) || "";
 
-        const userName = sessionStorage.getItem("userName");
-        console.log("userName:", userName);
         const userRole = sessionStorage.getItem("userRole");
         if (userRole !== "admin") {
             console.error("Only administrators can create events.");
             alert("Only administrators can create events.");
             return;
         }
-
-        const event: IEvent = {
-            ...newEvent,
-            userId,
-            userName: userName || "",
-        };
 
         try {
             await onSubmit(event);
