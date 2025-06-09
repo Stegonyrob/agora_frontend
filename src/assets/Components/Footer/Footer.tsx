@@ -31,7 +31,11 @@ export default function Footer() {
                 <i className="far fa-envelope-open"></i>
                 <div className={styles.ctaText}>
                   <h4>Email</h4>
-                  <span>centroeducativoagora@gmail.com</span>
+                  <span>
+                    <a href="mailto:centroeducativoagora@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+                      centroeducativoagora@gmail.com
+                    </a>
+                  </span>
                 </div>
               </div>
             </div>

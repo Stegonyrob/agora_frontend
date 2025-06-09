@@ -58,10 +58,50 @@ const CardItem: React.FC<CardItemProps> = ({
         ? `${location} · ${new Date(creationDate).toLocaleDateString()}`
         : undefined;
 
-    return (
-        <article className={styles.card} onClick={() => onSelect && onSelect({ id })}>
+    // Share Button Popup
+
+    const sharebtns = document.querySelectorAll(".share-btn");
+
+    sharebtns.forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            const eventFooter = btn.closest(".event-footer");
+            if (!eventFooter) return;
+            const popup = eventFooter.querySelector(".popup");
+            if (!popup) return;
+
+            btn.classList.toggle("active");
+            popup.classList.toggle("active");
+
+            event.stopPropagation();
+        });
+    });
+
+    document.addEventListener("click", (event) => {
+        const popups = document.querySelectorAll(".popup");
+
+        popups.forEach((popup) => {
+            if (popup.classList.contains("active") && !popup.contains(event.target as Node)) {
+                popup.classList.remove("active");
+
+                const eventFooter = popup.closest(".event-footer");
+                if (eventFooter) {
+                    const shareBtn = eventFooter.querySelector(".share-btn");
+                    if (shareBtn) {
+                        shareBtn.classList.remove("active");
+                    }
+                }
+            }
+        });
+    });
+
+
+
+
+
+
+    return (<>
+        <article className={`${styles.card} ${type === 'event' ? styles.event : ''}`} onClick={() => onSelect && onSelect({ id })}>
             <div className={styles.header}>
-                {/* Imagen y corazón arriba a la derecha */}
                 {images && images.length > 1 ? (
                     <div className={styles.carousel}>
                         <button className={styles.arrow} onClick={showPrev}>&lt;</button>
@@ -75,7 +115,7 @@ const CardItem: React.FC<CardItemProps> = ({
                             {images.map((_, idx) => (
                                 <span
                                     key={idx}
-                                    className={currentImage === idx ? styles.activeDot : styles.dot}
+                                    className={currentImage === idx ? styles.dot + ' ' + styles.active : styles.dot}
                                     onClick={e => { e.stopPropagation(); setCurrentImage(idx); }}
                                 />
                             ))}
@@ -88,31 +128,23 @@ const CardItem: React.FC<CardItemProps> = ({
                         alt="thumbnail"
                     />
                 )}
-                {/* Corazón arriba a la derecha */}
                 <span className={styles.favoriteIcon}>
                     <LikeButton
                         userId={userId}
                         postId={id}
-                        posts={[]} // Puedes ajustar esto si tienes eventos
                         requireLogin={type === 'post'}
-                        onSelect={() => {
-                            console.log('LikeButton clicked para postId:', id, 'userId:', userId);
-                        }}
-                        type={type} // <-- ¡Esto es lo importante!
+                        type={type}
                     />
                 </span>
-                {/* Fecha y lugar para eventos */}
                 {type === 'event' && (
-                    <span className={styles["event-date"]}>{eventInfo}</span>
+                    <span className={styles.eventDate}>{eventInfo}</span>
                 )}
             </div>
             <div className={styles.body}>
                 <h3 className={styles.title}>{title}</h3>
-                {/* Solo para post: fecha debajo del título */}
                 {type === 'post' && (
                     <p className={styles.date}>{new Date(creationDate).toLocaleDateString()}</p>
                 )}
-                {/* Descripción: ver más para post largos */}
                 <p className={styles.description}>
                     {type === 'post' && description.length > 250
                         ? (
@@ -129,15 +161,13 @@ const CardItem: React.FC<CardItemProps> = ({
                         : description
                     }
                 </p>
-                {/* Tags */}
                 <ul className={styles.tags}>
-                    {type === 'event' && <li className={styles["tag-item"]}>#Event</li>}
-                    {type === 'post' && <li className={styles["tag-item"]}>#Post</li>}
+                    {type === 'event' && <li className={styles.tagItem}>#Event</li>}
+                    {type === 'post' && <li className={styles.tagItem}>#Post</li>}
                 </ul>
             </div>
             <div className={styles.footer}>
                 <div className={styles.stats}>
-                    {/* Comentarios solo para post */}
                     {type === 'post' && (
                         <ButtonComment
                             postId={id}
@@ -145,7 +175,6 @@ const CardItem: React.FC<CardItemProps> = ({
                             counter={commentsCount || 0}
                         />
                     )}
-                    {/* Asistiré solo para eventos */}
                     {type === 'event' && (
                         <ButtonAttendee
                             eventId={id}
@@ -153,11 +182,10 @@ const CardItem: React.FC<CardItemProps> = ({
                         />
                     )}
                 </div>
-                {/* Compartir solo para eventos */}
                 {type === 'event' && (
                     <div className={styles.share}>
                         <button
-                            className={styles["share-btn"]}
+                            className={styles.share}
                             onClick={e => { e.stopPropagation(); setShareOpen(!shareOpen); }}
                         >
                             <i className="fa-solid fa-share"></i>
@@ -178,7 +206,8 @@ const CardItem: React.FC<CardItemProps> = ({
                 )}
             </div>
         </article>
+    </>
     );
-};
+}
 
 export default CardItem;

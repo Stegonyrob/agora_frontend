@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EventService from "../../../../core/events/EventService";
 import { IEvent } from "../../../../core/events/IEvent"; // Asumiendo que tienes una interfaz para eventos
 import CardItem from "../card/CardItem";
-import styles from "../card/CardItem.module.scss";
+import styles from "../card/CardItem.module.scss"; // Asegúrate de tener el archivo de estilos correcto
 
 interface EventListProps {
     userId: number | null;
@@ -40,9 +40,9 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.cardContainer}>
             {events.map((event) => (
-                <div className={styles.article} key={event.id}>
+                <div key={event.id}>
                     <CardItem
                         key={event.id}
                         type="event"
@@ -60,6 +60,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                 </div>
             ))}
         </div>
+
     );
 };
 
