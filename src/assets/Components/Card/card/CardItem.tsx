@@ -12,7 +12,7 @@ interface CardItemProps {
     creationDate: string;
     favoritesCount: number;
     commentsCount?: number;
-    attendentsCount?: number;
+    attendeesCount: number;
     location?: string;
     images?: string[];
     user?: any;
@@ -31,12 +31,13 @@ const CardItem: React.FC<CardItemProps> = ({
     creationDate,
     favoritesCount,
     commentsCount,
-    attendentsCount,
+    attendeesCount = 0,
     location,
     images,
     onSelect,
     maxCapacity = 0,
     userId = 1,
+
 
 }) => {
     const [currentImage, setCurrentImage] = useState(0);
@@ -168,6 +169,11 @@ const CardItem: React.FC<CardItemProps> = ({
             </div>
             <div className={styles.footer}>
                 <div className={styles.stats}>
+                    {type === 'event' && (
+                        <div className={styles.capacityInfo}>
+                            Aforo: {maxCapacity} · Plazas libres: {maxCapacity - attendeesCount}
+                        </div>
+                    )}
                     {type === 'post' && (
                         <ButtonComment
                             postId={id}

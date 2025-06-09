@@ -52,10 +52,12 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                         creationDate={event.creationDate}
                         favoritesCount={event.favoritesCount}
                         images={event.images}
-                        attendentsCount={event.attendentsCount}
+
                         user={event.user}
                         onSelect={handleSelect}
                         location={event.location}
+                        maxCapacity={typeof event.capacity === "number" ? event.capacity : (typeof event.capacity === "string" ? Number(event.capacity) || undefined : undefined)}
+                        attendeesCount={typeof event.attendeesCount === "number" ? event.attendeesCount : 0}
                     />
                 </div>
             ))}

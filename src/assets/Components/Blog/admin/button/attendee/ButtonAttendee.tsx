@@ -182,7 +182,10 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister, ma
                         <input
                             name="telefono"
                             placeholder="Teléfono"
-
+                            value={form.telefono}
+                            onChange={handleChange}
+                            required
+                            style={{ display: "block", marginBottom: 10, width: "100%" }}
                         />
                         <ReCAPTCHA
                             sitekey={siteKey}
