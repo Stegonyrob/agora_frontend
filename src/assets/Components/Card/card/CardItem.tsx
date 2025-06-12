@@ -167,11 +167,12 @@ const CardItem: React.FC<CardItemProps> = ({
                     {type === 'post' && <li className={styles.tagItem}>#Post</li>}
                 </ul>
             </div>
+            {/* !-- stadistic!  */}
             <div className={styles.footer}>
                 <div className={styles.stats}>
                     {type === 'event' && (
                         <div className={styles.capacityInfo}>
-                            Aforo: {maxCapacity} · Plazas libres: {maxCapacity - attendeesCount}
+                            Aforo: {maxCapacity}
                         </div>
                     )}
                     {type === 'post' && (
@@ -199,13 +200,20 @@ const CardItem: React.FC<CardItemProps> = ({
                         <ul className={`${styles.popup} ${shareOpen ? styles.active : ""}`}>
                             <li>
                                 <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
-                                    <i className="bx bxl-twitter"></i>
+                                    <i className="bi bi-twitter-x"></i>
                                 </a>
-                            </li>
-                            <li>
+
                                 <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
-                                    <i className="bx bxl-whatsapp"></i>
+                                    <i className="bi bi-whatsapp"></i>
                                 </a>
+                                <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <i className="bi bi-facebook"></i>
+                                </a>
+                                <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <i className="bi bi-instagram"></i>
+                                </a>
+
+
                             </li>
                         </ul>
                     </div>

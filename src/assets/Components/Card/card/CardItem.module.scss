@@ -226,6 +226,14 @@ $hover-glow-color: #9c27b0;
       .stats {
         display: flex;
         gap: 0.625rem;
+     
+        width: 100%;
+       justify-content: space-around;
+        .capacityInfo{
+        width: 50%;
+      
+        margin-left: 2rem;
+        }
       }
 
       .share {
@@ -233,6 +241,7 @@ $hover-glow-color: #9c27b0;
         align-items: center;
         position: relative;
         gap: 0.3125rem;
+        top: 0.8rem;
 
         button {
           background-color: rgb(51, 108, 215);

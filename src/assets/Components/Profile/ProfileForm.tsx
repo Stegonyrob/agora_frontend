@@ -1,7 +1,7 @@
-
+import Challenge from "@/assets/Components/Challenge/Challenge"; // Asegúrate de importar el componente
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
-import { validateInput } from '@/utils/validationUtils';
+import { sanitizeInput, validateInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
@@ -10,7 +10,7 @@ import styles from './ProfileForm.module.scss';
 
 interface ProfileFormProps {
   profile: IProfileDTO;
-  onSelect?: (profile: IProfile) => void; // Add this if needed
+  onSelect?: (profile: IProfile) => void;
   onSubmit: (updatedProfile: IProfileDTO) => Promise<void>;
   onClose: () => void;
   show: boolean;
@@ -36,8 +36,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
     password: "",
     confirmPassword: "",
   });
+  const [challengeOk, setChallengeOk] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Sincronizar los datos del perfil con el estado del formulario
   useEffect(() => {
     if (profile) {
       setFormState(profile);
@@ -51,18 +52,46 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Validar los inputs antes de enviarlos al servidor
-    if (!validateInput(formState.firstName) || !validateInput(formState.lastName1) || !validateInput(formState.email)) {
-      alert('Invalid input detected.');
+    setErrorMessage(null);
+
+    if (!challengeOk) {
+      setErrorMessage("Por favor, resuelve el desafío correctamente.");
       return;
     }
 
+    // Sanitize inputs
+    const sanitizedFirstName = sanitizeInput(formState.firstName);
+    const sanitizedLastName1 = sanitizeInput(formState.lastName1);
+    const sanitizedLastName2 = sanitizeInput(formState.lastName2);
+    const sanitizedRelationship = sanitizeInput(formState.relationship);
+    const sanitizedEmail = sanitizeInput(formState.email);
+    const sanitizedCity = sanitizeInput(formState.city);
+    const sanitizedCountry = sanitizeInput(formState.country);
+    const sanitizedPhone = sanitizeInput(formState.phone);
+
+    // Validar los inputs antes de enviarlos al servidor
+    if (!validateInput(sanitizedFirstName) || !validateInput(sanitizedLastName1) || !validateInput(sanitizedEmail)) {
+      setErrorMessage('Se detectaron entradas no válidas.');
+      return;
+    }
+
+    const updatedProfile: IProfileDTO = {
+      ...formState,
+      firstName: sanitizedFirstName,
+      lastName1: sanitizedLastName1,
+      lastName2: sanitizedLastName2,
+      relationship: sanitizedRelationship,
+      email: sanitizedEmail,
+      city: sanitizedCity,
+      country: sanitizedCountry,
+      phone: sanitizedPhone,
+    };
+
     try {
-      await onSubmit(formState);
+      await onSubmit(updatedProfile);
       onClose();
     } catch (error) {
-      console.error('Error submitting the form:', error);
-      alert('Error al enviar el formulario.');
+      setErrorMessage('Error al enviar el formulario.');
     }
   };
 
@@ -80,6 +109,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
+        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         <form onSubmit={handleSubmit}>
           <label htmlFor="firstName">Nombre:</label>
           <input
@@ -191,7 +221,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
             onChange={handleChange}
           />
 
-          <Button type="submit" variant="primary">
+          <Challenge onVerify={setChallengeOk} />
+
+          <Button type="submit" variant="primary" disabled={!challengeOk}>
             {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
           </Button>
         </form>

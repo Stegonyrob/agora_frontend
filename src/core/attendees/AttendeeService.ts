@@ -1,58 +1,62 @@
 import axios from "axios";
 
-//1-registerAttendee
-//2-getAttendees
-//3-getAttendee
-//4-updateAttendee
-//5-deleteAttendee
+//1-getAttendees
+//2-registerAttendee
+//3-deleteAttendee
+//4-verifyRecaptcha
+const API_URL = import.meta.env.VITE_API_ENDPOINT_ATTENDEES; // Ej: http://localhost:8080/api/v1/attendees
 
-const BASE_URL = import.meta.env.VITE_API_ENDPOINT_ATTENDEES; // Ej: http://localhost:8080/api/v1/attendees
+//1-getAttendees
 
-//1-registerAttendee
-
-export default class AttendeeService {
+class AttendeeService {
+  async getAttendees(eventId: number): Promise<any[]> {
+    try {
+      const response = await axios.get(`${API_URL}/${eventId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching attendees:", error);
+      throw error;
+    }
+  }
+  //2-registerAttendee
   async registerAttendee(
     eventId: number,
-    attendee: { name: string; email: string; phone: string },
-    captchaToken: string
-  ) {
-    const response = await axios.post(
-      `${BASE_URL}/${eventId}?captchaToken=${captchaToken}`,
-      attendee,
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
+    attendeeData: any,
+    recaptchaScore: string
+  ): Promise<any> {
+    try {
+      const response = await axios.post(`${API_URL}/${eventId}`, {
+        ...attendeeData,
+        recaptchaScore,
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("Error registering attendee:", error);
+      throw error;
+    }
+  }
+  //3-deleteAttendee
+  async deleteAttendee(eventId: number, attendeeId: number): Promise<void> {
+    try {
+      await axios.delete(`${API_URL}/${eventId}/${attendeeId}`);
+    } catch (error: any) {
+      console.error("Error deleting attendee:", error);
+      throw error;
+    }
   }
 
-  //2-getAttendees
-
-  async getAttendees(eventId: number) {
-    const response = await axios.get(`${BASE_URL}/${eventId}`);
-    return response.data;
-  }
-  //3-getAttendee
-
-  async getAttendee(eventId: number, attendeeId: number) {
-    const response = await axios.get(`${BASE_URL}/${eventId}/${attendeeId}`);
-    return response.data;
-  }
-  //4-updateAttendee
-
-  async updateAttendee(
-    eventId: number,
-    attendeeId: number,
-    attendee: { name: string; email: string; phone: string }
-  ) {
-    const response = await axios.put(
-      `${BASE_URL}/${eventId}/${attendeeId}`,
-      attendee,
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
-  }
-  //5-deleteAttendee
-  async deleteAttendee(eventId: number, attendeeId: number) {
-    const response = await axios.delete(`${BASE_URL}/${eventId}/${attendeeId}`);
-    return response.data;
+  //4-verifyRecaptcha
+  async verifyRecaptcha(token: string): Promise<number> {
+    try {
+      const response = await axios.post(`${API_URL}/recaptcha/verify`, {
+        token,
+      });
+      return response.data.score;
+    } catch (error: any) {
+      console.error("Error verifying ReCAPTCHA:", error);
+      throw error;
+    }
   }
 }
+
+export default AttendeeService;
