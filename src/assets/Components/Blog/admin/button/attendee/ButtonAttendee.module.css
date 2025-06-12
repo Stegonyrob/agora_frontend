@@ -58,3 +58,47 @@
   color: green;
   margin-bottom: 10px;
 }
+
+.modalCard {
+  position: fixed;
+  bottom: 15%;
+}
+
+.modalCard .modalHeader {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  color: azure;
+  font-size: 1.5rem;
+}
+
+.modalCard .modalBody {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: azure;
+}
+
+.modalCard .modalBody input,
+.modalCard .modalBody textarea {
+  background-color: rgba(133, 124, 124, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+.modalCard .modalBody textarea {
+  text-align: justify;
+  color: #f8f4f4;
+}
+
+.modalCard .modalBody label {
+  margin-left: 0.2rem;
+}
+
+.modalCard .modalBody button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-left: 17rem;
+  cursor: pointer;
+}
+
+.modalCard .modalBody button:hover {
+  background-color: #0056b3;
+}

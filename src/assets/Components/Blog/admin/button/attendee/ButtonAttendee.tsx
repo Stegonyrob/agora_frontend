@@ -149,11 +149,11 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister, ma
             >
                 {availableSpots > 0 ? "Asistir" : "Lleno"}
             </Button>
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-                <Modal.Header closeButton>
+            <Modal className={styles.modalCard} show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header className={styles.modalHeader} closeButton>
                     <Modal.Title>Registro de Asistente</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className={styles.modalBody}>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Label>Nombre</Form.Label>
