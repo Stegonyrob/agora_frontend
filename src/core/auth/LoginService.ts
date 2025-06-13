@@ -27,6 +27,8 @@ export default class LoginService {
         accessToken: accessToken,
         refreshToken: refreshToken,
         userName: response.data.username,
+        useremail: response.data.useremail,
+        isLoggedIn: true,
       };
     } catch (error) {
       throw new Error("Error with API calling: " + error);

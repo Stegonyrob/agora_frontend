@@ -1,5 +1,4 @@
 .cardContainer {
-  width: 95%;
   margin: auto;
   padding: 1rem;
   margin-bottom: 5rem;
@@ -30,4 +29,42 @@
   text-align: justify;
   margin-left: 2rem;
   padding: 1rem;
+}
+
+@media (max-width: 720px) {
+  .cardContainer {
+    padding: 0.5rem;
+  }
+  .cardContainer .cardText {
+    padding: 1.5rem;
+  }
+  .cardContainer .cardText .cardImage {
+    max-width: 10rem;
+  }
+  .cardContainer .cardText .cardTitle {
+    font-size: 1.5rem;
+  }
+  .cardContainer .cardText .cardDescription {
+    margin-left: 1rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 720px) and (max-width: 300px) {
+  .cardContainer {
+    padding: 0.5rem;
+  }
+  .cardContainer .cardText {
+    padding: 1rem;
+  }
+  .cardContainer .cardText .cardImage {
+    max-width: 7rem;
+  }
+  .cardContainer .cardText .cardTitle {
+    font-size: 1rem;
+  }
+  .cardContainer .cardText .cardDescription {
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+  }
 }

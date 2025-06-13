@@ -209,3 +209,72 @@
   background-color: #2196F3;
 }
 }
+@media (max-width: 340px) {
+  .navbar {
+    padding: 0;
+    width: 100vw;
+    min-width: 0;
+    height: auto;
+  }
+  .navContainer {
+    width: 100vw;
+    min-width: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+  }
+  .logoAndToggle {
+    width: 100vw;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.2rem;
+    padding: 0.2rem 0;
+    height: auto;
+  }
+  .logoSmall {
+    height: 3.2rem;   // 20% más grande que 2rem
+   
+    min-width: 2.4rem;
+    min-height: 2.4rem;
+    object-fit: contain;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .navIcon {
+    height: 1.5rem;   // 10% más pequeño que 1.5rem
+    width: 1.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    font-size: 1.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    color: #ffdd40;
+    z-index: 31;
+  }
+  
+
+
+  .navMenu {
+    position: absolute;
+    top: 4.2rem;
+    left: 0;
+    width: 100vw;
+    z-index: 15;
+    display: none;
+    flex-direction: column;
+    background: #0c0c0c;
+  }
+  .navMenu.active {
+    display: flex;
+    top:6.2rem
+  }
+}

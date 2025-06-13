@@ -199,9 +199,118 @@ ul {
   .colCopyright,
   .colMenu {
     width: 100%;
+    min-width: 0;
     margin-bottom: 2rem;
+    margin-left: 0;
   }
   .footerLogo img {
     margin: 0 auto;
+    max-width: 90vw;
+  }
+  .footerSection {
+    overflow-x: hidden;
+  }
+  .container {
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 320px) {
+  .container {
+    padding: 0 0.1rem;
+  }
+  .footerLogo img {
+    max-width: 65vw;
+    margin-left: 0;
+  }
+  .footerWidgetHeading h3,
+  .footerText p,
+  .ctaText h4,
+  .ctaText span,
+  .footerMenu a,
+  .colLinks ul li a {
+    font-size: 0.7rem;
+    word-break: break-word;
+    margin-left: 1.5rem;
+  }
+  .footerSocialIcon a {
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+  .colLinks ul li {
+    width: 100%;
+    float: none;
+  }
+  .footerSocialIcon i {
+    font-size: 0.9rem;
+    margin-right: 2px;
+    margin-left: 1.5rem;
+  }
+  .footerSocialIcon span {
+    font-size: 0.9rem;
+    margin-right: 2px;
+    margin-left: 1.5rem;
+  }
+  .singleCta i {
+    font-size: 1rem;
+    margin-left: 1.5rem;
+  }
+  .copyrightText p {
+    font-size: 0.7rem;
+    margin-left: 1.5rem;
+    padding: 25px 0;
+  }
+}
+
+@media (max-width: 240px) {
+  .container {
+    padding: 0 0.02rem;
+  }
+  .footerLogo img {
+    max-width: 55vw;
+  }
+  .footerWidgetHeading h3,
+  .footerText p,
+  .ctaText h4,
+  .ctaText span,
+  .footerMenu a,
+  .colLinks ul li a {
+    font-size: 0.6rem;
+    margin-left: 1rem;
+  }
+  .footerSocialIcon i {
+    font-size: 0.9rem;
+    margin-right: 2px;
+  }
+  .footerSocialIcon span {
+    font-size: 0.9rem;
+    margin-right: 2px;
+    margin-left: 1rem;
+  }
+  .singleCta i {
+    font-size: 1rem;
+    margin-left: 1rem;
+  }
+  .copyrightText p {
+    font-size: 0.7rem;
+    margin-left: 1rem;
+    padding: 25px 0;
+  }
+}
+
+@media (max-width: 200px) {
+  .footerLogo img {
+    max-width: 45vw;
+  }
+  .footerWidgetHeading h3,
+  .footerText p,
+  .ctaText h4,
+  .ctaText span,
+  .footerMenu a,
+  .colLinks ul li a {
+    font-size: 0.5rem;
+    margin-left: 1rem;
   }
 }

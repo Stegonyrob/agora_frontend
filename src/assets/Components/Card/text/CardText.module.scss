@@ -1,5 +1,5 @@
 .cardContainer {
-  width: 95%;
+
   margin: auto;
   padding: 1rem;
   margin-bottom: 5rem;
@@ -27,5 +27,43 @@
       margin-left: 2rem;
       padding: 1rem;
     }
+  }
+}
+
+@media (max-width: 720px) {
+  .cardContainer {
+    padding: 0.5rem;
+    .cardText {
+      padding: 1.5rem;
+      .cardImage {
+        max-width: 10rem;
+      }
+      .cardTitle {
+        font-size: 1.5rem;
+      }
+      .cardDescription {
+        margin-left: 1rem;
+        padding: 0.5rem;
+      }
+    }
+  }
+  @media  (max-width: 300px) {
+    .cardContainer {
+      padding: 0.5rem;
+      .cardText {
+        padding: 1rem;
+        .cardImage {
+          max-width: 7rem;
+        }
+        .cardTitle {
+          font-size: 1rem;
+        }
+        .cardDescription {
+          margin-left: 0.5rem;
+          padding: 0.5rem;
+        }
+      }
+    }
+    
   }
 }

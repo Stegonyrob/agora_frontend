@@ -3,4 +3,5 @@ export interface ISession {
   role: string;
   userName: string;
   isLoggedIn: boolean;
+  useremail: string;
 }

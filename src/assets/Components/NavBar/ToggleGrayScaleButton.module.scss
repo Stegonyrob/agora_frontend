@@ -52,3 +52,28 @@ input:checked + .slider .icon {
   left: 24px; // Ajusta este valor para que el infinito se mueva horizontalmente pero siga centrado verticalmente
 
 }
+@media (max-width: 320px) {
+  .slider {
+    height: 1.5rem;
+    width: 2.5rem;
+  }
+  .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+  .icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+ 
+  
+  .toggleSwitch {
+    width: 100vw;
+    min-width: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+  }

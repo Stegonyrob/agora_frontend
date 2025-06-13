@@ -5,4 +5,5 @@ export interface ITokenDTO {
   refreshToken: string;
   userName: string;
   isLoggedIn: boolean;
+  useremail: string;
 }

@@ -1,24 +1,109 @@
 @import "../Logo/LogoSimply.scss";
 
 .card {
-  width: 50%;
+  width: 50vh;
   margin-left: 25%;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 2rem;
-  color: azure ;
+  color: azure;
   margin-top: 5rem;
   margin-bottom: 8rem;
   text-align: center;
+  max-width: 40rem;
+  margin: 8rem auto;
+
   .input {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(177, 161, 161, 0.8);
     width: 70%;
     margin: auto;
-    color: 
-      azure ;
+    color: azure;
   }
 
-  .button {
+  .passwordWrapper {
+    position: relative;
+  }
+
+  .passwordInput {
+    padding-right: 2.5rem; /* Espacio para el icono */
+    background-color: rgba(177, 161, 161, 0.8);
     width: 70%;
     margin: auto;
+  }
+
+  .showPasswordIcon {
+    position: absolute;
+    top: 50%;
+    right: 18%;
+    width: 1.5rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ece8e8;
+  }
+
+  .loginButton {
+    width: 70%;
+    margin: 1rem auto;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .card {
+  
+    margin: 4rem auto;
+    padding: 1.2rem;
+  }
+  .input,
+  .passwordInput {
+    width: 90%;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 440px) {
+  .card {
+   width: 90%;
+    margin: 2rem auto;
+    padding: 0.7rem;
+    .loginButton {
+          font-size: 0.9rem;
+          margin: 1rem auto;
+    }
+    .registerLink {
+      font-size: 0.7rem;
+    }
+  }
+  .input,
+  .passwordInput {
+    width: 98%;
+    font-size: 0.95rem;
+  }
+  .showPasswordIcon {
+    right: 8%;
+    width: 1.2rem;
+  }
+
+}
+@media (max-width: 340px) {
+  .card {
+    padding: 0.3rem;
+
+ 
+    .loginButton {
+      font-size: 0.7rem;
+      padding: 0.2rem;
+    }
+  }
+  .cardTitle , .label{
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  .input,
+  .passwordInput {
+    font-size: 0.7rem;
+  }
+  .showPasswordIcon {
+    right: 25%;
+    width: 0.5rem;
   }
 }

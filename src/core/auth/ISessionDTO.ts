@@ -3,4 +3,5 @@ export interface SessionDTO {
   role: string;
   userName: string;
   isLoggedIn: boolean;
+  useremail: string;
 }
