@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IPost } from "../../../../core/posts/IPost";
 import PostsService from "../../../../core/posts/PostService";
 import CardItem from "../card/CardItem";
+import styles from "../card/CardItem.module.scss";
 interface PostListProps {
     userId: number | null;
 }
@@ -35,7 +36,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     console.log("fetchedPosts:", fetchedPosts);
 
     return (
-        <div>
+        <div className={styles.cardContainer}>
             {fetchedPosts.map((post) => (
                 <CardItem
                     key={post.id}
@@ -49,6 +50,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                     images={post.image}
                     user={post.user}
                     userRole={post.userRole}
+                    attendeesCount={post.attendeesCount ?? 0}
                     onSelect={handleSelect}
                 />
             ))}
