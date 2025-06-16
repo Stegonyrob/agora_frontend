@@ -86,7 +86,7 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.navLinks:hover, .dropbtn:hover, .dropdownContent .dropdownLink:hover {
+.navLinks:hover, .dropbtn:hover {
   background: #0c0c0c;
   color: #ffdd40;
 }
@@ -97,11 +97,14 @@
   border-radius: 4px;
 }
 
-.dropdownContent {
+.dropdownContent,
+.dropdownContentOne,
+.dropdownContentTwo,
+.dropdownContentTree {
   display: none;
   position: absolute;
   background: #0c0c0c;
-  min-width: 180px;
+  min-width: 160px;
   left: 0;
   top: 100%;
   border-radius: 0 0 8px 8px;
@@ -110,15 +113,27 @@
   padding: 0.5rem 0;
 }
 
+.dropdownContentTwo {
+  min-width: 250px;
+  background: #0c0c0c;
+}
+
+/* CORRECT SHOW/HOVER LOGIC */
 .dropdown:hover .dropdownContent,
-.dropdownContent.show {
+.dropdown:hover .dropdownContentOne,
+.dropdown:hover .dropdownContentTwo,
+.dropdown:hover .dropdownContentTree,
+.dropdownContent.show,
+.dropdownContentOne.show,
+.dropdownContentTwo.show,
+.dropdownContentTree.show {
   display: block;
 }
 
-.dropdownContent .dropdownLink {
+.dropdownLink {
   color: #fff;
   text-decoration: none;
-  padding: 0.5rem 1.5rem;
+  padding: 0.7rem 1.2rem;
   display: block;
   background: none;
   border: none;
@@ -126,6 +141,16 @@
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.2s, color 0.2s;
+  border-radius: 4px;
+}
+
+.dropdownContentTwo .dropdownLink {
+  padding: 0.7rem 1.5rem;
+}
+
+.dropdownLink:hover {
+  background: #232323;
+  color: #ffdd40;
 }
 
 @media (max-width: 960px) {
@@ -152,7 +177,10 @@
     text-align: center;
     padding: 1.5rem;
   }
-  .dropdownContent {
+  .dropdownContent,
+  .dropdownContentOne,
+  .dropdownContentTwo,
+  .dropdownContentTree {
     position: static;
     min-width: 100%;
     box-shadow: none;

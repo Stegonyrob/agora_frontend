@@ -5,10 +5,12 @@ import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
 import styles from "./NavBar.module.scss";
 import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
 
+
 function NavBar() {
     const [click, setClick] = useState(false);
     const [openDropdown, setOpenDropdown] = useState("");
-
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true" || sessionStorage.getItem("viewAsUser") !== "user";
+    console.log("isAdmin:", isAdmin);
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);
     const handleDropdown = (name: string) => {
@@ -74,15 +76,15 @@ function NavBar() {
                         >
                             Nosotros
                         </button>
-                        <ul className={openDropdown === "nosotros" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                        <ul className={openDropdown === "nosotros" ? `${styles.dropdownContentOne} ${styles.show}` : styles.dropdownContentOne}>
                             <li>
-                                <NavLink to="/agora" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Ágora</NavLink>
+                                <NavLink to="/agora" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Ágora</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/services" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Nuestros Servicios</NavLink>
+                                <NavLink to="/services" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Nuestros Servicios</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/aboutme" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Sobre Mi</NavLink>
+                                <NavLink to="/aboutme" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Sobre Mi</NavLink>
                             </li>
                         </ul>
                     </li>
@@ -97,7 +99,6 @@ function NavBar() {
                     </li>
                     {/* Dropdown 2: Neurodiversidad */}
                     <li
-
                         className={`${styles.navItem} ${styles.dropdown}`}
                         onMouseEnter={() => setOpenDropdown("neuro")}
                         onMouseLeave={() => setOpenDropdown("")}
@@ -111,28 +112,28 @@ function NavBar() {
                         >
                             Neurodiversidad
                         </button>
-                        <ul className={openDropdown === "neuro" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                        <ul className={openDropdown === "neuro" ? `${styles.dropdownContentTwo} ${styles.show}` : styles.dropdownContentTwo}>
                             <li>
                                 <NavLink
                                     to="/neurodiversity"
-                                    className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)}
+                                    className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)}
                                     onClick={closeMenu}
                                 >¿Qué es?</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/tea" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Cea/Tea</NavLink>
+                                <NavLink to="/tea" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Cea/Tea</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/tda_tdh" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Tda_Tdh</NavLink>
+                                <NavLink to="/tda_tdh" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Tda_Tdh</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/learningdifficulties" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
+                                <NavLink to="/learningdifficulties" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/developmentconditions" className={styles.dropdownLink} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
+                                <NavLink to="/developmentconditions" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/communication" className={styles.dropdownLink} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
+                                <NavLink to="/communication" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
                             </li>
                         </ul>
                     </li>
@@ -160,19 +161,31 @@ function NavBar() {
                         >
                             Inicio de Sesión
                         </button>
-                        <ul className={openDropdown === "sesion" ? `${styles.dropdownContent} ${styles.show}` : styles.dropdownContent}>
+                        <ul className={openDropdown === "sesion" ? `${styles.dropdownContentTree} ${styles.show}` : styles.dropdownContentTree}>
                             <li>
-                                <NavLink to="/login" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Login</NavLink>
+                                <NavLink to="/login" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Login</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/register" className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)} onClick={closeMenu}>Registro</NavLink>
+                                <NavLink to="/register" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Registro</NavLink>
                             </li>
                             <li>
-                                <button className={styles.dropdownLink} onClick={closeMenu}>Logout</button>
+                                <NavLink to="/logout" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Logout</NavLink>
                             </li>
                         </ul>
                     </li>
+                    <li className={styles.navItem}>
+                        {isAdmin && (
+                            <NavLink
+                                to="/admin"
+                                className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)}
+                                onClick={() => sessionStorage.removeItem("viewAsUser")}
+                            >
+                                Dashboard
+                            </NavLink>
+                        )}
+                    </li>
                 </ul>
+
             </div>
         </nav>
     );
