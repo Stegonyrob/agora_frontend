@@ -21,19 +21,15 @@ body {
   background-color: white;
   border-radius: 50px;
   margin: auto;
-  -webkit-box-shadow: 0px 3px 29px 0px #a0a0a0;
-  -moz-box-shadow: 0px 3px 29px 0px #a0a0a0;
   box-shadow: 0px 3px 29px 0px #a0a0a0;
   transition: 0.3s;
 }
 
 .heartWrapper:hover {
-  -webkit-box-shadow: 0px 2px 15px 0px #757575;
-  -moz-box-shadow: 0px 2px 15px 0px #757575;
   box-shadow: 0px 2px 15px 0px #757575;
 }
 
-.fa-heart {
+.heartWrapper .fa-heart {
   font-size: 2rem;
   color: #ff8484;
   transition: color 0.3s;
@@ -41,13 +37,13 @@ body {
   z-index: 1;
 }
 
-.backgroundHeart {
+.heartWrapper .backgroundHeart {
   color: #ff2e2e !important;
   position: relative;
   animation: fill-heart 0.7s;
 }
 
-.backgroundHeart::after {
+.heartWrapper .backgroundHeart::after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   content: "\f004";
@@ -63,7 +59,7 @@ body {
   pointer-events: none;
 }
 
-.backgroundHeart::before {
+.heartWrapper .backgroundHeart::before {
   content: "";
   width: 2.5rem;
   height: 2.5rem;
@@ -127,4 +123,67 @@ body {
   box-shadow: 0 0.5em 0.5em -0.4em var(--hover);
   transform: translateY(-0.25em);
   border-color: var(--hover);
+}
+
+.buttonArchiveBlock,
+.editButtonBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  font-weight: bold;
+  min-width: 8rem;
+}
+
+.buttonArchiveBlock .bi,
+.editButtonBlock .bi {
+  font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+  transition: color 0.2s;
+}
+
+.buttonArchiveBlock .label,
+.editButtonBlock .label {
+  font-size: 1.1rem;
+  margin-left: 0;
+  margin-top: 0.1rem;
+  text-align: center;
+}
+
+.buttonArchiveBlock:hover, .buttonArchiveBlock:focus,
+.editButtonBlock:hover,
+.editButtonBlock:focus {
+  box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.buttonArchiveBlock.published {
+  color: #28a745;
+}
+
+.buttonArchiveBlock.published .bi {
+  color: #28a745;
+}
+
+.buttonArchiveBlock.archived {
+  color: #dc3545;
+}
+
+.buttonArchiveBlock.archived .bi {
+  color: #dc3545;
+}
+
+.editButtonBlock {
+  color: #ffa260;
+}
+
+.editButtonBlock:hover, .editButtonBlock:focus {
+  color: #ffb84d;
 }

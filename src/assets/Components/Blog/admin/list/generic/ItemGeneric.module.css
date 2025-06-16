@@ -1,35 +1,151 @@
 .card {
-  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-content: center;
-  background-color: transparent;
+  align-items: flex-start;
+  background: transparent;
   color: azure;
-  width: 100%;
+  width: 90%;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.2rem;
+  border-radius: 8px;
+  gap: 0.2rem;
+  position: relative;
+  margin-bottom: 2.5rem;
+  margin-left: 4.5rem;
+  margin-right: 1rem;
 }
 
-.card h5, .card h6, .card div, .card p {
+.card .separator {
   width: 100%;
-  text-align: center;
-  max-width: 5rem;
-  margin: 2rem;
+  height: 2px;
+  background: linear-gradient(90deg, #b48be0 0%, #fff0 100%);
+  opacity: 0.8;
+  margin: 1.2rem 0 0.5rem 0;
+  border-radius: 2px;
 }
 
-.card .message {
-  min-width: 25%;
-  max-width: 50%;
-  text-align: center;
-  font-size: 1.5rem;
+.info {
+  flex: 1 1 0%;
+  min-width: 0;
+  margin-right: 0.5rem;
+}
+
+.info .row {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.info .row .id,
+.info .row .date {
+  font-size: 1rem;
+  color: #b0c4de;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info .row .statusContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+}
+
+.info .row .statusContainer .status-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s;
+}
+
+.info .row .statusContainer .status-block.published {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.info .row .statusContainer .status-block.archived {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.info .row .statusContainer .status-block .publishedStatus {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.info .row .statusContainer .status-block .archivedStatus {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.info .row .statusContainer .status-block .icon {
+  font-size: 1.3rem;
+  margin-bottom: 0.1rem;
+}
+
+.info .row .statusContainer .status-block .text {
+  font-size: 1rem;
+}
+
+.info .title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0 0.5rem 0;
+  color: #fff;
+  word-break: break-word;
+}
+
+.info .images {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info .images .image {
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 4px;
+}
+
+.info .messageRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info .messageRow .message {
+  font-size: 1.2rem;
   color: azure;
-  margin: 0;
-  padding: 3rem;
-  margin-right: 20rem;
+  margin: 0.5rem 0;
+  max-width: 70vw;
+  white-space: pre-line;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
-.card .toggleButton {
+.info .messageRow .toggleButton {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: azure;
+  margin-left: 0.5rem;
+}
+
+.info .messageRow .actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: flex-end;
+  min-width: 40px;
+  margin-left: 1rem;
 }

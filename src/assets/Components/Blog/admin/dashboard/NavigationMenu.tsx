@@ -17,7 +17,7 @@ interface NavigationMenuProps {
 
 const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, onNavigate }) => {
     const handleClick = (item: NavMenuItem) => {
-        // Si el item es para vista de usuario, activa viewAsUser
+
         if (item.viewAsUser) {
             sessionStorage.setItem("viewAsUser", "true");
         } else {

@@ -1,4 +1,7 @@
-h1, h2 {
+.h1, .h2, .centeredTitle {
   text-align: center;
   color: #090909;
+  margin: auto;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 }

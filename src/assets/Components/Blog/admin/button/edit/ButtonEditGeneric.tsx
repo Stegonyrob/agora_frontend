@@ -5,7 +5,7 @@ import { IEvent } from "../../../../../../core/events/IEvent";
 import { IEventDTO } from "../../../../../../core/events/IEventDTO";
 import { IPost } from "../../../../../../core/posts/IPost";
 import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
-import styles from '../ButtonIcons.module.scss';
+import styles from "../ButtonIcons.module.scss";
 import EditEventForm from "./EditEventForm";
 import EditPostForm from "./EditPostForm";
 interface ButtonEditGenericProps {
@@ -34,13 +34,11 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
     };
 
     return (
-        <div className={styles.socialIcons}>
-            <span className={styles.socialIcons} onClick={handleShow}>
-                <i
-                    className="bi bi-pencil-square"
-                    onClick={handleShow}
-                />
-            </span>
+        <div>
+            <div className={styles.editButtonBlock} onClick={handleShow}>
+                <i className="bi bi-pencil-square" />
+                <span className={styles.label}>Edición</span>
+            </div>
             {type === "post" && show && (
                 <EditPostForm
                     post={{

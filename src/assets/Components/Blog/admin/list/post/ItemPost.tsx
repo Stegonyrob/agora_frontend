@@ -20,44 +20,34 @@ interface ItemPostProps {
     onCreate: (newPost: IPostDTO) => Promise<void>;
 }
 
-
-const ItemPost: React.FC<ItemPostProps> = ({ post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, postId, onCreate }) => {
+const ItemPost: React.FC<ItemPostProps> = ({
+    post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, postId, onCreate
+}) => {
     const [showFullText, setShowFullText] = useState(false);
     const messagePreview = post?.message?.slice(0, 200) ?? '';
-    const isArchived = post?.isArchived ?? false;
-    console.log('PostCard:', post);
-    const toggleText = () => {
-        if (post) {
-            setShowFullText(prev => !prev);
-        }
-    };
 
-    if (!post) {
-        return null;
-    }
-    const handleChange = () => {
-        console.log('SVG clicked!');
-    };
+    if (!post) return null;
 
     return (
         <div className={styles.card}>
-
             <ItemGeneric
                 item={post}
                 id={post.id}
                 title={post.title}
-                message={post.message}
+                message={showFullText ? post.message : messagePreview}
                 creationDate={post.creationDate}
                 isArchived={post.isArchived}
                 type="post"
-
+                onArchive={onArchive}
+                onUnArchive={onUnArchive}
                 onSelect={onSelect}
                 onSubmit={onSubmit}
-                userId={post.userId}
-                onCreate={onCreate} />
-
+                userId={userId}
+                onCreate={onCreate}
+                images={post.images}
+            />
         </div>
     );
-}
+};
 
 export default ItemPost;

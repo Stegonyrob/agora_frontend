@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import EventService from "../../../../core/events/EventService";
-import { IEvent } from "../../../../core/events/IEvent"; // Asumiendo que tienes una interfaz para eventos
+import { IEvent } from "../../../../core/events/IEvent";
 import CardItem from "../card/CardItem";
-import styles from "../card/CardItem.module.scss"; // Asegúrate de tener el archivo de estilos correcto
+import styles from "../card/CardItem.module.scss";
 
 interface EventListProps {
     userId: number | null;
@@ -13,14 +13,14 @@ interface EventListProps {
 }
 
 const EventList: React.FC<EventListProps> = ({ onSelect }) => {
-    const [events, setEvents] = useState<IEvent[]>([]); // Estado para almacenar los eventos
-    const [isLoading, setIsLoading] = useState(true); // Estado para manejar la carga
+    const [events, setEvents] = useState<IEvent[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
                 const eventService = new EventService();
-                const fetchedEvents = await eventService.fetchEvents(); // Llama al servicio para obtener los eventos
+                const fetchedEvents = await eventService.fetchEvents();
                 setEvents(fetchedEvents);
             } catch (error) {
                 console.error("Error fetching events:", error);
@@ -33,7 +33,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
     }, []);
 
     if (isLoading) {
-        return <p>Loading events...</p>; // Muestra un mensaje de carga mientras se obtienen los eventos
+        return <p>Loading events...</p>;
     }
     const handleSelect = (item: any) => {
         console.log("Selected event:", item);

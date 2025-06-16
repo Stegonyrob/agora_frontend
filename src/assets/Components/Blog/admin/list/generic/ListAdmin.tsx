@@ -1,21 +1,39 @@
+import type { IEvent } from '@/core/events/IEvent';
+import type { IPost } from '@/core/posts/IPost';
 import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
 import styles from './ListAdmin.module.scss';
-interface ListAdminProps<T> {
-    items: T[];
-    type: 'post' | 'event';
-    onSelect: (item: T) => void;
+
+interface ListAdminPropsPost {
+    items: IPost[];
+    type: 'post';
+    onSelect: (item: IPost) => void;
     onDelete: (id: number) => Promise<void>;
-    onEdit: (item: T) => void;
+    onEdit: (item: IPost) => void;
     onArchive: (id: number) => Promise<boolean>;
     onUnArchive: (id: number) => Promise<boolean>;
-    onSubmit: (item: T) => void;
+    onSubmit: (item: IPost) => void;
     onCreate: (newItem: any) => Promise<void>;
     userId: number;
 }
 
-const ListAdmin = <T extends { id: number }>(props: ListAdminProps<T>) => {
+interface ListAdminPropsEvent {
+    items: IEvent[];
+    type: 'event';
+    onSelect: (item: IEvent) => void;
+    onDelete: (id: number) => Promise<void>;
+    onEdit: (item: IEvent) => void;
+    onArchive: (id: number) => Promise<boolean>;
+    onUnArchive: (id: number) => Promise<boolean>;
+    onSubmit: (item: IEvent) => void;
+    onCreate: (newItem: any) => Promise<void>;
+    userId: number;
+}
+
+type ListAdminProps = ListAdminPropsPost | ListAdminPropsEvent;
+
+const ListAdmin = (props: ListAdminProps) => {
     const {
         items,
         type,
@@ -33,34 +51,41 @@ const ListAdmin = <T extends { id: number }>(props: ListAdminProps<T>) => {
         <div className={styles.container}>
             <div className={styles.panel}>
                 <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
-                {items.map(item =>
-                    type === 'post' ? (
+                {type === 'post'
+                    ? (items as IPost[]).map(item => (
                         <ItemPost
                             key={item.id}
-                            post={item as any}
-                            onSelect={onSelect as (post: any) => void}
-                            onDelete={onDelete}
-                            onEdit={onEdit as (post: any) => void}
+                            post={item}
                             onArchive={onArchive}
                             onUnArchive={onUnArchive}
-                            onSubmit={onSubmit as (post: any) => void}
-                            userId={userId}
-                            onCreate={onCreate} id={0} title={''} postId={0} />
-                    ) : (
-                        <ItemEvent
-                            key={item.id}
-                            event={item as any}
-                            onSelect={onSelect as (event: any) => void}
+                            onSelect={onSelect}
+                            onEdit={onEdit}
                             onDelete={onDelete}
-                            onEdit={onEdit as (event: any) => void}
-                            onArchive={onArchive}
-                            onUnArchive={onUnArchive}
-                            onSubmit={onSubmit as (event: any) => void}
+                            onSubmit={onSubmit}
                             userId={userId}
                             onCreate={onCreate}
+                            postId={item.id}
+                            id={item.id}
+                            title={item.title}
                         />
-                    )
-                )}
+                    ))
+                    : (items as IEvent[]).map(item => (
+                        <ItemEvent
+                            key={item.id}
+                            event={item}
+                            onArchive={onArchive}
+                            onUnArchive={onUnArchive}
+                            onSelect={onSelect}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onSubmit={onSubmit}
+                            userId={userId}
+                            onCreate={onCreate}
+                            id={item.id}
+                            title={item.title}
+                        />
+                    ))
+                }
             </div>
         </div>
     );

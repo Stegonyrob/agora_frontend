@@ -68,7 +68,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
     return (
         <div className={styles.container}>
-            <h1>Perfil de Usuario</h1>
+            <h1 className={styles.centeredTitle}>Perfil de Usuario</h1>
             {profile ? (
                 <Profile profile={profile} onEdit={handleOpenProfileForm} />
             ) : (
@@ -82,7 +82,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
                 setUserName={setUserName}
                 onSubmit={handleSubmit}
                 profileDTO={undefined}
-                profile={profile}
+                profile={profile ?? undefined}
                 onSelect={(profile: IProfile) => console.log("Profile selected:", profile)}
                 onClose={handleCloseProfileForm}
                 show={showProfileForm}

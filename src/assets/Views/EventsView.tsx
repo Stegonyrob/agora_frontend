@@ -1,7 +1,7 @@
 import { IEvent } from "../../core/events/IEvent"; // Asegúrate de que esta interfaz esté bien definida
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";
 import EventList from "../Components/Card/event/EventList";
-
+import styles from "../Views/scss/Views.module.scss";
 
 interface EventListProps {
     userId: number | null;
@@ -33,7 +33,7 @@ const EventView: React.FC<EventListProps> = ({ userId, events, onSelect }) => {
     } else {
         return (
             <div>
-                <h1 >Lista de Eventos Disponibles</h1>
+                <h1 className={styles.centeredTitle}>Lista de Eventos Disponibles</h1>
 
                 <EventList userId={userId} events={events} onSelect={onSelect} />
 

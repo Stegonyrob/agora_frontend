@@ -1,9 +1,10 @@
-import React from 'react';
-import { IEvent } from '../../../../../../core/events/IEvent';
-import ItemGeneric from '../generic/ItemGeneric';
-import ImageEvent from './ImageEvent';
+import { IEvent } from "@/core/events/IEvent";
+import React from "react";
+import ItemGeneric from "../generic/ItemGeneric";
 
 interface ItemEventProps {
+    id: number;
+    title: string;
     event: IEvent;
     onEdit: (event: IEvent) => void;
     onDelete: (eventId: number) => Promise<void>;
@@ -12,26 +13,37 @@ interface ItemEventProps {
     onSelect: (event: IEvent) => void;
     onSubmit: (event: IEvent) => void;
     userId: number;
-    onCreate: (newEvent: IEvent) => Promise<void>;
+    onCreate: (newEvent: any) => Promise<void>;
 }
 
-const ItemEvent: React.FC<ItemEventProps> = (props) => {
-    const { event, ...rest } = props;
+const ItemEvent: React.FC<ItemEventProps> = ({
+    event,
+    onEdit,
+    onDelete,
+    onArchive,
+    onUnArchive,
+    onSelect,
+    onSubmit,
+    userId,
+    onCreate,
+}) => {
     return (
-        <div>
-            <ImageEvent event={event} />
-            <ItemGeneric
-                item={event}
-                id={event.id}
-                title={event.title}
-                message={event.message}
-                creationDate={event.creationDate}
-                isArchived={event.isArchived}
-                images={event.images}
-                type="event"
-                {...rest}
-            />
-        </div>
+        <ItemGeneric
+            item={event}
+            id={event.id}
+            title={event.title}
+            message={event.message}
+            creationDate={event.creationDate}
+            isArchived={event.isArchived}
+            type="event"
+            images={event.images}
+            onArchive={onArchive}
+            onUnArchive={onUnArchive}
+            onSelect={onSelect}
+            onSubmit={onSubmit}
+            userId={userId}
+            onCreate={onCreate}
+        />
     );
 };
 
