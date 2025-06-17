@@ -9,7 +9,7 @@ import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
 function NavBar() {
     const [click, setClick] = useState(false);
     const [openDropdown, setOpenDropdown] = useState("");
-    const isAdmin = sessionStorage.getItem("isAdmin") === "true" || sessionStorage.getItem("viewAsUser") !== "user";
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
     console.log("isAdmin:", isAdmin);
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);
@@ -121,7 +121,7 @@ function NavBar() {
                                 >¿Qué es?</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/tea" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Cea/Tea</NavLink>
+                                <NavLink to="/cea" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Cea/Tea</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/tda_tdh" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Tda_Tdh</NavLink>
@@ -178,7 +178,7 @@ function NavBar() {
                             <NavLink
                                 to="/admin"
                                 className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)}
-                                onClick={() => sessionStorage.removeItem("viewAsUser")}
+
                             >
                                 Dashboard
                             </NavLink>

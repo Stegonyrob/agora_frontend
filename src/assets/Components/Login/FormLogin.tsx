@@ -56,6 +56,11 @@ const FormLogin: React.FC = () => {
       sessionStorage.setItem('role', role);
       sessionStorage.setItem("viewAsUser", "false");
 
+      if (role === "ROLE_ADMIN") {
+        sessionStorage.setItem("isAdmin", "true");
+      } else {
+        sessionStorage.removeItem("isAdmin");
+      }
       dispatch(login({
         userId: response.userId,
         role,
