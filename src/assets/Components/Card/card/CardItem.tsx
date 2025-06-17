@@ -176,11 +176,10 @@ const CardItem: React.FC<CardItemProps> = ({
                         </div>
                     )}
                     {type === 'post' && (
-                        <ButtonComment
-                            postId={id}
-                            userId={userId}
-                            counter={commentsCount || 0}
-                        />
+                        <div style={{ marginTop: '1rem' }}>
+                            <AccordionComments postId={id} />
+                            {/* Puedes pasar los comentarios reales aquí */}
+                        </div>
                     )}
                     {type === 'event' && (
                         <ButtonAttendee
