@@ -4,18 +4,15 @@ import PostFavoriteService from '@/core/favorites/PostFavoriteService';
 import { useEffect, useState } from 'react';
 
 interface LikeButtonProps {
-    userId: number;
     postId: number;
-    requireLogin?: boolean;
     type: 'post' | 'event';
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({
-    userId,
     postId,
-    requireLogin = false,
     type
 }) => {
+    const [favoritesCount, setFavoritesCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
 
     const favoriteService =
@@ -23,52 +20,28 @@ const LikeButton: React.FC<LikeButtonProps> = ({
             ? new EventFavoriteService()
             : new PostFavoriteService();
 
-    const isAuthenticated = !!userId && userId !== 0;
-
     useEffect(() => {
         if (type === 'post') {
-            if (!isAuthenticated) {
-                setIsLiked(false);
-                return;
-            }
-            // @ts-expect-error: getFavorite solo existe en PostFavoriteService
-            favoriteService.getFavorite(postId, userId)
-                .then((response: number[]) => {
-                    const liked = response.includes(userId);
-                    setIsLiked(liked);
-                })
-                .catch(() => setIsLiked(false));
+            favoriteService.getFavoritesCount(postId)
+                .then((count: number) => setFavoritesCount(count))
+                .catch(() => setFavoritesCount(0));
         }
-        // Para eventos, no hay getFavorite, así que no hacemos nada
-    }, [postId, userId, type, isAuthenticated]);
+        // Si quieres, puedes hacer lo mismo para eventos
+    }, [postId, type]);
 
     const handleLike = () => {
-        if (type === 'post') {
-            if (!isAuthenticated) {
-                alert("Debes iniciar sesión para dar like.");
-                return;
-            }
-
-            favoriteService.giveLike(postId, userId).then(() => setIsLiked(true));
-        } else if (type === 'event') {
-            (favoriteService as EventFavoriteService).giveLike(postId).then(() => setIsLiked(true));
-        }
+        favoriteService.giveLike(postId).then(() => {
+            setIsLiked(true);
+            setFavoritesCount(c => c + 1);
+        });
     };
 
     const handleDislike = () => {
-        if (type === 'post') {
-            if (!isAuthenticated) {
-                alert("Debes iniciar sesión para quitar el like.");
-                return;
-            }
-
-            favoriteService.removeLike(postId, userId).then(() => setIsLiked(false));
-        } else if (type === 'event') {
-            (favoriteService as EventFavoriteService).removeLike(postId).then(() => setIsLiked(false));
-        }
+        favoriteService.removeLike(postId).then(() => {
+            setIsLiked(false);
+            setFavoritesCount(c => Math.max(0, c - 1));
+        });
     };
-
-    if (type === 'post' && !isAuthenticated) return null;
 
     return (
         <button
@@ -83,8 +56,10 @@ const LikeButton: React.FC<LikeButtonProps> = ({
         >
             <i
                 className={`fa${isLiked ? 's' : 'r'} fa-heart`}
-                style={{ color: isLiked ? 'red' : 'white', fontSize: 28 }}
-            />
+                style={{ color: isLiked ? 'red' : 'white', fontSize: 35, position: 'relative' }}
+            >
+                <span className={styles.heartCount}>{favoritesCount}</span>
+            </i>
         </button>
     );
 };

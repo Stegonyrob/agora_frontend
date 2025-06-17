@@ -13,100 +13,6 @@ body {
   color: grey;
 }
 
-.heartWrapper {
-  width: 70px;
-  height: 70px;
-  margin-top: 500px;
-  position: relative;
-  background-color: white;
-  border-radius: 50px;
-  margin: auto;
-  box-shadow: 0px 3px 29px 0px #a0a0a0;
-  transition: 0.3s;
-}
-
-.heartWrapper:hover {
-  box-shadow: 0px 2px 15px 0px #757575;
-}
-
-.heartWrapper .fa-heart {
-  font-size: 2rem;
-  color: #ff8484;
-  transition: color 0.3s;
-  position: relative;
-  z-index: 1;
-}
-
-.heartWrapper .backgroundHeart {
-  color: #ff2e2e !important;
-  position: relative;
-  animation: fill-heart 0.7s;
-}
-
-.heartWrapper .backgroundHeart::after {
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  content: "\f004";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2rem;
-  color: #ff2e2e;
-  z-index: -1;
-  opacity: 1;
-  animation: fill-heart 0.7s;
-  pointer-events: none;
-}
-
-.heartWrapper .backgroundHeart::before {
-  content: "";
-  width: 2.5rem;
-  height: 2.5rem;
-  opacity: 0.18;
-  background-color: #ff2e2e;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -2;
-  border-radius: 50%;
-  animation: circle-expand 0.7s;
-  pointer-events: none;
-}
-
-@keyframes fillHeart {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes circleExpand {
-  0% {
-    width: 60px;
-    height: 60px;
-    opacity: 1;
-  }
-  40% {
-    width: 0px;
-    height: 0px;
-    opacity: 0.2;
-  }
-  80% {
-    width: 60px;
-    height: 60px;
-    opacity: 0.2;
-  }
-  100% {
-    width: 60px;
-    height: 60px;
-    opacity: 0.2;
-  }
-}
-
 .socialIcons {
   font-size: 1.5rem;
   margin-right: 1.5rem;
@@ -186,4 +92,24 @@ body {
 
 .editButtonBlock:hover, .editButtonBlock:focus {
   color: #ffb84d;
+}
+
+.heartButton {
+  position: relative;
+  display: inline-block;
+  width: 2.8rem;
+  height: 2.8rem;
+  background-color: transparent;
+}
+
+.heartCount {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: azure;
+  font-size: 0.8rem;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 2;
 }

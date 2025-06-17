@@ -1,7 +1,7 @@
 import ButtonAttendee from '@/assets/Components/Blog/admin/button/attendee/ButtonAttendee';
 import LikeButton from '@/assets/Components/Blog/admin/button/favorite/ButtonFavoriteHeart';
-import ButtonComment from '@/assets/Components/Blog/comment/ButtonComent';
 import React, { useState } from 'react';
+import AccordionComments from '../../Blog/comments/AccordionComments';
 import styles from './CardItem.module.scss';
 
 interface CardItemProps {
@@ -131,9 +131,7 @@ const CardItem: React.FC<CardItemProps> = ({
                 )}
                 <span className={styles.favoriteIcon}>
                     <LikeButton
-                        userId={userId}
                         postId={id}
-                        requireLogin={type === 'post'}
                         type={type}
                     />
                 </span>
