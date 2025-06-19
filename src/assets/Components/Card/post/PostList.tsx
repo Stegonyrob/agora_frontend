@@ -19,7 +19,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
         const loadPosts = async () => {
             console.log("loadPosts called");
             try {
-                const fetchedPosts = await apiPost.fetchPosts();
+                const fetchedPosts = await apiPost.getAllPosts();
                 console.log("fetchedPosts:", fetchedPosts);
                 setFetchedPosts(fetchedPosts);
             } catch (error) {

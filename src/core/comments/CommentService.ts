@@ -1,44 +1,30 @@
-import axios from "axios";
+import { CommentRepository } from "./CommentRepository";
+import { IComment } from "./IComment";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api"; // Ajusta según tu backend
+export class CommentService {
+  repository: CommentRepository;
 
-// Helper para obtener el token del localStorage
-function getAuthHeaders() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  constructor(repository: CommentRepository) {
+    this.repository = repository;
+  }
+
+  async getAll(): Promise<IComment[]> {
+    return await this.repository.getAll();
+  }
+
+  async getByPostId(postId: number): Promise<IComment[]> {
+    return await this.repository.getByPostId(postId);
+  }
+
+  async create(comment: IComment): Promise<IComment> {
+    return await this.repository.create(comment);
+  }
+
+  async update(comment: IComment): Promise<IComment> {
+    return await this.repository.update(comment);
+  }
+
+  async delete(commentId: number): Promise<void> {
+    return await this.repository.delete(commentId);
+  }
 }
-
-export const CommentService = {
-  async getCommentsByPost(postId: number) {
-    const res = await axios.get(`${API_URL}/comments/post/${postId}`, {
-      headers: getAuthHeaders(),
-    });
-    return res.data;
-  },
-
-  async createComment(commentDTO: any) {
-    const res = await axios.post(`${API_URL}/comments/create`, commentDTO, {
-      headers: getAuthHeaders(),
-    });
-    return res.data;
-  },
-
-  async deleteComment(commentId: number) {
-    await axios.delete(`${API_URL}/comments/${commentId}`, {
-      headers: getAuthHeaders(),
-    });
-  },
-
-  async updateComment(commentId: number, commentDTO: any) {
-    const res = await axios.put(
-      `${API_URL}/comments/${commentId}`,
-      commentDTO,
-      {
-        headers: getAuthHeaders(),
-      }
-    );
-    return res.data;
-  },
-};
-
-export default CommentService;

@@ -2,6 +2,8 @@ export interface ITextItemDTO {
   title: string;
   content: string;
   author: string;
-  createdAt?: Date | null;
-  updatedAt?: Date | null;
+  image?: string | null;
+  description?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }

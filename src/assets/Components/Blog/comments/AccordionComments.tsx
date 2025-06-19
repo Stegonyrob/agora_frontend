@@ -59,7 +59,11 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   const [replyText, setReplyText] = useState('');
 
   const handleAddComment = () => {
-    if (!newComment.trim()) return;
+    if (!newComment.trim()) {
+      console.log('Add Comment: Empty comment text');
+      return;
+    }
+    console.log('Add Comment:', newComment);
     setComments(prev => [
       ...prev,
       {
@@ -75,7 +79,11 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   };
 
   const handleAddReply = (parentId: number) => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim()) {
+      console.log('Add Reply: Empty reply text');
+      return;
+    }
+    console.log(`Add Reply to Comment ID ${parentId}:`, replyText);
     setComments(comments =>
       comments.map(comment =>
         comment.id === parentId
@@ -113,7 +121,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
 
   return (
     <div className={styles.commentsContainer}>
-      <button className={styles.iconBtn} onClick={() => setOpen(!open)}>
+      <button className={styles.iconBtn} onClick={() => { console.log('Toggle Comments'); setOpen(!open); }}>
         <i className="bi bi-chat-dots"></i>
         <span className={styles.counter}>{comments.length}</span>
       </button>
@@ -125,7 +133,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
               type="text"
               placeholder="Escribe un comentario..."
               value={newComment}
-              onChange={e => setNewComment(e.target.value)}
+              onChange={e => { console.log('New Comment Input:', e.target.value); setNewComment(e.target.value); }}
               className={styles.input}
               onKeyDown={e => e.key === 'Enter' && handleAddComment()}
             />
@@ -149,7 +157,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
                   <div className={styles.actionsRow}>
                     <button
                       className={styles.replyBtn}
-                      onClick={() => setReplyTo(replyTo === comment.id ? null : comment.id)}
+                      onClick={() => { console.log('Toggle Reply Input for Comment ID', comment.id); setReplyTo(replyTo === comment.id ? null : comment.id); }}
                     >
                       <i className="bi bi-reply"></i>
                     </button>
@@ -160,7 +168,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
                         type="text"
                         placeholder="Responder..."
                         value={replyText}
-                        onChange={e => setReplyText(e.target.value)}
+                        onChange={e => { console.log('Reply Input for Comment ID', comment.id, ':', e.target.value); setReplyText(e.target.value); }}
                         className={styles.input}
                         onKeyDown={e => e.key === 'Enter' && handleAddReply(comment.id)}
                       />

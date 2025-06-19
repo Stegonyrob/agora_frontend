@@ -1,20 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IReply } from "./IReply"; // Asegúrate de que esta ruta sea correcta
-import { ReplyRepository } from "./ReplyRepository";
+import { IReply } from "./IReply";
 import { ReplyService } from "./ReplyService";
 
-// Definimos un thunk asíncrono para obtener las respuestas
+const service = new ReplyService();
+
 export const fetchReplies = createAsyncThunk(
   "replies/fetchReplies",
-  async () => {
-    const repository = new ReplyRepository();
-    const service = new ReplyService(repository);
-    const replies: IReply[] = await service.get();
-    return replies;
-  }
+  async () => await service.get()
 );
 
-// Definimos el slice de Redux para manejar el estado de las respuestas
 interface RepliesState {
   replies: IReply[];
   isLoading: boolean;
@@ -25,16 +19,17 @@ const repliesSlice = createSlice({
   initialState: { replies: [], isLoading: false } as RepliesState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchReplies.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fetchReplies.fulfilled, (state, action) => {
-      state.replies = action.payload;
-      state.isLoading = false;
-    });
-    builder.addCase(fetchReplies.rejected, (state) => {
-      state.isLoading = false;
-    });
+    builder
+      .addCase(fetchReplies.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchReplies.fulfilled, (state, action) => {
+        state.replies = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchReplies.rejected, (state) => {
+        state.isLoading = false;
+      });
   },
 });
 

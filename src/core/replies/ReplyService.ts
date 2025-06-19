@@ -1,10 +1,11 @@
 import { IReply } from "./IReply";
+import { IReplyDTO } from "./IReplyDTO";
 import { ReplyRepository } from "./ReplyRepository";
 
 export class ReplyService {
   repository: ReplyRepository;
 
-  constructor(repository: ReplyRepository) {
+  constructor(repository = new ReplyRepository()) {
     this.repository = repository;
   }
 
@@ -13,29 +14,14 @@ export class ReplyService {
   }
 
   async getByPostId(postId: number): Promise<IReply[]> {
-    const data: IReply[] = await this.repository.getByPostId(postId);
-    let list: IReply[] = [];
-
-    data.forEach((reply: IReply) => {
-      let template: IReply = {
-        replyId: reply.replyId,
-        postId: reply.postId,
-        userId: reply.userId,
-        reply_message: reply.reply_message,
-        creation_date: reply.creation_date,
-        comment: "",
-      };
-      list.push(template);
-    });
-
-    return list;
+    return await this.repository.getByPostId(postId);
   }
 
-  async create(reply: IReply): Promise<IReply> {
+  async create(reply: IReplyDTO): Promise<IReply> {
     return await this.repository.create(reply);
   }
 
-  async update(reply: IReply): Promise<IReply> {
+  async update(reply: IReplyDTO): Promise<IReply> {
     return await this.repository.update(reply);
   }
 

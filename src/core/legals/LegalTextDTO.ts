@@ -1,7 +1,7 @@
 export interface LegalTextDTO {
-  id: number;
+  id?: number;
   type: string;
   title: string;
   content: string;
-  updatedAt: string;
+  updatedAt?: string;
 }

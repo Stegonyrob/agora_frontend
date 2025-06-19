@@ -1,6 +1,6 @@
-// IImage.ts
 export interface IImage {
   imageName: string; // Nombre de la imagen
-  mainImage: boolean; // Indica si es la imagen principal
-  // Agrega otros campos que necesites, como URL, tamaño, etc.
+  mainImage: boolean; // Es la imagen principal
+  url?: string; // URL de la imagen (opcional)
+  size?: number; // Tamaño en bytes (opcional)
 }

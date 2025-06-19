@@ -1,27 +1,50 @@
-import axios, { AxiosError } from "axios";
-import type { IPost } from "./IPost";
+import axios from "axios";
+import { getAuthHeaders } from "../auth/AuthHeaders";
+import { IPost } from "./IPost";
+import { IPostDTO } from "./IPostDTO";
 
 export default class PostRepository {
-    uri: string = 'http://localhost:8080/api/v1/posts';
+  uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
 
-    async getAll(): Promise<IPost[]> {
-        try {
-            const response = await axios.get(this.uri);
-            return response.data;
-            console.log(response.data)
-        } catch (error) {
-            const axiosError = error as AxiosError;
-            if (axiosError.response) {
-                // El servidor respondió con un código de estado fuera del rango 2xx
-                console.error('Error API response:', axiosError.response.data);
-            } else if (axiosError.request) {
-                // La solicitud fue realizada pero no se recibió respuesta
-                console.error('No response received:', axiosError.request);
-            } else {
-                // Ocurrió un error durante la configuración de la solicitud
-                console.error('Request setup error:', axiosError.message);
-            }
-            throw new Error('Failed to fetch data');
-        }
-    }
+  // Todos los métodos requieren autenticación
+
+  // Lectura (user y admin)
+  async getAll(): Promise<IPost[]> {
+    const response = await axios.get(this.uri, { headers: getAuthHeaders() });
+    return response.data;
+  }
+
+  async getById(id: number): Promise<IPost> {
+    const response = await axios.get(`${this.uri}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  }
+
+  // CRUD (solo admin, pero el backend debe validar el rol)
+  async create(post: IPostDTO): Promise<IPost> {
+    const response = await axios.post(this.uri, post, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  }
+
+  async update(postId: number, post: IPostDTO): Promise<IPost> {
+    const response = await axios.put(`${this.uri}/${postId}`, post, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  }
+
+  async delete(postId: number): Promise<void> {
+    await axios.delete(`${this.uri}/${postId}`, { headers: getAuthHeaders() });
+  }
+
+  async archive(postId: number, archive: boolean): Promise<void> {
+    await axios.patch(
+      `${this.uri}/${postId}/archive?archive=${archive}`,
+      null,
+      { headers: getAuthHeaders() }
+    );
+  }
 }

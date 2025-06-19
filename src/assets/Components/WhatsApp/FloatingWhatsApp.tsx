@@ -5,7 +5,7 @@ import React, {
     useReducer,
     useRef
 } from "react";
-import { reducer } from "../../../redux/reducers/whatsAppSlice";
+import { reducer } from "../../../core/whatsApp/whatsAppStore";
 import styles from "./FloatingWhatsApp.module.scss";
 import { CheckSVG, CloseSVG, SendSVG, WhatsappSVG } from "./IconsWhatsApp";
 

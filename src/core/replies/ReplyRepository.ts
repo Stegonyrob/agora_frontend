@@ -1,49 +1,43 @@
 import axios from "axios";
+import { getAuthHeaders } from "../auth/AuthHeaders";
 import { IReply } from "./IReply";
+import { IReplyDTO } from "./IReplyDTO";
 
 export class ReplyRepository {
-  uri: string = import.meta.env.VITE_API_ENDPOINT_REPLIES
+  uri: string = import.meta.env.VITE_API_ENDPOINT_REPLIES;
+
   async getAll(): Promise<IReply[]> {
-    try {
-      const response = await axios.get(`${this.uri}/all`);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to get replies");
-    }
+    const response = await axios.get(`${this.uri}/all`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
   }
 
   async getByPostId(postId: number): Promise<IReply[]> {
-    try {
-      const response = await axios.get(`${this.uri}/post/${postId}`);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to get replies by post ID");
-    }
+    const response = await axios.get(`${this.uri}/post/${postId}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
   }
 
-  async create(reply: IReply): Promise<IReply> {
-    try {
-      const response = await axios.post(`${this.uri}/create`, reply);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to create reply");
-    }
+  async create(reply: IReplyDTO): Promise<IReply> {
+    const response = await axios.post(`${this.uri}/create`, reply, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
   }
 
-  async update(reply: IReply): Promise<IReply> {
-    try {
-      const response = await axios.put(`${this.uri}/update`, reply);
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to update reply");
-    }
+  async update(reply: IReplyDTO): Promise<IReply> {
+    if (!reply.replyId) throw new Error("replyId is required for update");
+    const response = await axios.put(`${this.uri}/${reply.replyId}`, reply, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
   }
 
   async delete(replyId: number): Promise<void> {
-    try {
-      await axios.delete(`${this.uri}/delete/${replyId}`);
-    } catch (error) {
-      throw new Error("Failed to delete reply");
-    }
+    await axios.delete(`${this.uri}/${replyId}`, {
+      headers: getAuthHeaders(),
+    });
   }
 }

@@ -3,7 +3,8 @@ import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import LoginService from '../../../core/auth/LoginService';
-import { login } from '../../../redux/reducers/loginSlice';
+// Ajusta el import según la ubicación real
+import { login } from '@/core/auth/sessionStore';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
@@ -32,6 +33,7 @@ const FormLogin: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage('');
@@ -43,7 +45,7 @@ const FormLogin: React.FC = () => {
 
     try {
       const loginService = new LoginService();
-      const response = await loginService.post({ useremail, password });
+      const response = await loginService.login({ useremail, password });
       const jwtData = parseJwt(response.accessToken);
       const role = typeof jwtData.roles === "string" ? jwtData.roles : "";
       const userName = typeof jwtData.username === "string" ? jwtData.username : "";
@@ -67,6 +69,8 @@ const FormLogin: React.FC = () => {
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
         userName,
+        useremail,
+        isLoggedIn: true,
       }));
 
       if (role === 'ROLE_ADMIN') {
@@ -84,6 +88,7 @@ const FormLogin: React.FC = () => {
   const togglePass = () => {
     setShowPassword(!showPassword);
   };
+
 
   return (
     <Card className={styles.card}>
@@ -110,14 +115,13 @@ const FormLogin: React.FC = () => {
             <Form.Label className={styles.label}>Contraseña</Form.Label>
             <div className={styles.passwordWrapper}>
               <Form.Control
-
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Contraseña"
-                className={styles.passwordInput} // Agregamos una clase para el input
+                className={styles.passwordInput}
               />
               <i
                 className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIcon}`}

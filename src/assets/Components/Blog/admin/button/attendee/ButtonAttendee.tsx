@@ -1,5 +1,5 @@
 import Challenge from "@/assets/Components/Challenge/Challenge";
-import AttendeeService from "@/core/attendees/AttendeeService";
+import { AttendeeService } from "@/core/attendees/AttendeeService";
 import { sanitizeInput } from "@/utils/validationUtils";
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
@@ -72,7 +72,8 @@ const ButtonAttendee: React.FC<ButtonAttendeeProps> = ({ eventId, onRegister, ma
                 email: sanitizeInput(form.correo),
                 phone: sanitizeInput(form.telefono),
             };
-            const response = await attendeeService.registerAttendee(eventId, sanitizedForm, "");
+            const attendeeDTO = { eventId, ...sanitizedForm };
+            const response = await attendeeService.registerAttendee(eventId, sanitizedForm, "", attendeeDTO);
             if (response && response.id) setUserAttendeeId(response.id);
             setSuccess(true);
             setForm({ nombre: "", correo: "", telefono: "" });

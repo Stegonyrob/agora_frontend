@@ -12,7 +12,7 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         const fetchPosts = async () => {
             try {
                 const postService = new PostService();
-                const posts = await postService.fetchPosts();
+                const posts = await postService.getAllPosts();
                 setFetchedPosts(posts ?? []);
             } catch (error) {
                 console.error("Error fetching posts:", error);
@@ -27,7 +27,7 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         try {
             const postService = new PostService();
             const postDTO: IPostDTO = { ...post, message: String(post.message), images: post.images ?? [] };
-            await postService.updatePost(postDTO, post.id);
+            await postService.updatePost(post.id, postDTO);
             setFetchedPosts(prev => prev.map(p => (p.id === post.id ? { ...p, ...post } : p)));
         } catch (error) {
             console.error("Error updating post:", error);
@@ -38,7 +38,7 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         try {
             const postService = new PostService();
             await postService.createPost(newPost);
-            const updatedPosts = await postService.fetchPosts();
+            const updatedPosts = await postService.getAllPosts();
             setFetchedPosts(updatedPosts ?? []);
         } catch (error) {
             console.error("Error creating post:", error);

@@ -1,37 +1,31 @@
-// AlertService.ts
-import { IAlert } from "./IAlert"; // Asegúrate de que esta interfaz existe
+import { AlertRepository } from "./AlertRepository";
+import { IAlert } from "./IAlert";
+import { IAlertDTO } from "./IAlertDTO";
 
-class AlertService {
-  private alerts: IAlert[] = [];
+export class AlertService {
+  repository: AlertRepository;
 
-  // Método para crear una alerta
-  createAlert(type: string, message: string): IAlert {
-    const alert: IAlert = { type, message };
-    this.alerts.push(alert);
-    // Opcional: Puedes agregar lógica para eliminar la alerta después de un tiempo
-    setTimeout(() => {
-      this.removeAlert(alert);
-    }, 3000); // Eliminar alerta después de 3 segundos
-    return alert;
+  constructor(repository = new AlertRepository()) {
+    this.repository = repository;
   }
 
-  // Método para eliminar una alerta
-  removeAlert(alert: IAlert): void {
-    const index = this.alerts.indexOf(alert);
-    if (index > -1) {
-      this.alerts.splice(index, 1);
-    }
+  async getAlerts(): Promise<IAlert[]> {
+    return await this.repository.getAll();
   }
 
-  // Método para obtener todas las alertas
-  getAlerts(): IAlert[] {
-    return this.alerts;
+  async getAlertById(id: number): Promise<IAlert> {
+    return await this.repository.getById(id);
   }
 
-  // Método para limpiar todas las alertas
-  clearAlerts(): void {
-    this.alerts = [];
+  async createAlert(alert: IAlertDTO): Promise<IAlert> {
+    return await this.repository.create(alert);
+  }
+
+  async updateAlert(id: number, alert: IAlertDTO): Promise<IAlert> {
+    return await this.repository.update(id, alert);
+  }
+
+  async deleteAlert(id: number): Promise<void> {
+    return await this.repository.delete(id);
   }
 }
-
-export default AlertService;

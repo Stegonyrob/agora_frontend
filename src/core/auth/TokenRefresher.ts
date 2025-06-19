@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import type { IRefreshTokenDTO } from "./IRefreshTokenDTO";
 import type { ITokenDTO } from "./ITokenDTO";
 
@@ -6,44 +6,29 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log(error);
-    // Check if the error is unauthorized
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log("Interceptor activado");
-
-      // Create refresh token DTO
-      let refreshToken: string = sessionStorage.getItem("refreshToken")!;
-
-      let refreshTokenDTO: IRefreshTokenDTO = {
-        refreshToken: "",
-      };
-
-      refreshTokenDTO.refreshToken = refreshToken;
-      let config: AxiosRequestConfig = {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const refreshToken = sessionStorage.getItem("refreshToken")!;
+      const refreshTokenDTO: IRefreshTokenDTO = { refreshToken };
+      const config: AxiosRequestConfig = {
+        headers: { "Content-Type": "application/json" },
       };
       try {
         const response: AxiosResponse = await axios.post(
-          "http://localhost:8080/api/v1/all/token",
+          import.meta.env.VITE_API_ENDPOINT_REFRESH_TOKEN,
           refreshTokenDTO,
           config
         );
         const newToken: ITokenDTO = response.data;
-        // Set the new access token in your state
-        sessionStorage.setItem("userId", String(response.data.userId));
-        sessionStorage.setItem("accessToken", response.data.accessToken);
-        sessionStorage.setItem("refreshToken", response.data.refreshToken);
-        // Then retry the original request
+        sessionStorage.setItem("userId", String(newToken.userId));
+        sessionStorage.setItem("accessToken", newToken.accessToken);
+        sessionStorage.setItem("refreshToken", newToken.refreshToken);
         originalRequest.headers[
           "Authorization"
         ] = `Bearer ${newToken.accessToken}`;
         return axios(originalRequest);
       } catch (err) {
-        // Handle error, e.g., logout user
-        console.error(err);
+        // Aquí puedes hacer logout o redirigir
         return Promise.reject(err);
       }
     }

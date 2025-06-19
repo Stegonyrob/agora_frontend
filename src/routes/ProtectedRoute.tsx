@@ -1,4 +1,4 @@
-import { RootState } from "@/redux/store";
+import { selectSession } from "@/core/auth/sessionSelector";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
-    const { isLoggedIn } = useSelector((state: RootState) => state.login);
+    const { role: loggedUserRole, isLoggedIn } = useSelector(selectSession);
 
     console.log("isLoggedIn:", isLoggedIn);
 

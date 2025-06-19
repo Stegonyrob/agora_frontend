@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { registerUser } from '../../../services/users.api';
+import UserService from '../../../core/user/UserService';
 import { sanitizeInput, validateInput } from '../../../utils/validationUtils';
 import styles from './RegisterForm.module.scss';
 
@@ -23,7 +23,12 @@ function RegisterForm() {
     const sanitizedPassword = sanitizeInput(password);
     const sanitizedConfirmPassword = sanitizeInput(confirmPassword);
 
-    if (!validateInput(sanitizedUsername) || !validateInput(sanitizedEmail) || !validateInput(sanitizedPassword) || !validateInput(sanitizedConfirmPassword)) {
+    if (
+      !validateInput(sanitizedUsername) ||
+      !validateInput(sanitizedEmail) ||
+      !validateInput(sanitizedPassword) ||
+      !validateInput(sanitizedConfirmPassword)
+    ) {
       setErrorMessage('Se detectaron entradas no válidas.');
       return;
     }
@@ -33,15 +38,16 @@ function RegisterForm() {
       return;
     }
 
+    // Ajusta el DTO según tu backend
     const userData = {
       username: sanitizedUsername,
       email: sanitizedEmail,
       password: sanitizedPassword,
-      confirmPassword: sanitizedConfirmPassword,
     };
 
     try {
-      await registerUser(userData);
+      const userService = new UserService();
+      await userService.registerUser(userData);
       // Reset form after successful registration
       setUsername('');
       setEmail('');

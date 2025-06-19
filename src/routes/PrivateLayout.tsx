@@ -1,5 +1,5 @@
 import NavBar from "@/assets/Components/NavBar/NavBar";
-import { RootState } from "@/redux/store";
+import { selectSession } from "@/core/auth/sessionSelector";
 import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
@@ -8,7 +8,7 @@ interface PrivateLayoutProps {
 }
 
 const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
-    const { loggedUserRole } = useSelector((state: RootState) => state.login);
+    const { role: loggedUserRole, isLoggedIn } = useSelector(selectSession);
 
     return (
         <div>

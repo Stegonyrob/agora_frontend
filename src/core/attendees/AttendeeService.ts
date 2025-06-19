@@ -1,62 +1,32 @@
-import axios from "axios";
+import { AttendeeRepository } from "./AttendeeRepository";
+import { IAttendee } from "./IAttendee";
+import { IAttendeeDTO } from "./IAttendeeDTO";
 
-//1-getAttendees
-//2-registerAttendee
-//3-deleteAttendee
-//4-verifyRecaptcha
-const API_URL = import.meta.env.VITE_API_ENDPOINT_ATTENDEES; // Ej: http://localhost:8080/api/v1/attendees
+export class AttendeeService {
+  repository: AttendeeRepository;
 
-//1-getAttendees
-
-class AttendeeService {
-  async getAttendees(eventId: number): Promise<any[]> {
-    try {
-      const response = await axios.get(`${API_URL}/${eventId}`);
-      return response.data;
-    } catch (error: any) {
-      console.error("Error fetching attendees:", error);
-      throw error;
-    }
+  constructor(repository = new AttendeeRepository()) {
+    this.repository = repository;
   }
-  //2-registerAttendee
+
+  async getAttendees(eventId: number): Promise<IAttendee[]> {
+    return await this.repository.getAll(eventId);
+  }
+
   async registerAttendee(
     eventId: number,
-    attendeeData: any,
-    recaptchaScore: string
-  ): Promise<any> {
-    try {
-      const response = await axios.post(`${API_URL}/${eventId}`, {
-        ...attendeeData,
-        recaptchaScore,
-      });
-      return response.data;
-    } catch (error: any) {
-      console.error("Error registering attendee:", error);
-      throw error;
-    }
-  }
-  //3-deleteAttendee
-  async deleteAttendee(eventId: number, attendeeId: number): Promise<void> {
-    try {
-      await axios.delete(`${API_URL}/${eventId}/${attendeeId}`);
-    } catch (error: any) {
-      console.error("Error deleting attendee:", error);
-      throw error;
-    }
+    sanitizedForm: { name: string; email: string; phone: string },
+    p0: string,
+    attendee: IAttendeeDTO
+  ): Promise<IAttendee> {
+    return await this.repository.register(eventId, attendee);
   }
 
-  //4-verifyRecaptcha
+  async deleteAttendee(eventId: number, attendeeId: number): Promise<void> {
+    return await this.repository.delete(eventId, attendeeId);
+  }
+
   async verifyRecaptcha(token: string): Promise<number> {
-    try {
-      const response = await axios.post(`${API_URL}/recaptcha/verify`, {
-        token,
-      });
-      return response.data.score;
-    } catch (error: any) {
-      console.error("Error verifying ReCAPTCHA:", error);
-      throw error;
-    }
+    return await this.repository.verifyRecaptcha(token);
   }
 }
-
-export default AttendeeService;

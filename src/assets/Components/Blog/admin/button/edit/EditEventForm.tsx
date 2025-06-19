@@ -1,7 +1,9 @@
+import ImageUploadInline from "@/assets/Components/Blog/admin/images/ImageUploadInline";
 import { IEventDTO } from "@/core/events/IEventDTO";
 import DOMPurify from "dompurify";
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import styles from "./EditModalForm.module.scss";
 
 interface EditEventFormProps {
@@ -17,28 +19,7 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
     const [place, setPlace] = useState(event?.place || "");
     const [date, setDate] = useState(event?.date || "");
     const [link, setLink] = useState(event?.link || "");
-    const [images, setImages] = useState<string[]>(event?.images || []);
-
-    // Manejar selección de imágenes
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const filesArray = Array.from(e.target.files);
-            const readers = filesArray.map(file => {
-                return new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            });
-            Promise.all(readers).then(imgs => setImages([...images, ...imgs]));
-        }
-    };
-
-    // Eliminar imagen
-    const handleRemoveImage = (idx: number) => {
-        setImages(images.filter((_, i) => i !== idx));
-    };
+    const imagesState = useSelector((state: any) => state.images);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -52,13 +33,13 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
         }
         const newEvent: IEventDTO = {
             ...event,
-            id: event.id, // Ensure id is always present and a number
+            id: event.id,
             title: sanitizedTitle,
             message: sanitizedMessage,
             place,
             date,
             link,
-            images,
+            images: imagesState.images.map((img: any) => img.url), // Usa las URLs del store
         };
         onSubmit(newEvent);
     };
@@ -117,21 +98,8 @@ const EditEventForm = ({ event, onSubmit, onClose, show }: EditEventFormProps) =
                         <br />
                         <label>
                             Imágenes:
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageChange}
-                            />
+                            <ImageUploadInline />
                         </label>
-                        <div className={styles.imagePreviewContainer}>
-                            {images.map((img, idx) => (
-                                <div key={idx} className={styles.imagePreview}>
-                                    <img src={img} alt={`preview-${idx}`} width={80} />
-                                    <button type="button" onClick={() => handleRemoveImage(idx)}>Eliminar</button>
-                                </div>
-                            ))}
-                        </div>
                         <Button type="submit" variant="primary">
                             {event ? "Actualizar Evento" : "Crear Evento"}
                         </Button>

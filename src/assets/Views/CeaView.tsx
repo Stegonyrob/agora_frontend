@@ -4,7 +4,7 @@ export default function CeaView() {
   return (
     <div className={styles.container}>
       <h2 className={styles.centeredTitle}>Condición del Espectro Autista</h2>
-      <CardText ids={['12', '13']} endpoint={""} />
+      <CardText ids={['14', '15']} endpoint={""} />
     </div>
   );
 }
