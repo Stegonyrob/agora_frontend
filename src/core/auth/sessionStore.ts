@@ -28,6 +28,7 @@ const sessionSlice = createSlice({
       state.useremail = "";
       state.isLoggedIn = false;
       sessionStorage.clear();
+      localStorage.clear();
       localStorage.removeItem("rememberMe");
       // Limpia cookies si las usas
       document.cookie.split(";").forEach((c) => {

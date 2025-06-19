@@ -1,3 +1,4 @@
+import { logout } from "@/core/auth/sessionStore";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import LogoNavBar from "../Logo/LogoNavBar";
@@ -25,6 +26,20 @@ function NavBar() {
         };
     }, [grayScale]);
 
+
+    const handleLogout = () => {
+        // Limpia el localStorage
+        localStorage.clear();
+        sessionStorage.clear();
+        // Limpia cookies si es necesario
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        // Despacha la acción de logout para limpiar el estado
+        dispatch(logout());
+    };
     return (
         <nav className={styles.navbar}>
             <div className={styles.navContainer}>
@@ -169,7 +184,7 @@ function NavBar() {
                                 <NavLink to="/register" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Registro</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/logout" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Logout</NavLink>
+                                <NavLink to="/logout" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={handleLogout}>Logout</NavLink>
                             </li>
                         </ul>
                     </li>
@@ -192,3 +207,7 @@ function NavBar() {
 }
 
 export default NavBar;
+
+function dispatch(arg0: any) {
+    throw new Error("Function not implemented.");
+}

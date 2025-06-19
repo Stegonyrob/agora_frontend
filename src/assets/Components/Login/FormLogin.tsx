@@ -47,6 +47,9 @@ const FormLogin: React.FC = () => {
       const loginService = new LoginService();
       const response = await loginService.login({ useremail, password });
       const jwtData = parseJwt(response.accessToken);
+      if (jwtData.exp) {
+        sessionStorage.setItem('sessionExpiresAt', jwtData.exp * 1000 + '');
+      }
       const role = typeof jwtData.roles === "string" ? jwtData.roles : "";
       const userName = typeof jwtData.username === "string" ? jwtData.username : "";
 
@@ -101,14 +104,19 @@ const FormLogin: React.FC = () => {
         {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formLoginEmail">
-            <Form.Label className={styles.label}>Email</Form.Label>
+            <Form.Label className={styles.label}>Email o Nombre de Usuario</Form.Label>
             <Form.Control
               className={styles.input}
               type="text"
-              placeholder="ejemplo@gmail.com"
+              placeholder="ejemplo@gmail.com o nombre de usuario"
               value={useremail}
               onChange={(e) => setUserEmail(e.target.value)}
               required
+              name="useremail"
+              autoComplete="username"
+              autoFocus
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9._-]{3,}$"
+              title="Debe ser un email válido o un nombre de usuario con al menos 3 caracteres."
             />
           </Form.Group>
           <Form.Group controlId="formLoginPassword">

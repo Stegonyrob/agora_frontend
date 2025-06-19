@@ -5,7 +5,7 @@ import PublicLayout from "@/routes/PublicLayout";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import React, { useEffect } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
 import swrConfig from "./swrConfig";
 // Vistas públicas
@@ -35,8 +35,8 @@ import CeaView from "@/assets/Views/CeaView";
 import AdminPostView from "./assets/Views/AdminPostView";
 import TermsView from "./assets/Views/TermsView";
 import TrasComunicationView from './assets/Views/TrasCommunication';
+import { logout, login as setLogin } from "./core/auth/sessionStore";
 import { IEvent } from "./core/events/IEvent";
-import { login as setLogin } from "./redux/reducers/loginSlice";
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -44,21 +44,41 @@ const App: React.FC = () => {
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     if (isLoggedIn) {
+      const userId = Number(sessionStorage.getItem('userId')) || 0;
+      const role = sessionStorage.getItem('role') || "";
+      const accessToken = sessionStorage.getItem('accessToken') || "";
+      const refreshToken = sessionStorage.getItem('refreshToken') || "";
+      const userName = sessionStorage.getItem('userName') || "";
+      const useremail = sessionStorage.getItem('useremail') || "";
+
       dispatch(setLogin({
-        userId: Number(sessionStorage.getItem('userId')) || 0,
-        role: sessionStorage.getItem('role') || "",
-        accessToken: sessionStorage.getItem('accessToken') || "",
-        refreshToken: sessionStorage.getItem('refreshToken') || "",
-        userName: sessionStorage.getItem('userName') || ""
+        userId,
+        role,
+        accessToken,
+        refreshToken,
+        userName,
+        isLoggedIn: isLoggedIn,
+        useremail
       }));
     }
   }, [dispatch, location.pathname]);
+  const expiresAt = Number(sessionStorage.getItem('sessionExpiresAt'));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (expiresAt && Date.now() > expiresAt) {
+      // Ejecuta logout automático
+      dispatch(logout());
+      sessionStorage.clear();
+      // Redirige a login
+      navigate('/login', { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expiresAt, dispatch, navigate]);
 
   return (
     <SWRConfig value={swrConfig}>
-
       <Routes>
-
         {/* Vista de error 404 */}
         {/* Rutas públicas */}
         <Route path="/" element={<PublicLayout />}>
@@ -75,9 +95,15 @@ const App: React.FC = () => {
           <Route path="register" element={<RegisterView />} />
           <Route path="*" element={<Error404View />} />
           <Route path="communication" element={<TrasComunicationView />} />
-          <Route path="events" element={<EventsView userId={null} events={[]} onSelect={function (event: IEvent): void {
-            throw new Error("Function not implemented.");
-          }} />} />
+          <Route path="events" element={
+            <EventsView
+              userId={null}
+              events={[]}
+              onSelect={(event: IEvent) => {
+                console.error("Function not implemented.");
+              }}
+            />
+          } />
           <Route path="legal/:type" element={<TermsView />} />
         </Route>
 
@@ -93,20 +119,17 @@ const App: React.FC = () => {
           </PrivateLayout>
         } />
 
-
         <Route path="/admin/posts" element={
           <PrivateLayout>
             <ProtectedRoute element={<AdminPostView userId={0} />} />
           </PrivateLayout>
         } />
 
-
         <Route path="/admin/events" element={
           <PrivateLayout>
             <ProtectedRoute element={<AdminEventView userId={0} />} />
           </PrivateLayout>
         } />
-
 
         <Route path="/profile" element={
           <PrivateLayout>
