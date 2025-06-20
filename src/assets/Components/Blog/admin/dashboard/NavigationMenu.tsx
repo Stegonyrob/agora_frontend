@@ -35,11 +35,6 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, onNavigate }) =>
                 <div
                     key={item.key}
                     className={styles.menuItem}
-                    style={{
-                        background: item.background
-                            ? `url(${item.background}) center/cover no-repeat`
-                            : '#f5f5f5'
-                    }}
                     onClick={() => handleClick(item)}
                 >
                     <div className={styles.label}>{item.label}</div>

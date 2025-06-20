@@ -18,18 +18,18 @@
     justify-content: center;
     cursor: pointer;
     position: relative;
-    transition: box-shadow 0.2s, background 0.2s;
-
+    transition: box-shadow 0.2s, background 0.2s, filter 0.2s;
+background-color: #b2bda4;
     overflow: hidden;
     &:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 16px rgba(32, 12, 119, 0.45);
         filter: brightness(0.95);
     }
 }
 
 .label {
     color: #fff;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: bold;
     text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     z-index: 2;
