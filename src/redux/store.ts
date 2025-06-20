@@ -12,6 +12,21 @@ import profileReducer from "@/core/profiles/profileStore";
 import repliesReducer from "@/core/replies/replyStore";
 import textsReducer from "@/core/texts/textStore";
 // Agrega aquí los demás reducers de core que hayas creado
+// Hidrata el estado de sesión desde sessionStorage
+const persistedSession =
+  sessionStorage.getItem("isLoggedIn") === "true"
+    ? {
+        userId: Number(sessionStorage.getItem("userId")) || 0,
+        role: sessionStorage.getItem("role") || "",
+        userName: sessionStorage.getItem("userName") || "",
+        isLoggedIn: true,
+        useremail: sessionStorage.getItem("useremail") || "",
+        accessToken: sessionStorage.getItem("accessToken") || "",
+        refreshToken: sessionStorage.getItem("refreshToken") || "",
+      }
+    : null;
+
+const preloadedState = persistedSession ? { session: persistedSession } : {};
 
 const store = configureStore({
   reducer: {

@@ -8,6 +8,9 @@ const initialState: ISession = {
   userName: "",
   isLoggedIn: false,
   useremail: "",
+  accessToken: "",
+  refreshToken: "",
+  viewAsUser: false,
 };
 
 const sessionSlice = createSlice({
@@ -20,6 +23,11 @@ const sessionSlice = createSlice({
       state.userName = action.payload.userName;
       state.useremail = action.payload.useremail;
       state.isLoggedIn = true;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+    },
+    setViewAsUser(state, action: PayloadAction<boolean>) {
+      state.viewAsUser = action.payload;
     },
     logout(state) {
       state.userId = 0;
@@ -28,8 +36,6 @@ const sessionSlice = createSlice({
       state.useremail = "";
       state.isLoggedIn = false;
       sessionStorage.clear();
-      localStorage.clear();
-      localStorage.removeItem("rememberMe");
       // Limpia cookies si las usas
       document.cookie.split(";").forEach((c) => {
         document.cookie = c

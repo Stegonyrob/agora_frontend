@@ -19,8 +19,8 @@ interface PostFormProps {
 const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
-  const role = useSelector((state: RootState) => state.login.loggedUserRole);
-  const isAuthenticated = useSelector((state: RootState) => state.login.isLoggedIn);
+  const role = useSelector((state: RootState) => state.session.role);
+  const isAuthenticated = useSelector((state: RootState) => state.session.isLoggedIn);
   const currentDate = new Date();
   const day = currentDate.getDate().toString().padStart(2, '0');
   const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');

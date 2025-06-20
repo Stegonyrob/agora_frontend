@@ -1,23 +1,30 @@
 import Footer from "@/assets/Components/Footer/Footer";
+import { RootState } from "@/redux/store";
 import PrivateLayout from "@/routes/PrivateLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import PublicLayout from "@/routes/PublicLayout";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
+import { IEvent } from "./core/events/IEvent";
 import swrConfig from "./swrConfig";
 // Vistas públicas
 import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";
 import AgoraView from "@/assets/Views/AgoraView";
+import CeaView from "@/assets/Views/CeaView";
 import HomeView from "@/assets/Views/HomeView";
 import LoginView from "@/assets/Views/LoginView";
 import NeurodiversityView from "@/assets/Views/NeurodiversityView";
 import RegisterView from "@/assets/Views/RegisterView";
 import ServiceView from "@/assets/Views/ServiceView";
 import Tda_TdhView from "@/assets/Views/Tda_TdhView";
+import AdminPostView from "./assets/Views/AdminPostView";
+import TermsView from "./assets/Views/TermsView";
+import TrasComunicationView from './assets/Views/TrasCommunication';
 
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
@@ -25,21 +32,20 @@ import BlogView from "@/assets/Views/BlogView";
 import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
-import { useDispatch } from "react-redux";
+
 import AdminEventView from "./assets/Views/AdminEventView";
 import EventsView from "./assets/Views/EventsView";
 
 
 
-import CeaView from "@/assets/Views/CeaView";
-import AdminPostView from "./assets/Views/AdminPostView";
-import TermsView from "./assets/Views/TermsView";
-import TrasComunicationView from './assets/Views/TrasCommunication';
-import { logout, login as setLogin } from "./core/auth/sessionStore";
-import { IEvent } from "./core/events/IEvent";
+
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
+  const session = useSelector((state: RootState) => state.session);
+  // Nuevo estado para controlar la hidratación
+  const [isHydrating, setIsHydrating] = useState(true);
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
@@ -50,32 +56,49 @@ const App: React.FC = () => {
       const refreshToken = sessionStorage.getItem('refreshToken') || "";
       const userName = sessionStorage.getItem('userName') || "";
       const useremail = sessionStorage.getItem('useremail') || "";
+      const viewAsUser = sessionStorage.getItem('viewAsUser') === 'true';
 
-      dispatch(setLogin({
-        userId,
-        role,
-        accessToken,
-        refreshToken,
-        userName,
-        isLoggedIn: isLoggedIn,
-        useremail
-      }));
+      dispatch({
+        type: "session/login",
+        payload: {
+          userId,
+          role,
+          accessToken,
+          refreshToken,
+          userName,
+          useremail,
+          isLoggedIn,
+          viewAsUser,
+        }
+      });
     }
+    setIsHydrating(false); // Ya terminamos de hidratar
   }, [dispatch, location.pathname]);
-  const expiresAt = Number(sessionStorage.getItem('sessionExpiresAt'));
-  const navigate = useNavigate();
 
   useEffect(() => {
+    sessionStorage.setItem("isLoggedIn", String(session.isLoggedIn));
+    sessionStorage.setItem("userId", String(session.userId));
+    sessionStorage.setItem("role", session.role || "");
+    sessionStorage.setItem("accessToken", session.accessToken || "");
+    sessionStorage.setItem("refreshToken", session.refreshToken || "");
+    sessionStorage.setItem("userName", session.userName || "");
+    sessionStorage.setItem("useremail", session.useremail || "");
+    sessionStorage.setItem("viewAsUser", String(session.viewAsUser));
+  }, [session]);
+
+  const expiresAt = Number(sessionStorage.getItem('sessionExpiresAt'));
+  useEffect(() => {
     if (expiresAt && Date.now() > expiresAt) {
-      // Ejecuta logout automático
-      dispatch(logout());
+      dispatch({ type: "session/logout" });
       sessionStorage.clear();
-      // Redirige a login
       navigate('/login', { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expiresAt, dispatch, navigate]);
 
+  // NO RENDERICES rutas protegidas hasta que termine la hidratación
+  if (isHydrating) {
+    return <div>Cargando sesión...</div>;
+  }
   return (
     <SWRConfig value={swrConfig}>
       <Routes>

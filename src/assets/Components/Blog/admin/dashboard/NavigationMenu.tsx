@@ -35,6 +35,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, onNavigate }) =>
                 <div
                     key={item.key}
                     className={styles.menuItem}
+
                     onClick={() => handleClick(item)}
                 >
                     <div className={styles.label}>{item.label}</div>
