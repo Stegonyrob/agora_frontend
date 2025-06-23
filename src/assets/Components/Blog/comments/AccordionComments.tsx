@@ -59,21 +59,28 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
     dispatch(deleteComment(id)).then(() => dispatch(fetchComments(postId)));
   };
 
-  // Placeholder para replies (deberías implementar el CRUD real en backend)
-  const handleAddReply = (parentId: number) => {
+  // CRUD real para replies: aquí deberías llamar a tu servicio de replies
+  const handleAddReply = (commentId: number) => {
+    if (!replyText.trim()) return;
+    // Aquí deberías despachar la acción para crear reply en el backend
+    // dispatch(createReply({ commentId, message: replyText }))
+    //   .then(() => dispatch(fetchComments(postId)));
     setReplyTo(null);
     setReplyText("");
-    // Aquí iría la lógica real para replies
   };
 
-  // Render replies si tu backend los devuelve en comment.replies
-  const renderReplies = (replies?: IComment[]) =>
-    replies?.map(reply => (
+  // Renderiza replies reales del backend (asegúrate que replies es un array)
+  const renderReplies = (replies?: any[]) =>
+    (replies ?? []).map(reply => (
       <div key={reply.id} className={styles.reply}>
-        <img src={avatarList[reply.userId % avatarList.length]} alt={reply.userId.toString()} className={styles.avatarSmall} />
+        <img
+          src={avatarList[reply.userId % avatarList.length]}
+          alt={reply.userId?.toString() ?? ""}
+          className={styles.avatarSmall}
+        />
         <div>
           <span className={styles.user}>{reply.userId}</span>
-          <span className={styles.date}>{reply.creationDate?.toString().slice(0, 10)}</span>
+          <span className={styles.date}>{reply.creationDate ? reply.creationDate.toString().slice(0, 10) : ""}</span>
           <p className={styles.text}>{reply.message}</p>
         </div>
       </div>
@@ -107,11 +114,15 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
             )}
             {comments.map((c: IComment) => (
               <div key={c.id} className={styles.comment}>
-                <img src={avatarList[c.userId % avatarList.length]} alt={c.userId.toString()} className={styles.avatarSmall} />
+                <img
+                  src={avatarList[c.userId % avatarList.length]}
+                  alt={c.userId?.toString() ?? ""}
+                  className={styles.avatarSmall}
+                />
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
                     <span className={styles.user}>{c.userId}</span>
-                    <span className={styles.date}>{c.creationDate?.toString().slice(0, 10)}</span>
+                    <span className={styles.date}>{c.creationDate ? c.creationDate.toString().slice(0, 10) : ""}</span>
                   </div>
                   {editId === c.id ? (
                     <>
