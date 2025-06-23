@@ -37,7 +37,7 @@ const CardItem: React.FC<CardItemProps> = ({
     onSelect,
     maxCapacity = 0,
     userId = 1,
-
+    userRole,
 
 }) => {
     const [currentImage, setCurrentImage] = useState(0);
@@ -175,8 +175,11 @@ const CardItem: React.FC<CardItemProps> = ({
                     )}
                     {type === 'post' && (
                         <div style={{ marginTop: '1rem' }}>
-                            <AccordionComments postId={id} />
-                            {/* Puedes pasar los comentarios reales aquí */}
+                            <AccordionComments
+                                postId={id}
+                                currentUserId={userId}
+                                isAdmin={userRole === 'ADMIN'}
+                            />
                         </div>
                     )}
                     {type === 'event' && (

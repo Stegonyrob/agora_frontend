@@ -1,4 +1,4 @@
 export function getAuthHeaders() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  const token = sessionStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
 }

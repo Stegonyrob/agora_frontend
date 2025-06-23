@@ -17,10 +17,11 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     useEffect(() => {
         console.log("useEffect posts called");
         const loadPosts = async () => {
-            console.log("loadPosts called");
             try {
-                const fetchedPosts = await apiPost.getAllPosts();
-                console.log("fetchedPosts:", fetchedPosts);
+                let fetchedPosts = await apiPost.getAllPosts();
+                if (typeof fetchedPosts === "string") {
+                    fetchedPosts = JSON.parse(fetchedPosts);
+                }
                 setFetchedPosts(fetchedPosts);
             } catch (error) {
                 console.error("Error loading posts: ", error);
@@ -34,7 +35,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     };
 
     console.log("fetchedPosts:", fetchedPosts);
-
+    console.log("fetchedPosts type:", typeof fetchedPosts, Array.isArray(fetchedPosts), fetchedPosts);
     return (
         <div className={styles.cardContainer}>
             {fetchedPosts.map((post) => (

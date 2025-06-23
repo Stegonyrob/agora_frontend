@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import styles from './AccordionComments.module.scss';
-
-interface Comment {
-  id: number;
-  user: string;
-  avatar: string;
-  text: string;
-  date: string;
-  replies?: Comment[];
-}
+import { CommentDTO } from "@/core/comments/CommentDTO";
+import { createComment, deleteComment, fetchComments, updateComment } from "@/core/comments/commetStore";
+import { IComment } from "@/core/comments/IComment";
+import { RootState } from "@/redux/store";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import styles from "./AccordionComments.module.scss";
 
 interface AccordionCommentsProps {
   postId: number;
+  currentUserId: number;
+  isAdmin: boolean;
 }
 
 const avatarList = [
@@ -23,119 +21,81 @@ const avatarList = [
   "https://randomuser.me/api/portraits/lego/6.jpg",
 ];
 
-// Datos fake para pruebas
-const FAKE_COMMENTS: Comment[] = [
-  {
-    id: 1,
-    user: 'Alice',
-    avatar: avatarList[0],
-    text: '¡Gran post!',
-    date: 'Hoy',
-    replies: [
-      {
-        id: 11,
-        user: 'Bob',
-        avatar: avatarList[1],
-        text: 'Totalmente de acuerdo',
-        date: 'Hoy',
-      },
-    ],
-  },
-  {
-    id: 2,
-    user: 'Charlie',
-    avatar: avatarList[2],
-    text: 'Gracias por compartir.',
-    date: 'Ayer',
-    replies: [],
-  },
-];
-
-const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
+const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUserId, isAdmin }) => {
+  const dispatch = useDispatch<any>();
+  const comments = useSelector((state: RootState) => state.comments.comments);
   const [open, setOpen] = useState(false);
-  const [comments, setComments] = useState<Comment[]>(FAKE_COMMENTS);
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
   const [replyTo, setReplyTo] = useState<number | null>(null);
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState("");
+
+  useEffect(() => {
+    if (open) dispatch(fetchComments(postId));
+    // eslint-disable-next-line
+  }, [dispatch, postId, open]);
 
   const handleAddComment = () => {
-    if (!newComment.trim()) {
-      console.log('Add Comment: Empty comment text');
-      return;
-    }
-    console.log('Add Comment:', newComment);
-    setComments(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        user: 'Tú',
-        avatar: avatarList[Math.floor(Math.random() * avatarList.length)],
-        text: newComment,
-        date: 'Ahora',
-        replies: [],
-      },
-    ]);
-    setNewComment('');
+    if (!newComment.trim()) return;
+    const dto: CommentDTO = { postId, message: newComment };
+    dispatch(createComment(dto)).then(() => dispatch(fetchComments(postId)));
+    setNewComment("");
   };
 
+  const handleEditComment = (comment: IComment) => {
+    setEditId(comment.id);
+    setEditText(comment.message);
+  };
+
+  const handleUpdateComment = (comment: IComment) => {
+    dispatch(updateComment({ id: comment.id, dto: { postId: comment.postId, message: editText } }))
+      .then(() => dispatch(fetchComments(postId)));
+    setEditId(null);
+    setEditText("");
+  };
+
+  const handleDeleteComment = (id: number) => {
+    dispatch(deleteComment(id)).then(() => dispatch(fetchComments(postId)));
+  };
+
+  // Placeholder para replies (deberías implementar el CRUD real en backend)
   const handleAddReply = (parentId: number) => {
-    if (!replyText.trim()) {
-      console.log('Add Reply: Empty reply text');
-      return;
-    }
-    console.log(`Add Reply to Comment ID ${parentId}:`, replyText);
-    setComments(comments =>
-      comments.map(comment =>
-        comment.id === parentId
-          ? {
-            ...comment,
-            replies: [
-              ...(comment.replies || []),
-              {
-                id: Date.now(),
-                user: 'Tú',
-                avatar: avatarList[Math.floor(Math.random() * avatarList.length)],
-                text: replyText,
-                date: 'Ahora',
-              },
-            ],
-          }
-          : comment
-      )
-    );
     setReplyTo(null);
-    setReplyText('');
+    setReplyText("");
+    // Aquí iría la lógica real para replies
   };
 
-  const renderReplies = (replies?: Comment[]) =>
+  // Render replies si tu backend los devuelve en comment.replies
+  const renderReplies = (replies?: IComment[]) =>
     replies?.map(reply => (
       <div key={reply.id} className={styles.reply}>
-        <img src={reply.avatar} alt={reply.user} className={styles.avatarSmall} />
+        <img src={avatarList[reply.userId % avatarList.length]} alt={reply.userId.toString()} className={styles.avatarSmall} />
         <div>
-          <span className={styles.user}>{reply.user}</span>
-          <span className={styles.date}>{reply.date}</span>
-          <p className={styles.text}>{reply.text}</p>
+          <span className={styles.user}>{reply.userId}</span>
+          <span className={styles.date}>{reply.creationDate?.toString().slice(0, 10)}</span>
+          <p className={styles.text}>{reply.message}</p>
         </div>
       </div>
     ));
 
   return (
     <div className={styles.commentsContainer}>
-      <button className={styles.iconBtn} onClick={() => { console.log('Toggle Comments'); setOpen(!open); }}>
+      <button className={styles.iconBtn} onClick={() => setOpen(!open)}>
         <i className="bi bi-chat-dots"></i>
         <span className={styles.counter}>{comments.length}</span>
       </button>
       {open && (
         <div className={styles.accordion}>
           <div className={styles.addCommentRow}>
-            <img src={avatarList[0]} alt="avatar" className={styles.avatarSmall} />
+            <img src={avatarList[currentUserId % avatarList.length]} alt="avatar" className={styles.avatarSmall} />
             <input
               type="text"
               placeholder="Escribe un comentario..."
               value={newComment}
-              onChange={e => { console.log('New Comment Input:', e.target.value); setNewComment(e.target.value); }}
+              onChange={e => setNewComment(e.target.value)}
               className={styles.input}
-              onKeyDown={e => e.key === 'Enter' && handleAddComment()}
+              onKeyDown={e => e.key === "Enter" && handleAddComment()}
             />
             <button className={styles.sendBtn} onClick={handleAddComment}>
               <i className="bi bi-send"></i>
@@ -145,42 +105,61 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
             {comments.length === 0 && (
               <div className={styles.noComments}>Sin comentarios aún.</div>
             )}
-            {comments.map(comment => (
-              <div key={comment.id} className={styles.comment}>
-                <img src={comment.avatar} alt={comment.user} className={styles.avatarSmall} />
+            {comments.map((c: IComment) => (
+              <div key={c.id} className={styles.comment}>
+                <img src={avatarList[c.userId % avatarList.length]} alt={c.userId.toString()} className={styles.avatarSmall} />
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
-                    <span className={styles.user}>{comment.user}</span>
-                    <span className={styles.date}>{comment.date}</span>
+                    <span className={styles.user}>{c.userId}</span>
+                    <span className={styles.date}>{c.creationDate?.toString().slice(0, 10)}</span>
                   </div>
-                  <div className={styles.commentText}>{comment.text}</div>
+                  {editId === c.id ? (
+                    <>
+                      <input
+                        value={editText}
+                        onChange={e => setEditText(e.target.value)}
+                        className={styles.input}
+                      />
+                      <button className={styles.sendBtn} onClick={() => handleUpdateComment(c)}>Guardar</button>
+                      <button className={styles.sendBtn} onClick={() => setEditId(null)}>Cancelar</button>
+                    </>
+                  ) : (
+                    <div className={styles.commentText}>{c.message}</div>
+                  )}
                   <div className={styles.actionsRow}>
                     <button
                       className={styles.replyBtn}
-                      onClick={() => { console.log('Toggle Reply Input for Comment ID', comment.id); setReplyTo(replyTo === comment.id ? null : comment.id); }}
+                      onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
                     >
                       <i className="bi bi-reply"></i>
                     </button>
+                    {(c.userId === currentUserId || isAdmin) && (
+                      <>
+                        <button className={styles.replyBtn} onClick={() => handleEditComment(c)}>
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                        <button className={styles.replyBtn} onClick={() => handleDeleteComment(c.id)}>
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </>
+                    )}
                   </div>
-                  {replyTo === comment.id && (
+                  {replyTo === c.id && (
                     <div className={styles.replyInputRow}>
                       <input
                         type="text"
                         placeholder="Responder..."
                         value={replyText}
-                        onChange={e => { console.log('Reply Input for Comment ID', comment.id, ':', e.target.value); setReplyText(e.target.value); }}
+                        onChange={e => setReplyText(e.target.value)}
                         className={styles.input}
-                        onKeyDown={e => e.key === 'Enter' && handleAddReply(comment.id)}
+                        onKeyDown={e => e.key === "Enter" && handleAddReply(c.id)}
                       />
-                      <button
-                        className={styles.sendBtn}
-                        onClick={() => handleAddReply(comment.id)}
-                      >
+                      <button className={styles.sendBtn} onClick={() => handleAddReply(c.id)}>
                         <i className="bi bi-send"></i>
                       </button>
                     </div>
                   )}
-                  {renderReplies(comment.replies)}
+                  {renderReplies(c.replies)}
                 </div>
               </div>
             ))}

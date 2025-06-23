@@ -1,30 +1,24 @@
+// src/core/comments/CommentService.ts
+import { CommentDTO } from "./CommentDTO";
 import { CommentRepository } from "./CommentRepository";
 import { IComment } from "./IComment";
 
+const repository = new CommentRepository();
+
 export class CommentService {
-  repository: CommentRepository;
-
-  constructor(repository: CommentRepository) {
-    this.repository = repository;
+  static async getByPostId(postId: number): Promise<IComment[]> {
+    return await repository.getByPostId(postId);
   }
 
-  async getAll(): Promise<IComment[]> {
-    return await this.repository.getAll();
+  static async create(dto: CommentDTO): Promise<IComment> {
+    return await repository.create(dto);
   }
 
-  async getByPostId(postId: number): Promise<IComment[]> {
-    return await this.repository.getByPostId(postId);
+  static async update(id: number, dto: CommentDTO): Promise<IComment> {
+    return await repository.update(id, dto);
   }
 
-  async create(comment: IComment): Promise<IComment> {
-    return await this.repository.create(comment);
-  }
-
-  async update(comment: IComment): Promise<IComment> {
-    return await this.repository.update(comment);
-  }
-
-  async delete(commentId: number): Promise<void> {
-    return await this.repository.delete(commentId);
+  static async delete(id: number): Promise<void> {
+    return await repository.delete(id);
   }
 }

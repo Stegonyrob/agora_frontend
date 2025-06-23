@@ -1,14 +1,30 @@
+// src/core/comments/commentStore.ts
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CommentRepository } from "./CommentRepository";
+import { CommentDTO } from "./CommentDTO";
 import { CommentService } from "./CommentService";
 import { IComment } from "./IComment";
 
-const service = new CommentService(new CommentRepository());
-
 export const fetchComments = createAsyncThunk(
   "comments/fetchComments",
-  async (postId: number) => {
-    return await service.getByPostId(postId);
+  async (postId: number) => await CommentService.getByPostId(postId)
+);
+
+export const createComment = createAsyncThunk(
+  "comments/createComment",
+  async (dto: CommentDTO) => await CommentService.create(dto)
+);
+
+export const updateComment = createAsyncThunk(
+  "comments/updateComment",
+  async ({ id, dto }: { id: number; dto: CommentDTO }) =>
+    await CommentService.update(id, dto)
+);
+
+export const deleteComment = createAsyncThunk(
+  "comments/deleteComment",
+  async (id: number) => {
+    await CommentService.delete(id);
+    return id;
   }
 );
 
@@ -17,21 +33,30 @@ interface CommentsState {
   isLoading: boolean;
 }
 
+const initialState: CommentsState = {
+  comments: [],
+  isLoading: false,
+};
+
 const commentsSlice = createSlice({
   name: "comments",
-  initialState: { comments: [], isLoading: false } as CommentsState,
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchComments.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(fetchComments.fulfilled, (state, action) => {
         state.comments = action.payload;
         state.isLoading = false;
       })
-      .addCase(fetchComments.rejected, (state) => {
-        state.isLoading = false;
+      .addCase(createComment.fulfilled, (state, action) => {
+        state.comments.push(action.payload);
+      })
+      .addCase(updateComment.fulfilled, (state, action) => {
+        const idx = state.comments.findIndex((c) => c.id === action.payload.id);
+        if (idx !== -1) state.comments[idx] = action.payload;
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.comments = state.comments.filter((c) => c.id !== action.payload);
       });
   },
 });

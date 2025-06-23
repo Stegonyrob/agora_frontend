@@ -54,6 +54,7 @@ const FormLogin: React.FC = () => {
       const userName = typeof jwtData.username === "string" ? jwtData.username : "";
 
       sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('token', response.accessToken);
       sessionStorage.setItem('accessToken', response.accessToken);
       sessionStorage.setItem('refreshToken', response.refreshToken);
       sessionStorage.setItem('userId', String(response.userId));

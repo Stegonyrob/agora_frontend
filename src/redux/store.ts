@@ -5,6 +5,7 @@ import { thunk } from "redux-thunk";
 import alertsReducer from "@/core/alerts/alertStore";
 import attendeesReducer from "@/core/attendees/attendeeStore";
 import sessionReducer from "@/core/auth/sessionStore";
+import commentsReducer from "@/core/comments/commetStore";
 import imagesReducer from "@/core/images/imageStore";
 import legalTextsReducer from "@/core/legals/legalTextStore";
 import postsReducer from "@/core/posts/postStore";
@@ -39,6 +40,7 @@ const store = configureStore({
     attendees: attendeesReducer,
     legalTexts: legalTextsReducer,
     replies: repliesReducer,
+    comments: commentsReducer,
     // ...agrega aquí otros reducers de core si los tienes
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
