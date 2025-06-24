@@ -21,15 +21,18 @@ export class ReplyRepository {
   }
 
   async create(reply: IReplyDTO): Promise<IReply> {
+    console.log("ReplyRepository.create: payload:", reply); // <-- Añade esto
     const response = await axios.post(`${this.uri}/create`, reply, {
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
     });
     return response.data;
   }
 
-  async update(reply: IReplyDTO): Promise<IReply> {
-    if (!reply.replyId) throw new Error("replyId is required for update");
-    const response = await axios.put(`${this.uri}/${reply.replyId}`, reply, {
+  async update(replyId: number, reply: IReplyDTO): Promise<IReply> {
+    const response = await axios.put(`${this.uri}/${replyId}`, reply, {
       headers: getAuthHeaders(),
     });
     return response.data;

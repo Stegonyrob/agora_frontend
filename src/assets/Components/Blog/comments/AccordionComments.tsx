@@ -12,6 +12,7 @@ interface AccordionCommentsProps {
   currentUserId: number;
   isAdmin: boolean;
   commentsCount: number;
+  tags: any[];
 }
 
 const avatarList = [
@@ -74,7 +75,8 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
     dispatch(createReply({
       commentId,
       userId: currentUserId,
-      reply_message: replyText
+      message: replyText,
+      tags: []
     })).then(() => dispatch(fetchComments(postId)));
     setReplyTo(null);
     setReplyText("");
@@ -82,8 +84,8 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
 
   // Renderiza replies reales del backend (asegúrate que replies es un array)
   const renderReplies = (replies?: any[]) =>
-    (Array.isArray(replies) ? replies : []).map(reply => (
-      <div key={reply.replyId} className={styles.reply}>
+    (Array.isArray(replies) ? replies : []).map((reply, idx) => (
+      <div key={reply.replyId ?? `reply-${idx}`} className={styles.reply}>
         <img
           src={avatarList[reply.userId % avatarList.length]}
           alt={reply.userId?.toString() ?? ""}
@@ -92,7 +94,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
         <div>
           <span className={styles.user}>{reply.userId}</span>
           <span className={styles.date}>{reply.creation_date ? reply.creation_date.toString().slice(0, 10) : ""}</span>
-          <p className={styles.text}>{reply.reply_message}</p>
+          <p className={styles.text}>{reply.message}</p>
         </div>
       </div>
     ));

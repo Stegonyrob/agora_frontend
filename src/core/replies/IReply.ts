@@ -1,7 +1,6 @@
 export interface IReply {
-  replyId: number;
   commentId: number;
   userId: number;
-  reply_message: string;
+  message: string;
   creation_date: string;
 }
