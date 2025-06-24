@@ -29,12 +29,12 @@ export const deleteComment = createAsyncThunk(
 );
 
 interface CommentsState {
-  comments: IComment[];
+  commentsByPostId: { [postId: number]: IComment[] };
   isLoading: boolean;
 }
 
 const initialState: CommentsState = {
-  comments: [],
+  commentsByPostId: {},
   isLoading: false,
 };
 
@@ -45,18 +45,36 @@ const commentsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchComments.fulfilled, (state, action) => {
-        state.comments = action.payload;
+        // action.meta.arg is the postId used in the thunk
+        const postId = action.meta.arg;
+        state.commentsByPostId[postId] = action.payload;
         state.isLoading = false;
       })
       .addCase(createComment.fulfilled, (state, action) => {
-        state.comments.push(action.payload);
+        const comment = action.payload;
+        const postId = comment.postId;
+        if (!state.commentsByPostId[postId]) {
+          state.commentsByPostId[postId] = [];
+        }
+        state.commentsByPostId[postId].push(comment);
       })
       .addCase(updateComment.fulfilled, (state, action) => {
-        const idx = state.comments.findIndex((c) => c.id === action.payload.id);
-        if (idx !== -1) state.comments[idx] = action.payload;
+        const updatedComment = action.payload;
+        const postId = updatedComment.postId;
+        const comments = state.commentsByPostId[postId];
+        if (comments) {
+          const idx = comments.findIndex((c) => c.id === updatedComment.id);
+          if (idx !== -1) comments[idx] = updatedComment;
+        }
       })
       .addCase(deleteComment.fulfilled, (state, action) => {
-        state.comments = state.comments.filter((c) => c.id !== action.payload);
+        const deletedCommentId = action.payload;
+        // Find the postId that contains this comment
+        Object.keys(state.commentsByPostId).forEach((postId) => {
+          state.commentsByPostId[Number(postId)] = state.commentsByPostId[
+            Number(postId)
+          ].filter((c) => c.id !== deletedCommentId);
+        });
       });
   },
 });

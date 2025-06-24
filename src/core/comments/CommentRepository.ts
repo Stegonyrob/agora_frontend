@@ -10,7 +10,7 @@ export class CommentRepository {
     const res = await axios.get(`${this.uri}/post/${postId}/with-replies`, {
       headers: getAuthHeaders(),
     });
-    return res.data;
+    return res.data.content; // <-- ¡Solo el array!
   }
 
   async create(comment: CommentDTO): Promise<IComment> {

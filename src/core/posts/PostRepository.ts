@@ -3,12 +3,22 @@ import { getAuthHeaders } from "../auth/AuthHeaders";
 import { IPost } from "./IPost";
 import { IPostDTO } from "./IPostDTO";
 
+export interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number; // página actual
+  size: number;
+}
+
 export default class PostRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
 
-  // Obtener todos los posts (array)
-  async getAll(): Promise<IPost[]> {
-    const response = await axios.get(this.uri, { headers: getAuthHeaders() });
+  // Obtener todos los posts paginados
+  async getAll(page = 0, size = 10): Promise<Page<IPost>> {
+    const response = await axios.get(`${this.uri}?page=${page}&size=${size}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   }
 

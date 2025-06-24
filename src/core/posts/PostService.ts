@@ -1,6 +1,6 @@
 import { IPost } from "./IPost";
 import { IPostDTO } from "./IPostDTO";
-import PostRepository from "./PostRepository";
+import PostRepository, { Page } from "./PostRepository";
 
 export default class PostService {
   repository: PostRepository;
@@ -9,9 +9,8 @@ export default class PostService {
     this.repository = repository;
   }
 
-  // Lectura (user y admin)
-  async getAllPosts(): Promise<IPost[]> {
-    return await this.repository.getAll();
+  async getAllPosts(page = 0, size = 10): Promise<Page<IPost>> {
+    return await this.repository.getAll(page, size);
   }
 
   async getPostById(id: number): Promise<IPost> {

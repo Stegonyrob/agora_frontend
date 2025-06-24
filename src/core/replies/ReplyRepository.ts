@@ -13,8 +13,8 @@ export class ReplyRepository {
     return response.data;
   }
 
-  async getByPostId(postId: number): Promise<IReply[]> {
-    const response = await axios.get(`${this.uri}/post/${postId}`, {
+  async getByCommentId(commentId: number): Promise<IReply[]> {
+    const response = await axios.get(`${this.uri}/comment/${commentId}`, {
       headers: getAuthHeaders(),
     });
     return response.data;

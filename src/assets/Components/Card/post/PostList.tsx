@@ -3,58 +3,73 @@ import { IPost } from "../../../../core/posts/IPost";
 import PostsService from "../../../../core/posts/PostService";
 import CardItem from "../card/CardItem";
 import styles from "../card/CardItem.module.scss";
+
 interface PostListProps {
     userId: number | null;
 }
 
+interface Page<T> {
+    content: T[];
+    totalPages: number;
+    number: number;
+    size: number;
+    totalElements: number;
+}
+
 const PostList: React.FC<PostListProps> = ({ userId }) => {
     const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
-
-    console.log("userId:", userId);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
     const apiPost = new PostsService();
 
     useEffect(() => {
-        console.log("useEffect posts called");
         const loadPosts = async () => {
             try {
-                let fetchedPosts = await apiPost.getAllPosts();
-                if (typeof fetchedPosts === "string") {
-                    fetchedPosts = JSON.parse(fetchedPosts);
-                }
-                setFetchedPosts(fetchedPosts);
+                const pageData: Page<IPost> = await apiPost.getAllPosts(page, 10); // 10 posts por página
+                setFetchedPosts(pageData.content);
+                setTotalPages(pageData.totalPages);
             } catch (error) {
                 console.error("Error loading posts: ", error);
             }
         };
         loadPosts();
-    }, []);
+    }, [page]);
 
     const handleSelect = (item: any) => {
         console.log("Selected item:", item);
     };
 
-    console.log("fetchedPosts:", fetchedPosts);
-    console.log("fetchedPosts type:", typeof fetchedPosts, Array.isArray(fetchedPosts), fetchedPosts);
+    // Opcional: controles de paginación
+    const handlePrev = () => setPage((p) => Math.max(0, p - 1));
+    const handleNext = () => setPage((p) => Math.min(totalPages - 1, p + 1));
+
     return (
-        <div className={styles.cardContainer}>
-            {fetchedPosts.map((post) => (
-                <CardItem
-                    key={post.id}
-                    type="post"
-                    id={post.id}
-                    title={post.title}
-                    description={post.message}
-                    creationDate={post.creationDate}
-                    favoritesCount={post.favoritesCount}
-                    commentsCount={post.commentsCount}
-                    images={post.image}
-                    user={post.user}
-                    userRole={post.userRole}
-                    attendeesCount={post.attendeesCount ?? 0}
-                    onSelect={handleSelect}
-                />
-            ))}
+        <div>
+            <div className={styles.cardContainer}>
+                {fetchedPosts.map((post) => (
+                    <CardItem
+                        key={post.id}
+                        type="post"
+                        id={post.id}
+                        title={post.title}
+                        description={post.message}
+                        creationDate={post.creationDate}
+                        favoritesCount={post.favoritesCount ?? 0}
+                        commentsCount={post.commentsCount ?? 0} // Solo el número
+                        images={post.image}
+                        user={post.user}
+                        userRole={post.userRole}
+                        attendeesCount={post.attendeesCount ?? 0}
+                        onSelect={handleSelect}
+                    />
+                ))}
+            </div>
+            <div style={{ marginTop: 16 }}>
+                <button onClick={handlePrev} disabled={page === 0}>Anterior</button>
+                <span style={{ margin: "0 8px" }}>Página {page + 1} de {totalPages}</span>
+                <button onClick={handleNext} disabled={page + 1 >= totalPages}>Siguiente</button>
+            </div>
         </div>
     );
 };

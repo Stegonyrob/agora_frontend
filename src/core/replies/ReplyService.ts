@@ -13,8 +13,8 @@ export class ReplyService {
     return await this.repository.getAll();
   }
 
-  async getByPostId(postId: number): Promise<IReply[]> {
-    return await this.repository.getByPostId(postId);
+  async getByCommentId(commentId: number): Promise<IReply[]> {
+    return await this.repository.getByCommentId(commentId);
   }
 
   async create(reply: IReplyDTO): Promise<IReply> {

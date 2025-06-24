@@ -6,26 +6,31 @@ const service = new PostService();
 
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
-  async () => await service.getAllPosts()
-);
-
-export const fetchPostById = createAsyncThunk(
-  "posts/fetchPostById",
-  async (id: number) => await service.getPostById(id)
+  async ({ page = 0, size = 10 }: { page?: number; size?: number }) =>
+    await service.getAllPosts(page, size)
 );
 
 interface PostsState {
   posts: IPost[];
+  totalPages: number;
+  page: number;
   isLoaded: boolean;
 }
 
 const postsSlice = createSlice({
   name: "posts",
-  initialState: { posts: [], isLoaded: false } as PostsState,
+  initialState: {
+    posts: [],
+    totalPages: 0,
+    page: 0,
+    isLoaded: false,
+  } as PostsState,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
+      state.posts = action.payload.content;
+      state.totalPages = action.payload.totalPages;
+      state.page = action.payload.number;
       state.isLoaded = true;
     });
   },

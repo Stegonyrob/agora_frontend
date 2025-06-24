@@ -1,6 +1,7 @@
 import { CommentDTO } from "@/core/comments/CommentDTO";
 import { createComment, deleteComment, fetchComments, updateComment } from "@/core/comments/commetStore";
 import { IComment } from "@/core/comments/IComment";
+import { createReply } from "@/core/replies/replyStore";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +11,7 @@ interface AccordionCommentsProps {
   postId: number;
   currentUserId: number;
   isAdmin: boolean;
+  commentsCount: number;
 }
 
 const avatarList = [
@@ -21,9 +23,16 @@ const avatarList = [
   "https://randomuser.me/api/portraits/lego/6.jpg",
 ];
 
-const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUserId, isAdmin }) => {
+const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUserId, isAdmin, commentsCount }) => {
   const dispatch = useDispatch<any>();
-  const comments = useSelector((state: RootState) => state.comments.comments);
+
+  // Selecciona los comentarios solo de este postId (ajusta tu store si es necesario)
+  const comments = useSelector((state: RootState) =>
+    Array.isArray(state.comments.commentsByPostId?.[postId])
+      ? state.comments.commentsByPostId[postId]
+      : []
+  );
+
   const [open, setOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
@@ -59,20 +68,22 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
     dispatch(deleteComment(id)).then(() => dispatch(fetchComments(postId)));
   };
 
-  // CRUD real para replies: aquí deberías llamar a tu servicio de replies
+  // CRUD real para replies
   const handleAddReply = (commentId: number) => {
     if (!replyText.trim()) return;
-    // Aquí deberías despachar la acción para crear reply en el backend
-    // dispatch(createReply({ commentId, message: replyText }))
-    //   .then(() => dispatch(fetchComments(postId)));
+    dispatch(createReply({
+      commentId,
+      userId: currentUserId,
+      reply_message: replyText
+    })).then(() => dispatch(fetchComments(postId)));
     setReplyTo(null);
     setReplyText("");
   };
 
   // Renderiza replies reales del backend (asegúrate que replies es un array)
   const renderReplies = (replies?: any[]) =>
-    (replies ?? []).map(reply => (
-      <div key={reply.id} className={styles.reply}>
+    (Array.isArray(replies) ? replies : []).map(reply => (
+      <div key={reply.replyId} className={styles.reply}>
         <img
           src={avatarList[reply.userId % avatarList.length]}
           alt={reply.userId?.toString() ?? ""}
@@ -80,8 +91,8 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
         />
         <div>
           <span className={styles.user}>{reply.userId}</span>
-          <span className={styles.date}>{reply.creationDate ? reply.creationDate.toString().slice(0, 10) : ""}</span>
-          <p className={styles.text}>{reply.message}</p>
+          <span className={styles.date}>{reply.creation_date ? reply.creation_date.toString().slice(0, 10) : ""}</span>
+          <p className={styles.text}>{reply.reply_message}</p>
         </div>
       </div>
     ));
@@ -90,7 +101,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
     <div className={styles.commentsContainer}>
       <button className={styles.iconBtn} onClick={() => setOpen(!open)}>
         <i className="bi bi-chat-dots"></i>
-        <span className={styles.counter}>{comments.length}</span>
+        <span className={styles.counter}>{commentsCount}</span>
       </button>
       {open && (
         <div className={styles.accordion}>

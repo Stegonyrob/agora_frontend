@@ -179,6 +179,7 @@ const CardItem: React.FC<CardItemProps> = ({
                                 postId={id}
                                 currentUserId={userId}
                                 isAdmin={userRole === 'ADMIN'}
+                                commentsCount={commentsCount ?? 0}
                             />
                         </div>
                     )}
