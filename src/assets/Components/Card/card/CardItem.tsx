@@ -132,8 +132,7 @@ const CardItem: React.FC<CardItemProps> = ({
                 <span className={styles.favoriteIcon}>
                     <LikeButton
                         postId={id}
-                        type={type}
-                    />
+                        type={type} />
                 </span>
                 {type === 'event' && (
                     <span className={styles.eventDate}>{eventInfo}</span>
@@ -180,6 +179,7 @@ const CardItem: React.FC<CardItemProps> = ({
                                 currentUserId={userId}
                                 isAdmin={userRole === 'ADMIN'}
                                 commentsCount={commentsCount ?? 0}
+                                tags={[]} // Pass an empty array or appropriate tags
                             />
                         </div>
                     )}

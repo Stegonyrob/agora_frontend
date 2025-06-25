@@ -1,28 +1,41 @@
 import styles from '@/assets/Components/Blog/admin/button/ButtonIcons.module.scss';
 import EventFavoriteService from '@/core/favorites/EventFavoriteService';
 import PostFavoriteService from '@/core/favorites/PostFavoriteService';
-import { useEffect, useState } from 'react';
+import { RootState } from '@/redux/store';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
 
 interface LikeButtonProps {
     postId: number;
     type: 'post' | 'event';
+
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({
     postId,
-    type
+    type,
+
 }) => {
     const [favoritesCount, setFavoritesCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
+
+
+    const userId = useSelector((state: RootState) => state.session.userId);
+    console.log("userId desde LikeButton:", userId);
+
+
 
     const favoriteService =
         type === 'event'
             ? new EventFavoriteService()
             : new PostFavoriteService();
-
+    useEffect(() => {
+        console.log("userId recibido en LikeButton:", userId);
+        console.log(userId);
+    }, [userId]);
     useEffect(() => {
         if (type === 'post') {
-            favoriteService.getFavoritesCount(postId)
+            favoriteService.getLovesCount(postId)
                 .then((count: number) => setFavoritesCount(count))
                 .catch(() => setFavoritesCount(0));
         }
@@ -30,14 +43,14 @@ const LikeButton: React.FC<LikeButtonProps> = ({
     }, [postId, type]);
 
     const handleLike = () => {
-        favoriteService.giveLike(postId).then(() => {
+        favoriteService.giveLike(postId, userId).then(() => {
             setIsLiked(true);
             setFavoritesCount(c => c + 1);
         });
     };
 
     const handleDislike = () => {
-        favoriteService.removeLike(postId).then(() => {
+        favoriteService.removeLike(postId, userId).then(() => {
             setIsLiked(false);
             setFavoritesCount(c => Math.max(0, c - 1));
         });
