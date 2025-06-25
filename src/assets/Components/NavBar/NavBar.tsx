@@ -1,24 +1,49 @@
 import { logout } from "@/core/auth/sessionStore";
+import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import Avatar from "../Avatar/Avatar";
 import LogoNavBar from "../Logo/LogoNavBar";
+import SettingsModal from "../Settings/SetttingsModal";
 import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
 import styles from "./NavBar.module.scss";
 import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
 
 
 function NavBar() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [click, setClick] = useState(false);
     const [openDropdown, setOpenDropdown] = useState("");
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [grayScale, setGrayScale] = useState(false);
+
+    const userName = useSelector((state: RootState) => state.session.userName) || sessionStorage.getItem("userName") || "Usuario";
+    const avatarUrl = useSelector((state: RootState) => state.session.avatarUrl) || "/avatars/lego/lego1.png";
     const isAdmin = sessionStorage.getItem("isAdmin") === "true";
-    console.log("isAdmin:", isAdmin);
+    const userId = Number(sessionStorage.getItem("userId")) || 0;
+    const isLoggedIn = userId > 0;
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);
+
     const handleDropdown = (name: string) => {
         setOpenDropdown(openDropdown === name ? "" : name);
     };
-    const [grayScale, setGrayScale] = useState(false);
 
+    const handleLogout = () => {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        dispatch(logout());
+        navigate("/login");
+    };
+
+    // Grayscale effect
     useEffect(() => {
         document.body.style.filter = grayScale ? "grayscale(100%)" : "none";
         return () => {
@@ -26,20 +51,6 @@ function NavBar() {
         };
     }, [grayScale]);
 
-
-    const handleLogout = () => {
-        // Limpia el localStorage
-        localStorage.clear();
-        sessionStorage.clear();
-        // Limpia cookies si es necesario
-        document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
-        // Despacha la acción de logout para limpiar el estado
-        dispatch(logout());
-    };
     return (
         <nav className={styles.navbar}>
             <div className={styles.navContainer}>
@@ -174,6 +185,7 @@ function NavBar() {
                             aria-expanded={openDropdown === "sesion"}
                             type="button"
                         >
+                            <i className="bi bi-person" style={{ marginRight: 6 }}></i>
                             Inicio de Sesión
                         </button>
                         <ul className={openDropdown === "sesion" ? `${styles.dropdownContentTree} ${styles.show}` : styles.dropdownContentTree}>
@@ -197,10 +209,57 @@ function NavBar() {
                             >
                                 Dashboard
                             </NavLink>
+
+
+
                         )}
                     </li>
+
                 </ul>
 
+                {/* AVATAR DEL USUARIO - fuera del <ul> */}
+                {isLoggedIn && (
+                    <div className={styles.avatarNav}>
+                        <Avatar
+                            userName={userName}
+                            avatarUrl={avatarUrl}
+                            onProfile={() => navigate("/profile")}
+                            onSettings={() => setShowSettingsModal(true)}
+                            onLogout={handleLogout}
+                        />
+                        {showSettingsModal && (
+
+                            <SettingsModal
+                                show={showSettingsModal}
+                                onClose={() => setShowSettingsModal(false)}
+                                userId={Number(sessionStorage.getItem("userId"))}
+                            />
+                        )}
+
+
+                    </div>
+                )}
+
+
+                {!isLoggedIn && (
+                    <span
+                        className={styles.settingsIcon}
+                        title="Configuración"
+                        style={{ cursor: "pointer", fontSize: "1.2rem", marginLeft: "1rem", color: "azure", marginRight: "1rem" }}
+                        onClick={() => setShowSettingsModal(true)}
+                    >
+                        <i className="bi bi-gear"></i>
+                    </span>
+                )}
+
+                {/* Modal de settings, visible para ambos casos */}
+                {showSettingsModal && (
+                    <SettingsModal
+                        show={showSettingsModal}
+                        onClose={() => setShowSettingsModal(false)}
+                        userId={Number(isLoggedIn ? userId : 0)}
+                    />
+                )}
             </div>
         </nav>
     );
@@ -208,6 +267,3 @@ function NavBar() {
 
 export default NavBar;
 
-function dispatch(arg0: any) {
-    throw new Error("Function not implemented.");
-}

@@ -8,5 +8,15 @@ export interface ISession {
   refreshToken: string;
   expiresAt?: number; // Timestamp for session expiration
   isLoading?: boolean;
-  viewAsUser?: boolean; // Optional flag to indicate if the user is being viewed as another user
+  viewAsUser?: boolean;
+  avatarUrl?: string;
+  userSettings?: {
+    fontSize?: number;
+    highContrast?: boolean;
+    animations?: boolean;
+    daltonic?: boolean;
+    showPersonalInfo?: boolean;
+    twoFA?: boolean;
+    socialLinks?: string[];
+  };
 }

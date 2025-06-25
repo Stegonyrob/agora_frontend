@@ -5,7 +5,7 @@ import { sanitizeInput, validateInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
-import Avatar from './Avatar';
+import Avatar from '../Avatar/Avatar';
 import styles from './ProfileForm.module.scss';
 
 interface ProfileFormProps {
@@ -60,14 +60,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
     }
 
     // Sanitize inputs
-    const sanitizedFirstName = sanitizeInput(formState.firstName);
-    const sanitizedLastName1 = sanitizeInput(formState.lastName1);
-    const sanitizedLastName2 = sanitizeInput(formState.lastName2);
-    const sanitizedRelationship = sanitizeInput(formState.relationship);
-    const sanitizedEmail = sanitizeInput(formState.email);
-    const sanitizedCity = sanitizeInput(formState.city);
-    const sanitizedCountry = sanitizeInput(formState.country);
-    const sanitizedPhone = sanitizeInput(formState.phone);
+    const sanitizedFirstName = sanitizeInput(formState.firstName || "");
+    const sanitizedLastName1 = sanitizeInput(formState.lastName1 || "");
+    const sanitizedLastName2 = sanitizeInput(formState.lastName2 || "");
+    const sanitizedRelationship = sanitizeInput(formState.relationship || "");
+    const sanitizedEmail = sanitizeInput(formState.email || "");
+    const sanitizedCity = sanitizeInput(formState.city || "");
+    const sanitizedCountry = sanitizeInput(formState.country || "");
+    const sanitizedPhone = sanitizeInput(formState.phone || "");
 
     // Validar los inputs antes de enviarlos al servidor
     if (!validateInput(sanitizedFirstName) || !validateInput(sanitizedLastName1) || !validateInput(sanitizedEmail)) {
@@ -161,12 +161,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
 
           <label htmlFor="avatar">Imagen de perfil:</label>
           <Avatar
-            source_avatar={formState.avatar || ''}
-            url_avatar={formState.avatar || ''}
-            alt_avatar={formState.avatar || ''}
-            userId={formState.id}
-            userName={formState.firstName || ''}
-            source={''}
+            userName={formState.firstName || 'Usuario'}
+            avatarUrl={formState.avatar || '/default-avatar.png'}
+            onProfile={() => { }}
+            onSettings={() => { }}
+            onLogout={() => { }}
           />
           <input
             id="avatar"

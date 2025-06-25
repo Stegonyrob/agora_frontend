@@ -3,7 +3,7 @@ import React from "react";
 import { validateInput } from '../../../utils/validationUtils';
 import ButtonEditProfile from "../Blog/admin/button/profile/ButtonEditProfile";
 
-import Avatar from "./Avatar";
+import Avatar from "../Avatar/Avatar";
 import styles from './UserInfo.module.scss';
 
 interface UserInfo {

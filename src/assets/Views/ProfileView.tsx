@@ -37,7 +37,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
         }
 
         try {
-            const fetchedProfile = await profileService.fetchProfileById(id);
+            const fetchedProfile = await profileService.getProfileById(id);
             if (!fetchedProfile) {
                 console.error("Profile data not found");
                 return;
@@ -81,12 +81,10 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
                 setRegister={setRegister}
                 setUserName={setUserName}
                 onSubmit={handleSubmit}
-                profileDTO={undefined}
-                profile={profile ?? undefined}
+                profile={profile as IProfileDTO}
                 onSelect={(profile: IProfile) => console.log("Profile selected:", profile)}
                 onClose={handleCloseProfileForm}
                 show={showProfileForm}
-                setRole={(value: React.SetStateAction<string>) => console.log("Role set:", value)}
                 setUserId={(value: React.SetStateAction<number>) => console.log("User ID set:", value)}
             />
         </div>
