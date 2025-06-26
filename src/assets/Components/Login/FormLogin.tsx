@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import LoginService from '../../../core/auth/LoginService';
 // Ajusta el import según la ubicación real
 import { login } from '@/core/auth/sessionStore';
+import { AuthService } from '../../../core/auth/AuthService';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import styles from './FormLogin.module.scss';
+import SocialLogin from './SocialLogin';
 
 function parseJwt(token: string) {
   try {
@@ -30,16 +32,21 @@ const FormLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const authService = new AuthService();
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage('');
+    setIsLoading(true);
 
     if (!validateInput(useremail) || !validateInput(password)) {
       setErrorMessage('Por favor, ingrese un email y contraseña válidos.');
+      setIsLoading(false);
       return;
     }
 
@@ -86,6 +93,72 @@ const FormLogin: React.FC = () => {
       }
     } catch (error: any) {
       setErrorMessage('Error al iniciar sesión. Verifica tus credenciales.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (token: string) => {
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+
+      const response = await authService.loginWithGoogle(token);
+
+      // Store additional session data
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('userId', String(response.userId));
+      sessionStorage.setItem('userEmail', response.user.email);
+      sessionStorage.setItem('role', 'ROLE_USER'); // Assuming social login users get standard role
+
+      dispatch(login({
+        userId: response.userId,
+        role: 'ROLE_USER',
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userName: response.user.username,
+        useremail: response.user.email,
+        isLoggedIn: true,
+      }));
+
+      navigate('/blog', { state: { userId: String(response.userId) } });
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      setErrorMessage('Error al iniciar sesión con Google. Inténtalo de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFacebookLogin = async (token: string) => {
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+
+      const response = await authService.loginWithFacebook(token);
+
+      // Store additional session data
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('userId', String(response.userId));
+      sessionStorage.setItem('userEmail', response.user.email);
+      sessionStorage.setItem('role', 'ROLE_USER'); // Assuming social login users get standard role
+
+      dispatch(login({
+        userId: response.userId,
+        role: 'ROLE_USER',
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userName: response.user.username,
+        useremail: response.user.email,
+        isLoggedIn: true,
+      }));
+
+      navigate('/blog', { state: { userId: String(response.userId) } });
+    } catch (error: any) {
+      console.error('Facebook login error:', error);
+      setErrorMessage('Error al iniciar sesión con Facebook. Inténtalo de nuevo.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -138,10 +211,22 @@ const FormLogin: React.FC = () => {
               />
             </div>
           </Form.Group>
-          <Button className={styles.loginButton} variant="primary" type="submit">
-            Iniciar Sesión
+          <Button
+            className={styles.loginButton}
+            variant="primary"
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </Button>
         </Form>
+
+        <SocialLogin
+          onGoogleLogin={handleGoogleLogin}
+          onFacebookLogin={handleFacebookLogin}
+          isLoading={isLoading}
+        />
+
         <div className={styles.registerLink}>
           ¿No tienes una cuenta? <a href="/register">Regístrate aquí</a>
         </div>

@@ -10,7 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
 import { IEvent } from "./core/events/IEvent";
+import { useFontSize } from "./hooks/useFontSize";
 import swrConfig from "./swrConfig";
+
 // Vistas públicas
 import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";
@@ -46,6 +48,9 @@ const App: React.FC = () => {
   const session = useSelector((state: RootState) => state.session);
   // Nuevo estado para controlar la hidratación
   const [isHydrating, setIsHydrating] = useState(true);
+
+  // Initialize font size hook
+  const { fontSize } = useFontSize();
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';

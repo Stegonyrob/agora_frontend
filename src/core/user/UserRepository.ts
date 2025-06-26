@@ -35,9 +35,8 @@ export class UserRepository {
   }
 
   async register(user: IUserDTO): Promise<IUser> {
-    const res = await axios.post(`${this.uri}/register`, user, {
-      headers: getAuthHeaders(),
-    });
+    // No enviar headers de autenticación para registro - el usuario aún no tiene token
+    const res = await axios.post(`${this.uri}/register`, user);
     return res.data;
   }
 }

@@ -5,9 +5,30 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ágora Centro Educativo de Apoyo Especializado</title>
+    
+    <!-- Google OAuth SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- Facebook SDK -->
+    <script async defer crossorigin="anonymous" 
+      src="https://connect.facebook.net/es_ES/sdk.js"></script>
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Initialize Facebook SDK -->
+    <script>
+      window.fbAsyncInit = function() {
+        // El App ID se configura en el componente SocialLogin
+        FB.init({
+          appId: '1234567890', // Este se reemplaza dinámicamente
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0'
+        });
+      };
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

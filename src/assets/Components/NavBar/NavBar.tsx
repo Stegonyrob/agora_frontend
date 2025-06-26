@@ -227,40 +227,31 @@ function NavBar() {
                             onSettings={() => setShowSettingsModal(true)}
                             onLogout={handleLogout}
                         />
-                        {showSettingsModal && (
-
-                            <SettingsModal
-                                show={showSettingsModal}
-                                onClose={() => setShowSettingsModal(false)}
-                                userId={Number(sessionStorage.getItem("userId"))}
-                            />
-                        )}
-
-
                     </div>
                 )}
 
 
-                {!isLoggedIn && (
-                    <span
-                        className={styles.settingsIcon}
-                        title="Configuración"
-                        style={{ cursor: "pointer", fontSize: "1.2rem", marginLeft: "1rem", color: "azure", marginRight: "1rem" }}
-                        onClick={() => setShowSettingsModal(true)}
-                    >
-                        <i className="bi bi-gear"></i>
-                    </span>
-                )}
-
-                {/* Modal de settings, visible para ambos casos */}
-                {showSettingsModal && (
-                    <SettingsModal
-                        show={showSettingsModal}
-                        onClose={() => setShowSettingsModal(false)}
-                        userId={Number(isLoggedIn ? userId : 0)}
-                    />
-                )}
             </div>
+
+            {!isLoggedIn && (
+                <span
+                    className={styles.settingsIcon}
+                    title="Configuración"
+
+                    onClick={() => setShowSettingsModal(true)}
+                >
+                    <i className="bi bi-gear"></i>
+                </span>
+            )}
+
+            {/* Modal de settings, visible para ambos casos */}
+            {showSettingsModal && (
+                <SettingsModal
+                    show={showSettingsModal}
+                    onClose={() => setShowSettingsModal(false)}
+                    userId={Number(isLoggedIn ? userId : 0)}
+                />
+            )}
         </nav>
     );
 }

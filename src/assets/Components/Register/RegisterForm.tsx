@@ -2,20 +2,44 @@ import React, { useState } from 'react';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { useNavigate } from 'react-router-dom';
+import { AuthService } from '../../../core/auth/AuthService';
 import UserService from '../../../core/user/UserService';
+import { useRulesAcceptance } from '../../../hooks/useRulesAcceptance';
 import { sanitizeInput, validateInput } from '../../../utils/validationUtils';
+import RulesModal from '../Legal/RulesModal';
 import styles from './RegisterForm.module.scss';
 
 function RegisterForm() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    showRulesModal,
+    rulesAccepted,
+    canProceed: canProceedToRegister,
+    showModal: showRulesModalHandler,
+    hideModal: handleRulesModalClose,
+    toggleAcceptance: handleRulesAcceptChange
+  } = useRulesAcceptance(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
+    setIsLoading(true);
+
+    // Check if rules were accepted
+    if (!canProceedToRegister) {
+      setErrorMessage('Debes aceptar las reglas de la comunidad para poder registrarte.');
+      showRulesModalHandler();
+      setIsLoading(false);
+      return;
+    }
 
     // Sanitize inputs
     const sanitizedUsername = sanitizeInput(username);
@@ -30,11 +54,13 @@ function RegisterForm() {
       !validateInput(sanitizedConfirmPassword)
     ) {
       setErrorMessage('Se detectaron entradas no válidas.');
+      setIsLoading(false);
       return;
     }
 
     if (sanitizedPassword !== sanitizedConfirmPassword) {
       setErrorMessage('Las contraseñas no coinciden.');
+      setIsLoading(false);
       return;
     }
 
@@ -46,79 +72,139 @@ function RegisterForm() {
     };
 
     try {
+      // 1. Registrar usuario
       const userService = new UserService();
       await userService.registerUser(userData);
-      // Reset form after successful registration
+
+      // 2. Login automático después del registro exitoso
+      const authService = new AuthService();
+      await authService.login({
+        email: sanitizedEmail,
+        password: sanitizedPassword
+      });
+
+      // 3. Reset form after successful registration and login
       setUsername('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
+
+      // 4. Redirigir al usuario a la página principal o dashboard
+      navigate('/blog'); // Cambia esto por la ruta que prefieras
+
     } catch (error: any) {
-      setErrorMessage(error.message || 'Error al registrar el usuario.');
+      console.error('Error en registro/login:', error);
+
+      // Si el registro fue exitoso pero el login falló
+      if (error.message?.includes('login') || error.response?.status === 401) {
+        setErrorMessage('Registro exitoso. Por favor, inicia sesión manualmente.');
+        // Opcional: redirigir al login después de un delay
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setErrorMessage(error.message || 'Error al registrar el usuario.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleCancelRegistration = () => {
+    handleRulesModalClose();
+    // You might want to redirect to home page or login page here
+    window.history.back();
+  };
+
   return (
-    <Card className={styles.card}>
-      <Card.Body>
-        <Card.Title>Formulario de Registro</Card.Title>
-        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formUsername">
-            <Form.Label>Nombre de Usuario</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formPassword">
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formConfirmPassword">
-            <Form.Label>Confirmar Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Confirmar Contraseña"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </Form.Group>
-          <div className={styles.buttonContainer}>
-            <Button variant="danger" type="button" className={styles.button}>
-              Cancelar
-            </Button>
-            <Button variant="primary" type="submit" className={styles.button}>
-              Enviar
-            </Button>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card>
+    <>
+      <RulesModal
+        show={showRulesModal}
+        onHide={handleRulesModalClose}
+        onAccept={handleRulesAcceptChange}
+        isAccepted={rulesAccepted}
+      />
+
+      <Card className={styles.card}>
+        <Card.Body>
+          <Card.Title>Formulario de Registro</Card.Title>
+          {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formUsername">
+              <Form.Label>Nombre de Usuario</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className={styles.input}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={styles.input}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formPassword">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={styles.input}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formConfirmPassword">
+              <Form.Label>Confirmar Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirmar Contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className={styles.input}
+              />
+            </Form.Group>
+
+            {!canProceedToRegister && (
+              <div className={styles.rulesNotice}>
+                <p>⚠️ Debes aceptar las reglas de la comunidad para continuar</p>
+                <Button
+                  variant="outline-primary"
+                  onClick={showRulesModalHandler}
+                  className={styles.showRulesButton}
+                >
+                  Ver Reglas de la Comunidad
+                </Button>
+              </div>
+            )}
+
+            <div className={styles.buttonContainer}>
+              <Button variant="danger" type="button" className={styles.button}>
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                className={styles.button}
+                disabled={!canProceedToRegister || isLoading}
+              >
+                {isLoading ? 'Registrando...' : 'Enviar'}
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
+    </>
   );
 }
 

@@ -21,3 +21,43 @@ body {
   height: 100%;
 
 }
+
+/* Font size system using CSS custom properties */
+:root {
+  --base-font-size: 1.25rem;
+  --font-scale: 1;
+}
+
+/* Font size classes for accessibility */
+body.font-size-small {
+  --base-font-size: 1.25rem;
+  --font-scale: 1.25;
+}
+
+body.font-size-medium {
+  --base-font-size: 1.5rem;
+  --font-scale: 1.5;
+}
+
+body.font-size-large {
+  --base-font-size: 1.75rem;
+  --font-scale: 1.75;
+}
+
+/* Apply base font size to body and common elements */
+body {
+  font-size: var(--base-font-size);
+}
+
+/* Scale headings proportionally - más ambiciosos */
+h1 { font-size: calc(2rem * var(--font-scale)); }
+h2 { font-size: calc(1.75rem * var(--font-scale)); }
+h3 { font-size: calc(1.5rem * var(--font-scale)); }
+h4 { font-size: calc(1.25rem * var(--font-scale)); }
+h5 { font-size: calc(1.125rem * var(--font-scale)); }
+h6 { font-size: calc(1rem * var(--font-scale)); }
+
+/* Common text elements */
+p, span, div, li, a, button, input, textarea, label {
+  font-size: var(--base-font-size);
+}

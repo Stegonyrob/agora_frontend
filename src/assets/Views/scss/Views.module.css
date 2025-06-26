@@ -1,7 +1,101 @@
+@charset "UTF-8";
 .h1, .h2, .centeredTitle {
   text-align: center;
   color: #090909;
   margin: auto;
   margin-top: 3rem;
   margin-bottom: 3rem;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.rulesPageHeader {
+  margin-bottom: 30px;
+}
+
+.rulesPageHeader .backButton {
+  margin-left: 20px;
+  padding: 8px 16px;
+  font-weight: 500;
+}
+
+.rulesPageHeader .backButton:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.rulesPageFooter {
+  margin-top: 40px;
+  padding: 30px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.rulesPageFooter .lastUpdated {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+}
+
+.rulesPageFooter .contactInfo h4 {
+  color: #2c5aa0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.rulesPageFooter .contactInfo p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.rulesPageFooter .contactInfo ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.rulesPageFooter .contactInfo ul li {
+  background: white;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  border-left: 4px solid #2c5aa0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.rulesPageFooter .contactInfo ul li:before {
+  content: "📧 ";
+  margin-right: 8px;
+}
+
+.rulesPageFooter .contactInfo ul li:last-child:before {
+  content: "📝 ";
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  .rulesPageHeader {
+    margin-bottom: 20px;
+  }
+  .rulesPageHeader .backButton {
+    margin-left: 0;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .rulesPageFooter {
+    margin-top: 30px;
+    padding: 20px 15px;
+  }
+  .rulesPageFooter .contactInfo ul li {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
 }

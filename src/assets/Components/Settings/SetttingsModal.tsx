@@ -1,3 +1,4 @@
+import { ISettings } from "@/core/settings/ISettings";
 import { SettingsService } from "@/core/settings/SettingsService";
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
@@ -12,7 +13,7 @@ import TextToSpeechSetting from "./TextToSpeechSetting";
 import TwoFASetting from "./TwoFASetting";
 
 interface UserSettings {
-    fontSize: number;
+    fontSize: string;
     highContrast: boolean;
     animations: boolean;
     daltonic: boolean;
@@ -28,9 +29,25 @@ interface SettingsModalProps {
     userId: number;
 }
 
+// Conversion functions between frontend (string) and backend (number)
+const fontSizeToNumber = (fontSize: string): number => {
+    switch (fontSize) {
+        case "small": return 16;   // 1rem = 16px
+        case "medium": return 20;  // 1.25rem = 20px  
+        case "large": return 24;   // 1.5rem = 24px
+        default: return 16;
+    }
+};
+
+const numberToFontSize = (fontSize: number): string => {
+    if (fontSize <= 16) return "small";
+    if (fontSize <= 20) return "medium";
+    return "large";
+};
+
 // Default settings object
 const defaultSettings: UserSettings = {
-    fontSize: 16,
+    fontSize: "small",
     highContrast: false,
     animations: true,
     daltonic: false,
@@ -53,9 +70,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
         setSaving(true);
         try {
             if (isLogged) {
-                await settingsService.saveSettings(userId, settings);
+                // Convert to backend format
+                const backendSettings: ISettings = {
+                    ...settings,
+                    fontSize: fontSizeToNumber(settings.fontSize)
+                };
+                await settingsService.saveSettings(userId, backendSettings);
+                // Also save to localStorage for immediate effect and trigger event
+                localStorage.setItem("settings", JSON.stringify(settings));
+                window.dispatchEvent(new Event('settingsUpdated'));
             } else {
                 localStorage.setItem("settings", JSON.stringify(settings));
+                // Dispatch custom event to notify other components
+                window.dispatchEvent(new Event('settingsUpdated'));
             }
             onClose();
         } catch (e) {
@@ -70,7 +97,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
             setLoading(true);
             if (isLogged) {
                 settingsService.getSettings(userId)
-                    .then(data => setSettings({ ...defaultSettings, ...data }))
+                    .then(data => {
+                        // Convert from backend format
+                        const frontendSettings: UserSettings = {
+                            ...defaultSettings,
+                            ...data,
+                            fontSize: numberToFontSize(data.fontSize || 16)
+                        };
+                        setSettings(frontendSettings);
+                    })
                     .catch(() => setSettings(defaultSettings))
                     .finally(() => setLoading(false));
             } else {
@@ -110,8 +145,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
             </Modal.Header>
             <Modal.Body className={styles.settingsModalBody}>
                 <FontSizeSetting
-                    value={settings.fontSize.toString()}
-                    onChange={v => handleUpdate({ fontSize: Number(v) })}
+                    value={settings.fontSize}
+                    onChange={v => handleUpdate({ fontSize: v })}
                 />
                 <ContrastSetting
                     value={settings.highContrast}

@@ -6,9 +6,27 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    // No intentar refrescar token en estas rutas
+    const publicRoutes = ["/register", "/login", "/auth", "/any/", "/all/"];
+
+    const isPublicRoute = publicRoutes.some((route) =>
+      originalRequest.url?.includes(route)
+    );
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isPublicRoute
+    ) {
       originalRequest._retry = true;
-      const refreshToken = sessionStorage.getItem("refreshToken")!;
+      const refreshToken = sessionStorage.getItem("refreshToken");
+
+      // Si no hay refreshToken, no intentar refrescar
+      if (!refreshToken) {
+        return Promise.reject(error);
+      }
+
       const refreshTokenDTO: IRefreshTokenDTO = { refreshToken };
       const config: AxiosRequestConfig = {
         headers: { "Content-Type": "application/json" },
@@ -28,7 +46,10 @@ axios.interceptors.response.use(
         ] = `Bearer ${newToken.accessToken}`;
         return axios(originalRequest);
       } catch (err) {
-        // Aquí puedes hacer logout o redirigir
+        // Limpiar tokens inválidos
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
         return Promise.reject(err);
       }
     }
