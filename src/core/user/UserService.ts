@@ -28,8 +28,4 @@ export default class UserService {
   async deleteUser(id: number): Promise<void> {
     return await this.repository.delete(id);
   }
-
-  async registerUser(user: IUserDTO): Promise<IUser> {
-    return await this.repository.register(user);
-  }
 }

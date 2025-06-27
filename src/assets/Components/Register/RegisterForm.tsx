@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from 'react-router-dom';
 import { AuthService } from '../../../core/auth/AuthService';
-import UserService from '../../../core/user/UserService';
+import { RegisterService } from '../../../core/register/RegisterService';
 import { useRulesAcceptance } from '../../../hooks/useRulesAcceptance';
 import { sanitizeInput, validateInput } from '../../../utils/validationUtils';
 import RulesModal from '../Legal/RulesModal';
@@ -64,17 +64,18 @@ function RegisterForm() {
       return;
     }
 
-    // Ajusta el DTO según tu backend
+    // Ajusta el DTO según tu backend - incluye la aceptación de reglas
     const userData = {
       username: sanitizedUsername,
       email: sanitizedEmail,
       password: sanitizedPassword,
+      rulesAccepted: rulesAccepted // Incluir explícitamente la aceptación de reglas
     };
 
     try {
-      // 1. Registrar usuario
-      const userService = new UserService();
-      await userService.registerUser(userData);
+      // 1. Registrar usuario usando RegisterService
+      const registerService = new RegisterService();
+      await registerService.register(userData);
 
       // 2. Login automático después del registro exitoso
       const authService = new AuthService();

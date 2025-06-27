@@ -34,9 +34,17 @@ export class UserRepository {
     await axios.delete(`${this.uri}/${id}`, { headers: getAuthHeaders() });
   }
 
-  async register(user: IUserDTO): Promise<IUser> {
-    // No enviar headers de autenticación para registro - el usuario aún no tiene token
-    const res = await axios.post(`${this.uri}/register`, user);
-    return res.data;
+  async getByUsername(username: string): Promise<IUser | null> {
+    try {
+      const res = await axios.get(`${this.uri}/username/${username}`, {
+        headers: getAuthHeaders(),
+      });
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null; // User not found
+      }
+      throw error; // Re-throw unexpected errors
+    }
   }
 }

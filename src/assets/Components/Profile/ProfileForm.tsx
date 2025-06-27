@@ -5,7 +5,7 @@ import { sanitizeInput, validateInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
-import Avatar from '../Avatar/Avatar';
+import AvatarPickerModal from "../Avatar/AvatarPickerModal";
 import styles from './ProfileForm.module.scss';
 
 interface ProfileFormProps {
@@ -160,19 +160,22 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
           />
 
           <label htmlFor="avatar">Imagen de perfil:</label>
-          <Avatar
-            userName={formState.firstName || 'Usuario'}
-            avatarUrl={formState.avatar || '/default-avatar.png'}
-            onProfile={() => { }}
-            onSettings={() => { }}
-            onLogout={() => { }}
+          <AvatarPickerModal
+            currentAvatar={formState.avatar}
+            onSelect={(src: string) => {
+              setFormState((prev) => ({ ...prev, avatar: src }));
+            }}
+            onUpload={(src: string | ArrayBuffer | null) => {
+              if (src) {
+                setFormState((prev) => ({ ...prev, avatar: src.toString() }));
+              }
+            }}
           />
           <input
             id="avatar"
-            type="text"
+            type="hidden"
             name="avatar"
             value={formState.avatar || ''}
-            onChange={handleChange}
           />
 
           <label htmlFor="city">Ciudad:</label>
@@ -222,9 +225,16 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
 
           <Challenge onVerify={setChallengeOk} />
 
-          <Button type="submit" variant="primary" disabled={!challengeOk}>
-            {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
-          </Button>
+          <div className={styles.submitButtonContainer}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!challengeOk}
+              className={styles.submitButton}
+            >
+              {profile ? 'Actualizar Perfil' : 'Crear Perfil'}
+            </Button>
+          </div>
         </form>
       </Modal.Body>
     </Modal>

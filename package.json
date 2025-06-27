@@ -11,6 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.2.3",
+    "@dicebear/core": "^9.2.3",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -23,6 +25,7 @@
     "axios": "^1.6.7",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.13.1",
+    "crypto-js": "^4.2.0",
     "dompurify": "^3.2.4",
     "jsencrypt": "^3.3.2",
     "jsonwebtoken": "^9.0.2",

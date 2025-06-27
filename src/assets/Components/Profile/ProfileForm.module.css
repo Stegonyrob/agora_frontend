@@ -37,13 +37,30 @@
   margin-left: 2rem;
 }
 
-.modalCard .modalBody button {
+.modalCard .modalBody .modalBody > form > button {
   padding: 1rem 2rem;
   font-size: 1.7rem;
-  margin-left: 17rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto 0 auto;
+}
+
+.modalCard .modalBody .modalBody > form > button:hover {
+  background-color: #0056b3;
+}
+
+.modalCard .modalBody .submitButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.modalCard .modalBody .submitButton {
+  padding: 1rem 2rem;
+  font-size: 1.7rem;
   cursor: pointer;
 }
 
-.modalCard .modalBody button:hover {
+.modalCard .modalBody .submitButton:hover {
   background-color: #0056b3;
 }

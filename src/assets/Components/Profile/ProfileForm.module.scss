@@ -36,11 +36,29 @@ label{
   margin-left: 2rem;
 }
 
-button {
+// Estilos generales para botones (solo para botones del formulario)
+.modalBody > form > button {
   padding: 1rem 2rem;
   font-size: 1.7rem;
-  margin-left: 17rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto 0 auto; // Centrado con margin auto
 
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+// Contenedor para centrar el botón de submit
+.submitButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.submitButton {
+  padding: 1rem 2rem;
+  font-size: 1.7rem;
   cursor: pointer;
 
   &:hover {
