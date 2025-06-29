@@ -15,15 +15,28 @@ export class AvatarRepository {
     const response = await axios.get(`${this.baseURL}/selector`, {
       headers,
     });
+
     console.log(
       "✅ AvatarRepository - Respuesta getAvatarsForSelector:",
       response.data
     );
-    return response.data;
+
+    // Convertir formato del backend al formato del frontend
+    const avatars: IAvatar[] = response.data.map((avatar: any) => ({
+      id: avatar.id,
+      name: avatar.displayName,
+      imagePath: `/images/avatars/${avatar.imageName}`, // Convertir ruta del backend
+      isDefault: false, // Para el selector, ninguno es "default"
+      isCustom: false,
+    }));
+
+    console.log("🔄 AvatarRepository - Avatares convertidos:", avatars);
+    return avatars;
   }
 
   /**
    * Obtiene el avatar por defecto del sistema
+   * Temporal: usa /preloaded y filtra por default: true
    */
   async getDefaultAvatar(): Promise<IAvatar> {
     const headers = getAuthHeaders();
@@ -32,14 +45,34 @@ export class AvatarRepository {
       headers
     );
 
-    const response = await axios.get(`${this.baseURL}/default`, {
+    // Temporal: usar /preloaded hasta que se arregle /default en backend
+    const response = await axios.get(`${this.baseURL}/preloaded`, {
       headers,
     });
-    console.log(
-      "✅ AvatarRepository - Respuesta getDefaultAvatar:",
-      response.data
+
+    const allAvatars = response.data;
+    const defaultAvatar = allAvatars.find(
+      (avatar: any) => avatar.default === true
     );
-    return response.data;
+
+    if (!defaultAvatar) {
+      throw new Error("No se encontró avatar por defecto");
+    }
+
+    // Convertir al formato esperado por el frontend
+    const convertedAvatar: IAvatar = {
+      id: defaultAvatar.id,
+      name: defaultAvatar.displayName,
+      imagePath: `/images/avatars/${defaultAvatar.imageName}`,
+      isDefault: defaultAvatar.default,
+      isCustom: false,
+    };
+
+    console.log(
+      "✅ AvatarRepository - Avatar por defecto encontrado:",
+      convertedAvatar
+    );
+    return convertedAvatar;
   }
 
   /**
