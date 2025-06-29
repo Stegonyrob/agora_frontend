@@ -201,6 +201,21 @@ const adminMenuItems: NavMenuItem[] = [
         background: "/images/bg-register.jpg",
         viewAsUser: true,
     },
+    {
+        key: "reglas-blog-admin",
+        label: "Reglas Blog",
+        path: "/admin/blog-rules",
+        background: "/images/bg-blog.jpg",
+        role: "ROLE_ADMIN",
+        viewAsUser: false,
+    },
+    {
+        key: "reglas-blog-preview",
+        label: "Reglas Blog (Vista Usuario)",
+        path: "/reglas-comunidad",
+        background: "/images/bg-blog-user.jpg",
+        viewAsUser: true,
+    },
 
 ];
 

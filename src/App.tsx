@@ -35,6 +35,7 @@ import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView"
 import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import ProfileView from "@/assets/Views/ProfileView";
 
+import AdminBlogRulesView from "./assets/Views/AdminBlogRulesView";
 import AdminEventView from "./assets/Views/AdminEventView";
 import EventsView from "./assets/Views/EventsView";
 
@@ -156,6 +157,12 @@ const App: React.FC = () => {
         <Route path="/admin/events" element={
           <PrivateLayout>
             <ProtectedRoute element={<AdminEventView userId={0} />} />
+          </PrivateLayout>
+        } />
+
+        <Route path="/admin/blog-rules" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<AdminBlogRulesView />} />
           </PrivateLayout>
         } />
 

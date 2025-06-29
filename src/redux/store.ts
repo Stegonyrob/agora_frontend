@@ -5,6 +5,7 @@ import { thunk } from "redux-thunk";
 import alertsReducer from "@/core/alerts/alertStore";
 import attendeesReducer from "@/core/attendees/attendeeStore";
 import sessionReducer from "@/core/auth/sessionStore";
+import avatarsReducer from "@/core/avatars/avatarStore";
 import commentsReducer from "@/core/comments/commetStore";
 import imagesReducer from "@/core/images/imageStore";
 import legalTextsReducer from "@/core/legals/legalTextStore";
@@ -33,6 +34,7 @@ const store = configureStore({
   reducer: {
     session: sessionReducer,
     alerts: alertsReducer,
+    avatars: avatarsReducer,
     images: imagesReducer,
     posts: postsReducer,
     profile: profileReducer,

@@ -5,7 +5,8 @@ export default interface IProfile {
   lastName2: string;
   relationship: string;
   email: string;
-  avatar: string;
+  avatar: string; // URL del avatar (para mostrar en frontend)
+  avatar_id?: number; // ID del avatar (para enviar al backend)
   city: string;
   country: string;
   phone: string;

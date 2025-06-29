@@ -1,6 +1,8 @@
 import Challenge from "@/assets/Components/Challenge/Challenge"; // Asegúrate de importar el componente
+import type { IAvatar } from '@/core/avatars';
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
+import { useAvatars } from '@/hooks/useAvatars';
 import { sanitizeInput, validateInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
@@ -21,7 +23,9 @@ interface ProfileFormProps {
   setUserName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, show }) => {
+const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, show, userId }) => {
+  const { getRandomAvatar, getAvatarImageUrl } = useAvatars();
+
   const [formState, setFormState] = useState<IProfileDTO>({
     id: 0,
     firstName: "",
@@ -29,15 +33,52 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
     lastName2: "",
     relationship: "",
     email: "",
-    avatar: "",
+    avatar: "", // Se actualizará con la URL del avatar
+    avatar_id: undefined, // ID del avatar para el backend
     city: "",
     country: "",
     phone: "",
     password: "",
     confirmPassword: "",
   });
+  const [selectedAvatar, setSelectedAvatar] = useState<IAvatar | null>(null);
   const [challengeOk, setChallengeOk] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (profile) {
+      setFormState(profile);
+      // Si el perfil tiene avatar_id, intentar encontrar el avatar correspondiente
+      if (profile.avatar_id) {
+        // Aquí podrías buscar el avatar por ID si lo necesitas
+        // Por ahora, confía en que el avatar URL ya está correcto
+      }
+    }
+  }, [profile]);
+
+  // Inicializar avatar aleatorio si no hay uno seleccionado
+  useEffect(() => {
+    if (!selectedAvatar && !formState.avatar_id && !profile) {
+      const randomAvatar = getRandomAvatar();
+      if (randomAvatar) {
+        setSelectedAvatar(randomAvatar);
+        updateAvatarInForm(randomAvatar);
+      }
+    }
+  }, [getRandomAvatar, selectedAvatar, formState.avatar_id, profile]);
+
+  const updateAvatarInForm = async (avatar: IAvatar) => {
+    try {
+      const avatarUrl = await getAvatarImageUrl(avatar);
+      setFormState(prev => ({
+        ...prev,
+        avatar: avatarUrl,
+        avatar_id: avatar.id
+      }));
+    } catch (error) {
+      console.error('Error updating avatar in form:', error);
+    }
+  };
 
   useEffect(() => {
     if (profile) {
@@ -162,14 +203,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
           <label htmlFor="avatar">Imagen de perfil:</label>
           <AvatarPickerModal
             currentAvatar={formState.avatar}
-            onSelect={(src: string) => {
-              setFormState((prev) => ({ ...prev, avatar: src }));
+            onSelect={(avatar: IAvatar) => {
+              setSelectedAvatar(avatar);
+              updateAvatarInForm(avatar);
             }}
-            onUpload={(src: string | ArrayBuffer | null) => {
-              if (src) {
-                setFormState((prev) => ({ ...prev, avatar: src.toString() }));
-              }
+            onUpload={(avatar: IAvatar) => {
+              setSelectedAvatar(avatar);
+              updateAvatarInForm(avatar);
             }}
+            userId={userId}
           />
           <input
             id="avatar"

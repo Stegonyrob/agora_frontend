@@ -234,6 +234,40 @@
   20%, 40%, 60%, 80% { transform: translateX(0.25rem); }
 }
 
+// Mensaje de error
+.errorMessage {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 0.25rem 0.75rem rgba(255, 107, 107, 0.25);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estado de carga
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
 // Responsive
 @media (max-width: 480px) {
   .container {

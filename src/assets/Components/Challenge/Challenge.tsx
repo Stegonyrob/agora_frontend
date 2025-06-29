@@ -219,13 +219,14 @@ const HumanChallenge: React.FC<HumanChallengeProps> = ({ onVerify }) => {
         setAnswer(newAnswer);
         setError("");
 
-        // Validación en tiempo real para números
+        // Validación en tiempo real solo para desafíos matemáticos
         if (challenge.type === 'math' && newAnswer.trim() !== '') {
             const userNum = parseFloat(newAnswer.trim());
             const correctNum = parseFloat(challenge.answer.trim());
 
             if (!isNaN(userNum) && !isNaN(correctNum) && userNum === correctNum) {
                 // Respuesta correcta detectada
+                console.log('✅ Respuesta correcta detectada en tiempo real:', userNum, '===', correctNum);
                 onVerify(true);
                 setIsTimerActive(false);
                 setError("✅ ¡Correcto!");
@@ -245,25 +246,35 @@ const HumanChallenge: React.FC<HumanChallengeProps> = ({ onVerify }) => {
     }; const handleBlur = () => {
         if (isLocked || timeLeft === 0) return;
 
-        const userAnswer = answer.trim().toLowerCase();
-        const correctAnswer = challenge.answer.trim().toLowerCase();
+        const userAnswer = answer.trim();
+        const correctAnswer = challenge.answer.trim();
 
         // Debug temporal - remover después
         console.log('Debug Challenge:', {
             userAnswer: `"${userAnswer}"`,
             correctAnswer: `"${correctAnswer}"`,
             question: challenge.question,
-            match: userAnswer === correctAnswer
+            challengeType: challenge.type
         });
 
-        // Validación más robusta
-        const isCorrect = userAnswer === correctAnswer ||
-            answer.trim() === challenge.answer.trim() ||
-            parseFloat(userAnswer) === parseFloat(correctAnswer);
+        let isCorrect = false;
+
+        // Validación específica por tipo de challenge
+        if (challenge.type === 'math') {
+            // Para matemáticas, comparar como números
+            const userNum = parseFloat(userAnswer);
+            const correctNum = parseFloat(correctAnswer);
+            isCorrect = !isNaN(userNum) && !isNaN(correctNum) && userNum === correctNum;
+        } else {
+            // Para otros tipos, comparar como texto (case insensitive)
+            isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+        }
+
+        console.log('Validation result:', { isCorrect, userAnswer, correctAnswer });
 
         if (isCorrect) {
             onVerify(true);
-            setError("");
+            setError("✅ ¡Correcto!");
             setIsTimerActive(false);
         } else {
             const newAttempts = attempts + 1;
@@ -274,7 +285,7 @@ const HumanChallenge: React.FC<HumanChallengeProps> = ({ onVerify }) => {
                 setError("Demasiados intentos fallidos. Genera un nuevo desafío.");
                 setIsLocked(true);
             } else {
-                setError(`Respuesta incorrecta. Tu respuesta: "${answer.trim()}", Correcta: "${challenge.answer}". Intentos restantes: ${3 - newAttempts}`);
+                setError(`Respuesta incorrecta. Tu respuesta: "${userAnswer}", Correcta: "${correctAnswer}". Intentos restantes: ${3 - newAttempts}`);
             }
         }
     };

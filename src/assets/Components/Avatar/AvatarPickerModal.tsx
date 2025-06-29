@@ -1,194 +1,149 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import type { IAvatar } from "@/core/avatars";
+import { useAvatars } from "@/hooks/useAvatars";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "./AvatarPickerModal.module.scss";
-
-// Lista de avatares predefinidos - Colección Simpática de Ágora
-const avatarList = [
-    // 🎓 CRIATURAS EDUCATIVAS ADORABLES (10)
-    {
-        name: "Búho Sabio",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=wise-owl&backgroundColor=fef3c7&hair=short01&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Gato Estudioso",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=smart-cat&backgroundColor=fed7aa&eyes=wink&mouth=cute"
-    },
-    {
-        name: "Panda Lector",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=reading-panda&backgroundColor=e5e7eb&hair=short03&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Alien Científico",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=science-alien&backgroundColor=c7d2fe&eyes=stars&mouth=surprised"
-    },
-    {
-        name: "Robot Amigable",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=friendly-robot&backgroundColor=bfdbfe&hair=short02&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Dragón Gentil",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=gentle-dragon&backgroundColor=fca5a5&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Unicornio Mágico",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=magic-unicorn&backgroundColor=f3e8ff&hair=short04&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Zorro Ingenioso",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=clever-fox&backgroundColor=fed7aa&eyes=wink&mouth=smile"
-    },
-    {
-        name: "Pingüino Artista",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=artist-penguin&backgroundColor=e0f2fe&hair=short01&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Rana Química",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=chemistry-frog&backgroundColor=bbf7d0&eyes=happy&mouth=cute"
-    },
-
-    // 👾 MONSTRUITOS SÚPER SIMPÁTICOS (20) 
-    {
-        name: "Cosmos Verde",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=green-cosmos&backgroundColor=86efac&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Bubble Azul",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=blue-bubble&backgroundColor=93c5fd&hair=short02&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Chispa Rosa",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=pink-spark&backgroundColor=f9a8d4&eyes=wink&mouth=cute"
-    },
-    {
-        name: "Nube Morada",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=purple-cloud&backgroundColor=c4b5fd&hair=short03&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Sol Amarillo",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=yellow-sun&backgroundColor=fde047&eyes=stars&mouth=smile"
-    },
-    {
-        name: "Luna Plateada",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=silver-moon&backgroundColor=e5e7eb&hair=short01&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Estrella Dorada",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=golden-star&backgroundColor=fbbf24&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Océano Turquesa",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=ocean-turquoise&backgroundColor=22d3ee&hair=short04&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Bosque Verde",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=forest-green&backgroundColor=4ade80&eyes=wink&mouth=cute"
-    },
-    {
-        name: "Lava Roja",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=lava-red&backgroundColor=f87171&hair=short02&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Cristal Violeta",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=crystal-violet&backgroundColor=a855f7&eyes=stars&mouth=smile"
-    },
-    {
-        name: "Hielo Celeste",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=ice-cyan&backgroundColor=67e8f9&hair=short03&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Tierra Marrón",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=earth-brown&backgroundColor=a3a3a3&eyes=happy&mouth=cute"
-    },
-    {
-        name: "Rayo Eléctrico",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=electric-bolt&backgroundColor=facc15&hair=short01&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Viento Gris",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=wind-gray&backgroundColor=9ca3af&eyes=wink&mouth=smile"
-    },
-    {
-        name: "Flor Coral",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=flower-coral&backgroundColor=fb7185&hair=short04&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Musgo Verde",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=moss-green&backgroundColor=65a30d&eyes=happy&mouth=bigSmile"
-    },
-    {
-        name: "Perla Blanca",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=pearl-white&backgroundColor=f8fafc&hair=short02&eyes=happy&mouth=smile"
-    },
-    {
-        name: "Ámbar Naranja",
-        src: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=amber-orange&backgroundColor=fb923c&eyes=wink&mouth=cute"
-    },
-    {
-        name: "Galaxia Índigo",
-        src: "https://api.dicebear.com/7.x/big-smile/svg?seed=galaxy-indigo&backgroundColor=6366f1&hair=short03&eyes=stars&mouth=bigSmile"
-    }
-];
 
 interface AvatarPickerModalProps {
     currentAvatar?: string;
-    onSelect: (src: string) => void;
-    onUpload?: (src: string | ArrayBuffer | null) => void;
+    onSelect: (avatar: IAvatar) => void;
+    onUpload?: (avatar: IAvatar) => void;
+    userId?: number; // Necesario para subir avatares personalizados
 }
 
 const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
     currentAvatar,
     onSelect,
-    onUpload
+    onUpload,
+    userId = 0
 }) => {
+    const {
+        avatars,
+        defaultAvatar,
+        isLoaded,
+        isUploading,
+        uploadError,
+        getAvatarImageUrl,
+        handleUploadAvatar,
+        handleClearError
+    } = useAvatars();
+
+    console.log('🔍 AvatarPickerModal - Estado hook:', {
+        avatarsLength: avatars.length,
+        defaultAvatar,
+        isLoaded,
+        isUploading,
+        uploadError
+    });
+
     const [activeIndex, setActiveIndex] = useState(0);
-    const [currentAvatarData, setCurrentAvatarData] = useState(avatarList[0]);
-    const [uploadError, setUploadError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [currentAvatarData, setCurrentAvatarData] = useState<IAvatar | null>(null);
+    const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>("");
+    const [isLoadingImage, setIsLoadingImage] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Filtrar solo avatares del sistema (predefinidos)
+    const systemAvatars = avatars.filter(avatar => !avatar.isCustom);
+    console.log('🔍 AvatarPickerModal - Avatares del sistema:', systemAvatars);
+
+    // Inicializar avatar actual
+    useEffect(() => {
+        console.log('🚀 AvatarPickerModal - useEffect inicialización:', {
+            isLoaded,
+            systemAvatarsLength: systemAvatars.length,
+            defaultAvatar
+        });
+
+        if (isLoaded && systemAvatars.length > 0) {
+            const initialAvatar = systemAvatars[0];
+            console.log('✅ AvatarPickerModal - Usando primer avatar del sistema:', initialAvatar);
+            setCurrentAvatarData(initialAvatar);
+            updateAvatarUrl(initialAvatar);
+        } else if (defaultAvatar) {
+            console.log('✅ AvatarPickerModal - Usando avatar por defecto:', defaultAvatar);
+            setCurrentAvatarData(defaultAvatar);
+            updateAvatarUrl(defaultAvatar);
+        } else {
+            console.log('❌ AvatarPickerModal - No hay avatares disponibles');
+        }
+    }, [isLoaded, systemAvatars.length, defaultAvatar]);
+
+    const updateAvatarUrl = async (avatar: IAvatar) => {
+        try {
+            setIsLoadingImage(true);
+            const url = await getAvatarImageUrl(avatar);
+            setCurrentAvatarUrl(url);
+        } catch (error) {
+            console.error('Error getting avatar URL:', error);
+            setCurrentAvatarUrl('/images/avatarGeneric.png');
+        } finally {
+            setIsLoadingImage(false);
+        }
+    };
+
     const showNext = () => {
-        const nextIndex = activeIndex + 1 >= avatarList.length ? 0 : activeIndex + 1;
+        console.log('➡️ AvatarPickerModal - showNext:', { activeIndex, systemAvatarsLength: systemAvatars.length });
+        if (systemAvatars.length === 0) {
+            console.log('❌ AvatarPickerModal - showNext: No hay avatares del sistema');
+            return;
+        }
+
+        const nextIndex = activeIndex + 1 >= systemAvatars.length ? 0 : activeIndex + 1;
+        const nextAvatar = systemAvatars[nextIndex];
+        console.log('➡️ AvatarPickerModal - showNext:', { nextIndex, nextAvatar });
+
         setActiveIndex(nextIndex);
-        setCurrentAvatarData(avatarList[nextIndex]);
-        onSelect(avatarList[nextIndex].src);
+        setCurrentAvatarData(nextAvatar);
+        updateAvatarUrl(nextAvatar);
+        onSelect(nextAvatar);
     };
 
     const showPrevious = () => {
-        const prevIndex = activeIndex - 1 < 0 ? avatarList.length - 1 : activeIndex - 1;
+        console.log('⬅️ AvatarPickerModal - showPrevious:', { activeIndex, systemAvatarsLength: systemAvatars.length });
+        if (systemAvatars.length === 0) {
+            console.log('❌ AvatarPickerModal - showPrevious: No hay avatares del sistema');
+            return;
+        }
+
+        const prevIndex = activeIndex - 1 < 0 ? systemAvatars.length - 1 : activeIndex - 1;
+        const prevAvatar = systemAvatars[prevIndex];
+        console.log('⬅️ AvatarPickerModal - showPrevious:', { prevIndex, prevAvatar });
+
         setActiveIndex(prevIndex);
-        setCurrentAvatarData(avatarList[prevIndex]);
-        onSelect(avatarList[prevIndex].src);
+        setCurrentAvatarData(prevAvatar);
+        updateAvatarUrl(prevAvatar);
+        onSelect(prevAvatar);
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
         const file = files[0];
-        const imageType = /^image\//;
 
-        if (!imageType.test(file.type)) {
-            setUploadError(true);
-            setTimeout(() => setUploadError(false), 1200);
-            return;
-        }
+        try {
+            handleClearError();
+            const uploadedAvatar = await handleUploadAvatar(file, userId);
 
-        setUploadError(false);
-        setIsLoading(true);
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setIsLoading(false);
             if (onUpload) {
-                onUpload(reader.result);
+                onUpload(uploadedAvatar);
             }
-            onSelect(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+            onSelect(uploadedAvatar);
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+        }
     };
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
+
+    if (!isLoaded) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loading}>Cargando avatares...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -199,6 +154,7 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                     onClick={showPrevious}
                     aria-label="Avatar anterior"
                     type="button"
+                    disabled={systemAvatars.length <= 1}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
@@ -209,20 +165,20 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                 <div className={`${styles.avatarContainer} ${uploadError ? styles['avatarContainer--error'] : ''}`}>
                     <div className={styles.avatar}>
                         <img
-                            src={currentAvatar || currentAvatarData.src}
+                            src={currentAvatar || currentAvatarUrl || '/images/avatarGeneric.png'}
                             alt="Avatar seleccionado"
-                            className={`${styles.avatarImg} ${isLoading ? styles['avatarImg--loading'] : ''}`}
-                            onLoad={() => setIsLoading(false)}
+                            className={`${styles.avatarImg} ${isLoadingImage ? styles['avatarImg--loading'] : ''}`}
+                            onLoad={() => setIsLoadingImage(false)}
                             onError={(e) => {
                                 e.currentTarget.src = "/images/avatarGeneric.png";
                             }}
                         />
-                        {isLoading && <div className={styles.loadingSpinner} />}
+                        {(isLoadingImage || isUploading) && <div className={styles.loadingSpinner} />}
                     </div>
 
                     {/* Indicador del nombre del avatar */}
                     <div className={styles.avatarName}>
-                        {currentAvatarData.name}
+                        {currentAvatarData?.name || 'Avatar'}
                     </div>
                 </div>
 
@@ -232,6 +188,7 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                     onClick={showNext}
                     aria-label="Siguiente avatar"
                     type="button"
+                    disabled={systemAvatars.length <= 1}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
@@ -245,13 +202,21 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                 onClick={handleUploadClick}
                 aria-label="Subir imagen personalizada"
                 type="button"
+                disabled={isUploading || userId === 0}
             >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className={styles.uploadIcon}>
                     <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                     <path d="M12,12L16,16H13V19H11V16H8L12,12Z" />
                 </svg>
-                <span>Sube tu imagen aquí</span>
+                <span>{isUploading ? 'Subiendo...' : 'Sube tu imagen aquí'}</span>
             </button>
+
+            {/* Mostrar errores si los hay */}
+            {uploadError && (
+                <div className={styles.errorMessage}>
+                    {uploadError}
+                </div>
+            )}
 
             <input
                 ref={fileInputRef}
@@ -259,6 +224,7 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
                 accept="image/*"
                 onChange={handleFileUpload}
                 className={styles.hiddenInput}
+                disabled={isUploading}
             />
         </div>
     );
