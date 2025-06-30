@@ -7,6 +7,7 @@ export default interface IProfile {
   email: string;
   avatar: string; // URL del avatar (para mostrar en frontend)
   avatar_id?: number; // ID del avatar (para enviar al backend)
+  avatarId?: number; // Campo del backend (camelCase)
   city: string;
   country: string;
   phone: string;

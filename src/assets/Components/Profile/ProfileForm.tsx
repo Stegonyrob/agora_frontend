@@ -35,6 +35,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
     email: "",
     avatar: "", // Se actualizará con la URL del avatar
     avatar_id: undefined, // ID del avatar para el backend
+    avatarId: undefined, // Campo del backend (camelCase)
     city: "",
     country: "",
     phone: "",
@@ -69,14 +70,38 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
 
   const updateAvatarInForm = async (avatar: IAvatar) => {
     try {
+      console.log('🖼️ ProfileForm - updateAvatarInForm - Entrada:', avatar);
+
+      if (!avatar || !avatar.id) {
+        console.error('❌ ProfileForm - Avatar inválido:', avatar);
+        return;
+      }
+
+      console.log('🖼️ ProfileForm - updateAvatarInForm - avatar.id:', avatar.id, typeof avatar.id);
+
       const avatarUrl = await getAvatarImageUrl(avatar);
-      setFormState(prev => ({
-        ...prev,
-        avatar: avatarUrl,
-        avatar_id: avatar.id
-      }));
+
+      setFormState(prev => {
+        console.log('🖼️ ProfileForm - FormState anterior:', prev);
+
+        const newState = {
+          ...prev,
+          avatar: avatarUrl,
+          avatar_id: avatar.id,
+          avatarId: avatar.id  // También para el backend
+        };
+
+        console.log('✅ ProfileForm - FormState actualizado:', {
+          avatar_id: newState.avatar_id,
+          avatar: newState.avatar,
+          avatar_id_type: typeof newState.avatar_id
+        });
+        console.log('✅ ProfileForm - FormState completo:', newState);
+
+        return newState;
+      });
     } catch (error) {
-      console.error('Error updating avatar in form:', error);
+      console.error('❌ ProfileForm - Error al actualizar avatar:', error);
     }
   };
 
@@ -116,6 +141,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
       return;
     }
 
+    console.log('🚀 ProfileForm - formState before submission:', formState);
+    console.log('🚀 ProfileForm - formState.avatar_id:', formState.avatar_id, typeof formState.avatar_id);
+
     const updatedProfile: IProfileDTO = {
       ...formState,
       firstName: sanitizedFirstName,
@@ -127,6 +155,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
       country: sanitizedCountry,
       phone: sanitizedPhone,
     };
+
+    // Asegurar que avatar_id esté incluido si existe y mapear al nombre correcto del backend
+    if (formState.avatar_id !== undefined && formState.avatar_id !== null) {
+      updatedProfile.avatar_id = formState.avatar_id;
+      // También enviar como avatarId para compatibilidad con el backend
+      updatedProfile.avatarId = formState.avatar_id;
+    }
+
+    console.log('🚀 ProfileForm - updatedProfile after explicit avatar_id:', updatedProfile);
+    console.log('🚀 ProfileForm - updatedProfile keys:', Object.keys(updatedProfile));
+    console.log('🚀 ProfileForm - updatedProfile.avatar_id:', updatedProfile.avatar_id, typeof updatedProfile.avatar_id);
+    console.log('🚀 ProfileForm - JSON.stringify(updatedProfile):', JSON.stringify(updatedProfile));
 
     try {
       await onSubmit(updatedProfile);

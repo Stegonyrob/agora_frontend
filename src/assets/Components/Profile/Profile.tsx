@@ -1,28 +1,174 @@
 import IProfile from "@/core/profiles/IProfile";
-import React from "react";
+import { useAvatars } from "@/hooks/useAvatars";
+import React, { useEffect, useState } from "react";
 import styles from "./Profile.module.scss";
 
 interface ProfileProps {
     profile?: IProfile;
     onEdit: () => void;
 }
+
 const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
+    const { getAvatarImageUrl, defaultAvatar, avatars, isLoaded } = useAvatars();
+    const [avatarUrl, setAvatarUrl] = useState<string>("/images/avatarGeneric.png");
+
+    useEffect(() => {
+        const loadAvatarUrl = async () => {
+            console.log("🔍 Profile - Datos del perfil:", profile);
+            console.log("🔍 Profile - profile?.avatar:", profile?.avatar);
+            console.log("🔍 Profile - profile?.avatar_id:", profile?.avatar_id);
+            console.log("🔍 Profile - isLoaded:", isLoaded);
+            console.log("🔍 Profile - avatars.length:", avatars.length);
+
+            if (profile?.avatar) {
+                console.log("🖼️ Profile - Avatar URL desde profile:", profile.avatar);
+                setAvatarUrl(profile.avatar);
+            } else if (profile?.avatar_id) {
+                try {
+                    console.log("🖼️ Profile - Obteniendo URL para avatar_id:", profile.avatar_id);
+
+                    // Si los avatares no están cargados, esperar un poco y reintentar
+                    if (!isLoaded || avatars.length === 0) {
+                        console.log("🔄 Profile - Avatares no cargados aún, esperando...");
+                        return;
+                    }
+
+                    // Buscar el avatar específico por ID
+                    const targetAvatar = avatars.find(avatar => avatar.id === profile.avatar_id);
+                    console.log("🔍 Profile - Avatar buscado con ID:", profile.avatar_id);
+                    console.log("🔍 Profile - Avatar encontrado:", targetAvatar);
+
+                    if (targetAvatar) {
+                        console.log("🖼️ Profile - Avatar encontrado:", targetAvatar);
+                        const url = await getAvatarImageUrl(targetAvatar);
+                        console.log("🖼️ Profile - URL generada:", url);
+                        setAvatarUrl(url);
+                    } else if (defaultAvatar) {
+                        console.log("🖼️ Profile - Avatar no encontrado, usando defaultAvatar");
+                        const url = await getAvatarImageUrl(defaultAvatar);
+                        setAvatarUrl(url);
+                    } else {
+                        console.log("🖼️ Profile - No se encontró avatar, usando genérico");
+                        setAvatarUrl("/images/avatarGeneric.png");
+                    }
+                } catch (error) {
+                    console.error("❌ Profile - Error obteniendo avatar URL:", error);
+                    setAvatarUrl("/images/avatarGeneric.png");
+                }
+            } else {
+                console.log("🖼️ Profile - Usando avatar por defecto - Razón:");
+                console.log("  - profile?.avatar:", !!profile?.avatar);
+                console.log("  - profile?.avatar_id:", !!profile?.avatar_id);
+                console.log("  - isLoaded:", isLoaded);
+                setAvatarUrl("/images/avatarGeneric.png");
+            }
+        };
+
+        loadAvatarUrl();
+    }, [profile, getAvatarImageUrl, defaultAvatar, avatars, isLoaded]);
+
     if (!profile) {
-        return <p>No profile data available.</p>;
+        return (
+            <div className={styles.noProfile}>
+                <p>No hay datos de perfil disponibles.</p>
+            </div>
+        );
     }
 
+    const fullName = `${profile.firstName || ''} ${profile.lastName1 || ''} ${profile.lastName2 || ''}`.trim();
+
     return (
-        <div className={styles.profileContainer}>
-            <img className={styles.avatar} src={profile.avatar} alt="Profile Avatar" />
-            <p><strong>Nombre:</strong> {profile.firstName} </p>
-            <p><strong>Primer Apellido:</strong> </p>
-            <p><strong>Segundo Apellido:</strong> {profile.lastName2}</p>
-            <p><strong>Parentesco:</strong> {profile.relationship}</p>
-            <p><strong>Email:</strong> {profile.email}</p>
-            <p><strong>Ciudad:</strong> {profile.city}</p>
-            <p><strong>País:</strong> {profile.country}</p>
-            <p><strong>Teléfono:</strong> {profile.phone}</p>
-            <button onClick={onEdit} className={styles.editButton}>Editar Perfil</button>
+        <div className={styles.profileWrapper}>
+            {/* Header del perfil */}
+            <div className={styles.profileHeader}>
+                <div className={styles.avatarSection}>
+                    <div className={styles.avatarContainer}>
+                        <img
+                            className={styles.avatar}
+                            src={avatarUrl}
+                            alt="Avatar del perfil"
+                            onError={(e) => {
+                                console.error("❌ Profile - Error cargando imagen:", avatarUrl);
+                                (e.target as HTMLImageElement).src = "/images/avatarGeneric.png";
+                            }}
+                        />
+                    </div>
+                    <div className={styles.userInfo}>
+                        <h2 className={styles.userName}>{fullName || 'Usuario'}</h2>
+                        <p className={styles.userRole}>{profile.relationship || 'Miembro'}</p>
+                    </div>
+                </div>
+                <button onClick={onEdit} className={styles.editButton}>
+                    <i className="fas fa-edit"></i>
+                    Editar Perfil
+                </button>
+            </div>
+
+            {/* Información de identidad */}
+            <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>INFORMACIÓN PERSONAL</h3>
+                <div className={styles.card}>
+                    <div className={styles.cardBody}>
+                        <table className={styles.infoTable}>
+                            <tbody>
+                                <tr>
+                                    <td className={styles.label}>Nombre</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.firstName || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>Primer Apellido</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.lastName1 || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>Segundo Apellido</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.lastName2 || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>Parentesco</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.relationship || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>Email</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.email || 'No especificado'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {/* Información de contacto */}
+            <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>INFORMACIÓN DE CONTACTO</h3>
+                <div className={styles.card}>
+                    <div className={styles.cardBody}>
+                        <table className={styles.infoTable}>
+                            <tbody>
+                                <tr>
+                                    <td className={styles.label}>Ciudad</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.city || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>País</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.country || 'No especificado'}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.label}>Teléfono</td>
+                                    <td className={styles.separator}>:</td>
+                                    <td className={styles.value}>{profile.phone || 'No especificado'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

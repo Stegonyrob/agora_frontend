@@ -126,7 +126,6 @@
   background: #0c0c0c;
 }
 
-/* CORRECT SHOW/HOVER LOGIC */
 .dropdown:hover .dropdownContent,
 .dropdown:hover .dropdownContentOne,
 .dropdown:hover .dropdownContentTwo,
@@ -152,13 +151,13 @@
   border-radius: 4px;
 }
 
-.dropdownContentTwo .dropdownLink {
-  padding: 0.7rem 1.5rem;
-}
-
 .dropdownLink:hover {
   background: #232323;
   color: #ffdd40;
+}
+
+.dropdownContentTwo .dropdownLink {
+  padding: 0.7rem 1.5rem;
 }
 
 @media (max-width: 960px) {
@@ -193,54 +192,6 @@
     min-width: 100%;
     box-shadow: none;
     border-radius: 0;
-  }
-  .grayScaleButton {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    outline: none;
-    display: flex;
-    align-items: center;
-    transition: filter 0.3s;
-  }
-  .grayScaleButton:hover, .grayScaleButton:focus {
-    filter: brightness(1.2);
-  }
-  .toggleSwitch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  .toggleSwitch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .infinityIcon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .toggleSwitch input:checked + .slider {
-    background-color: #2196F3;
   }
 }
 
@@ -308,4 +259,59 @@
     display: flex;
     top: 6.2rem;
   }
+}
+
+.grayScaleButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  display: flex;
+  align-items: center;
+  transition: filter 0.3s;
+}
+
+.grayScaleButton:hover, .grayScaleButton:focus {
+  filter: brightness(1.2);
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infinityIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleSwitch input:checked + .slider {
+  background-color: #2196F3;
 }

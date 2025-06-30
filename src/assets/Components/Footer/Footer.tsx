@@ -125,9 +125,6 @@ export default function Footer() {
                     <li><a href="/legal/terms">Términos</a></li>
                     <li><a href="/legal/privacy">Privacidad</a></li>
                     <li><a href="/legal/cookies">Política de cookies</a></li>
-
-
-
                   </ul>
                 </div>
               </div>

@@ -46,8 +46,12 @@ const sessionSlice = createSlice({
     setSession(state, action: PayloadAction<ISession>) {
       Object.assign(state, action.payload);
     },
+    updateAvatarUrl(state, action: PayloadAction<string>) {
+      state.avatarUrl = action.payload;
+    },
   },
 });
 
-export const { login, logout, setSession } = sessionSlice.actions;
+export const { login, logout, setSession, updateAvatarUrl } =
+  sessionSlice.actions;
 export default sessionSlice.reducer;

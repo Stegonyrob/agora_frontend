@@ -1,15 +1,15 @@
 -- Script para insertar avatares del sistema en la base de datos
 -- Avatar 1 es el default para usuarios nuevos
 -- Avatar onron es exclusivo del admin pero NO es default del sistema
-
-INSERT INTO avatars (
-    image_name,
-    image_data,
-    preloaded,
-    is_default,
-    display_name,
-    image_url
-)
+INSERT INTO
+    avatars (
+        image_name,
+        image_data,
+        preloaded,
+        is_default,
+        display_name,
+        image_url
+    )
 VALUES
     -- Avatar default para usuarios nuevos
     (
@@ -248,5 +248,16 @@ VALUES
     );
 
 -- Verificar que se insertaron correctamente
-SELECT COUNT(*) as total_avatars FROM avatars WHERE preloaded = true;
-SELECT COUNT(*) as default_avatars FROM avatars WHERE is_default = true;
+SELECT
+    COUNT(*) as total_avatars
+FROM
+    avatars
+WHERE
+    preloaded = true;
+
+SELECT
+    COUNT(*) as default_avatars
+FROM
+    avatars
+WHERE
+    is_default = true;

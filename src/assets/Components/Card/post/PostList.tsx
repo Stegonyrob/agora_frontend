@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IPost } from "../../../../core/posts/IPost";
 import PostsService from "../../../../core/posts/PostService";
+import Pagination from "../../Pagination";
 import CardItem from "../card/CardItem";
 import styles from "../card/CardItem.module.scss";
 
@@ -40,9 +41,9 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
         console.log("Selected item:", item);
     };
 
-    // Opcional: controles de paginación
-    const handlePrev = () => setPage((p) => Math.max(0, p - 1));
-    const handleNext = () => setPage((p) => Math.min(totalPages - 1, p + 1));
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
 
     return (
         <div>
@@ -65,11 +66,12 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                     />
                 ))}
             </div>
-            <div style={{ marginTop: 16 }}>
-                <button onClick={handlePrev} disabled={page === 0}>Anterior</button>
-                <span style={{ margin: "0 8px" }}>Página {page + 1} de {totalPages}</span>
-                <button onClick={handleNext} disabled={page + 1 >= totalPages}>Siguiente</button>
-            </div>
+
+            <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 };

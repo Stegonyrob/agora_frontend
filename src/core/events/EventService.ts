@@ -38,6 +38,52 @@ export default class EventService {
     }
   }
 
+  // 1.1 Get events with pagination - fetchEventsPaginated() (Public)
+  async fetchEventsPaginated(
+    page: number = 0,
+    size: number = 6
+  ): Promise<{
+    content: IEvent[];
+    totalPages: number;
+    number: number;
+    size: number;
+    totalElements: number;
+  }> {
+    console.log(
+      `Fetching events with pagination - Page: ${page}, Size: ${size}`
+    );
+    try {
+      const response = await axios.get(
+        `${this.uri}/paginated?page=${page}&size=${size}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Paginated events fetched successfully:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching paginated events:", error.message);
+      // Fallback: Si no existe el endpoint paginado, simular paginación con el método normal
+      console.log("Falling back to client-side pagination...");
+      const allEvents = await this.fetchEvents();
+      const startIndex = page * size;
+      const endIndex = startIndex + size;
+      const paginatedEvents = allEvents.slice(startIndex, endIndex);
+
+      return {
+        content: paginatedEvents,
+        totalPages: Math.ceil(allEvents.length / size),
+        number: page,
+        size: size,
+        totalElements: allEvents.length,
+      };
+    } finally {
+      console.log("End fetching paginated events.");
+    }
+  }
+
   // 2. Get event by ID - fetchEventById() (Public)
   async fetchEventById(id: number): Promise<IEvent> {
     console.log(`Fetching event by ID: ${id}`);

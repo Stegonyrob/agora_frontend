@@ -48,14 +48,46 @@ export const useAvatars = () => {
     };
 
     // Función para subir un avatar personalizado
-    const handleUploadAvatar = async (file: File, userId: number) => {
+    const handleUploadAvatar = async (file: File | null, userId: number): Promise<IAvatar | null> => {
+        console.log('📤 useAvatars - handleUploadAvatar iniciado:', { file: file?.name, userId });
+
+        if (!file) {
+            console.error('❌ useAvatars - Archivo nulo, no se puede subir');
+            return null;
+        }
+
+        console.log('🔍 useAvatars - Archivo:', file);
+
         const validation = avatarService.validateAvatarFile(file);
+        console.log('🔍 useAvatars - Validación:', validation);
+
         if (!validation.isValid) {
+            console.error('❌ useAvatars - Validación fallida:', validation.error);
             throw new Error(validation.error);
         }
 
-        const result = await dispatch(uploadCustomAvatar({ file, userId }) as any);
-        return result.payload;
+        console.log('✅ useAvatars - Archivo validado, enviando a Redux...');
+
+        try {
+            const action = uploadCustomAvatar({ file, userId });
+            console.log('🔍 useAvatars - Acción a dispatch:', action);
+
+            const result = await dispatch(action as any);
+            console.log('🔍 useAvatars - Resultado de Redux:', result);
+
+            if (result.type.endsWith('fulfilled')) {
+                console.log('✅ useAvatars - Upload exitoso:', result.payload);
+                return result.payload;
+            } else if (result.type.endsWith('rejected')) {
+                console.error('❌ useAvatars - Upload rechazado:', result.error);
+                throw new Error(result.error?.message || 'Error uploading avatar');
+            }
+
+            return result.payload;
+        } catch (error) {
+            console.error('❌ useAvatars - Error en dispatch:', error);
+            throw error;
+        }
     };
 
     // Función para limpiar errores
@@ -83,6 +115,12 @@ export const useAvatars = () => {
         return randomAvatar;
     };
 
+    const handleUpdateUserAvatar = (avatarId: number) => {
+        console.log('🔄 useAvatars - Actualizando avatar del usuario:', avatarId);
+        // Esta funcionalidad ahora se maneja desde ProfileForm
+        console.log('ℹ️ useAvatars - La actualización del avatar se maneja en ProfileForm');
+    };
+
     return {
         avatars,
         defaultAvatar,
@@ -95,5 +133,6 @@ export const useAvatars = () => {
         handleUploadAvatar,
         handleClearError,
         getRandomAvatar,
+        handleUpdateUserAvatar,
     };
 };

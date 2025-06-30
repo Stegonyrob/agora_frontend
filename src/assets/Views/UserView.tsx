@@ -12,7 +12,18 @@ interface UserViewProps {
 const UserView: React.FC<UserViewProps> = ({ posts }) => {
     return (
         <div className={styles.container}>
-            <ProfileForm />
+            <ProfileForm
+                profile={{} as any} // TODO: Replace with a real IProfileDTO object
+                onSubmit={async (updatedProfile) => { /* TODO: implement submit logic */ }} // Replace with your submit handler
+                onClose={() => { }} // Replace with your close handler
+                show={true} // Set to true or false as needed
+                userId={0} // TODO: Replace with actual userId of type number
+                setLogin={() => { }} // TODO: Replace with actual setLogin function
+                setRegister={() => { }} // TODO: Replace with actual setRegister function
+                setUserId={() => { }} // TODO: Replace with actual setUserId function
+                setUserName={() => { }} // TODO: Replace with actual setUserName function
+            // Add other required props here
+            />
 
         </div>
     );

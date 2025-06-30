@@ -1,9 +1,12 @@
 import ProfileForm from "@/assets/Components/Profile/ProfileForm";
+import { updateAvatarUrl } from "@/core/auth/sessionStore";
 import { IPost } from "@/core/posts/IPost";
 import IProfile from "@/core/profiles/IProfile";
 import IProfileDTO from "@/core/profiles/IProfileDTO";
 import ProfileService from "@/core/profiles/ProfileService";
+import { useAvatars } from "@/hooks/useAvatars";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import Profile from "../Components/Profile/Profile";
 import styles from "./scss/Views.module.scss";
 
@@ -12,6 +15,8 @@ interface ProfileProps {
 }
 
 const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
+    const dispatch = useDispatch();
+    const { getAvatarImageUrl, avatars, defaultAvatar, isLoaded } = useAvatars();
     const [login, setLogin] = React.useState<boolean>(false);
     const [register, setRegister] = React.useState<boolean>(false);
 
@@ -30,6 +35,13 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
         }
     }, [userId]);
 
+    // Efecto para actualizar el avatar cuando los avatares se cargan
+    useEffect(() => {
+        if (profile && isLoaded) {
+            updateSessionAvatar(profile);
+        }
+    }, [isLoaded, avatars]);
+
     const fetchProfileData = async (id: number) => {
         if (!id) {
             console.error("Invalid user ID");
@@ -42,9 +54,39 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
                 console.error("Profile data not found");
                 return;
             }
+            console.log('🔍 ProfileView - Profile fetched:', fetchedProfile);
             setProfile(fetchedProfile);
+
+            // También actualizar el avatar en la sesión si es necesario
+            await updateSessionAvatar(fetchedProfile);
         } catch (error) {
             console.error("Error fetching profile data:", error);
+        }
+    };
+
+    const updateSessionAvatar = async (profileData: IProfile) => {
+        if (!isLoaded) return;
+
+        try {
+            if (profileData.avatar_id) {
+                console.log('🖼️ ProfileView - Actualizando avatar de sesión inicial, avatar_id:', profileData.avatar_id);
+
+                const targetAvatar = avatars.find(avatar => avatar.id === profileData.avatar_id);
+
+                if (targetAvatar) {
+                    const avatarUrl = await getAvatarImageUrl(targetAvatar);
+                    console.log('🖼️ ProfileView - Actualizando sesión con URL:', avatarUrl);
+                    dispatch(updateAvatarUrl(avatarUrl));
+                } else if (profileData.avatar && profileData.avatar.trim() !== '') {
+                    console.log('🖼️ ProfileView - Actualizando sesión con avatar personalizado:', profileData.avatar);
+                    dispatch(updateAvatarUrl(profileData.avatar));
+                }
+            } else if (profileData.avatar && profileData.avatar.trim() !== '') {
+                console.log('🖼️ ProfileView - Actualizando sesión con avatar directo:', profileData.avatar);
+                dispatch(updateAvatarUrl(profileData.avatar));
+            }
+        } catch (error) {
+            console.error('❌ ProfileView - Error actualizando avatar de sesión:', error);
         }
     };
 
@@ -58,8 +100,43 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
         }
 
         try {
+            console.log('🔄 ProfileView - Actualizando perfil:', updatedProfile);
             const updatedData = await profileService.updateProfile(profile.id, updatedProfile);
+            console.log('✅ ProfileView - Perfil actualizado:', updatedData);
+
             setProfile(updatedData);
+
+            // Si se actualizó el avatar, también actualizar la sesión
+            if (updatedData.avatar_id && isLoaded) {
+                console.log('🖼️ ProfileView - Actualizando avatar en sesión, avatar_id:', updatedData.avatar_id);
+
+                // Buscar el avatar específico por ID
+                const targetAvatar = avatars.find(avatar => avatar.id === updatedData.avatar_id);
+
+                if (targetAvatar) {
+                    console.log('🖼️ ProfileView - Avatar encontrado:', targetAvatar);
+                    try {
+                        const avatarUrl = await getAvatarImageUrl(targetAvatar);
+                        console.log('🖼️ ProfileView - URL de avatar generada:', avatarUrl);
+                        dispatch(updateAvatarUrl(avatarUrl));
+                    } catch (error) {
+                        console.error('❌ ProfileView - Error generando URL de avatar:', error);
+                    }
+                } else if (updatedData.avatar && updatedData.avatar.trim() !== '') {
+                    // Si es un avatar personalizado (URL directa)
+                    console.log('🖼️ ProfileView - Usando avatar personalizado:', updatedData.avatar);
+                    dispatch(updateAvatarUrl(updatedData.avatar));
+                } else if (defaultAvatar) {
+                    console.log('🖼️ ProfileView - Usando avatar por defecto');
+                    try {
+                        const avatarUrl = await getAvatarImageUrl(defaultAvatar);
+                        dispatch(updateAvatarUrl(avatarUrl));
+                    } catch (error) {
+                        console.error('❌ ProfileView - Error con avatar por defecto:', error);
+                    }
+                }
+            }
+
             setShowProfileForm(false);
         } catch (error) {
             console.error("Error updating profile:", error);

@@ -20,7 +20,7 @@ function NavBar() {
     const [grayScale, setGrayScale] = useState(false);
 
     const userName = useSelector((state: RootState) => state.session.userName) || sessionStorage.getItem("userName") || "Usuario";
-    const avatarUrl = useSelector((state: RootState) => state.session.avatarUrl) || "/avatars/lego/lego1.png";
+    const avatarUrl = useSelector((state: RootState) => state.session.avatarUrl) || "/images/avatarGeneric.png";
     const isAdmin = sessionStorage.getItem("isAdmin") === "true";
     const userId = Number(sessionStorage.getItem("userId")) || 0;
     const isLoggedIn = userId > 0;

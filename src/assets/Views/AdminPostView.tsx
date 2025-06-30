@@ -12,8 +12,8 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         const fetchPosts = async () => {
             try {
                 const postService = new PostService();
-                const posts = await postService.getAllPosts();
-                setFetchedPosts(posts ?? []);
+                const page = await postService.getAllPosts();
+                setFetchedPosts(page?.data ?? []);
             } catch (error) {
                 console.error("Error fetching posts:", error);
             }

@@ -4,7 +4,7 @@ import { LegalTextService } from "@/core/legals/LegalTextService";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const TermsView: React.FC = () => {
+const LegalTextView: React.FC = () => {
     const validTypes = ["terms", "privacy", "cookies"];;
     const { type } = useParams<{ type?: string }>();
     const selectedType = validTypes.includes(type ?? "") ? type! : "terms";
@@ -38,4 +38,4 @@ const TermsView: React.FC = () => {
     );
 };
 
-export default TermsView;
+export default LegalTextView;

@@ -18,26 +18,27 @@ import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";
 import AgoraView from "@/assets/Views/AgoraView";
 import CeaView from "@/assets/Views/CeaView";
+import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
 import HomeView from "@/assets/Views/HomeView";
+import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
 import LoginView from "@/assets/Views/LoginView";
 import NeurodiversityView from "@/assets/Views/NeurodiversityView";
 import RegisterView from "@/assets/Views/RegisterView";
 import ServiceView from "@/assets/Views/ServiceView";
 import Tda_TdhView from "@/assets/Views/Tda_TdhView";
 import AdminPostView from "./assets/Views/AdminPostView";
-import TermsView from "./assets/Views/TermsView";
+import EventsView from "./assets/Views/EventsView";
 import TrasComunicationView from './assets/Views/TrasCommunication';
-
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
 import BlogView from "@/assets/Views/BlogView";
-import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
-import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
-import ProfileView from "@/assets/Views/ProfileView";
 
-import AdminBlogRulesView from "./assets/Views/AdminBlogRulesView";
+import ProfileView from "@/assets/Views/ProfileView";
 import AdminEventView from "./assets/Views/AdminEventView";
-import EventsView from "./assets/Views/EventsView";
+import AdminLegalTextView from "./assets/Views/AdminLegalTextView";
+import LegalTextView from "./assets/Views/LegalTextView";
+
+
 
 
 
@@ -133,7 +134,7 @@ const App: React.FC = () => {
               }}
             />
           } />
-          <Route path="legal/:type" element={<TermsView />} />
+          <Route path="legal/:type" element={<LegalTextView />} />
         </Route>
 
         {/* Rutas privadas */}
@@ -160,9 +161,9 @@ const App: React.FC = () => {
           </PrivateLayout>
         } />
 
-        <Route path="/admin/blog-rules" element={
+        <Route path="/admin/legal/:type" element={
           <PrivateLayout>
-            <ProtectedRoute element={<AdminBlogRulesView />} />
+            <ProtectedRoute element={<AdminLegalTextView />} />
           </PrivateLayout>
         } />
 
