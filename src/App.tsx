@@ -36,6 +36,7 @@ import BlogView from "@/assets/Views/BlogView";
 import ProfileView from "@/assets/Views/ProfileView";
 import AdminEventView from "./assets/Views/AdminEventView";
 import AdminLegalTextView from "./assets/Views/AdminLegalTextView";
+import AdminUsersView from "./assets/Views/AdminUsersView";
 import LegalTextView from "./assets/Views/LegalTextView";
 
 
@@ -164,6 +165,12 @@ const App: React.FC = () => {
         <Route path="/admin/legal/:type" element={
           <PrivateLayout>
             <ProtectedRoute element={<AdminLegalTextView />} />
+          </PrivateLayout>
+        } />
+
+        <Route path="/admin/users" element={
+          <PrivateLayout>
+            <ProtectedRoute element={<AdminUsersView />} />
           </PrivateLayout>
         } />
 

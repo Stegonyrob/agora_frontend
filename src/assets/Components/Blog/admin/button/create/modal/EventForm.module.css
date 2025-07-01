@@ -1,0 +1,177 @@
+/* EventForm.module.scss */
+.eventForm {
+  font-family: 'Overlock', serif;
+}
+
+.eventForm .modal-header {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d73 100%);
+  color: white;
+  border-bottom: none;
+}
+
+.eventForm .modal-header .modal-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.eventForm .modal-header .btn-close {
+  filter: invert(1);
+}
+
+.eventForm .modal-body {
+  padding: 2rem;
+  background: #f8f9fa;
+}
+
+.eventForm .modal-body .form-label {
+  color: #2c5aa0;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.eventForm .modal-body .form-label strong {
+  font-weight: 700;
+}
+
+.eventForm .modal-body .form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-family: 'Overlock', serif;
+  transition: all 0.3s ease;
+}
+
+.eventForm .modal-body .form-control:focus {
+  border-color: #2c5aa0;
+  box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+}
+
+.eventForm .modal-body .form-control::placeholder {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.eventForm .modal-body textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.eventForm .modal-body input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.eventForm .modal-body input[type="number"]::-webkit-outer-spin-button, .eventForm .modal-body input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.eventForm .modal-body .row .col-md-6 {
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.eventForm .modal-body .row .col-md-6:first-child {
+  padding-left: 0.75rem;
+}
+
+.eventForm .modal-body .row .col-md-6:last-child {
+  padding-right: 0.75rem;
+}
+
+.eventForm .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+}
+
+.eventForm .modal-footer .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: 'Overlock', serif;
+  transition: all 0.3s ease;
+}
+
+.eventForm .modal-footer .btn.btn-primary {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d73 100%);
+  border: none;
+}
+
+.eventForm .modal-footer .btn.btn-primary:hover {
+  background: linear-gradient(135deg, #1e3d73 0%, #152d5a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+}
+
+.eventForm .modal-footer .btn.btn-secondary {
+  background: #6c757d;
+  border: none;
+}
+
+.eventForm .modal-footer .btn.btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.imagePreviewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.imagePreviewContainer:empty {
+  display: none;
+}
+
+.imagePreview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.imagePreview:hover {
+  border-color: #2c5aa0;
+  transform: scale(1.05);
+}
+
+.imagePreview img {
+  display: block;
+  border-radius: 6px;
+}
+
+.imagePreview .btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+.imagePreview .btn:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .eventForm .modal-body {
+    padding: 1rem;
+  }
+  .eventForm .modal-body .row .col-md-6 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}

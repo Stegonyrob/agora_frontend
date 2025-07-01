@@ -196,13 +196,7 @@ const adminMenuItems: NavMenuItem[] = [
         background: "/images/bg-login.jpg",
         viewAsUser: true,
     },
-    {
-        key: "registro",
-        label: "Registro",
-        path: "/register",
-        background: "/images/bg-register.jpg",
-        viewAsUser: true,
-    },
+
     {
         key: "terminos-admin",
         label: "Términos (Admin)",

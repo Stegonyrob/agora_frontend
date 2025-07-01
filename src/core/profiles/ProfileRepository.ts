@@ -5,6 +5,10 @@ import IProfileDTO from "./IProfileDTO";
 
 export class ProfileRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE;
+  adminUri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE.replace(
+    "/any/user/",
+    "/any/admin/user/"
+  );
 
   async getAll(): Promise<IProfile[]> {
     const res = await axios.get(`${this.uri}`, {
@@ -63,6 +67,10 @@ export class ProfileRepository {
       "🚀 ProfileRepository.update - JSON.stringify(profile):",
       JSON.stringify(profile)
     );
+    console.log(
+      "🔗 ProfileRepository.update - Using USER endpoint:",
+      `${this.uri}/${id}`
+    );
 
     const res = await axios.put(`${this.uri}/${id}`, profile, {
       headers: getAuthHeaders(),
@@ -80,8 +88,40 @@ export class ProfileRepository {
     return profileData;
   }
 
+  // ✅ Para administradores - URL corregida
+  async updateAsAdmin(id: number, profile: IProfileDTO): Promise<IProfile> {
+    console.log("🚀 ProfileRepository.updateAsAdmin - id:", id);
+    console.log("🚀 ProfileRepository.updateAsAdmin - profile:", profile);
+    console.log(
+      "🔗 ProfileRepository.updateAsAdmin - Using ADMIN endpoint:",
+      `${this.adminUri}/${id}`
+    );
+
+    const res = await axios.put(`${this.adminUri}/${id}`, profile, {
+      headers: getAuthHeaders(),
+    });
+
+    console.log("🔍 ProfileRepository.updateAsAdmin - Raw response:", res.data);
+
+    // Mapear avatarId (backend) a avatar_id (frontend)
+    const profileData = res.data;
+    if (profileData.avatarId && !profileData.avatar_id) {
+      profileData.avatar_id = profileData.avatarId;
+    }
+
+    console.log(
+      "🔍 ProfileRepository.updateAsAdmin - Mapped profile:",
+      profileData
+    );
+    return profileData;
+  }
+
   async delete(id: number): Promise<void> {
-    await axios.delete(`${this.uri}/${id}`, {
+    console.log(
+      "🗑️ ProfileRepository.delete - Using ADMIN endpoint:",
+      `${this.adminUri}/${id}`
+    );
+    await axios.delete(`${this.adminUri}/${id}`, {
       headers: getAuthHeaders(),
     });
   }

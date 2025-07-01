@@ -25,6 +25,13 @@ export default class ProfileService {
     return await this.repository.update(id, profile);
   }
 
+  async updateProfileAsAdmin(
+    id: number,
+    profile: IProfileDTO
+  ): Promise<IProfile> {
+    return await this.repository.updateAsAdmin(id, profile);
+  }
+
   async deleteProfile(id: number): Promise<void> {
     return await this.repository.delete(id);
   }

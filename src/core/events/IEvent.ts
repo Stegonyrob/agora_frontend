@@ -5,6 +5,7 @@ export interface IEvent {
   id: number;
   title: string;
   message: string;
+  description: string;
   location: string;
   loves: number;
   isArchived: boolean;
@@ -17,4 +18,7 @@ export interface IEvent {
   creationDate: string;
   favoritesCount: number;
   attendentsCount: number;
+  capacity: number; // Campo de aforo
+  eventDate: string; // Fecha del evento
+  link: string;
 }

@@ -11,12 +11,24 @@ const ImageUploadInline = () => {
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
-            const formData = new FormData();
-            Array.from(event.target.files).forEach(file => formData.append("images", file));
-            const imageService = new ImageService();
-            const uploadedImages = await imageService.uploadImages(formData);
-            dispatch(addImages(uploadedImages));
-            if (fileInputRef.current) fileInputRef.current.value = "";
+            try {
+                const formData = new FormData();
+                Array.from(event.target.files).forEach(file => formData.append("images", file));
+
+                console.log("📤 Subiendo imágenes...", Array.from(event.target.files).map(f => f.name));
+
+                const imageService = new ImageService();
+                const uploadedImages = await imageService.uploadImages(formData);
+
+                console.log("✅ Imágenes subidas exitosamente:", uploadedImages);
+                dispatch(addImages(uploadedImages));
+
+                if (fileInputRef.current) fileInputRef.current.value = "";
+            } catch (error) {
+                console.error("❌ Error al subir imágenes:", error);
+                alert("Error al subir las imágenes. Por favor, inténtelo de nuevo.");
+                if (fileInputRef.current) fileInputRef.current.value = "";
+            }
         }
     };
 
@@ -26,21 +38,34 @@ const ImageUploadInline = () => {
     };
 
     return (
-        <div>
-            <input
-                type="file"
-                multiple
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className={styles.mainImageInput}
-            />
+        <div className="mb-3">
+            <div className="d-flex align-items-center mb-2">
+                <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="form-control"
+                    id="imageUpload"
+                />
+                <label htmlFor="imageUpload" className="btn btn-primary ms-2">
+                    📸 Subir Imágenes
+                </label>
+            </div>
+            <small className="text-muted">
+                Puedes seleccionar múltiples imágenes. Formatos permitidos: JPG, PNG, GIF
+            </small>
             <div className={styles.imagePreviewContainer}>
                 {imagesState.images.map((img: any, idx: number) => (
                     <div key={idx} className={styles.imagePreview}>
                         <img src={img.url} alt={img.imageName} width={80} />
-                        <button type="button" onClick={() => handleRemoveImage(img.imageName)}>
-                            Eliminar
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleRemoveImage(img.imageName)}
+                        >
+                            ❌
                         </button>
                     </div>
                 ))}

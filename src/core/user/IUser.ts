@@ -1,9 +1,17 @@
 export default interface IUser {
   id: number;
-  avatar: string;
   username: string;
-  role: string;
-  name: string;
   email: string;
-  url_avatar: string;
+  acceptedRules: boolean;
+  firstName: string | null;
+  lastName1: string | null;
+  lastName2: string | null;
+  avatarId: number | null;
+  avatarUrl: string | null;
+  avatarDisplayName: string | null;
+  roles: string[];
+  banReason: string | null;
+  fullName: string;
+  banned: boolean;
+  admin: boolean;
 }

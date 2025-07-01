@@ -2,6 +2,7 @@ export interface IEventDTO {
   id: number;
   title: string;
   message: string;
+  description: string;
   userId: number;
   loves: number;
   isArchived: boolean;
@@ -14,10 +15,10 @@ export interface IEventDTO {
   images: string[];
   isPublished: boolean;
   location: string;
-  description: string;
   createdAt: string;
   updatedAt: string;
   place?: string;
-  date: string;
+  eventDate: string; // Fecha del evento en formato ISO
   link: string;
+  capacity: number; // Campo de aforo
 }

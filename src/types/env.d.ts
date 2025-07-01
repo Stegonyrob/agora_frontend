@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_API_ENDPOINT_TAGS: string;
   readonly VITE_API_ENDPOINT_LOGIN: string;
   readonly VITE_API_ENDPOINT_REGISTER: string;
+  readonly VITE_API_ENDPOINT_BASE: string;
+  readonly VITE_API_ENDPOINT_PROFILE: string;
 }
 
 interface ImportMeta {
