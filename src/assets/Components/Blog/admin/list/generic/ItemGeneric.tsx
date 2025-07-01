@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify';
 import { useState } from 'react';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
+import ViewAttendeesButton from '../../button/attendees/ViewAttendeesButton';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import styles from './ItemGeneric.module.scss';
 
@@ -121,6 +122,12 @@ const ItemGeneric = <T extends IPost | IEvent>({
                                 }
                             }}
                         />
+                        {type === 'event' && (
+                            <ViewAttendeesButton
+                                eventId={id}
+                                eventTitle={title}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

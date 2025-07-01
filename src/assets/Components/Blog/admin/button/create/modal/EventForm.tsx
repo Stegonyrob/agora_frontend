@@ -3,6 +3,7 @@ import { Button, Modal } from "react-bootstrap";
 import EventService from "../../../../../../../core/events/EventService";
 import { IEvent } from "../../../../../../../core/events/IEvent";
 import { IEventDTO } from "../../../../../../../core/events/IEventDTO";
+import TagSelector from "../../../components/TagSelector";
 import ButtonAddImage from "../../image/ButtonAddImage";
 import styles from "./PostForm.module.scss";
 
@@ -18,6 +19,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
     const [title, setTitle] = useState(event?.title || "");
     const [description, setDescription] = useState(event?.description || "");
     const [images, setImages] = useState<string[]>(event?.images || []);
+    const [tags, setTags] = useState<string[]>(event?.tags || []);
 
     // Recupera los datos del usuario desde sessionStorage
     const userRole = sessionStorage.getItem("role");
@@ -56,7 +58,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             description: String(description),
             location: "",
             isArchived: false,
-            tags: [],
+            tags: tags,
             images,
             message: "",
             loves: 0,
@@ -80,6 +82,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
             setTitle("");
             setDescription("");
             setImages([]);
+            setTags([]);
         } catch (error) {
             console.error("Error al crear el evento:", error);
             alert(
@@ -118,6 +121,13 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
                             </div>
                         ))}
                     </div>
+
+                    <TagSelector
+                        selectedTags={tags}
+                        onTagsChange={setTags}
+                        placeholder="Agregar tags para el evento..."
+                    />
+
                     <label>
                         Descripción:
                         <textarea

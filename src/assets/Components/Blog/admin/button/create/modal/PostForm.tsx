@@ -5,6 +5,7 @@ import { IPost } from '../../../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../../../core/posts/IPostDTO';
 import PostService from '../../../../../../../core/posts/PostService';
 import { RootState } from '../../../../../../../redux/store';
+import TagSelector from '../../../components/TagSelector';
 import ButtonAddImage from '../../image/ButtonAddImage';
 import styles from './PostForm.module.scss';
 interface PostFormProps {
@@ -19,6 +20,8 @@ interface PostFormProps {
 const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) => {
   const [title, setTitle] = useState(post?.title || '');
   const [message, setMessage] = useState(post?.message || '');
+  const [images, setImages] = useState<string[]>(post?.images || []);
+  const [tags, setTags] = useState<string[]>(post?.tags || []);
   const role = useSelector((state: RootState) => state.session.role);
   const isAuthenticated = useSelector((state: RootState) => state.session.isLoggedIn);
   const currentDate = new Date();
@@ -27,6 +30,17 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
   const year = currentDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
   const apiPost = new PostService();
+
+  // Maneja la selección de imágenes desde ButtonAddImage
+  const handleImageSelected = (imageSrc: string, imageTitle: string) => {
+    setImages((prev) => [...prev, imageSrc]);
+  };
+
+  // Elimina una imagen del array
+  const handleRemoveImage = (idx: number) => {
+    setImages(images.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title || !message) {
@@ -43,8 +57,8 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
       loves: 0,
       comments: [],
       isArchived: false,
-      tags: [],
-      images: [],
+      tags: tags,
+      images: images,
       isPublished: false,
       alt_image: '',
       source_image: '',
@@ -75,6 +89,8 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
       onClose();
       setTitle('');
       setMessage('');
+      setImages([]);
+      setTags([]);
     } catch (error) {
       console.error('Error al crear el post:', error);
       alert(`No se pudo crear el post: ${error instanceof Error ? error.message : 'Error desconocido'}. Inténtelo de nuevo más tarde.`);
@@ -94,10 +110,23 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           </label>
           <br />
 
-          <ButtonAddImage onImageSelected={(imageSrc, imageTitle) => {
-            // Aquí se tiene que  agregar la lógica para manejar la imagen seleccionada
-            console.log(imageSrc, imageTitle);
-          }} />
+          <ButtonAddImage onImageSelected={handleImageSelected} />
+
+          <div className={styles.imagePreviewContainer}>
+            {images.map((img, idx) => (
+              <div key={idx} className={styles.imagePreview}>
+                <img src={img} alt={`preview-${idx}`} width={80} />
+                <button type="button" onClick={() => handleRemoveImage(idx)}>Eliminar</button>
+              </div>
+            ))}
+          </div>
+
+          <TagSelector
+            selectedTags={tags}
+            onTagsChange={setTags}
+            placeholder="Agregar tags para el post..."
+          />
+
           <label>
             Mensaje:
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} required />
