@@ -162,11 +162,6 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
                                 required
                             />
                         </div>
-                                value={eventDate}
-                                onChange={(e) => setEventDate(e.target.value)}
-                                required
-                            />
-                        </div>
                         <div className="col-md-6 mb-3">
                             <label className="form-label">
                                 <strong>Aforo máximo 👥</strong>
@@ -185,36 +180,39 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
                         </div>
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
                         <label className="form-label">
-                            <strong>Ubicación *</strong>
+                            <strong>📍 Ubicación *</strong>
                         </label>
                         <input
                             type="text"
                             className="form-control"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Ej: Aula 1, Centro Cívico, etc."
+                            placeholder="Ej: Aula 1, Centro Cívico, Salón de Actos..."
                             required
                         />
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
                         <label className="form-label">
-                            <strong>Enlace adicional (opcional)</strong>
+                            <strong>🔗 Enlace adicional (opcional)</strong>
                         </label>
                         <input
                             type="url"
                             className="form-control"
                             value={link}
                             onChange={(e) => setLink(e.target.value)}
-                            placeholder="https://..."
+                            placeholder="https://ejemplo.com/mas-informacion"
                         />
+                        <small className="text-muted">
+                            💡 Link para más información, inscripciones, etc.
+                        </small>
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
                         <label className="form-label">
-                            <strong>Imágenes</strong>
+                            <strong>🖼️ Imágenes del Evento</strong>
                         </label>
                         <ImageUploadButton
                             onImagesSelected={handleImagesSelected}
@@ -232,20 +230,20 @@ const EventForm: React.FC<EventFormProps> = ({ event, onClose, onSubmit, show })
                         </div>
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
                         <TagSelector
                             selectedTags={tags}
                             onTagsChange={setTags}
-                            placeholder="Agregar tags para el evento..."
+                            placeholder="🏷️ Agregar etiquetas para el evento..."
                         />
                     </div>
 
-                    <div className="d-flex justify-content-end">
-                        <Button type="button" variant="secondary" className="me-2" onClick={onClose}>
-                            Cancelar
+                    <div className="d-flex justify-content-end gap-2">
+                        <Button type="button" variant="secondary" onClick={onClose}>
+                            ❌ Cancelar
                         </Button>
                         <Button type="submit" variant="primary">
-                            {event ? "Actualizar Evento" : "Crear Evento"}
+                            {event ? "💾 Actualizar Evento" : "🎉 Crear Evento"}
                         </Button>
                     </div>
                 </form>

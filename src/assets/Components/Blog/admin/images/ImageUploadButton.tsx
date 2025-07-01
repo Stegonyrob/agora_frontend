@@ -7,8 +7,8 @@ interface ImageUploadButtonProps {
     className?: string;
 }
 
-const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({ 
-    onImagesSelected, 
+const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
+    onImagesSelected,
     multiple = true,
     className = ""
 }) => {
