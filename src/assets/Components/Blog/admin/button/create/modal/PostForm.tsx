@@ -5,7 +5,7 @@ import { IPost } from '../../../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../../../core/posts/IPostDTO';
 import PostService from '../../../../../../../core/posts/PostService';
 import { RootState } from '../../../../../../../redux/store';
-import TagSelector from '../../../components/TagSelector';
+import TagSelector from '../../../tags/TagSelector';
 import ButtonAddImage from '../../image/ButtonAddImage';
 import styles from './PostForm.module.scss';
 interface PostFormProps {

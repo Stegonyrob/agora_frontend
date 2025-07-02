@@ -19,27 +19,13 @@ interface ItemPostProps {
     postId: number;
     onCreate: (newPost: IPostDTO) => Promise<void>;
 }
-const fakeComments = [
-    {
-        id: 1,
-        user: 'Juan Pérez',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        text: '¡Gran post! Me encantó el contenido.',
-        date: 'Hace 2h'
-    },
-    {
-        id: 2,
-        user: 'Ana Gómez',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-        text: 'Muy interesante, gracias por compartir.',
-        date: 'Hace 1h'
-    }
-];
+
 const ItemPost: React.FC<ItemPostProps> = ({
-    post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, postId, onCreate
+    post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, onCreate
 }) => {
     const [showFullText, setShowFullText] = useState(false);
     const messagePreview = post?.message?.slice(0, 200) ?? '';
+    const comments = post?.comments || [];
 
     if (!post) return null;
 
@@ -61,7 +47,13 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 onCreate={onCreate}
                 images={post.images}
             />
-            <AccordionComments comments={fakeComments} />
+            <AccordionComments
+                postId={post.id}
+                currentUserId={userId}
+                isAdmin={true}
+                commentsCount={comments.length}
+                tags={post.tags || []}
+            />
         </div>
     );
 };

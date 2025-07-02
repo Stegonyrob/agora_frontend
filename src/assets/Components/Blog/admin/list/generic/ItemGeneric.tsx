@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { useState } from 'react';
+import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
-import ViewAttendeesButton from '../../button/attendees/ViewAttendeesButton';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import styles from './ItemGeneric.module.scss';
 

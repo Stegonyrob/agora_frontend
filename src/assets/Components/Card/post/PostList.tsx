@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IPost } from "../../../../core/posts/IPost";
-import PostsService from "../../../../core/posts/PostService";
+import PostService from "../../../../core/posts/PostService";
 import Pagination from "../../Pagination";
 import CardItem from "../card/CardItem";
 import styles from "../card/CardItem.module.scss";
@@ -22,7 +22,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
-    const apiPost = new PostsService();
+    const apiPost = new PostService();
 
     useEffect(() => {
         const loadPosts = async () => {

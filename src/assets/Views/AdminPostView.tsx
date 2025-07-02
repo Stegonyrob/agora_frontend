@@ -39,7 +39,7 @@ const AdminPostView = ({ userId }: { userId: number }) => {
             const postService = new PostService();
             await postService.createPost(newPost);
             const updatedPosts = await postService.getAllPosts();
-            setFetchedPosts(updatedPosts ?? []);
+            setFetchedPosts(updatedPosts?.data ?? []);
         } catch (error) {
             console.error("Error creating post:", error);
         }

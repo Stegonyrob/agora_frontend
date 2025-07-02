@@ -2,12 +2,12 @@ import IUser from '@/core/user/IUser';
 import IUserDTO from '@/core/user/IUserDTO';
 import React, { useEffect, useState } from 'react';
 import { Alert, Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { UserManagerService } from '../../../../../core/user/UserManagerService';
 import UserDeleteModal from './components/UserDeleteModal';
 import UserEditModal from './components/UserEditModal';
 import UserStats from './components/UserStats';
 import UserTable from './components/UserTable';
 import UserViewModal from './components/UserViewModal';
-import { UserManagerService } from './services/UserManagerService';
 import styles from './UserManager.module.scss';
 
 const UserManager: React.FC = () => {

@@ -4,7 +4,7 @@
 }
 
 .uploadButton {
-  width: 100%;
+  width: 65vh;
   padding: 1.5rem;
   border: 2px dashed #2c5aa0;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);

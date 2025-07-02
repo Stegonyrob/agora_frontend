@@ -95,7 +95,8 @@
 .modalCard .modalBody button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  margin-left: 17rem;
+  margin: 1rem auto;
+  display: block;
   cursor: pointer;
 }
 

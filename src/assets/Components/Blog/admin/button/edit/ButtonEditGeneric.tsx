@@ -59,7 +59,6 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                         description: (item as any).description ?? "",
                         createdAt: (item as any).createdAt ?? new Date().toISOString(),
                         updatedAt: (item as any).updatedAt ?? new Date().toISOString(),
-                        date: (item as any).date ?? new Date().toISOString(),
                         link: (item as any).link ?? "",
                         userId: (item as any).userId ?? 0,
                     }}

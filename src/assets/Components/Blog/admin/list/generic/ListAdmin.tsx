@@ -47,44 +47,52 @@ const ListAdmin = (props: ListAdminProps) => {
         userId,
     } = props;
 
+    console.log('ListAdmin props:', props);
+
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
                 <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
                 {type === 'post'
-                    ? (items as IPost[]).map(item => (
-                        <ItemPost
-                            key={item.id}
-                            post={item}
-                            onArchive={onArchive}
-                            onUnArchive={onUnArchive}
-                            onSelect={onSelect}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onSubmit={onSubmit}
-                            userId={userId}
-                            onCreate={onCreate}
-                            postId={item.id}
-                            id={item.id}
-                            title={item.title}
-                        />
-                    ))
-                    : (items as IEvent[]).map(item => (
-                        <ItemEvent
-                            key={item.id}
-                            event={item}
-                            onArchive={onArchive}
-                            onUnArchive={onUnArchive}
-                            onSelect={onSelect}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onSubmit={onSubmit}
-                            userId={userId}
-                            onCreate={onCreate}
-                            id={item.id}
-                            title={item.title}
-                        />
-                    ))
+                    ? (items as IPost[]).map(item => {
+                        console.log('ListAdmin post item:', item);
+                        return (
+                            <ItemPost
+                                key={item.id}
+                                post={item}
+                                onArchive={onArchive}
+                                onUnArchive={onUnArchive}
+                                onSelect={onSelect}
+                                onEdit={onEdit}
+                                onDelete={onDelete}
+                                onSubmit={onSubmit}
+                                userId={userId}
+                                onCreate={onCreate}
+                                postId={item.id}
+                                id={item.id}
+                                title={item.title}
+                            />
+                        );
+                    })
+                    : (items as IEvent[]).map(item => {
+                        console.log('ListAdmin event item:', item);
+                        return (
+                            <ItemEvent
+                                key={item.id}
+                                event={item}
+                                onArchive={onArchive}
+                                onUnArchive={onUnArchive}
+                                onSelect={onSelect}
+                                onEdit={onEdit}
+                                onDelete={onDelete}
+                                onSubmit={onSubmit}
+                                userId={userId}
+                                onCreate={onCreate}
+                                id={item.id}
+                                title={item.title}
+                            />
+                        );
+                    })
                 }
             </div>
         </div>
