@@ -105,7 +105,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         }
     };
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleAddTag();
@@ -120,13 +120,13 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             </label>
 
             {/* Input para agregar tags personalizados */}
-            <div className={styles.inputContainer}>
+            <div className={styles.inputTagsContainer}>
                 <div className={styles.inputWrapper}>
                     <Form.Control
                         type="text"
                         value={inputTag}
                         onChange={(e) => setInputTag(e.target.value)}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyDown}
                         placeholder={placeholder}
                         className={styles.tagInput}
                         autoComplete="off"

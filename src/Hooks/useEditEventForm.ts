@@ -17,6 +17,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
   const [date, setDate] = useState("");
   const [link, setLink] = useState("");
   const [capacity, setCapacity] = useState<number | string>(0);
+  const [tags, setTags] = useState<string[]>([]);
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
@@ -31,12 +32,26 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       setPlace(event.place || "");
       setCapacity(event.capacity || 0);
       setLink(event.link || "");
+      setTags(event.tags || []);
+      console.log(
+        "🏷️ useEditEventForm - Tags cargadas del evento:",
+        event.tags
+      );
 
       if (event.eventDate) {
-        const formattedDate = new Date(event.eventDate)
-          .toISOString()
-          .split("T")[0];
-        setDate(formattedDate);
+        try {
+          const eventDateObj = new Date(event.eventDate);
+          if (!isNaN(eventDateObj.getTime())) {
+            const formattedDate = eventDateObj.toISOString().split("T")[0];
+            setDate(formattedDate);
+          } else {
+            console.warn("Fecha del evento inválida:", event.eventDate);
+            setDate("");
+          }
+        } catch (error) {
+          console.error("Error al procesar fecha del evento:", error);
+          setDate("");
+        }
       } else {
         setDate("");
       }
@@ -122,6 +137,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       setDate("");
       setLink("");
       setCapacity(0);
+      setTags([]);
       setImagePreviews([]);
       setFormErrors({});
     }
@@ -168,10 +184,18 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
     if (typeof capacity === "string" || capacity < 0) {
       errors.capacity = "El aforo debe ser un número positivo.";
     }
+    if (!date || !date.trim()) {
+      errors.date = "La fecha del evento es obligatoria.";
+    } else {
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        errors.date = "La fecha del evento no es válida.";
+      }
+    }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-  }, [title, capacity]);
+  }, [title, capacity, date]);
 
   // Submit del formulario
   const submitForm = useCallback(
@@ -202,15 +226,23 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       // en el componente padre o mediante otro mecanismo
       const allImages = [...existingImageUrls];
 
+      // Validar y formatear la fecha
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        console.error("Fecha inválida:", date);
+        return;
+      }
+
       const updatedEvent: IEventDTO = {
         ...event,
         id: event.id,
         title: sanitizedTitle,
         message: sanitizedMessage,
         place,
-        eventDate: new Date(date).toISOString(),
+        eventDate: dateObj.toISOString(),
         link,
         capacity: Number(capacity),
+        tags,
         images: allImages,
       };
 
@@ -224,6 +256,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       date,
       link,
       capacity,
+      tags,
       imagePreviews,
       event,
     ]
@@ -243,6 +276,8 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
     setLink,
     capacity,
     setCapacity,
+    tags,
+    setTags,
     imagePreviews,
     formErrors,
 

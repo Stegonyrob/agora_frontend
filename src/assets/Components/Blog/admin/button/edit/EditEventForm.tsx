@@ -7,6 +7,7 @@ import ImageUploadButton from "../../images/ImageUploadButton";
 import EditEventBasicFields from "./components/EditEventBasicFields";
 import EditEventDateCapacityFields from "./components/EditEventDateCapacityFields";
 import EditEventFormActions from "./components/EditEventFormActions";
+import EditEventTagsField from "./components/EditEventTagsField";
 import styles from "./EditModalForm.module.scss";
 
 interface EditEventFormProps {
@@ -32,6 +33,7 @@ const EditEventForm = ({
         date, setDate,
         link, setLink,
         capacity, setCapacity,
+        tags, setTags,
         imagePreviews,
         formErrors,
         handleNewImagesSelected,
@@ -45,60 +47,67 @@ const EditEventForm = ({
     };
 
     return (
-        <Modal size="lg" show={show} onHide={onClose} className={styles.eventForm}>
-            <Modal.Header className={styles.eventForm} closeButton>
-                <Modal.Title>
-                    ✏️ Editar Evento
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body className={styles.eventForm}>
-                <form onSubmit={handleSubmit}>
-                    <EditEventBasicFields
-                        title={title}
-                        setTitle={setTitle}
-                        message={message}
-                        setMessage={setMessage}
-                        place={place}
-                        setPlace={setPlace}
-                        link={link}
-                        setLink={setLink}
-                        formErrors={formErrors}
-                    />
+        <Modal size="lg" show={show} onHide={onClose} className={styles.editModalForm}>
+            <div className={styles.editModalContent}>
+                <div className={styles.editModalHeader}>
+                    <h2 className={styles.editModalTitle}>
+                        ✏️ Editar Evento
+                    </h2>
+                </div>
+                <div className={styles.editModalBody}>
+                    <form className={styles.editForm} onSubmit={handleSubmit}>
+                        <EditEventBasicFields
+                            title={title}
+                            setTitle={setTitle}
+                            message={message}
+                            setMessage={setMessage}
+                            place={place}
+                            setPlace={setPlace}
+                            link={link}
+                            setLink={setLink}
+                            formErrors={formErrors}
+                        />
 
-                    <EditEventDateCapacityFields
-                        date={date}
-                        setDate={setDate}
-                        capacity={capacity}
-                        setCapacity={setCapacity}
-                        formErrors={formErrors}
-                    />
+                        <EditEventDateCapacityFields
+                            date={date}
+                            setDate={setDate}
+                            capacity={capacity}
+                            setCapacity={setCapacity}
+                            formErrors={formErrors}
+                        />
 
-                    <div className={styles.imageSection}>
-                        <label className={styles.imageSectionTitle}>🖼️ Gestión de Imágenes</label>
+                        <EditEventTagsField
+                            tags={tags}
+                            setTags={setTags}
+                        />
 
-                        {/* Subir nuevas imágenes */}
-                        <div className={styles.newImagesUploadSection}>
-                            <h4 className={styles.subsectionTitle}>➕ Seleccionar imágenes:</h4>
-                            <ImageUploadButton onImagesSelected={handleNewImagesSelected} />
-                            <small className={styles.helpText}>
-                                💡 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
-                            </small>
+                        <div className={styles.editImageSection}>
+                            <label className={styles.editImageSectionTitle}>🖼️ Gestión de Imágenes</label>
+
+                            {/* Subir nuevas imágenes */}
+                            <div className={styles.editImageUploadSection}>
+                                <h4 className={styles.editImageSubsectionTitle}>➕ Seleccionar imágenes:</h4>
+                                <ImageUploadButton onImagesSelected={handleNewImagesSelected} />
+                                <small className={styles.editImageHelpText}>
+                                    💡 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
+                                </small>
+                            </div>
+
+                            {/* Grid unificado de previews de imágenes */}
+                            <ImagePreviewGrid
+                                imagePreviews={imagePreviews}
+                                onRemoveImage={handleRemoveImage}
+                                showExistingBadge={true}
+                            />
                         </div>
 
-                        {/* Grid unificado de previews de imágenes */}
-                        <ImagePreviewGrid
-                            imagePreviews={imagePreviews}
-                            onRemoveImage={handleRemoveImage}
-                            showExistingBadge={true}
+                        <EditEventFormActions
+                            isSubmitting={isSubmitting}
+                            submitError={submitError}
                         />
-                    </div>
-
-                    <EditEventFormActions
-                        isSubmitting={isSubmitting}
-                        submitError={submitError}
-                    />
-                </form>
-            </Modal.Body>
+                    </form>
+                </div>
+            </div>
         </Modal>
     );
 };

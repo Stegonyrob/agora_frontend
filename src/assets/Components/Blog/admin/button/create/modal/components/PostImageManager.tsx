@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import ImagePreviewGrid, { ImagePreview as IImagePreview } from '../../../../images/ImagePreviewGrid';
 import ImageUploadButton from '../../../../images/ImageUploadButton';
 import ButtonAddImage from '../../../image/ButtonAddImage';
-import styles from '../PostForm.module.scss';
+import styles from '../EventForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostImageManagerProps {
     imagePreviews: IImagePreview[];

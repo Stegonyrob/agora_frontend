@@ -71,6 +71,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                             eventDate={event.eventDate}
                             favoritesCount={event.favoritesCount}
                             images={event.images}
+                            tags={event.tags}
                             user={event.user}
                             onSelect={handleSelect}
                             location={event.location}

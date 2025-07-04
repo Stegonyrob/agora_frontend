@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import TagSelector from '../../../../tags/TagSelector';
-import styles from '../PostForm.module.scss';
+import styles from '../EventForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostTagsFieldProps {
     tags: string[];

@@ -59,6 +59,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                         favoritesCount={post.favoritesCount ?? 0}
                         commentsCount={post.commentsCount ?? 0} // Solo el número
                         images={post.image}
+                        tags={post.tags}
                         user={post.user}
                         userRole={post.userRole}
                         attendeesCount={post.attendeesCount ?? 0}

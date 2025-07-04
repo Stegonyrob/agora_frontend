@@ -13,13 +13,13 @@ const EditEventFormActions: React.FC<EditEventFormActionsProps> = ({
     return (
         <>
             {submitError && (
-                <div className={styles.globalError}>{submitError}</div>
+                <div className={styles.editFormGlobalError}>{submitError}</div>
             )}
 
-            <div className={styles.submitButtonContainer}>
+            <div className={styles.editSubmitButtonContainer}>
                 <button
                     type="submit"
-                    className="btn btn-primary"
+                    className={styles.editSubmitButton}
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? "Guardando..." : "💾 Actualizar Evento"}

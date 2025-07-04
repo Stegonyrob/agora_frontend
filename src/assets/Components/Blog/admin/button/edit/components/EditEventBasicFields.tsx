@@ -26,31 +26,31 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
 }) => {
     return (
         <>
-            <div className={styles.formGroup}>
-                <label htmlFor="eventTitle" className="form-label">
+            <div className={styles.editFormGroup}>
+                <label htmlFor="eventTitle" className={styles.editFormLabel}>
                     <strong>📝 Título del Evento *</strong>
                 </label>
                 <input
                     type="text"
                     id="eventTitle"
-                    className={`form-control ${formErrors.title ? styles.isInvalid : ""}`}
+                    className={`${styles.editFormInput} ${formErrors.title ? styles.editFormInputInvalid : ""}`}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Ej: Taller de Robótica, Conferencia de IA..."
                     required
                 />
                 {formErrors.title && (
-                    <div className={styles.errorText}>{formErrors.title}</div>
+                    <div className={styles.editFormErrorText}>{formErrors.title}</div>
                 )}
             </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="eventMessage" className={styles.titleLabel}>
+            <div className={styles.editFormGroup}>
+                <label htmlFor="eventMessage" className={styles.editFormLabel}>
                     📄 Descripción del Evento:
                 </label>
                 <textarea
                     id="eventMessage"
-                    className="form-control"
+                    className={styles.editFormTextarea}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe el evento, lo que los asistentes aprenderán..."
@@ -58,28 +58,28 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
                 />
             </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="eventPlace" className={styles.titleLabel}>
+            <div className={styles.editFormGroup}>
+                <label htmlFor="eventPlace" className={styles.editFormLabel}>
                     📍 Ubicación:
                 </label>
                 <input
                     type="text"
                     id="eventPlace"
-                    className="form-control"
+                    className={styles.editFormInput}
                     value={place}
                     onChange={(e) => setPlace(e.target.value)}
                     placeholder="Ej: Sala de Conferencias A, Online..."
                 />
             </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="eventLink" className={styles.titleLabel}>
+            <div className={styles.editFormGroup}>
+                <label htmlFor="eventLink" className={styles.editFormLabel}>
                     🔗 Enlace adicional:
                 </label>
                 <input
                     type="url"
                     id="eventLink"
-                    className="form-control"
+                    className={styles.editFormInput}
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="https://example.com/mas-info"

@@ -16,6 +16,7 @@ interface CardItemProps {
     attendeesCount: number;
     location?: string;
     images?: string[];
+    tags?: string[];
     user?: any;
     userRole?: string;
     onSelect?: (item: any) => void;
@@ -36,6 +37,7 @@ const CardItem: React.FC<CardItemProps> = ({
     attendeesCount = 0,
     location,
     images,
+    tags = [],
     onSelect,
     maxCapacity = 0,
     userId = 1,
@@ -117,6 +119,10 @@ const CardItem: React.FC<CardItemProps> = ({
                             className={styles.thumbnail}
                             src={images[currentImage]}
                             alt={`Imagen ${currentImage + 1} de ${title}`}
+                            onError={(e) => {
+                                console.error('Error cargando imagen en CardItem:', images[currentImage]);
+                                e.currentTarget.src = "/images/blocks-8866100_1280.png";
+                            }}
                         />
                         <button className={styles.arrow} onClick={showNext}>&gt;</button>
                         <div className={styles.dots}>
@@ -134,6 +140,10 @@ const CardItem: React.FC<CardItemProps> = ({
                         className={styles.thumbnail}
                         src={images && images.length === 1 ? images[0] : "/images/blocks-8866100_1280.png"}
                         alt="thumbnail"
+                        onError={(e) => {
+                            console.error('Error cargando imagen en CardItem:', images && images.length === 1 ? images[0] : 'sin imagen');
+                            e.currentTarget.src = "/images/blocks-8866100_1280.png";
+                        }}
                     />
                 )}
                 <span className={styles.favoriteIcon}>
@@ -171,8 +181,16 @@ const CardItem: React.FC<CardItemProps> = ({
                     }
                 </p>
                 <ul className={styles.tags}>
-                    {type === 'event' && <li className={styles.tagItem}>#Event</li>}
-                    {type === 'post' && <li className={styles.tagItem}>#Post</li>}
+                    {tags && tags.length > 0 ? (
+                        tags.map((tag, index) => (
+                            <li key={index} className={styles.tagItem}>#{tag}</li>
+                        ))
+                    ) : (
+                        <>
+                            {type === 'event' && <li className={styles.tagItem}>#Event</li>}
+                            {type === 'post' && <li className={styles.tagItem}>#Post</li>}
+                        </>
+                    )}
                 </ul>
             </div>
             {/* !-- stadistic!  */}

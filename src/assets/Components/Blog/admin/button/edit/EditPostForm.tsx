@@ -42,13 +42,14 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
       centered
       show={show}
       onHide={onClose}
+      className={styles.eventForm} // Usar el mismo estilo que eventos
       style={{ zIndex: 10000 }}
       backdropClassName="custom-backdrop"
     >
-      <Modal.Header className={styles.modalHeader} closeButton>
-        <Modal.Title>Editar Post</Modal.Title>
+      <Modal.Header className={styles.eventForm} closeButton>
+        <Modal.Title className={styles.modalTitle}>Editar Post</Modal.Title>
       </Modal.Header>
-      <Modal.Body className={styles.modalBody}>
+      <Modal.Body className={styles.eventForm}>
         <form onSubmit={handleFormSubmit}>
           <EditPostBasicFields
             title={title}

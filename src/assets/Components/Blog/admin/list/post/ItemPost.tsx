@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IPost } from '../../../../../../core/posts/IPost';
 import { IPostDTO } from '../../../../../../core/posts/IPostDTO';
 import AccordionComments from '../../../comments/AccordionComments';
@@ -23,8 +23,6 @@ interface ItemPostProps {
 const ItemPost: React.FC<ItemPostProps> = ({
     post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, onCreate
 }) => {
-    const [showFullText, setShowFullText] = useState(false);
-    const messagePreview = post?.message?.slice(0, 200) ?? '';
     const comments = post?.comments || [];
 
     if (!post) return null;
@@ -35,7 +33,7 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 item={post}
                 id={post.id}
                 title={post.title}
-                message={showFullText ? post.message : messagePreview}
+                message={post.message} // Pasar el mensaje completo, no recortado
                 creationDate={post.creationDate}
                 isArchived={post.isArchived}
                 type="post"

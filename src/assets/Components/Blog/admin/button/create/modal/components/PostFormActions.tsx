@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import styles from '../PostForm.module.scss';
+import styles from '../EventForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostFormActionsProps {
     onSubmit: () => void;

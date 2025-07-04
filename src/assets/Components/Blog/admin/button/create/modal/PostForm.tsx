@@ -6,7 +6,7 @@ import PostBasicFields from './components/PostBasicFields';
 import PostFormActions from './components/PostFormActions';
 import PostImageManager from './components/PostImageManager';
 import PostTagsField from './components/PostTagsField';
-import styles from './PostForm.module.scss';
+import styles from './EventForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostFormProps {
   post?: IPost;
@@ -40,11 +40,21 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
   };
 
   return (
-    <Modal size="lg" show={show} onHide={onClose} className={styles.postForm}>
-      <Modal.Header className={styles.postForm} closeButton>
-        <Modal.Title>{post ? 'Editar Post' : 'Crear Post'}</Modal.Title>
+    <Modal
+      size="lg"
+      centered
+      show={show}
+      onHide={onClose}
+      className={styles.eventForm} // Usar el mismo estilo que eventos
+      style={{ zIndex: 10000 }}
+      backdropClassName="custom-backdrop"
+    >
+      <Modal.Header className={styles.modalHeader} closeButton>
+        <Modal.Title className={styles.modalTitle}>
+          {post ? 'Editar Post' : 'Crear Nuevo Post'}
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body className={styles.postForm}>
+      <Modal.Body className={styles.modalBody}>
         <form onSubmit={handleFormSubmit}>
           <PostBasicFields
             title={title}

@@ -11,11 +11,17 @@ const AdminPostView = ({ userId }: { userId: number }) => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
+                console.log("🚀 Starting to fetch posts...");
                 const postService = new PostService();
                 const page = await postService.getAllPosts(0, 100); // Obtener los primeros 100 posts
+                console.log("📦 Posts loaded successfully:", page?.totalElements, "total posts");
                 setFetchedPosts(page?.content ?? []);
-            } catch (error) {
-                console.error("Error fetching posts:", error);
+            } catch (error: any) {
+                console.error("❌ Error fetching posts:", error);
+                if (error.response) {
+                    console.error("📋 Response status:", error.response.status);
+                    console.error("📋 Response data:", error.response.data);
+                }
             }
         };
         fetchPosts();

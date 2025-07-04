@@ -45,18 +45,65 @@ const ItemGeneric = <T extends IPost | IEvent>({
 }: ItemGenericProps<T>) => {
     const [showFullText, setShowFullText] = useState(false);
     const [eventImages, setEventImages] = useState<ImagePreview[]>([]);
+    const [postImages, setPostImages] = useState<ImagePreview[]>([]);
     const [loadingImages, setLoadingImages] = useState(false);
     const messagePreview = message?.slice(0, 200) ?? '';
     const archived = isArchived ?? false;
 
     const toggleText = () => setShowFullText(prev => !prev);
 
+    // Debug de estructura del item
+    useEffect(() => {
+        console.log(`🔍 ItemGeneric - Debug ${type}:`, {
+            id,
+            title,
+            item,
+            images,
+            itemImages: (item as any)?.images,
+            itemImage: (item as any)?.image
+        });
+    }, [type, id, item, images]);
+
     // Cargar imágenes del evento si es un evento
     useEffect(() => {
         if (type === 'event' && id) {
             loadEventImages();
+        } else if (type === 'post') {
+            loadPostImages();
         }
-    }, [type, id]);
+    }, [type, id, item, images]);
+
+    const loadPostImages = () => {
+        try {
+            // Manejar diferentes posibles estructuras de imágenes en posts
+            let imageUrls: string[] = [];
+
+            if (images && Array.isArray(images)) {
+                imageUrls = images;
+            } else if ((item as any)?.images && Array.isArray((item as any).images)) {
+                imageUrls = (item as any).images;
+            } else if ((item as any)?.image && Array.isArray((item as any).image)) {
+                imageUrls = (item as any).image;
+            }
+
+            const imagePreviewsData: ImagePreview[] = imageUrls.map((url, index) => ({
+                url: url,
+                isLoading: false,
+                isExisting: true,
+                id: index // Usar índice numérico en lugar de string
+            }));
+
+            setPostImages(imagePreviewsData);
+            console.log("🖼️ ItemGeneric - Post images loaded:", {
+                postId: id,
+                cantidad: imagePreviewsData.length,
+                imagenes: imagePreviewsData.map(img => ({ id: img.id, url: img.url }))
+            });
+        } catch (error) {
+            console.error("Error loading post images:", error);
+            setPostImages([]);
+        }
+    };
 
     const loadEventImages = async () => {
         if (type !== 'event' || !id) return;
@@ -93,23 +140,31 @@ const ItemGeneric = <T extends IPost | IEvent>({
             return;
         }
 
-        const imageToRemove = eventImages[index];
-        if (!imageToRemove?.id) {
-            console.error("Error: imagen sin ID válido");
-            return;
-        }
+        if (type === 'event') {
+            // Lógica existente para eventos
+            const imageToRemove = eventImages[index];
+            if (!imageToRemove?.id) {
+                console.error("Error: imagen sin ID válido");
+                return;
+            }
 
-        try {
-            const eventImageService = new EventImageService();
-            await eventImageService.deleteEventImage(imageToRemove.id);
+            try {
+                const eventImageService = new EventImageService();
+                await eventImageService.deleteEventImage(imageToRemove.id as number);
 
-            // Actualizar la lista local removiendo por índice
-            setEventImages(prev => prev.filter((_, idx) => idx !== index));
+                // Actualizar la lista local removiendo por índice
+                setEventImages(prev => prev.filter((_, idx) => idx !== index));
 
-            console.log("✅ ItemGeneric - Imagen eliminada:", imageToRemove.id);
-        } catch (error) {
-            console.error("Error deleting image:", error);
-            alert('Error al eliminar la imagen. Por favor, inténtalo de nuevo.');
+                console.log("✅ ItemGeneric - Imagen de evento eliminada:", imageToRemove.id);
+            } catch (error) {
+                console.error("Error deleting event image:", error);
+                alert('Error al eliminar la imagen. Por favor, inténtalo de nuevo.');
+            }
+        } else if (type === 'post') {
+            // Para posts, solo removemos de la vista local por ahora
+            // TODO: Implementar lógica de eliminación en el backend si es necesario
+            setPostImages(prev => prev.filter((_, idx) => idx !== index));
+            console.log("✅ ItemGeneric - Imagen de post removida de la vista:", index);
         }
     };
 
@@ -169,17 +224,15 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </div>
                 )}
 
-                {/* Mostrar imágenes para posts (formato anterior) */}
-                {type === 'post' && images && images.length > 0 && (
-                    <div className={styles.images}>
-                        {images.map((image, index) => (
-                            <img
-                                key={index}
-                                src={image}
-                                alt={`Imagen ${index + 1}`}
-                                className={styles.image}
-                            />
-                        ))}
+                {/* Mostrar imágenes para posts usando el mismo sistema que eventos */}
+                {type === 'post' && postImages.length > 0 && (
+                    <div>
+                        <ImagePreviewGrid
+                            imagePreviews={postImages}
+                            onRemoveImage={handleRemoveImage}
+                            showExistingBadge={true}
+                            className={styles.postImagesGrid}
+                        />
                     </div>
                 )}
                 <div className={styles.messageRow}>

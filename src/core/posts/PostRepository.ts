@@ -13,10 +13,10 @@ export interface Page<T> {
 
 export default class PostRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_POSTS;
-
   // Obtener todos los posts paginados
   async getAll(page = 0, size = 10): Promise<Page<IPost>> {
-    const response = await axios.get(`${this.uri}?page=${page}&size=${size}`, {
+    const url = `${this.uri}?page=${page}&size=${size}`;
+    const response = await axios.get(url, {
       headers: getAuthHeaders(),
     });
     return response.data;

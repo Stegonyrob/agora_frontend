@@ -48,11 +48,21 @@ const ListAdmin = (props: ListAdminProps) => {
     } = props;
 
     console.log('ListAdmin props:', props);
+    console.log('Items array length:', items?.length);
+    console.log('Items array:', items);
 
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
                 <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
+
+                {items && items.length === 0 && (
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                        <p>No hay {type === 'post' ? 'posts' : 'eventos'} para mostrar.</p>
+                        <p>Usa el botón de arriba para crear el primero.</p>
+                    </div>
+                )}
+
                 {type === 'post'
                     ? (items as IPost[]).map(item => {
                         console.log('ListAdmin post item:', item);

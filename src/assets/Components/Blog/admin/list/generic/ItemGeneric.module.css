@@ -333,3 +333,34 @@
     font-size: 14px;
   }
 }
+
+.eventImagesGrid,
+.postImagesGrid {
+  margin: 1rem 0;
+}
+
+.eventImagesGrid.postImagesGrid .imagePreview,
+.postImagesGrid.postImagesGrid .imagePreview {
+  border: 2px solid #b48be0;
+  border-radius: 8px;
+}
+
+.eventImagesGrid.postImagesGrid .imagePreview:hover,
+.postImagesGrid.postImagesGrid .imagePreview:hover {
+  border-color: #d4b4f7;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.eventImagesGrid.eventImagesGrid .imagePreview,
+.postImagesGrid.eventImagesGrid .imagePreview {
+  border: 2px solid #4a9eff;
+  border-radius: 8px;
+}
+
+.eventImagesGrid.eventImagesGrid .imagePreview:hover,
+.postImagesGrid.eventImagesGrid .imagePreview:hover {
+  border-color: #7bb8ff;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}

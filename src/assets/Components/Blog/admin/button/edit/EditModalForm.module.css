@@ -1,44 +1,30 @@
-@charset "UTF-8";
-/* EditModalForm.module.scss */
-.eventForm {
+.editModalForm, .eventForm {
   background-color: rgba(0, 0, 0, 0.8);
   color: #e0f7fa;
-  /* Un azul claro para el texto general, más suave que el azure puro */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.eventForm .modal-content {
+.editModalForm .editModalContent, .eventForm .editModalContent {
   margin: 0 auto;
   padding: 2.5rem;
-  /* Un poco más de padding */
   width: 55rem;
-  /* Hacemos el modal un poco más ancho de nuevo */
   max-width: 90%;
-  /* Asegura responsividad: El modal no superará el 90% del ancho de la vista */
   border-radius: 1rem;
-  /* Bordes más redondeados */
   box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.6);
-  /* Sombra más pronunciada para profundidad */
   background-color: #2c2c2c;
-  /* Fondo más oscuro y sólido para el modal */
   border: 1px solid #4a4a4a;
-  /* Borde sutil */
-  /* Importante: para centrar el contenido del modal si su ancho es menor que el de su padre flex */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Centra los elementos hijos del modal-content (header, body) */
 }
 
-.eventForm .modal-header {
+.editModalForm .editModalHeader, .eventForm .editModalHeader {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  /* Separador sutil */
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
   width: 100%;
-  /* Asegura que el header ocupe todo el ancho del modal-content */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -46,7 +32,7 @@
   border-bottom: none;
 }
 
-.eventForm .modal-title {
+.editModalForm .editModalTitle, .eventForm .editModalTitle {
   font-size: 2.8rem;
   font-weight: 600;
   color: #00bcd4;
@@ -54,32 +40,25 @@
   width: 100%;
 }
 
-.eventForm .modal-body {
+.editModalForm .editModalBody, .eventForm .editModalBody {
   padding: 0;
   width: 100%;
-  /* Asegura que el body ocupe todo el ancho disponible */
 }
 
-.eventForm form {
+.editModalForm .editForm, .eventForm .editForm {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  /* Espacio entre cada formGroup */
 }
 
-.eventForm .formGroup {
-  /* CLAVE PARA CENTRADO Y RESPONSIVIDAD DE LOS INPUTS */
-  width: 100%;
-  /* El formGroup ocupa el 100% del ancho del modal-body */
+.editModalForm .editFormGroup, .eventForm .editFormGroup {
   max-width: 45rem;
-  /* <<-- Este es el ancho MÁXIMO deseado para los inputs */
   margin-left: auto;
-  /* Centra el formGroup horizontalmente */
   margin-right: auto;
-  /* Centra el formGroup horizontalmente */
+  width: 100%;
 }
 
-.eventForm label {
+.editModalForm .editFormLabel, .eventForm .editFormLabel {
   display: block;
   margin-bottom: 0.6rem;
   font-weight: 500;
@@ -87,67 +66,73 @@
   color: #b3e5fc;
 }
 
-.eventForm input[type="text"],
-.eventForm input[type="number"],
-.eventForm input[type="url"],
-.eventForm input[type="date"],
-.eventForm textarea {
-  /* CLAVE PARA CENTRADO Y RESPONSIVIDAD DE LOS INPUTS */
+.editModalForm .editFormInput, .eventForm .editFormInput {
   width: 100%;
-  /* <<-- Ocupa el 100% del ANCHO de su padre (.formGroup) */
-  /* La propiedad 'max-width' ya no es necesaria aquí, se controla en .formGroup */
   background-color: #3a3a3a;
   border: 1px solid #00bcd4;
   border-radius: 0.6rem;
   padding: 0.9rem 1.2rem;
   font-size: 1.1rem;
   color: #f8f4f4;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  font-family: inherit;
+  transition: all 0.3s ease;
 }
 
-.eventForm input[type="text"]::placeholder,
-.eventForm input[type="number"]::placeholder,
-.eventForm input[type="url"]::placeholder,
-.eventForm input[type="date"]::placeholder,
-.eventForm textarea::placeholder {
+.editModalForm .editFormInput::placeholder, .eventForm .editFormInput::placeholder {
   color: #9e9e9e;
 }
 
-.eventForm input[type="text"]:focus,
-.eventForm input[type="number"]:focus,
-.eventForm input[type="url"]:focus,
-.eventForm input[type="date"]:focus,
-.eventForm textarea:focus {
+.editModalForm .editFormInput:focus, .eventForm .editFormInput:focus {
   outline: none;
   border-color: #00e5ff;
   box-shadow: 0 0 0 0.3rem rgba(0, 189, 212, 0.35);
   background-color: #4a4a4a;
 }
 
-.eventForm input[type="text"].isInvalid,
-.eventForm input[type="number"].isInvalid,
-.eventForm input[type="url"].isInvalid,
-.eventForm input[type="date"].isInvalid,
-.eventForm textarea.isInvalid {
+.editModalForm .editFormInput.editFormInputInvalid, .eventForm .editFormInput.editFormInputInvalid {
   border-color: #ff6e6e;
   box-shadow: 0 0 0 0.25rem rgba(255, 110, 110, 0.3);
 }
 
-.eventForm textarea {
+.editModalForm .editFormTextarea, .eventForm .editFormTextarea {
+  width: 100%;
+  background-color: #3a3a3a;
+  border: 1px solid #00bcd4;
+  border-radius: 0.6rem;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.1rem;
+  color: #f8f4f4;
+  font-family: inherit;
+  transition: all 0.3s ease;
   min-height: 10rem;
   resize: vertical;
   line-height: 1.6;
 }
 
-.eventForm .errorText {
+.editModalForm .editFormTextarea::placeholder, .eventForm .editFormTextarea::placeholder {
+  color: #9e9e9e;
+}
+
+.editModalForm .editFormTextarea:focus, .eventForm .editFormTextarea:focus {
+  outline: none;
+  border-color: #00e5ff;
+  box-shadow: 0 0 0 0.3rem rgba(0, 189, 212, 0.35);
+  background-color: #4a4a4a;
+}
+
+.editModalForm .editFormTextarea.editFormTextareaInvalid, .eventForm .editFormTextarea.editFormTextareaInvalid {
+  border-color: #ff6e6e;
+  box-shadow: 0 0 0 0.25rem rgba(255, 110, 110, 0.3);
+}
+
+.editModalForm .editFormErrorText, .eventForm .editFormErrorText {
   color: #ff6e6e;
   font-size: 0.95rem;
   margin-top: 0.5rem;
   font-weight: 400;
-  /* Los errores se alinearán automáticamente con el input porque están dentro del .formGroup */
 }
 
-.eventForm .globalError {
+.editModalForm .editFormGlobalError, .eventForm .editFormGlobalError {
   color: #ff6e6e;
   text-align: center;
   margin-top: 1.5rem;
@@ -157,22 +142,20 @@
   border-radius: 0.5rem;
   border: 1px solid #ff6e6e;
   max-width: 45rem;
-  /* Mantener el ancho máximo para el error global */
   margin-left: auto;
   margin-right: auto;
 }
 
-.eventForm .imageSection {
+.editModalForm .editImageSection, .eventForm .editImageSection {
   margin-top: 2.5rem;
   border-top: 1px dashed rgba(255, 255, 255, 0.15);
   padding-top: 2rem;
   max-width: 45rem;
-  /* Asegura que la sección de imágenes también se alinee */
   margin-left: auto;
   margin-right: auto;
 }
 
-.eventForm .imageSection .imageSectionTitle {
+.editModalForm .editImageSection .editImageSectionTitle, .eventForm .editImageSection .editImageSectionTitle {
   font-size: 2rem;
   margin-bottom: 1.8rem;
   color: #00bcd4;
@@ -180,7 +163,7 @@
   font-weight: 600;
 }
 
-.eventForm .imageSection .subsectionTitle {
+.editModalForm .editImageSection .editImageSubsectionTitle, .eventForm .editImageSection .editImageSubsectionTitle {
   font-size: 1.4rem;
   margin-top: 1.5rem;
   margin-bottom: 1.2rem;
@@ -189,15 +172,14 @@
   font-weight: 500;
 }
 
-.eventForm .imageSection .imagePreviewGrid {
+.editModalForm .editImageSection .editImagePreviewGrid, .eventForm .editImageSection .editImagePreviewGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 1.2rem;
   margin-bottom: 1.5rem;
-  /* No necesitamos padding aquí si el .imageSection tiene max-width y se centra */
 }
 
-.eventForm .imageSection .imagePreview {
+.editModalForm .editImageSection .editImagePreview, .eventForm .editImageSection .editImagePreview {
   position: relative;
   width: 100%;
   padding-bottom: 75%;
@@ -208,14 +190,14 @@
   background-color: #3a3a3a;
 }
 
-.eventForm .imageSection .imagePreview img {
+.editModalForm .editImageSection .editImagePreview .editImagePreviewImg, .eventForm .editImageSection .editImagePreview .editImagePreviewImg {
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.eventForm .imageSection .imagePreview .removeImageBtn {
+.editModalForm .editImageSection .editImagePreview .editImageRemoveBtn, .eventForm .editImageSection .editImagePreview .editImageRemoveBtn {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -234,12 +216,12 @@
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.3);
 }
 
-.eventForm .imageSection .imagePreview .removeImageBtn:hover {
-  background-color: red;
+.editModalForm .editImageSection .editImagePreview .editImageRemoveBtn:hover, .eventForm .editImageSection .editImagePreview .editImageRemoveBtn:hover {
+  background-color: #ff3232;
   transform: scale(1.1);
 }
 
-.eventForm .imageSection .helpText {
+.editModalForm .editImageSection .editImageHelpText, .eventForm .editImageSection .editImageHelpText {
   font-size: 0.95rem;
   color: #bbdefb;
   margin-top: 0.8rem;
@@ -247,14 +229,14 @@
   text-align: center;
 }
 
-.eventForm .imageSection .newImagesUploadSection {
+.editModalForm .editImageSection .editImageUploadSection, .eventForm .editImageSection .editImageUploadSection {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 1.5rem;
 }
 
-.eventForm .submitButtonContainer {
+.editModalForm .editSubmitButtonContainer, .eventForm .editSubmitButtonContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -262,29 +244,32 @@
   margin-top: 3rem;
 }
 
-.eventForm button[type="submit"] {
+.editModalForm .editSubmitButton, .eventForm .editSubmitButton {
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 0.6rem;
-  padding: 1.2rem 2.8rem;
-  font-size: 1.3rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  padding: 1.2rem 2.8rem;
+  font-size: 1.3rem;
   box-shadow: 0 0.4rem 0.8rem rgba(0, 123, 255, 0.2);
 }
 
-.eventForm button[type="submit"]:hover {
+.editModalForm .editSubmitButton:hover:not(:disabled), .eventForm .editSubmitButton:hover:not(:disabled) {
   background-color: #0056b3;
   transform: translateY(-3px);
-  box-shadow: 0 0.6rem 1.2rem rgba(0, 123, 255, 0.3);
 }
 
-.eventForm button[type="submit"]:disabled {
+.editModalForm .editSubmitButton:disabled, .eventForm .editSubmitButton:disabled {
   background-color: #555555;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
   color: #aaaaaa;
+}
+
+.editModalForm .editSubmitButton:hover:not(:disabled), .eventForm .editSubmitButton:hover:not(:disabled) {
+  box-shadow: 0 0.6rem 1.2rem rgba(0, 123, 255, 0.3);
 }
