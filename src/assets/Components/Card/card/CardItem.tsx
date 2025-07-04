@@ -10,6 +10,7 @@ interface CardItemProps {
     title: string;
     description: string;
     creationDate: string;
+    eventDate?: string; // Fecha específica del evento
     favoritesCount: number;
     commentsCount?: number;
     attendeesCount: number;
@@ -29,6 +30,7 @@ const CardItem: React.FC<CardItemProps> = ({
     title,
     description,
     creationDate,
+    eventDate,
     favoritesCount,
     commentsCount,
     attendeesCount = 0,
@@ -55,8 +57,13 @@ const CardItem: React.FC<CardItemProps> = ({
     };
 
     // Fecha y lugar juntos para eventos
+    const displayDate = type === 'event' && eventDate ? eventDate : creationDate;
     const eventInfo = type === 'event' && location
-        ? `${location} · ${new Date(creationDate).toLocaleDateString()}`
+        ? `${location} · ${new Date(displayDate).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        })}`
         : undefined;
 
     // Share Button Popup
@@ -141,7 +148,11 @@ const CardItem: React.FC<CardItemProps> = ({
             <div className={styles.body}>
                 <h3 className={styles.title}>{title}</h3>
                 {type === 'post' && (
-                    <p className={styles.date}>{new Date(creationDate).toLocaleDateString()}</p>
+                    <p className={styles.date}>{new Date(displayDate).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    })}</p>
                 )}
                 <p className={styles.description}>
                     {type === 'post' && description.length > 250

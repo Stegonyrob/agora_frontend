@@ -152,13 +152,13 @@ const App: React.FC = () => {
 
         <Route path="/admin/posts" element={
           <PrivateLayout>
-            <ProtectedRoute element={<AdminPostView userId={0} />} />
+            <ProtectedRoute element={<AdminPostView userId={session.userId || 0} />} />
           </PrivateLayout>
         } />
 
         <Route path="/admin/events" element={
           <PrivateLayout>
-            <ProtectedRoute element={<AdminEventView userId={0} />} />
+            <ProtectedRoute element={<AdminEventView userId={session.userId || 0} />} />
           </PrivateLayout>
         } />
 

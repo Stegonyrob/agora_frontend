@@ -18,6 +18,12 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  position: relative;
+}
+
+.inputWrapper {
+  flex: 1;
+  position: relative;
 }
 
 .tagInput {
@@ -51,6 +57,7 @@
   color: white !important;
   transition: all 0.3s ease;
   font-family: 'Overlock', serif;
+  flex-shrink: 0;
 }
 
 .addButton:hover:not(:disabled) {
@@ -179,6 +186,78 @@
 .removeButton i {
   font-size: 0.875rem;
   font-weight: bold;
+}
+
+/* Estilos para sugerencias de autocompletado */
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(47, 47, 47, 0.95);
+  border: 1px solid rgba(135, 206, 235, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  /* Custom scrollbar */
+}
+
+.suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.suggestions::-webkit-scrollbar-thumb {
+  background: rgba(135, 206, 235, 0.5);
+  border-radius: 3px;
+}
+
+.suggestions::-webkit-scrollbar-thumb:hover {
+  background: rgba(135, 206, 235, 0.7);
+}
+
+.suggestionItem {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: #f8f4f4;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Overlock', serif;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(135, 206, 235, 0.1);
+}
+
+.suggestionItem:hover {
+  background: rgba(135, 206, 235, 0.15);
+  color: #87ceeb;
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+/* Texto de carga */
+.loadingText {
+  font-size: 0.75rem;
+  color: rgba(135, 206, 235, 0.7);
+  font-style: italic;
+}
+
+/* Mejorar el wrapper del input */
+.inputWrapper .tagInput {
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {

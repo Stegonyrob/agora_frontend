@@ -106,7 +106,15 @@ export default class EventService {
 
   // 3. Create event - createEvent() (Admin Only)
   async createEvent(newEvent: IEventDTO): Promise<IEvent> {
-    console.log("Creating new event...");
+    console.log("🔧 EventService - Creating new event...");
+    console.log("📝 EventService - Datos recibidos:", {
+      userId: newEvent.userId,
+      userIdType: typeof newEvent.userId,
+      title: newEvent.title,
+      message: newEvent.message,
+      eventDTO: newEvent,
+    });
+
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -115,15 +123,29 @@ export default class EventService {
     };
 
     try {
+      console.log("📤 EventService - Enviando al backend:", {
+        url: this.uri,
+        method: "POST",
+        userId: newEvent.userId,
+        data: newEvent,
+      });
+
       const response: AxiosResponse<IEvent> = await axios.post<IEvent>(
         this.uri,
         newEvent,
         config
       );
-      console.log("Event created successfully:", response.data);
+
+      console.log("✅ EventService - Event created successfully:", {
+        id: response.data.id,
+        userId: response.data.userId,
+        title: response.data.title,
+        fullResponse: response.data,
+      });
+
       return response.data;
     } catch (error: any) {
-      console.error("Error creating event:", error.message);
+      console.error("💥 EventService - Error creating event:", error.message);
       throw new Error(`Error creating event: ${error.message}`);
     }
   }

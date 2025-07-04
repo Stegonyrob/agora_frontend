@@ -9,6 +9,14 @@ const AdminEventView = ({ userId }: { userId: number }) => {
     const [fetchedEvents, setFetchedEvents] = useState<IEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
 
+    console.log("🔧 AdminEventView - Props y sesión:", {
+        userId,
+        userIdType: typeof userId,
+        sessionUserId: sessionStorage.getItem("userId"),
+        sessionUserRole: sessionStorage.getItem("role"),
+        sessionUserName: sessionStorage.getItem("userName")
+    });
+
     useEffect(() => {
         const fetchEvents = async () => {
             try {
@@ -45,13 +53,20 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             return;
         }
         try {
+            console.log("✅ AdminEventView - Evento recibido del formulario:", {
+                id: newEvent.id,
+                title: newEvent.title,
+                message: newEvent.description
+            });
+
+            // El evento ya fue creado en EventForm, solo actualizar la lista
             const eventService = new EventService();
-            const eventDTO = event as unknown as IEventDTO;
-            await eventService.createEvent(eventDTO);
             const updatedEvents = await eventService.fetchEvents();
             setFetchedEvents(updatedEvents ?? []);
+
+            console.log("✅ AdminEventView - Lista de eventos actualizada");
         } catch (error) {
-            console.error("Error creating event:", error);
+            console.error("Error updating events list:", error);
         }
     };
 

@@ -8,7 +8,8 @@
     :global(.modal-content) {
       margin: 0 auto;
       padding: 2.5rem;
-  
+      position: relative; /* Añadido para mejorar el contexto de posicionamiento */
+      z-index: 1055; /* Aumentado para que esté por encima de otros elementos */
       
       border-radius: 1rem;
       box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.6);
@@ -63,6 +64,8 @@
       margin-left: auto;
       margin-right: auto;
       padding: 0 0.5rem;
+      position: relative; /* Añadido para contexto de posicionamiento */
+      z-index: 1; /* Asegurar orden de capas correcto */
     }
   
     :global(.form-label) {
@@ -71,9 +74,7 @@
       font-weight: 500;
       font-size: 1.1rem;
       color: #b3e5fc;
-    }
-  
-    :global(.form-control) {
+    }    :global(.form-control) {
       width: 100%;
       background-color: #3a3a3a;
       border: 1px solid #00bcd4;
@@ -83,18 +84,21 @@
       color: #f8f4f4;
       transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
       margin: 0;
-  
+      position: relative; /* Mejorar posicionamiento para autocompletado */
+      z-index: 10; /* Elevar para autocompletado del navegador */
+
       &::placeholder {
         color: #9e9e9e;
       }
-  
+
       &:focus {
         outline: none;
         border-color: #00e5ff;
         box-shadow: 0 0 0 0.3rem rgba(0, 189, 212, 0.35);
         background-color: #4a4a4a;
+        z-index: 20; /* Elevar más cuando está en foco */
       }
-  
+
       &.is-invalid {
         border-color: #ff6e6e;
         box-shadow: 0 0 0 0.25rem rgba(255, 110, 110, 0.3);
@@ -143,11 +147,25 @@
       margin-right: auto;
   
       .imageSectionTitle {
-        font-size: 2rem;
+        font-size: 2.2rem;
         margin-bottom: 1.8rem;
         color: #00bcd4;
         text-align: center;
-        font-weight: 600;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 188, 212, 0.3);
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60px;
+          height: 3px;
+          background: linear-gradient(90deg, #00bcd4, #00e5ff);
+          border-radius: 2px;
+        }
       }
   
       .subsectionTitle {
@@ -157,122 +175,208 @@
         color: #b3e5fc;
         text-align: center;
         font-weight: 500;
-      }
-  
-      .imagePreviewContainer {
+      }      .imagePreviewContainer {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1.2rem;
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
-        padding: 0.5rem;
-        background-color: #333;
-        border-radius: 0.5rem;
-        border: 1px solid #444;
-        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+        border-radius: 1rem;
+        border: 2px solid #00bcd4;
+        box-shadow: 
+          0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        max-height: 300px;
+        overflow-y: auto;
+        
+        /* Custom scrollbar */
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+          background: #00bcd4;
+          border-radius: 4px;
+          
+          &:hover {
+            background: #00e5ff;
+          }
+        }
       }
-  
+
       .imagePreview {
-        position: relative; // <-- ESTO ES CLAVE
+        position: relative;
         width: 100%;
-        padding-bottom: 75%; // Mantén esto si tu imagen no tiene un aspect-ratio fijo, o usa aspect-ratio
+        aspect-ratio: 1; // Cuadrado perfecto
         overflow: hidden;
-        border-radius: 0.6rem;
-        border: 2px solid rgba(0, 189, 212, 0.6);
-        box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.3);
-        background-color: #3a3a3a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        aspect-ratio: 4/3; // <-- Preferible a padding-bottom si el navegador lo soporta bien
-  
-        img {
+        border-radius: 0.8rem;
+        border: 3px solid transparent;
+        background: linear-gradient(#2a2a2a, #2a2a2a) padding-box,
+                    linear-gradient(45deg, #00bcd4, #00e5ff, #26c6da) border-box;
+        box-shadow: 
+          0 4px 15px rgba(0, 188, 212, 0.2),
+          0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+
+        &:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 
+            0 8px 25px rgba(0, 188, 212, 0.3),
+            0 4px 15px rgba(0, 0, 0, 0.4);
+          border-color: #00e5ff;
+        }
+
+        .previewImage {
           position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
           height: 100%;
-          object-fit: cover; // <-- CRUCIAL para que las imágenes se vean bien
-          border-radius: 0.6rem;
+          object-fit: cover;
+          border-radius: 0.5rem;
+          transition: transform 0.3s ease;
         }
-  
-        .removeButton {
+
+        &:hover .previewImage {
+          transform: scale(1.05);
+        }        .removeButton {
           position: absolute;
-          top: 0.2rem;
-          right: 0.2rem;
-          background-color: rgba(255, 50, 50, 0.9);
-          color: white;
+          top: 8px;
+          right: 8px;
+          background: transparent;
           border: none;
-          border-radius: 50%;
-          width: 1.6rem;
-          height: 1.6rem;
+          cursor: pointer;
+          padding: 0;
+          margin: 0;
+          width: auto;
+          height: auto;
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
-          font-size: 0.8rem;
-          transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
-          box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.4);
-          z-index: 10; // <-- Asegura que esté por encima de la imagen
-  
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 10;
+          
+          i {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1;
+            display: block;
+          }
+          
           &:hover {
-            background-color: rgba(255, 0, 0, 1);
             transform: scale(1.1);
+            
+            i {
+              color: #ff4757;
+              text-shadow: 
+                0 0 10px rgba(255, 71, 87, 0.6),
+                0 2px 8px rgba(0, 0, 0, 0.7);
+              transform: rotate(360deg);
+            }
+          }
+          
+          &:active {
+            transform: scale(1.0);
+            
+            i {
+              transform: rotate(360deg);
+            }
+          }
+          
+          &:focus {
+            outline: none;
+            
+            i {
+              color: #ff4757;
+              filter: drop-shadow(0 0 6px rgba(255, 71, 87, 0.8));
+            }
           }
         }
-  
+
         .existingBadge {
           position: absolute;
-          bottom: 0.3rem;
-          left: 0.3rem;
-          background-color: rgba(0, 123, 255, 0.8);
+          bottom: 5px;
+          left: 5px;
+          background: linear-gradient(45deg, #00bcd4, #26c6da);
           color: white;
-          padding: 0.2rem 0.5rem;
-          border-radius: 0.3rem;
-          font-size: 0.7rem;
-          font-weight: 500;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          box-shadow: 
+            0 2px 8px rgba(0, 188, 212, 0.4),
+            0 1px 3px rgba(0, 0, 0, 0.3);
           z-index: 5;
-        }
-  
-        .imagePlaceholder {
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }        .imagePlaceholder {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           height: 100%;
           width: 100%;
-          color: #aaa;
+          color: #00bcd4;
           font-size: 0.9rem;
-          background-color: #444;
+          background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+          border-radius: 0.5rem;
+          
+          .loadingText {
+            margin-top: 8px;
+            font-weight: 500;
+            color: #b3e5fc;
+          }
         }
-  
+
         .loadingSpinner {
-          border: 3px solid rgba(255, 255, 255, 0.3);
-          border-top: 3px solid #fff;
+          border: 3px solid rgba(0, 188, 212, 0.3);
+          border-top: 3px solid #00bcd4;
           border-radius: 50%;
-          width: 25px;
-          height: 25px;
+          width: 30px;
+          height: 30px;
           animation: spin 1s linear infinite;
-          margin-bottom: 0.5rem;
-        }
-  
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
         }
       }
   
-      .helpText {
-        font-size: 0.95rem;
-        color: #bbdefb;
-        margin-top: 0.8rem;
-        display: block;
-        text-align: center;
-      }
       .newImagesUploadSection {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-top: 1.5rem;
+        margin-bottom: 1rem;
         width: 100%;
+        padding: 0.8rem;
+        background: transparent;
+        border: none;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .helpText {
+        font-size: 0.95rem;
+        color: #b3e5fc;
+        margin-top: 1rem;
+        display: block;
+        text-align: center;
+        font-weight: 500;
+        opacity: 0.9;
       }
     }
   
@@ -338,4 +442,54 @@
     :global(.spinner-border) {
       color: white;
     }
+  }
+  
+  /* Estilos específicos para mejorar el autocompletado del navegador */
+  
+  /* Mejorar el contexto de posicionamiento del modal completo */
+  :global(.modal) {
+    z-index: 1050;
+    
+    .modal-dialog {
+      z-index: 1051;
+      position: relative;
+    }
+  }
+  
+  /* Forzar posicionamiento correcto para elementos de autocompletado */
+  .formGroup {
+    /* Crear contexto de posicionamiento local */
+    transform: translateZ(0);
+    
+    /* Asegurar que los inputs tengan contexto de stacking correcto */
+    :global(.form-control) {
+      transform: translateZ(0);
+    }
+  }
+  
+  /* Estilos específicos para Chrome/Edge autocompletado */
+  :global(.form-control) {
+    /* Forzar repaint para elementos con autocompletado */
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px #4a4a4a inset !important;
+      -webkit-text-fill-color: #f8f4f4 !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  }
+  
+  /* Mejorar el contenedor del modal para autocompletado */
+  :global(.modal-content) {
+    /* Crear un nuevo contexto de stacking */
+    isolation: isolate;
+    
+    /* Asegurar que elementos internos se posicionen correctamente */
+    contain: layout style;
+  }
+  
+  /* Si el problema persiste, se puede usar esta clase para desactivar autocompletado */
+  .noAutocomplete {
+    /* Esta clase se usará en el componente para aplicar autocomplete="off" */
+    position: relative;
   }

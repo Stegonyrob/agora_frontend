@@ -12,8 +12,8 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         const fetchPosts = async () => {
             try {
                 const postService = new PostService();
-                const page = await postService.getAllPosts();
-                setFetchedPosts(page?.data ?? []);
+                const page = await postService.getAllPosts(0, 100); // Obtener los primeros 100 posts
+                setFetchedPosts(page?.content ?? []);
             } catch (error) {
                 console.error("Error fetching posts:", error);
             }
@@ -38,8 +38,8 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         try {
             const postService = new PostService();
             await postService.createPost(newPost);
-            const updatedPosts = await postService.getAllPosts();
-            setFetchedPosts(updatedPosts?.data ?? []);
+            const updatedPosts = await postService.getAllPosts(0, 100);
+            setFetchedPosts(updatedPosts?.content ?? []);
         } catch (error) {
             console.error("Error creating post:", error);
         }

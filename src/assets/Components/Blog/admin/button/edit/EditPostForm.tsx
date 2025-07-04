@@ -1,9 +1,11 @@
 import { IPostDTO } from "@/core/posts/IPostDTO";
-import React, { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-
-import DOMPurify from "dompurify";
-import { useSelector } from "react-redux";
+import { useEditPostForm } from "@/hooks/useEditPostForm";
+import React from "react";
+import { Modal } from "react-bootstrap";
+import EditPostBasicFields from "./components/EditPostBasicFields";
+import EditPostFormActions from "./components/EditPostFormActions";
+import EditPostImageManager from "./components/EditPostImageManager";
+import EditPostTagsField from "./components/EditPostTagsField";
 import styles from "./EditModalForm.module.scss";
 
 interface EditPostFormProps {
@@ -13,59 +15,27 @@ interface EditPostFormProps {
   show: boolean;
 }
 
-const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
-  const [title, setTitle] = useState(post?.title || "");
-  const [message, setMessage] = useState(post?.message || "");
-  const imagesState = useSelector((state: any) => state.images);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [date, setDate] = useState("");
+const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, show }) => {
+  const {
+    title,
+    setTitle,
+    message,
+    setMessage,
+    imagePreviews,
+    tags,
+    handleImagesSelected,
+    handleRemoveImage,
+    setTags,
+    submitForm,
+    isSubmitting,
+    globalError
+  } = useEditPostForm({ post, show });
 
-  // Cargar datos del post cuando se abre el modal
-  useEffect(() => {
-    if (post && show) {
-      setTitle(post.title || "");
-      setMessage(post.message || "");
-
-
-      // Formatear la fecha para el input type="date"
-      if (post.createdAt) {
-        const formattedDate = new Date(post.createdAt).toISOString().split('T')[0];
-        setDate(formattedDate);
-      }
-
-      // Cargar imágenes existentes
-      setExistingImages(post.images || []);
-    }
-  }, [post, show]);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Sanitizar inputs
-    const sanitizedTitle = DOMPurify.sanitize(title);
-    const sanitizedMessage = DOMPurify.sanitize(message);
-
-    if (!post || typeof post.id !== "number") {
-      throw new Error("El post original debe tener un id válido.");
-    }
-
-    // Combinar imágenes existentes y nuevas del store
-    const allImages = [
-      ...existingImages,
-      ...imagesState.images.map((img: any) => img.url)
-    ];
-
-    const updatedPost: IPostDTO = {
-      ...post,
-      id: post.id,
-      title: sanitizedTitle,
-      message: sanitizedMessage,
-      createdAt: post.createdAt,
-      images: allImages,
-    };
-
-    onSubmit(updatedPost);
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await submitForm(onSubmit, onClose);
   };
+
   return (
     <Modal
       size="lg"
@@ -76,36 +46,34 @@ const EditPostForm = ({ post, onSubmit, onClose, show }: EditPostFormProps) => {
       backdropClassName="custom-backdrop"
     >
       <Modal.Header className={styles.modalHeader} closeButton>
-        <Modal.Title>Formulario de Edición de los Post</Modal.Title>
+        <Modal.Title>Editar Post</Modal.Title>
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label className={styles.titleLabel}>
-              Título:
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
+        <form onSubmit={handleFormSubmit}>
+          <EditPostBasicFields
+            title={title}
+            setTitle={setTitle}
+            message={message}
+            setMessage={setMessage}
+          />
 
-          <div className={styles.formGroup}>
-            <label className={styles.titleLabel}>
-              Mensaje:
-            </label>
-            <textarea
-              value={message.toString()}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
+          <EditPostImageManager
+            imagePreviews={imagePreviews}
+            onImagesSelected={handleImagesSelected}
+            onRemoveImage={handleRemoveImage}
+          />
 
-          <div className={styles.submitButtonContainer}>
-            <Button type="submit" variant="primary">
-              {post ? "Actualizar Post" : "Crear Post"}
-            </Button>
-          </div>
+          <EditPostTagsField
+            tags={tags}
+            setTags={setTags}
+          />
+
+          <EditPostFormActions
+            onSubmit={() => { }}
+            onCancel={onClose}
+            isSubmitting={isSubmitting}
+            globalError={globalError}
+          />
         </form>
       </Modal.Body>
     </Modal>

@@ -13,6 +13,14 @@ interface ButtonCreateGenericProps {
 const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmit, userId }) => {
     const [show, setShow] = useState(false);
 
+    console.log("🔧 ButtonCreateGeneric - Props recibidos:", {
+        type,
+        userId,
+        userIdType: typeof userId,
+        sessionUserId: sessionStorage.getItem("userId"),
+        sessionUserRole: sessionStorage.getItem("role")
+    });
+
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
@@ -60,14 +68,15 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
                     onSubmit={handleCreate}
                     onClose={handleClose}
                     show={show}
-                    userId={userId} userName={""} />
+                    userId={userId}
+                    userName={sessionStorage.getItem("userName") || ""}
+                />
             ) : (
                 <EventForm
                     onSubmit={handleCreate}
                     onClose={handleClose}
                     show={show}
                     userId={userId}
-                    userName={sessionStorage.getItem("userName") || ""}
                 />
             )}
         </div>
