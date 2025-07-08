@@ -1,5 +1,5 @@
 export interface ITagDTO {
-  id: number;
+  id?: number;
   name: string;
-  isArchived: boolean;
+  archived?: boolean;
 }

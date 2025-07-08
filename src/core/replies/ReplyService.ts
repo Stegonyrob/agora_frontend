@@ -21,8 +21,8 @@ export class ReplyService {
     return await this.repository.create(reply);
   }
 
-  async update(reply: IReplyDTO): Promise<IReply> {
-    return await this.repository.update(reply);
+  async update(replyId: number, reply: IReplyDTO): Promise<IReply> {
+    return await this.repository.update(replyId, reply);
   }
 
   async delete(replyId: number): Promise<void> {

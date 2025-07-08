@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { IEvent } from "./IEvent";
 
 export default class EventRepository {
-  uri: string = "http://localhost:8080/api/v1/posts";
+  uri: string = import.meta.env.VITE_API_ENDPOINT_EVENTS;
 
   async getAll(): Promise<IEvent[]> {
     try {

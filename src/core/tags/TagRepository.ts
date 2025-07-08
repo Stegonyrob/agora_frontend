@@ -15,18 +15,24 @@ export interface ITagRepository {
   addTagToPost(postId: number, tagName: string): Promise<void>;
   removeTagFromEvent(eventId: number, tagName: string): Promise<void>;
   removeTagFromPost(postId: number, tagName: string): Promise<void>;
+  archiveTag(tagId: number, archived: boolean): Promise<ITag>;
 }
 
 class TagRepository implements ITagRepository {
-  private readonly baseUrl = `${
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
-  }`;
+  // URLs específicas para cada endpoint según las variables de entorno
+  private readonly publicTagsUrl = import.meta.env
+    .VITE_API_ENDPOINT_TAGS_BY_EVENT_PUBLIC;
+  private readonly privateEventTagsUrl = import.meta.env
+    .VITE_API_ENDPOINT_TAGS_BY_EVENT_PRIVATE;
+  private readonly postTagsUrl = import.meta.env.VITE_API_ENDPOINT_TAGS_POST;
+  private readonly tagsUrl = import.meta.env.VITE_API_ENDPOINT_TAGS;
+  private readonly eventTagsUrl = import.meta.env.VITE_API_ENDPOINT_EVENT_TAGS;
 
   // Endpoints públicos (no requieren autenticación)
   async getAllTags(): Promise<ITag[]> {
     try {
       console.log("🏷️ TagRepository - Obteniendo todos los tags...");
-      const response = await axios.get(`${this.baseUrl}/api/v1/all/tags`);
+      const response = await axios.get(this.publicTagsUrl);
 
       console.log("✅ TagRepository - Tags obtenidos:", {
         cantidad: response.data?.length || 0,
@@ -43,9 +49,12 @@ class TagRepository implements ITagRepository {
   async getEventsByTag(tagName: string): Promise<any[]> {
     try {
       console.log("🏷️ TagRepository - Obteniendo eventos por tag:", tagName);
-      const response = await axios.get(
-        `${this.baseUrl}/api/v1/all/tags/events/${encodeURIComponent(tagName)}`
+      // Usar la URL específica para eventos por tag (pública)
+      const url = this.privateEventTagsUrl.replace(
+        "{tagName}",
+        encodeURIComponent(tagName)
       );
+      const response = await axios.get(url);
 
       console.log("✅ TagRepository - Eventos obtenidos por tag:", {
         tag: tagName,
@@ -68,7 +77,7 @@ class TagRepository implements ITagRepository {
       console.log("🏷️ TagRepository - Obteniendo posts por tag:", tagName);
       const headers = getAuthHeaders();
       const response = await axios.get(
-        `${this.baseUrl}/api/v1/any/tags/posts/${encodeURIComponent(tagName)}`,
+        `${this.postTagsUrl}/${encodeURIComponent(tagName)}`,
         { headers }
       );
 
@@ -91,11 +100,7 @@ class TagRepository implements ITagRepository {
     try {
       console.log("🏷️ TagRepository - Creando tag:", request);
       const headers = getAuthHeaders();
-      const response = await axios.post(
-        `${this.baseUrl}/api/v1/any/tags`,
-        request,
-        { headers }
-      );
+      const response = await axios.post(this.tagsUrl, request, { headers });
 
       console.log("✅ TagRepository - Tag creado:", response.data);
       return response.data;
@@ -113,11 +118,7 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.post(
-        `${
-          this.baseUrl
-        }/api/v1/any/tags/events/${eventId}/tags/${encodeURIComponent(
-          tagName
-        )}`,
+        `${this.eventTagsUrl}/${eventId}/tags/${encodeURIComponent(tagName)}`,
         {},
         { headers }
       );
@@ -137,9 +138,7 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.post(
-        `${
-          this.baseUrl
-        }/api/v1/any/tags/posts/${postId}/tags/${encodeURIComponent(tagName)}`,
+        `${this.postTagsUrl}/${postId}/tags/${encodeURIComponent(tagName)}`,
         {},
         { headers }
       );
@@ -159,11 +158,7 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.delete(
-        `${
-          this.baseUrl
-        }/api/v1/any/tags/events/${eventId}/tags/${encodeURIComponent(
-          tagName
-        )}`,
+        `${this.eventTagsUrl}/${eventId}/tags/${encodeURIComponent(tagName)}`,
         { headers }
       );
 
@@ -185,15 +180,34 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.delete(
-        `${
-          this.baseUrl
-        }/api/v1/any/tags/posts/${postId}/tags/${encodeURIComponent(tagName)}`,
+        `${this.postTagsUrl}/${postId}/tags/${encodeURIComponent(tagName)}`,
         { headers }
       );
 
       console.log("✅ TagRepository - Tag eliminado de post exitosamente");
     } catch (error) {
       console.error("❌ TagRepository - Error al eliminar tag de post:", error);
+      throw error;
+    }
+  }
+
+  async archiveTag(tagId: number, archived: boolean): Promise<ITag> {
+    try {
+      console.log("🏷️ TagRepository - Archivando tag:", { tagId, archived });
+      const headers = getAuthHeaders();
+      const response = await axios.patch(
+        `${this.tagsUrl}/${tagId}/archive`,
+        { archived },
+        { headers }
+      );
+
+      console.log(
+        "✅ TagRepository - Tag archivada exitosamente:",
+        response.data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ TagRepository - Error al archivar tag:", error);
       throw error;
     }
   }

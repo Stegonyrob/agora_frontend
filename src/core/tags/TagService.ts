@@ -1,21 +1,9 @@
-import axios from "axios";
-import { getAuthHeaders } from "../auth/AuthHeaders";
-
-export interface Tag {
-  id: number;
-  name: string;
-  archived: boolean;
-}
-
-export interface TagDTO {
-  id?: number;
-  name: string;
-  archived?: boolean;
-}
+import { ITag } from "./ITag";
+import { ITagDTO } from "./ITagDTO";
+import TagRepository from "./TagRepository";
 
 class TagService {
-  private baseUrl = "http://localhost:8080/api/v1/any/tags"; // Usar el endpoint que funciona
-  private legacyUrl = "http://localhost:8080/api/v1/tags"; // Mantener el original como fallback
+  private tagRepository: TagRepository;
 
   // Tags populares predefinidas que siempre deben aparecer como sugerencias
   private popularTags = [
@@ -40,34 +28,27 @@ class TagService {
     "Actividades",
   ];
 
+  constructor() {
+    this.tagRepository = new TagRepository();
+  }
+
   /**
    * Obtener todas las tags disponibles
    */
-  async getAllTags(): Promise<Tag[]> {
+  async getAllTags(): Promise<ITag[]> {
     try {
-      console.log(
-        "🏷️ TagService - Obteniendo todas las tags desde:",
-        this.baseUrl
-      );
+      console.log("🏷️ TagService - Obteniendo todas las tags...");
 
-      const response = await axios.get(this.baseUrl, {
-        headers: getAuthHeaders(),
-      });
+      const tags = await this.tagRepository.getAllTags();
 
       console.log("✅ TagService - Tags obtenidas del backend:", {
-        cantidad: response.data?.length || 0,
-        endpoint: this.baseUrl,
-        primerasTags:
-          response.data?.slice(0, 3)?.map((tag: Tag) => tag.name) || [],
+        cantidad: tags.length,
+        primerasTags: tags.slice(0, 3).map((tag) => tag.name),
       });
 
-      return response.data || [];
+      return tags;
     } catch (error) {
-      console.error(
-        "❌ TagService - Error obteniendo tags desde:",
-        this.baseUrl,
-        error
-      );
+      console.error("❌ TagService - Error obteniendo tags:", error);
       throw error;
     }
   }
@@ -75,7 +56,7 @@ class TagService {
   /**
    * Obtener tags activas (no archivadas)
    */
-  async getActiveTags(): Promise<Tag[]> {
+  async getActiveTags(): Promise<ITag[]> {
     try {
       const allTags = await this.getAllTags();
       const activeTags = allTags.filter((tag) => !tag.archived);
@@ -95,26 +76,26 @@ class TagService {
   /**
    * Obtener tags populares combinando predefinidas y del backend
    */
-  async getPopularTags(): Promise<Tag[]> {
+  async getPopularTags(): Promise<ITag[]> {
     try {
       console.log("🔥 TagService - Obteniendo tags populares...");
 
       // Intentar obtener tags del backend con timeout corto
       const backendTags = await Promise.race([
         this.getActiveTags(),
-        new Promise<Tag[]>((_, reject) =>
+        new Promise<ITag[]>((_, reject) =>
           setTimeout(() => reject(new Error("Timeout")), 3000)
         ),
       ]);
 
       // Crear un mapa de tags existentes por nombre
-      const backendTagsMap = new Map<string, Tag>();
+      const backendTagsMap = new Map<string, ITag>();
       backendTags.forEach((tag) => {
         backendTagsMap.set(tag.name.toLowerCase(), tag);
       });
 
       // Combinar tags populares predefinidas con las del backend
-      const popularTagsResult: Tag[] = [];
+      const popularTagsResult: ITag[] = [];
 
       // Primero añadir las populares predefinidas que existen en el backend
       this.popularTags.forEach((tagName) => {
@@ -146,7 +127,7 @@ class TagService {
       );
 
       // Fallback: crear tags virtuales con las predefinidas
-      const fallbackTags: Tag[] = this.popularTags
+      const fallbackTags: ITag[] = this.popularTags
         .slice(0, 10)
         .map((name, index) => ({
           id: -(index + 1), // IDs negativos para tags virtuales
@@ -165,31 +146,24 @@ class TagService {
   /**
    * Crear una nueva tag
    */
-  async createTag(tagData: TagDTO): Promise<Tag> {
+  async createTag(tagData: ITagDTO): Promise<ITag> {
     try {
-      console.log(
-        "🏷️ TagService - Creando nueva tag en:",
-        this.baseUrl,
-        tagData
-      );
+      console.log("🏷️ TagService - Creando nueva tag:", tagData);
 
-      const response = await axios.post(this.baseUrl, tagData, {
-        headers: getAuthHeaders(),
-      });
+      const createRequest = {
+        name: tagData.name,
+        archived: tagData.archived || false,
+      };
+
+      const iTagResponse = await this.tagRepository.createTag(createRequest);
 
       console.log("✅ TagService - Tag creada exitosamente:", {
-        endpoint: this.baseUrl,
-        tagCreada: response.data,
-        status: response.status,
+        tagCreada: iTagResponse,
       });
 
-      return response.data;
+      return iTagResponse;
     } catch (error) {
-      console.error(
-        "❌ TagService - Error creando tag en:",
-        this.baseUrl,
-        error
-      );
+      console.error("❌ TagService - Error creando tag:", error);
       throw error;
     }
   }
@@ -197,14 +171,14 @@ class TagService {
   /**
    * Buscar tag por nombre
    */
-  async findTagByName(name: string): Promise<Tag | null> {
+  async findTagByName(name: string): Promise<ITag | null> {
     try {
       console.log("🔍 TagService - Buscando tag por nombre:", name);
 
       // Intentar obtener tags del backend con timeout
       const allTags = await Promise.race([
         this.getAllTags(),
-        new Promise<Tag[]>((_, reject) =>
+        new Promise<ITag[]>((_, reject) =>
           setTimeout(() => reject(new Error("Timeout buscando tags")), 2000)
         ),
       ]);
@@ -235,7 +209,7 @@ class TagService {
       );
 
       if (predefinedTag) {
-        const virtualTag: Tag = {
+        const virtualTag: ITag = {
           id: -Math.floor(Math.random() * 1000),
           name: predefinedTag,
           archived: false,
@@ -251,7 +225,7 @@ class TagService {
   /**
    * Obtener o crear tag por nombre
    */
-  async getOrCreateTag(name: string): Promise<Tag> {
+  async getOrCreateTag(name: string): Promise<ITag> {
     try {
       console.log("🔍 TagService - Intentando obtener/crear tag:", name);
 
@@ -275,7 +249,7 @@ class TagService {
       });
 
       // Fallback: crear tag virtual con ID negativo
-      const virtualTag: Tag = {
+      const virtualTag: ITag = {
         id: -Math.floor(Math.random() * 10000), // ID negativo aleatorio
         name: name.trim(),
         archived: false,
@@ -289,11 +263,11 @@ class TagService {
   /**
    * Obtener múltiples tags por nombres (crear si no existen)
    */
-  async getOrCreateTags(names: string[]): Promise<Tag[]> {
+  async getOrCreateTags(names: string[]): Promise<ITag[]> {
     try {
       console.log("🏷️ TagService - Procesando múltiples tags:", names);
 
-      const tags: Tag[] = [];
+      const tags: ITag[] = [];
 
       for (const name of names) {
         if (name.trim()) {
@@ -318,20 +292,103 @@ class TagService {
   /**
    * Archivar/desarchivar tag
    */
-  async archiveTag(tagId: number, archived: boolean): Promise<Tag> {
+  async archiveTag(tagId: number, archived: boolean): Promise<ITag> {
     try {
       console.log("🗃️ TagService - Archivando tag:", { tagId, archived });
 
-      const response = await axios.patch(
-        `${this.baseUrl}/${tagId}/archive`,
-        { archived },
-        { headers: getAuthHeaders() }
-      );
+      const iTag = await this.tagRepository.archiveTag(tagId, archived);
 
-      console.log("✅ TagService - Tag archivada exitosamente:", response.data);
-      return response.data;
+      console.log("✅ TagService - Tag archivada exitosamente:", iTag);
+      return iTag;
     } catch (error) {
       console.error("❌ TagService - Error archivando tag:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener posts por tag
+   */
+  async getPostsByTag(tagName: string): Promise<any[]> {
+    try {
+      console.log("🏷️ TagService - Obteniendo posts por tag:", tagName);
+      return await this.tagRepository.getPostsByTag(tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error obteniendo posts por tag:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener eventos por tag
+   */
+  async getEventsByTag(tagName: string): Promise<any[]> {
+    try {
+      console.log("🏷️ TagService - Obteniendo eventos por tag:", tagName);
+      return await this.tagRepository.getEventsByTag(tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error obteniendo eventos por tag:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Añadir tag a evento
+   */
+  async addTagToEvent(eventId: number, tagName: string): Promise<void> {
+    try {
+      console.log("🏷️ TagService - Añadiendo tag a evento:", {
+        eventId,
+        tagName,
+      });
+      await this.tagRepository.addTagToEvent(eventId, tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error añadiendo tag a evento:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Añadir tag a post
+   */
+  async addTagToPost(postId: number, tagName: string): Promise<void> {
+    try {
+      console.log("🏷️ TagService - Añadiendo tag a post:", { postId, tagName });
+      await this.tagRepository.addTagToPost(postId, tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error añadiendo tag a post:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Eliminar tag de evento
+   */
+  async removeTagFromEvent(eventId: number, tagName: string): Promise<void> {
+    try {
+      console.log("🏷️ TagService - Eliminando tag de evento:", {
+        eventId,
+        tagName,
+      });
+      await this.tagRepository.removeTagFromEvent(eventId, tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error eliminando tag de evento:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Eliminar tag de post
+   */
+  async removeTagFromPost(postId: number, tagName: string): Promise<void> {
+    try {
+      console.log("🏷️ TagService - Eliminando tag de post:", {
+        postId,
+        tagName,
+      });
+      await this.tagRepository.removeTagFromPost(postId, tagName);
+    } catch (error) {
+      console.error("❌ TagService - Error eliminando tag de post:", error);
       throw error;
     }
   }

@@ -19,6 +19,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
   const [capacity, setCapacity] = useState<number | string>(0);
   const [tags, setTags] = useState<string[]>([]);
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
+  const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   // Servicio memoizado
@@ -139,6 +140,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       setCapacity(0);
       setTags([]);
       setImagePreviews([]);
+      setImagesToDelete([]);
       setFormErrors({});
     }
   }, [event?.id, event?.images, show]);
@@ -164,6 +166,13 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
   const handleRemoveImage = useCallback((idx: number) => {
     setImagePreviews((prev) => {
       const imageToRemove = prev[idx];
+
+      // Si la imagen es una imagen existente, la añadimos a la lista de imágenes a eliminar
+      if (imageToRemove?.isExisting && typeof imageToRemove.id === "number") {
+        setImagesToDelete((prevIds) => [...prevIds, imageToRemove.id!]);
+      }
+
+      // Si la imagen es una nueva imagen (aún no subida), revocamos el Object URL para liberar memoria
       if (
         imageToRemove?.url &&
         !imageToRemove.isExisting &&
@@ -171,6 +180,8 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       ) {
         URL.revokeObjectURL(imageToRemove.url);
       }
+
+      // Eliminamos la imagen de la vista previa
       return prev.filter((_, i) => i !== idx);
     });
   }, []);
@@ -217,36 +228,55 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
         return;
       }
 
-      // Combinar todas las imágenes (existentes que no se eliminaron)
-      const existingImageUrls = imagePreviews
-        .filter((preview) => preview.isExisting)
-        .map((preview) => preview.url);
+      try {
+        // 1. Eliminar imágenes marcadas para borrado
+        if (imagesToDelete.length > 0) {
+          console.log(`🗑️ Eliminando ${imagesToDelete.length} imágenes...`);
+          const eventImageService = new EventImageService();
+          // La función de borrado múltiple solo necesita los IDs de las imágenes
+          await eventImageService.deleteMultipleEventImages(imagesToDelete);
+          console.log("✅ Imágenes eliminadas exitosamente");
+        }
 
-      // Nota: En esta versión simplificada, las imágenes nuevas se manejarían
-      // en el componente padre o mediante otro mecanismo
-      const allImages = [...existingImageUrls];
+        // 2. Subir nuevas imágenes si las hay
+        const newImageFiles = imagePreviews
+          .filter((preview) => !preview.isExisting && preview.file)
+          .map((preview) => preview.file!);
 
-      // Validar y formatear la fecha
-      const dateObj = new Date(date);
-      if (isNaN(dateObj.getTime())) {
-        console.error("Fecha inválida:", date);
-        return;
+        if (newImageFiles.length > 0) {
+          console.log(`📷 Subiendo ${newImageFiles.length} nuevas imágenes...`);
+          const eventImageService = new EventImageService();
+          await eventImageService.uploadEventImages(event.id, newImageFiles);
+          console.log("✅ Nuevas imágenes subidas exitosamente");
+        }
+
+        // 3. Validar y formatear la fecha
+        const dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) {
+          console.error("Fecha inválida:", date);
+          return;
+        }
+
+        // 4. Actualizar el evento (sin imágenes, ya que se manejan por separado)
+        const updatedEvent: IEventDTO = {
+          ...event,
+          id: event.id,
+          title: sanitizedTitle,
+          message: sanitizedMessage,
+          place,
+          eventDate: dateObj.toISOString(),
+          link,
+          capacity: Number(capacity),
+          tags,
+        };
+
+        console.log("📝 Actualizando datos del evento...");
+        onSubmit(updatedEvent);
+        console.log("✅ Evento actualizado exitosamente");
+      } catch (error) {
+        console.error("❌ Error al actualizar el evento:", error);
+        throw error;
       }
-
-      const updatedEvent: IEventDTO = {
-        ...event,
-        id: event.id,
-        title: sanitizedTitle,
-        message: sanitizedMessage,
-        place,
-        eventDate: dateObj.toISOString(),
-        link,
-        capacity: Number(capacity),
-        tags,
-        images: allImages,
-      };
-
-      onSubmit(updatedEvent);
     },
     [
       validateForm,
@@ -259,6 +289,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       tags,
       imagePreviews,
       event,
+      imagesToDelete,
     ]
   );
 

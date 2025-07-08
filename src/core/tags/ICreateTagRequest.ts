@@ -5,5 +5,5 @@ export interface ICreateTagRequest {
 export interface ICreateTagResponse {
   id: number;
   name: string;
-  isArchived: boolean;
+  archived: boolean;
 }

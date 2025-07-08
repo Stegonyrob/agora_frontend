@@ -319,6 +319,59 @@ export default class EventImageService {
   }
 
   /**
+   * Eliminar múltiples imágenes de un evento.
+   * Se asume un endpoint POST /api/v1/event-images/delete-multiple que acepta un array de IDs.
+   * Endpoint: POST /api/v1/event-images/delete-multiple
+   */
+  async deleteMultipleEventImages(imageIds: number[]): Promise<void> {
+    if (!imageIds || imageIds.length === 0) {
+      console.warn("No se proporcionaron IDs de imagen para eliminar.");
+      return;
+    }
+
+    console.log("🗑️ EventImageService - Eliminando múltiples imágenes:", {
+      imageIds,
+      uri: this.uri,
+    });
+
+    try {
+      const deleteUrl = `${this.uri}/delete-multiple`;
+      console.log(
+        "🗑️ EventImageService - Enviando solicitud DELETE a:",
+        deleteUrl
+      );
+
+      await axios.delete(deleteUrl, {
+        data: { imageIds }, // Enviando los IDs en el cuerpo del request DELETE
+        headers: getAuthHeaders(),
+        timeout: 15000,
+      });
+
+      console.log(
+        "✅ EventImageService - Múltiples imágenes eliminadas exitosamente:",
+        imageIds
+      );
+    } catch (error: any) {
+      console.error(
+        "💥 EventImageService - Error eliminando múltiples imágenes:",
+        {
+          imageIds,
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+        }
+      );
+
+      throw new Error(
+        `Error deleting multiple event images: ${
+          error.response?.data?.message || error.message
+        }`
+      );
+    }
+  }
+
+  /**
    * Construir URL completa para servir imagen
    * @param imageId ID de la imagen
    * @returns URL completa para obtener la imagen
