@@ -1,4 +1,5 @@
 import React from 'react';
+import { Form } from 'react-bootstrap';
 import styles from '../EditModalForm.module.scss';
 
 interface EditEventBasicFieldsProps {
@@ -26,31 +27,30 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
 }) => {
     return (
         <>
-            <div className={styles.editFormGroup}>
-                <label htmlFor="eventTitle" className={styles.editFormLabel}>
-                    <strong>📝 Título del Evento *</strong>
-                </label>
-                <input
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Título del Evento *
+                </Form.Label>
+                <Form.Control
                     type="text"
-                    id="eventTitle"
-                    className={`${styles.editFormInput} ${formErrors.title ? styles.editFormInputInvalid : ""}`}
+                    className={`form-control ${formErrors.title ? 'is-invalid' : ''}`}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Ej: Taller de Robótica, Conferencia de IA..."
                     required
                 />
                 {formErrors.title && (
-                    <div className={styles.editFormErrorText}>{formErrors.title}</div>
+                    <div className={styles.errorText}>{formErrors.title}</div>
                 )}
             </div>
 
-            <div className={styles.editFormGroup}>
-                <label htmlFor="eventMessage" className={styles.editFormLabel}>
-                    📄 Descripción del Evento:
-                </label>
-                <textarea
-                    id="eventMessage"
-                    className={styles.editFormTextarea}
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Descripción del Evento *
+                </Form.Label>
+                <Form.Control
+                    as="textarea"
+                    className="form-control"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe el evento, lo que los asistentes aprenderán..."
@@ -58,28 +58,26 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
                 />
             </div>
 
-            <div className={styles.editFormGroup}>
-                <label htmlFor="eventPlace" className={styles.editFormLabel}>
-                    📍 Ubicación:
-                </label>
-                <input
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Ubicación *
+                </Form.Label>
+                <Form.Control
                     type="text"
-                    id="eventPlace"
-                    className={styles.editFormInput}
+                    className="form-control"
                     value={place}
                     onChange={(e) => setPlace(e.target.value)}
                     placeholder="Ej: Sala de Conferencias A, Online..."
                 />
             </div>
 
-            <div className={styles.editFormGroup}>
-                <label htmlFor="eventLink" className={styles.editFormLabel}>
-                    🔗 Enlace adicional:
-                </label>
-                <input
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Enlace adicional (opcional)
+                </Form.Label>
+                <Form.Control
                     type="url"
-                    id="eventLink"
-                    className={styles.editFormInput}
+                    className="form-control"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="https://example.com/mas-info"

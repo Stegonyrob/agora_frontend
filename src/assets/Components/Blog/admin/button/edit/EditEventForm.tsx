@@ -47,67 +47,69 @@ const EditEventForm = ({
     };
 
     return (
-        <Modal size="lg" show={show} onHide={onClose} className={styles.editModalForm}>
-            <div className={styles.editModalContent}>
-                <div className={styles.editModalHeader}>
-                    <h2 className={styles.editModalTitle}>
-                        ✏️ Editar Evento
-                    </h2>
-                </div>
-                <div className={styles.editModalBody}>
-                    <form className={styles.editForm} onSubmit={handleSubmit}>
-                        <EditEventBasicFields
-                            title={title}
-                            setTitle={setTitle}
-                            message={message}
-                            setMessage={setMessage}
-                            place={place}
-                            setPlace={setPlace}
-                            link={link}
-                            setLink={setLink}
-                            formErrors={formErrors}
-                        />
+        <Modal
+            size="lg"
+            centered
+            show={show}
+            onHide={onClose}
+            className={styles.eventForm}
+            style={{ zIndex: 10000 }}
+            backdropClassName="custom-backdrop"
+        >
+            <Modal.Header className={styles.eventForm} closeButton>
+                <Modal.Title className={styles.modalTitle}>Editar Evento</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className={styles.eventForm}>
+                <form onSubmit={handleSubmit}>
+                    <EditEventBasicFields
+                        title={title}
+                        setTitle={setTitle}
+                        message={message}
+                        setMessage={setMessage}
+                        place={place}
+                        setPlace={setPlace}
+                        link={link}
+                        setLink={setLink}
+                        formErrors={formErrors}
+                    />
 
-                        <EditEventDateCapacityFields
-                            date={date}
-                            setDate={setDate}
-                            capacity={capacity}
-                            setCapacity={setCapacity}
-                            formErrors={formErrors}
-                        />
+                    <EditEventDateCapacityFields
+                        date={date}
+                        setDate={setDate}
+                        capacity={capacity}
+                        setCapacity={setCapacity}
+                        formErrors={formErrors}
+                    />
 
-                        <EditEventTagsField
-                            tags={tags}
-                            setTags={setTags}
-                        />
+                    <EditEventTagsField
+                        tags={tags}
+                        setTags={setTags}
+                    />
 
-                        <div className={styles.editImageSection}>
-                            <label className={styles.editImageSectionTitle}>🖼️ Gestión de Imágenes</label>
+                    <div className={styles.imageSection}>
+                        <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
 
-                            {/* Subir nuevas imágenes */}
-                            <div className={styles.editImageUploadSection}>
-                                <h4 className={styles.editImageSubsectionTitle}>➕ Seleccionar imágenes:</h4>
-                                <ImageUploadButton onImagesSelected={handleNewImagesSelected} />
-                                <small className={styles.editImageHelpText}>
-                                    💡 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
-                                </small>
-                            </div>
-
-                            {/* Grid unificado de previews de imágenes */}
-                            <ImagePreviewGrid
-                                imagePreviews={imagePreviews}
-                                onRemoveImage={handleRemoveImage}
-                                showExistingBadge={true}
-                            />
+                        <div className={styles.newImagesUploadSection}>
+                            <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
+                            <ImageUploadButton onImagesSelected={handleNewImagesSelected} />
+                            <small className={styles.helpText}>
+                                Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
+                            </small>
                         </div>
 
-                        <EditEventFormActions
-                            isSubmitting={isSubmitting}
-                            submitError={submitError}
+                        <ImagePreviewGrid
+                            imagePreviews={imagePreviews}
+                            onRemoveImage={handleRemoveImage}
+                            showExistingBadge={true}
                         />
-                    </form>
-                </div>
-            </div>
+                    </div>
+
+                    <EditEventFormActions
+                        isSubmitting={isSubmitting}
+                        submitError={submitError}
+                    />
+                </form>
+            </Modal.Body>
         </Modal>
     );
 };

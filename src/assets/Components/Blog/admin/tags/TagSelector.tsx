@@ -40,15 +40,15 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     const loadAvailableTags = async () => {
         try {
             setLoading(true);
+
             const tagService = new TagService();
-            // Usar getPopularTags() en lugar de getActiveTags() para mostrar las más importantes
             const tags = await tagService.getPopularTags();
             setAvailableTags(tags);
-            console.log('🏷️ TagSelector - Tags populares cargadas:', tags);
+
         } catch (error) {
-            console.error('❌ TagSelector - Error cargando tags:', error);
-            // Fallback: usar tags predefinidas localmente si falla la conexión
-            const fallbackTags = [
+            console.error('Error cargando tags:', error);
+            // Si hay error, usar tags básicas
+            const basicTags = [
                 { id: -1, name: 'Taller', archived: false },
                 { id: -2, name: 'Escuela de padres', archived: false },
                 { id: -3, name: 'Neurodiversidad', archived: false },
@@ -58,8 +58,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                 { id: -7, name: 'TEA', archived: false },
                 { id: -8, name: 'Inclusión', archived: false }
             ];
-            setAvailableTags(fallbackTags);
-            console.log('⚠️ TagSelector - Usando tags fallback:', fallbackTags);
+            setAvailableTags(basicTags);
         } finally {
             setLoading(false);
         }
@@ -72,24 +71,30 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         }
 
         try {
-            // Intentar crear o obtener la tag
             const tagService = new TagService();
             const tag = await tagService.getOrCreateTag(trimmedTag);
 
-            // Añadir a la lista de seleccionadas
             const newTags = [...selectedTags, tag.name];
             onTagsChange(newTags);
             setInputTag('');
 
-            // Actualizar lista de tags disponibles si es nueva
-            if (!availableTags.find(t => t.id === tag.id)) {
+            if (!availableTags.find(t => t.name.toLowerCase() === tag.name.toLowerCase())) {
                 setAvailableTags(prev => [...prev, tag]);
             }
-
-            console.log('✅ TagSelector - Tag añadida:', tag);
         } catch (error) {
-            console.error('❌ TagSelector - Error añadiendo tag:', error);
-            alert('Error al crear/añadir la tag. Por favor, inténtalo de nuevo.');
+            console.error('Error añadiendo tag:', error);
+
+            // Si hay error, crear tag local
+            const localTag = {
+                id: -Math.floor(Math.random() * 10000),
+                name: trimmedTag,
+                archived: false
+            };
+
+            const newTags = [...selectedTags, localTag.name];
+            onTagsChange(newTags);
+            setInputTag('');
+            setAvailableTags(prev => [...prev, localTag]);
         }
     };
 
@@ -116,7 +121,8 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         <div className={styles.tagSelector}>
             <label className={styles.label}>
                 <i className="bi bi-tags-fill me-2"></i>
-                Tags {loading && <span className={styles.loadingText}>(Cargando...)</span>}
+                Tags
+                {loading && <span className={styles.loadingText}>(Cargando...)</span>}
             </label>
 
             {/* Input para agregar tags personalizados */}
@@ -214,6 +220,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                     </div>
                 </div>
             )}
+
         </div>
     );
 };

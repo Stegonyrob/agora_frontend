@@ -14,7 +14,8 @@ export interface TagDTO {
 }
 
 class TagService {
-  private baseUrl = "http://localhost:8080/api/v1/tags";
+  private baseUrl = "http://localhost:8080/api/v1/any/tags"; // Usar el endpoint que funciona
+  private legacyUrl = "http://localhost:8080/api/v1/tags"; // Mantener el original como fallback
 
   // Tags populares predefinidas que siempre deben aparecer como sugerencias
   private popularTags = [
@@ -44,20 +45,29 @@ class TagService {
    */
   async getAllTags(): Promise<Tag[]> {
     try {
-      console.log("🏷️ TagService - Obteniendo todas las tags...");
+      console.log(
+        "🏷️ TagService - Obteniendo todas las tags desde:",
+        this.baseUrl
+      );
 
       const response = await axios.get(this.baseUrl, {
         headers: getAuthHeaders(),
       });
 
-      console.log("✅ TagService - Tags obtenidas:", {
+      console.log("✅ TagService - Tags obtenidas del backend:", {
         cantidad: response.data?.length || 0,
-        tags: response.data,
+        endpoint: this.baseUrl,
+        primerasTags:
+          response.data?.slice(0, 3)?.map((tag: Tag) => tag.name) || [],
       });
 
       return response.data || [];
     } catch (error) {
-      console.error("❌ TagService - Error obteniendo tags:", error);
+      console.error(
+        "❌ TagService - Error obteniendo tags desde:",
+        this.baseUrl,
+        error
+      );
       throw error;
     }
   }
@@ -89,8 +99,13 @@ class TagService {
     try {
       console.log("🔥 TagService - Obteniendo tags populares...");
 
-      // Obtener tags del backend
-      const backendTags = await this.getActiveTags();
+      // Intentar obtener tags del backend con timeout corto
+      const backendTags = await Promise.race([
+        this.getActiveTags(),
+        new Promise<Tag[]>((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout")), 3000)
+        ),
+      ]);
 
       // Crear un mapa de tags existentes por nombre
       const backendTagsMap = new Map<string, Tag>();
@@ -116,7 +131,7 @@ class TagService {
         ...remainingBackendTags.slice(0, 15 - popularTagsResult.length)
       );
 
-      console.log("✅ TagService - Tags populares obtenidas:", {
+      console.log("✅ TagService - Tags populares obtenidas del backend:", {
         predefinidas: this.popularTags.length,
         delBackend: backendTags.length,
         combinadas: popularTagsResult.length,
@@ -125,7 +140,10 @@ class TagService {
 
       return popularTagsResult;
     } catch (error) {
-      console.error("❌ TagService - Error obteniendo tags populares:", error);
+      console.warn(
+        "⚠️ TagService - Backend no disponible, usando fallback:",
+        error instanceof Error ? error.message : String(error)
+      );
 
       // Fallback: crear tags virtuales con las predefinidas
       const fallbackTags: Tag[] = this.popularTags
@@ -137,8 +155,8 @@ class TagService {
         }));
 
       console.log(
-        "⚠️ TagService - Usando tags predefinidas como fallback:",
-        fallbackTags
+        "✅ TagService - Tags predefinidas cargadas (modo offline):",
+        fallbackTags.map((t) => t.name)
       );
       return fallbackTags;
     }
@@ -149,16 +167,29 @@ class TagService {
    */
   async createTag(tagData: TagDTO): Promise<Tag> {
     try {
-      console.log("🏷️ TagService - Creando nueva tag:", tagData);
+      console.log(
+        "🏷️ TagService - Creando nueva tag en:",
+        this.baseUrl,
+        tagData
+      );
 
       const response = await axios.post(this.baseUrl, tagData, {
         headers: getAuthHeaders(),
       });
 
-      console.log("✅ TagService - Tag creada exitosamente:", response.data);
+      console.log("✅ TagService - Tag creada exitosamente:", {
+        endpoint: this.baseUrl,
+        tagCreada: response.data,
+        status: response.status,
+      });
+
       return response.data;
     } catch (error) {
-      console.error("❌ TagService - Error creando tag:", error);
+      console.error(
+        "❌ TagService - Error creando tag en:",
+        this.baseUrl,
+        error
+      );
       throw error;
     }
   }
@@ -168,12 +199,21 @@ class TagService {
    */
   async findTagByName(name: string): Promise<Tag | null> {
     try {
-      const allTags = await this.getAllTags();
+      console.log("🔍 TagService - Buscando tag por nombre:", name);
+
+      // Intentar obtener tags del backend con timeout
+      const allTags = await Promise.race([
+        this.getAllTags(),
+        new Promise<Tag[]>((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout buscando tags")), 2000)
+        ),
+      ]);
+
       const tag = allTags.find(
         (tag) => tag.name.toLowerCase() === name.toLowerCase()
       );
 
-      console.log("🔍 TagService - Buscando tag por nombre:", {
+      console.log("🔍 TagService - Resultado búsqueda:", {
         nombre: name,
         encontrada: !!tag,
         tag: tag,
@@ -181,7 +221,29 @@ class TagService {
 
       return tag || null;
     } catch (error) {
-      console.error("❌ TagService - Error buscando tag:", error);
+      console.warn(
+        "⚠️ TagService - Error buscando tag, backend no disponible:",
+        {
+          name,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+
+      // Si hay error, verificar en las tags predefinidas localmente
+      const predefinedTag = this.popularTags.find(
+        (tagName) => tagName.toLowerCase() === name.toLowerCase()
+      );
+
+      if (predefinedTag) {
+        const virtualTag: Tag = {
+          id: -Math.floor(Math.random() * 1000),
+          name: predefinedTag,
+          archived: false,
+        };
+        console.log("✅ TagService - Tag predefinida encontrada:", virtualTag);
+        return virtualTag;
+      }
+
       return null;
     }
   }
@@ -191,6 +253,8 @@ class TagService {
    */
   async getOrCreateTag(name: string): Promise<Tag> {
     try {
+      console.log("🔍 TagService - Intentando obtener/crear tag:", name);
+
       // Primero buscar si existe
       let tag = await this.findTagByName(name);
 
@@ -205,8 +269,20 @@ class TagService {
 
       return tag;
     } catch (error) {
-      console.error("❌ TagService - Error obteniendo/creando tag:", error);
-      throw error;
+      console.warn("⚠️ TagService - Error con backend, creando tag virtual:", {
+        name,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      // Fallback: crear tag virtual con ID negativo
+      const virtualTag: Tag = {
+        id: -Math.floor(Math.random() * 10000), // ID negativo aleatorio
+        name: name.trim(),
+        archived: false,
+      };
+
+      console.log("✅ TagService - Tag virtual creada:", virtualTag);
+      return virtualTag;
     }
   }
 
