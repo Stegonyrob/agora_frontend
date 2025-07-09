@@ -1,6 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { getAuthHeaders } from "../auth/AuthHeaders";
 import { IEvent } from "./IEvent";
-import { IEventDTO } from "./IEventDTO";
+import {
+  IEventCreateDTO,
+  IEventResponseDTO,
+  IEventUpdateDTO,
+} from "./IEventBackendDTO";
 
 // Index:
 // 1. Get all events - fetchEvents()
@@ -105,40 +110,35 @@ export default class EventService {
   }
 
   // 3. Create event - createEvent() (Admin Only)
-  async createEvent(newEvent: IEventDTO): Promise<IEvent> {
+  async createEvent(newEvent: IEventCreateDTO): Promise<IEvent> {
     console.log("🔧 EventService - Creating new event...");
     console.log("📝 EventService - Datos recibidos:", {
-      userId: newEvent.userId,
-      userIdType: typeof newEvent.userId,
       title: newEvent.title,
       message: newEvent.message,
-      eventDTO: newEvent,
+      capacity: newEvent.capacity,
+      tags: newEvent.tags,
     });
-
-    const config: AxiosRequestConfig = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
-    };
 
     try {
       console.log("📤 EventService - Enviando al backend:", {
         url: this.uri,
         method: "POST",
-        userId: newEvent.userId,
         data: newEvent,
       });
 
       const response: AxiosResponse<IEvent> = await axios.post<IEvent>(
         this.uri,
         newEvent,
-        config
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
+        }
       );
 
       console.log("✅ EventService - Event created successfully:", {
         id: response.data.id,
-        userId: response.data.userId,
         title: response.data.title,
         fullResponse: response.data,
       });
@@ -151,40 +151,36 @@ export default class EventService {
   }
 
   // 4. Update event - updateEvent() (Admin Only)
-  async updateEvent(id: number, updatedEvent: IEventDTO): Promise<IEvent> {
+  async updateEvent(
+    id: number,
+    updatedEvent: IEventUpdateDTO
+  ): Promise<IEventResponseDTO> {
     console.log(`Updating event with ID: ${id}`);
-    const config: AxiosRequestConfig = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
-    };
 
     try {
-      const response: AxiosResponse<IEvent> = await axios.put<IEvent>(
-        `${this.uri}/${id}`,
-        updatedEvent,
-        config
-      );
+      const response: AxiosResponse<IEventResponseDTO> =
+        await axios.put<IEventResponseDTO>(`${this.uri}/${id}`, updatedEvent, {
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
+        });
       console.log("Event updated successfully:", response.data);
       return response.data;
     } catch (error: any) {
-      console.error(`Error updating event with ID ${id}:`, error.message);
-      throw new Error(`Error updating event with ID ${id}: ${error.message}`);
+      console.error(`Error updating event: ${error.message}`);
+      throw new Error(`Error updating event: ${error.message}`);
     }
   }
 
   // 5. Delete event - deleteEvent() (Admin Only)
   async deleteEvent(id: number): Promise<void> {
     console.log(`Deleting event with ID: ${id}`);
-    const config: AxiosRequestConfig = {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
-    };
 
     try {
-      await axios.delete(`${this.uri}/${id}`, config);
+      await axios.delete(`${this.uri}/${id}`, {
+        headers: getAuthHeaders(),
+      });
       console.log("Event deleted successfully.");
     } catch (error: any) {
       console.error(`Error deleting event with ID ${id}:`, error.message);

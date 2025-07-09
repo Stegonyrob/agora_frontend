@@ -64,7 +64,7 @@ const ItemGeneric = <T extends IPost | IEvent>({
         });
     }, [type, id, item, images]);
 
-    // Cargar imágenes del evento si es un evento
+    // Ajustar carga de imágenes y tags para el nuevo formato del backend
     useEffect(() => {
         if (type === 'event' && id) {
             loadEventImages();
@@ -75,24 +75,21 @@ const ItemGeneric = <T extends IPost | IEvent>({
 
     const loadPostImages = () => {
         try {
-            // Manejar diferentes posibles estructuras de imágenes en posts
+            // Ahora las imágenes vienen en images (array de strings)
             let imageUrls: string[] = [];
-
-            if (images && Array.isArray(images)) {
+            if (Array.isArray((item as any)?.images)) {
+                imageUrls = (item as any).images.map((url: string) =>
+                    url.startsWith('http') ? url : `/images/posts/${url}`
+                );
+            } else if (images && Array.isArray(images)) {
                 imageUrls = images;
-            } else if ((item as any)?.images && Array.isArray((item as any).images)) {
-                imageUrls = (item as any).images;
-            } else if ((item as any)?.image && Array.isArray((item as any).image)) {
-                imageUrls = (item as any).image;
             }
-
             const imagePreviewsData: ImagePreview[] = imageUrls.map((url, index) => ({
                 url: url,
                 isLoading: false,
                 isExisting: true,
-                id: index // Usar índice numérico en lugar de string
+                id: index
             }));
-
             setPostImages(imagePreviewsData);
             console.log("🖼️ ItemGeneric - Post images loaded:", {
                 postId: id,
@@ -113,8 +110,8 @@ const ItemGeneric = <T extends IPost | IEvent>({
             const eventImageService = new EventImageService();
             const images = await eventImageService.getEventImages(id);
 
-            // Transformar EventImageResponse[] a ImagePreview[]
-            const imagePreviewsData: ImagePreview[] = images.map(img => ({
+            // Transformar EventImageResponse[] a ImagePreview[] usando buildImageUrl
+            const imagePreviewsData: ImagePreview[] = images.map((img) => ({
                 url: eventImageService.buildImageUrl(img.id),
                 isLoading: false,
                 isExisting: true,
@@ -174,6 +171,19 @@ const ItemGeneric = <T extends IPost | IEvent>({
         onSubmit(updatedItem);
     };
 
+    // Ajustar tags para el nuevo formato del backend
+    const getTagNames = () => {
+        if (Array.isArray((item as any)?.tags) && (item as any).tags.length > 0) {
+            // Si los tags son objetos, extraer el campo name
+            if (typeof (item as any).tags[0] === 'object' && (item as any).tags[0].name) {
+                return (item as any).tags.map((tag: any) => tag.name);
+            }
+            // Si ya son strings
+            return (item as any).tags;
+        }
+        return [];
+    };
+
     return (
         <div className={styles.card}>
             <div className={styles.info}>
@@ -204,6 +214,15 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </div>
                 </div>
                 <h2 className={styles.title}>{title ?? 'No hay título'}</h2>
+
+                {/* Mostrar tags para eventos y posts */}
+                {getTagNames().length > 0 && (
+                    <div className={styles.tagsRow}>
+                        {getTagNames().map((tag: string, idx: number) => (
+                            <span key={idx} className={styles.tagBadge}>{tag}</span>
+                        ))}
+                    </div>
+                )}
 
                 {/* Mostrar imágenes para eventos */}
                 {type === 'event' && (

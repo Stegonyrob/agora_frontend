@@ -27,6 +27,35 @@ const ItemPost: React.FC<ItemPostProps> = ({
 
     if (!post) return null;
 
+    // 🗓️ Formatear fecha de creación del post para mostrar
+    const formatPostDate = (creationDate: string) => {
+        if (!creationDate) return null;
+
+        try {
+            const date = new Date(creationDate);
+            if (isNaN(date.getTime())) {
+                console.warn('📅 ItemPost - Fecha inválida:', creationDate);
+                return null;
+            }
+
+            // Convertir a array para ItemGeneric
+            return [
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate(),
+                date.getHours(),
+                date.getMinutes(),
+                date.getSeconds(),
+                date.getMilliseconds()
+            ];
+        } catch (error) {
+            console.error('📅 ItemPost - Error parseando fecha:', error);
+            return null;
+        }
+    };
+
+    const formattedCreationDate = formatPostDate(post.creationDate);
+
     return (
         <div className={styles.card}>
             <ItemGeneric
@@ -34,7 +63,7 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 id={post.id}
                 title={post.title}
                 message={post.message} // Pasar el mensaje completo, no recortado
-                creationDate={post.creationDate}
+                creationDate={formattedCreationDate}
                 isArchived={post.isArchived}
                 type="post"
                 onArchive={onArchive}
@@ -43,7 +72,7 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 onSubmit={onSubmit}
                 userId={userId}
                 onCreate={onCreate}
-                images={post.images}
+                images={post.image}
             />
             <AccordionComments
                 postId={post.id}

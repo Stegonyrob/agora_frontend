@@ -2,7 +2,10 @@ import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/im
 import EventImageService from "@/core/events/EventImageService";
 import EventService from "@/core/events/EventService";
 import { IEvent } from "@/core/events/IEvent";
-import { IEventDTO } from "@/core/events/IEventDTO";
+import {
+  IEventCreateDTO,
+  IEventUpdateDTO,
+} from "@/core/events/IEventBackendDTO";
 import { useCallback, useEffect, useState } from "react";
 
 interface UseEventFormProps {
@@ -18,7 +21,7 @@ export const useEventForm = ({
 }: UseEventFormProps) => {
   // Estados del formulario
   const [title, setTitle] = useState(event?.title || "");
-  const [description, setDescription] = useState(event?.description || "");
+  const [message, setMessage] = useState(event?.message || "");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
   const [tags, setTags] = useState<string[]>(event?.tags || []);
   const [location, setLocation] = useState(event?.location || "");
@@ -142,24 +145,19 @@ export const useEventForm = ({
       );
     }
 
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      !eventDate ||
-      !location.trim()
-    ) {
+    if (!title.trim() || !message.trim() || !eventDate || !location.trim()) {
       throw new Error(
-        "Título, descripción, fecha y ubicación son campos obligatorios."
+        "Título, mensaje, fecha y ubicación son campos obligatorios."
       );
     }
 
     return true;
-  }, [title, description, eventDate, location, userRole, userId]);
+  }, [title, message, eventDate, location, userRole, userId]);
 
   // Reset del formulario
   const resetForm = useCallback(() => {
     setTitle("");
-    setDescription("");
+    setMessage("");
     setImagePreviews([]);
     setTags([]);
     setLocation("");
@@ -194,59 +192,53 @@ export const useEventForm = ({
         });
 
         // Construir DTO del evento
-        const eventData: IEventDTO = {
-          id: event?.id || 0,
-          title: title.trim(),
-          message: description.trim(),
-          description: description.trim(),
-          location: location.trim(),
-          capacity: Number(capacity) || 0,
-          eventDate: new Date(eventDate).toISOString(),
-          link: link.trim(),
-          isArchived: false,
-          tags: tags,
-          images: existingImageUrls,
-          loves: event?.loves || 0,
-          isPublished: event?.isPublished || false,
-          createdAt: event?.createdAt
-            ? String(event.createdAt)
-            : new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          alt_image: "",
-          source_image: "",
-          alt_avatar: "",
-          source_avatar: "",
-          url_avatar: "",
-          userId: userId,
-        };
-
+        // Preparar datos según si es creación o edición
         let resultEvent: IEvent;
 
         if (event?.id) {
-          resultEvent = await apiEvent.updateEvent(event.id, eventData);
+          // Edición - usar IEventUpdateDTO
+          const updateData: IEventUpdateDTO = {
+            title: title.trim(),
+            message: message.trim(),
+            capacity: Number(capacity) || undefined,
+            archived: false,
+          };
+
+          const updatedEventDTO = await apiEvent.updateEvent(
+            event.id,
+            updateData
+          );
+          // Convertir la respuesta DTO a IEvent para mantener compatibilidad
+          resultEvent = {
+            ...event,
+            id: updatedEventDTO.id,
+            title: updatedEventDTO.title,
+            message: updatedEventDTO.message,
+            capacity: updatedEventDTO.capacity,
+            isArchived: updatedEventDTO.archived,
+            tags: updatedEventDTO.tags,
+          };
         } else {
-          resultEvent = await apiEvent.createEvent(eventData);
+          // Creación - usar IEventCreateDTO
+          const createData: IEventCreateDTO = {
+            title: title.trim(),
+            message: message.trim(),
+            capacity: Number(capacity) || undefined,
+            tags: tags.length > 0 ? tags : undefined,
+          };
+
+          resultEvent = await apiEvent.createEvent(createData);
         }
 
         // Subir imágenes nuevas si las hay
         if (newImageFiles.length > 0 && resultEvent.id) {
           try {
-            const validation = apiEventImage.validateConfiguration();
-            if (!validation.isValid) {
-              setGlobalError(
-                `Error de configuración: ${validation.errors.join(", ")}`
-              );
-              return;
-            }
-
-            const uploadedImages = await apiEventImage.uploadEventImages(
+            await apiEventImage.uploadEventImages(
               resultEvent.id,
               newImageFiles
             );
-            const newImageUrls = uploadedImages.map((img) =>
-              apiEventImage.buildImageUrl(img.id)
-            );
-            resultEvent.images = [...existingImageUrls, ...newImageUrls];
+            // REFRESH: volver a pedir el evento actualizado
+            resultEvent = await apiEvent.fetchEventById(resultEvent.id);
           } catch (imageError: any) {
             setGlobalError(
               `Evento guardado, pero error subiendo imágenes: ${imageError.message}`
@@ -277,7 +269,7 @@ export const useEventForm = ({
       imagePreviews,
       event,
       title,
-      description,
+      message,
       location,
       capacity,
       eventDate,
@@ -294,8 +286,8 @@ export const useEventForm = ({
     // Estados
     title,
     setTitle,
-    description,
-    setDescription,
+    message,
+    setMessage,
     location,
     setLocation,
     capacity,

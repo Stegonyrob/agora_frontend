@@ -2,7 +2,7 @@ export interface IEventDTO {
   id: number;
   title: string;
   message: string;
-  description: string;
+
   userId: number;
   loves: number;
   isArchived: boolean;

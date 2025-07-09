@@ -7,9 +7,11 @@ export interface ITagRepository {
   // Endpoints públicos
   getAllTags(): Promise<ITag[]>;
   getEventsByTag(tagName: string): Promise<any[]>;
+  getTagsByEvent(eventId: number): Promise<ITag[]>;
 
   // Endpoints privados (requieren autenticación)
   getPostsByTag(tagName: string): Promise<any[]>;
+  getTagsByPost(postId: number): Promise<ITag[]>;
   createTag(request: ICreateTagRequest): Promise<ICreateTagResponse>;
   addTagToEvent(eventId: number, tagName: string): Promise<void>;
   addTagToPost(postId: number, tagName: string): Promise<void>;
@@ -71,6 +73,34 @@ class TagRepository implements ITagRepository {
     }
   }
 
+  async getTagsByEvent(eventId: number): Promise<ITag[]> {
+    try {
+      console.log("🏷️ TagRepository - Obteniendo tags del evento:", eventId);
+      const response = await axios.get(`${this.eventTagsUrl}/${eventId}/tags`);
+
+      console.log("✅ TagRepository - Tags del evento obtenidas:", {
+        eventId,
+        cantidad: response.data?.length || 0,
+        tags: response.data,
+      });
+
+      return response.data || [];
+    } catch (error: any) {
+      console.error(
+        "❌ TagRepository - Error al obtener tags del evento:",
+        error
+      );
+      // Si no encuentra tags, retornar array vacío en lugar de fallar
+      if (error.response?.status === 404) {
+        console.warn(
+          `⚠️ TagRepository - No se encontraron tags para el evento ${eventId}`
+        );
+        return [];
+      }
+      throw error;
+    }
+  }
+
   // Endpoints privados (requieren autenticación)
   async getPostsByTag(tagName: string): Promise<any[]> {
     try {
@@ -92,6 +122,37 @@ class TagRepository implements ITagRepository {
         "❌ TagRepository - Error al obtener posts por tag:",
         error
       );
+      throw error;
+    }
+  }
+
+  async getTagsByPost(postId: number): Promise<ITag[]> {
+    try {
+      console.log("🏷️ TagRepository - Obteniendo tags del post:", postId);
+      const headers = getAuthHeaders();
+      const response = await axios.get(`${this.postTagsUrl}/${postId}/tags`, {
+        headers,
+      });
+
+      console.log("✅ TagRepository - Tags del post obtenidas:", {
+        postId,
+        cantidad: response.data?.length || 0,
+        tags: response.data,
+      });
+
+      return response.data || [];
+    } catch (error: any) {
+      console.error(
+        "❌ TagRepository - Error al obtener tags del post:",
+        error
+      );
+      // Si no encuentra tags, retornar array vacío en lugar de fallar
+      if (error.response?.status === 404) {
+        console.warn(
+          `⚠️ TagRepository - No se encontraron tags para el post ${postId}`
+        );
+        return [];
+      }
       throw error;
     }
   }

@@ -7,6 +7,7 @@ interface EditEventBasicFieldsProps {
     setTitle: (value: string) => void;
     message: string;
     setMessage: (value: string) => void;
+
     place: string;
     setPlace: (value: string) => void;
     link: string;
@@ -19,6 +20,7 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
     setTitle,
     message,
     setMessage,
+
     place,
     setPlace,
     link,
@@ -46,17 +48,22 @@ const EditEventBasicFields: React.FC<EditEventBasicFieldsProps> = ({
 
             <div className={styles.formGroup}>
                 <Form.Label className="form-label">
-                    Descripción del Evento *
+                    Mensaje/Resumen del Evento *
                 </Form.Label>
                 <Form.Control
                     as="textarea"
-                    className="form-control"
+                    className={`form-control ${formErrors.message ? 'is-invalid' : ''}`}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Describe el evento, lo que los asistentes aprenderán..."
-                    rows={4}
+                    placeholder="Mensaje corto o resumen del evento..."
+                    rows={2}
+                    required
                 />
+                {formErrors.message && (
+                    <div className={styles.errorText}>{formErrors.message}</div>
+                )}
             </div>
+
 
             <div className={styles.formGroup}>
                 <Form.Label className="form-label">

@@ -307,6 +307,32 @@ class TagService {
   }
 
   /**
+   * Obtener tags de un evento específico
+   */
+  async getTagsByEvent(eventId: number): Promise<ITag[]> {
+    try {
+      console.log("🏷️ TagService - Obteniendo tags del evento:", eventId);
+      return await this.tagRepository.getTagsByEvent(eventId);
+    } catch (error) {
+      console.error("❌ TagService - Error obteniendo tags del evento:", error);
+      return []; // Retornar array vacío si falla
+    }
+  }
+
+  /**
+   * Obtener tags de un post específico
+   */
+  async getTagsByPost(postId: number): Promise<ITag[]> {
+    try {
+      console.log("🏷️ TagService - Obteniendo tags del post:", postId);
+      return await this.tagRepository.getTagsByPost(postId);
+    } catch (error) {
+      console.error("❌ TagService - Error obteniendo tags del post:", error);
+      return []; // Retornar array vacío si falla
+    }
+  }
+
+  /**
    * Obtener posts por tag
    */
   async getPostsByTag(tagName: string): Promise<any[]> {

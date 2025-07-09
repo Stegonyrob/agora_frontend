@@ -16,18 +16,23 @@
   padding: 0.2rem 0.5rem;
   border-radius: 8px;
   transition: background 0.15s;
-}
-
-.commentsContainer .iconBtn:hover {
-  background: #f0f2f5;
-  color: #1877f2;
+  position: relative;
 }
 
 .commentsContainer .iconBtn .counter {
-  font-size: 0.98rem;
-  font-weight: 500;
-  color: #444;
-  margin-left: 0.2rem;
+  background: linear-gradient(90deg, #b48be0 0%, #6dd5ed 100%);
+  color: #222;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 50%;
+  padding: 0.18em 0.7em;
+  margin-left: 0.4rem;
+  box-shadow: 0 2px 8px rgba(180, 139, 224, 0.15);
+  border: 2px solid #fff;
+  display: inline-block;
+  min-width: 2em;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
 }
 
 .commentsContainer .accordion {

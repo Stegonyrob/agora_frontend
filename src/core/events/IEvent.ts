@@ -5,7 +5,7 @@ export interface IEvent {
   id: number;
   title: string;
   message: string;
-  description: string;
+
   location: string;
   loves: number;
   isArchived: boolean;

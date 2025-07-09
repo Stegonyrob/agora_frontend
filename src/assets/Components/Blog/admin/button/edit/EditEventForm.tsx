@@ -70,6 +70,7 @@ const EditEventForm = ({
                         setPlace={setPlace}
                         link={link}
                         setLink={setLink}
+
                         formErrors={formErrors}
                     />
 

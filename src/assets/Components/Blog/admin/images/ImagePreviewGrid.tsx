@@ -1,4 +1,5 @@
 import React from 'react';
+import AuthenticatedImage from './AuthenticatedImage';
 
 export interface ImagePreview {
     url: string;
@@ -47,116 +48,140 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
             maxHeight: '300px',
             overflowY: 'auto'
         }}>
-            {imagePreviews.map((preview, idx) => (
-                <div key={idx} style={{
-                    position: 'relative',
-                    width: '100%',
-                    aspectRatio: '1',
-                    overflow: 'hidden',
-                    borderRadius: '0.8rem',
-                    border: '3px solid transparent',
-                    background: 'linear-gradient(#2a2a2a, #2a2a2a) padding-box, linear-gradient(45deg, #00bcd4, #00e5ff, #26c6da) border-box',
-                    boxShadow: '0 4px 15px rgba(0, 188, 212, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    cursor: 'pointer'
-                }}>
-                    {preview.isLoading ? (
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                            width: '100%',
-                            color: '#00bcd4',
-                            fontSize: '0.9rem',
-                            background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%)',
-                            borderRadius: '0.5rem'
-                        }}>
+            {imagePreviews.map((preview, idx) => {
+                // Use a stable key that doesn't change when the array order changes
+                const key = preview.isExisting && preview.id
+                    ? `existing-${preview.id}`
+                    : preview.url || `new-${idx}`;
+
+                return (
+                    <div key={key} style={{
+                        position: 'relative',
+                        width: '100%',
+                        aspectRatio: '1',
+                        overflow: 'hidden',
+                        borderRadius: '0.8rem',
+                        border: '3px solid transparent',
+                        background: 'linear-gradient(#2a2a2a, #2a2a2a) padding-box, linear-gradient(45deg, #00bcd4, #00e5ff, #26c6da) border-box',
+                        boxShadow: '0 4px 15px rgba(0, 188, 212, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: 'pointer'
+                    }}>
+                        {preview.isLoading ? (
                             <div style={{
-                                border: '3px solid rgba(0, 188, 212, 0.3)',
-                                borderTop: '3px solid #00bcd4',
-                                borderRadius: '50%',
-                                width: '30px',
-                                height: '30px',
-                                animation: 'spin 1s linear infinite'
-                            }}></div>
-                            <span style={{
-                                marginTop: '8px',
-                                fontWeight: '500',
-                                color: '#b3e5fc'
-                            }}>Cargando...</span>
-                        </div>
-                    ) : (
-                        <>
-                            <img
-                                src={preview.url}
-                                alt={`preview-${idx}`}
-                                style={{
-                                    position: 'absolute',
-                                    top: '0',
-                                    left: '0',
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: '0.5rem',
-                                    transition: 'transform 0.3s ease'
-                                }}
-                                onError={(e) => handleImageError(e, preview.url)}
-                            />
-                            <button
-                                type="button"
-                                style={{
-                                    position: 'absolute',
-                                    top: '8px',
-                                    right: '8px',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    padding: '0',
-                                    margin: '0',
-                                    width: 'auto',
-                                    height: 'auto',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    zIndex: 10
-                                }}
-                                onClick={() => onRemoveImage(idx)}
-                                title="Eliminar imagen"
-                            >
-                                <i className="bi bi-x-octagon" style={{
-                                    fontSize: '20px',
-                                    color: 'rgba(255, 255, 255, 0.8)',
-                                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
-                                    transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    lineHeight: '1',
-                                    display: 'block'
-                                }}></i>
-                            </button>
-                            {showExistingBadge && preview.isExisting && (
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                width: '100%',
+                                color: '#00bcd4',
+                                fontSize: '0.9rem',
+                                background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%)',
+                                borderRadius: '0.5rem'
+                            }}>
+                                <div style={{
+                                    border: '3px solid rgba(0, 188, 212, 0.3)',
+                                    borderTop: '3px solid #00bcd4',
+                                    borderRadius: '50%',
+                                    width: '30px',
+                                    height: '30px',
+                                    animation: 'spin 1s linear infinite'
+                                }}></div>
                                 <span style={{
-                                    position: 'absolute',
-                                    bottom: '5px',
-                                    left: '5px',
-                                    background: 'linear-gradient(45deg, #00bcd4, #26c6da)',
-                                    color: 'white',
-                                    padding: '4px 8px',
-                                    borderRadius: '12px',
-                                    fontSize: '10px',
-                                    fontWeight: '600',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                    boxShadow: '0 2px 8px rgba(0, 188, 212, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)',
-                                    zIndex: 5,
-                                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                                }}>Existente</span>
-                            )}
-                        </>
-                    )}
-                </div>
-            ))}
+                                    marginTop: '8px',
+                                    fontWeight: '500',
+                                    color: '#b3e5fc'
+                                }}>Cargando...</span>
+                            </div>
+                        ) : (
+                            <>
+                                {preview.isExisting && preview.id ? (
+                                    <AuthenticatedImage
+                                        imageId={preview.id}
+                                        alt={`preview-${idx}`}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '0',
+                                            left: '0',
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: '0.5rem',
+                                            transition: 'transform 0.3s ease'
+                                        }}
+                                    />
+                                ) : (
+                                    <img
+                                        src={preview.url}
+                                        alt={`preview-${idx}`}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '0',
+                                            left: '0',
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: '0.5rem',
+                                            transition: 'transform 0.3s ease'
+                                        }}
+                                        onError={(e) => handleImageError(e, preview.url)}
+                                    />
+                                )}
+                                <button
+                                    type="button"
+                                    style={{
+                                        position: 'absolute',
+                                        top: '8px',
+                                        right: '8px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '0',
+                                        margin: '0',
+                                        width: 'auto',
+                                        height: 'auto',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        zIndex: 10
+                                    }}
+                                    onClick={() => onRemoveImage(idx)}
+                                    title="Eliminar imagen"
+                                >
+                                    <i className="bi bi-x-octagon" style={{
+                                        fontSize: '20px',
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+                                        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        lineHeight: '1',
+                                        display: 'block'
+                                    }}></i>
+                                </button>
+                                {showExistingBadge && preview.isExisting && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        bottom: '5px',
+                                        left: '5px',
+                                        background: 'linear-gradient(45deg, #00bcd4, #26c6da)',
+                                        color: 'white',
+                                        padding: '4px 8px',
+                                        borderRadius: '12px',
+                                        fontSize: '10px',
+                                        fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        boxShadow: '0 2px 8px rgba(0, 188, 212, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)',
+                                        zIndex: 5,
+                                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                                    }}>Existente</span>
+                                )}
+                            </>
+                        )}
+                    </div>
+                );
+            })}
             <style>{`
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
