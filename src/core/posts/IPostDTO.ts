@@ -1,3 +1,9 @@
+export interface IPostTagDTO {
+  id: number;
+  name: string;
+  archived?: boolean;
+}
+
 export interface IPostDTO {
   updatedAt: string;
   createdAt: string;
@@ -10,7 +16,7 @@ export interface IPostDTO {
   loves: number;
   comments: any[];
   isArchived: boolean;
-  tags: string[];
+  tags: IPostTagDTO[];
   images: string[];
   isPublished: boolean;
   alt_image: string;

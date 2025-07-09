@@ -14,7 +14,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
   const [date, setDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -143,7 +143,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           id: post.id,
           title: sanitizedTitle,
           message: sanitizedMessage,
-          tags: tags,
+          tags: tags, // Ahora es array de objetos {id, name, archived}
           createdAt: post.createdAt,
           images: allImages,
         };

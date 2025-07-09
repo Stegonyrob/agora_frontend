@@ -16,7 +16,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
   const [title, setTitle] = useState(post?.title || "");
   const [message, setMessage] = useState(post?.message || "");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const [tags, setTags] = useState<string[]>(post?.tags || []);
+  const [tags, setTags] = useState<any[]>(post?.tags || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -118,22 +118,17 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
 
   // Submit del formulario
   const submitForm = useCallback(
-    async (onSubmit: (post: IPost) => Promise<void>, onClose: () => void) => {
+    async (onSubmit: (post: IPost) => void, onClose: () => void) => {
       console.log("🚀 usePostForm - Iniciando proceso de envío");
-
       if (isSubmitting) return;
-
       setIsSubmitting(true);
       setGlobalError(null);
-
       try {
         validateForm();
-
-        // Obtener URLs de imágenes
-        const imageUrls = imagePreviews.map((preview) => preview.url);
-
-        // Construir DTO del post
-        const newPost: IPostDTO = {
+        // Combinar imágenes existentes y nuevas
+        const allImages = imagePreviews.map((preview) => preview.url);
+        // Enviar tags como array de objetos {id, name, archived}
+        const postDTO: IPostDTO = {
           id: post?.id || 0,
           userName: post?.userName || "",
           title: title.trim(),
@@ -142,8 +137,8 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
           loves: 0,
           comments: [],
           isArchived: false,
-          tags: tags,
-          images: imageUrls,
+          tags,
+          images: allImages,
           isPublished: false,
           alt_image: "",
           source_image: "",
@@ -159,10 +154,10 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
 
         // Configurar datos de usuario si está autenticado
         if (isAuthenticated) {
-          newPost.userId = role === "admin" ? 0 : 1;
-          newPost.userName = role === "admin" ? "admin" : "user";
-          newPost.role = role === "admin" ? "admin" : "user";
-          newPost.url_avatar =
+          postDTO.userId = role === "admin" ? 0 : 1;
+          postDTO.userName = role === "admin" ? "admin" : "user";
+          postDTO.role = role === "admin" ? "admin" : "user";
+          postDTO.url_avatar =
             role === "admin"
               ? "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=identicon"
               : "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm";
@@ -177,10 +172,10 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
           throw new Error("Funcionalidad de actualización no implementada aún");
         } else {
           console.log("🆕 usePostForm - Creando nuevo post");
-          resultPost = await apiPost.createPost(newPost);
+          resultPost = await apiPost.createPost(postDTO);
         }
 
-        await onSubmit(resultPost);
+        onSubmit(resultPost);
 
         if (!post?.id) {
           resetForm();
