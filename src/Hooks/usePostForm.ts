@@ -1,10 +1,21 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { IPost } from "@/core/posts/IPost";
-import { IPostDTO } from "@/core/posts/IPostDTO";
 import PostService from "@/core/posts/PostService";
 import { RootState } from "@/redux/store";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
+// Tipo para el payload mínimo de creación/edición de post
+export type PostPayload = {
+  userId: number;
+  title: string;
+  message: string;
+  location: string;
+  tags: any[];
+  images: string[];
+  isArchived: boolean;
+  isPublished: boolean;
+};
 
 interface UsePostFormProps {
   post?: IPost;
@@ -118,7 +129,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
 
   // Submit del formulario
   const submitForm = useCallback(
-    async (onSubmit: (post: IPost) => void, onClose: () => void) => {
+    async (onSubmit: (post: PostPayload) => void, onClose: () => void) => {
       console.log("🚀 usePostForm - Iniciando proceso de envío");
       if (isSubmitting) return;
       setIsSubmitting(true);
@@ -127,55 +138,26 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
         validateForm();
         // Combinar imágenes existentes y nuevas
         const allImages = imagePreviews.map((preview) => preview.url);
-        // Enviar tags como array de objetos {id, name, archived}
-        const postDTO: IPostDTO = {
-          id: post?.id || 0,
-          userName: post?.userName || "",
+        // Construir el payload solo con los campos requeridos
+        const postDTO: PostPayload = {
+          userId: post?.userId || 0,
           title: title.trim(),
           message: message.trim(),
-          location: "",
-          loves: 0,
-          comments: [],
-          isArchived: false,
+          location: post?.location || "",
           tags,
           images: allImages,
-          isPublished: false,
-          alt_image: "",
-          source_image: "",
-          alt_avatar: "",
-          source_avatar: "",
-          userId: post?.userId || 0,
-          role: "",
-          url_avatar: "",
-          updatedAt: "",
-          createdAt: "",
-          description: "",
+          isArchived: false,
+          isPublished: true,
         };
 
         // Configurar datos de usuario si está autenticado
         if (isAuthenticated) {
           postDTO.userId = role === "admin" ? 0 : 1;
-          postDTO.userName = role === "admin" ? "admin" : "user";
-          postDTO.role = role === "admin" ? "admin" : "user";
-          postDTO.url_avatar =
-            role === "admin"
-              ? "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=identicon"
-              : "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm";
         }
 
-        let resultPost: IPost;
+        let resultPost = await apiPost.createPost(postDTO as any); // el backend espera solo los campos mínimos
 
-        if (post?.id) {
-          // Actualizar post existente (implementar cuando sea necesario)
-          console.log("✏️ usePostForm - Actualizando post existente");
-          // resultPost = await apiPost.updatePost(post.id, newPost);
-          throw new Error("Funcionalidad de actualización no implementada aún");
-        } else {
-          console.log("🆕 usePostForm - Creando nuevo post");
-          resultPost = await apiPost.createPost(postDTO);
-        }
-
-        onSubmit(resultPost);
+        onSubmit(postDTO);
 
         if (!post?.id) {
           resetForm();

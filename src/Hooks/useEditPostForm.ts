@@ -4,6 +4,18 @@ import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+// Tipo para el payload mínimo de edición de post
+export type PostPayload = {
+  userId: number;
+  title: string;
+  message: string;
+  location: string;
+  tags: any[];
+  images: string[];
+  isArchived: boolean;
+  isPublished: boolean;
+};
+
 interface UseEditPostFormProps {
   post?: IPostDTO;
   show: boolean;
@@ -107,7 +119,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
 
   // Submit del formulario
   const submitForm = useCallback(
-    async (onSubmit: (post: IPostDTO) => void, onClose: () => void) => {
+    async (onSubmit: (post: PostPayload) => void, onClose: () => void) => {
       console.log("🚀 useEditPostForm - Iniciando proceso de actualización");
 
       if (isSubmitting) return;
@@ -138,14 +150,15 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
 
         const allImages = [...existingImageUrls, ...newImageUrls];
 
-        const updatedPost: IPostDTO = {
-          ...post,
-          id: post.id,
+        const updatedPost: PostPayload = {
+          userId: post.userId,
           title: sanitizedTitle,
           message: sanitizedMessage,
-          tags: tags, // Ahora es array de objetos {id, name, archived}
-          createdAt: post.createdAt,
+          location: post.location || "",
+          tags: tags, // array de objetos {id, name, archived}
           images: allImages,
+          isArchived: post.isArchived ?? false,
+          isPublished: post.isPublished ?? true,
         };
 
         await onSubmit(updatedPost);
