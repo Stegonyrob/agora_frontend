@@ -27,13 +27,14 @@ interface ItemGenericProps<T> {
     onUnArchive: (id: number) => Promise<boolean>;
 }
 
+
 const ItemGeneric = <T extends IPost | IEvent>({
     item,
-    id,
-    title,
-    message,
-    creationDate,
-    isArchived,
+    id: propId,
+    title: propTitle,
+    message: propMessage,
+    creationDate: propCreationDate,
+    isArchived: propIsArchived,
     onSelect,
     onSubmit,
     userId,
@@ -43,28 +44,39 @@ const ItemGeneric = <T extends IPost | IEvent>({
     onArchive,
     onUnArchive
 }: ItemGenericProps<T>) => {
+    // Usar siempre los datos del objeto item como fuente principal
+    const data = item || {};
+    const id = data.id ?? propId;
+    const title = data.title ?? propTitle;
+    const message = data.message ?? propMessage;
+    const creationDate = data.creationDate ?? propCreationDate;
+    // Forzar tipado de tags para evitar error TS
+    type TagType = { id?: number; name?: string; archived?: boolean } | string;
+    const tags: TagType[] = Array.isArray(data.tags) ? data.tags : [];
+    const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);
+
     const [showFullText, setShowFullText] = useState(false);
     const [eventImages, setEventImages] = useState<ImagePreview[]>([]);
     const [postImages, setPostImages] = useState<ImagePreview[]>([]);
     const [loadingImages, setLoadingImages] = useState(false);
     const messagePreview = message?.slice(0, 200) ?? '';
-    const archived = isArchived ?? false;
 
     const toggleText = () => setShowFullText(prev => !prev);
 
-    // Debug de estructura del item
     useEffect(() => {
         console.log(`🔍 ItemGeneric - Debug ${type}:`, {
             id,
             title,
             item,
             images,
+            message,
+            creationDate,
+            archived,
             itemImages: (item as any)?.images,
             itemImage: (item as any)?.image
         });
     }, [type, id, item, images]);
 
-    // Ajustar carga de imágenes y tags para el nuevo formato del backend
     useEffect(() => {
         if (type === 'event' && id) {
             loadEventImages();
@@ -75,7 +87,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
 
     const loadPostImages = () => {
         try {
-            // Ahora las imágenes vienen en images (array de strings)
             let imageUrls: string[] = [];
             if (Array.isArray((item as any)?.images)) {
                 imageUrls = (item as any).images.map((url: string) =>
@@ -110,7 +121,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
             const eventImageService = new EventImageService();
             const images = await eventImageService.getEventImages(id);
 
-            // Transformar EventImageResponse[] a ImagePreview[] usando buildImageUrl
             const imagePreviewsData: ImagePreview[] = images.map((img) => ({
                 url: eventImageService.buildImageUrl(img.id),
                 isLoading: false,
@@ -138,7 +148,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
         }
 
         if (type === 'event') {
-            // Lógica existente para eventos
             const imageToRemove = eventImages[index];
             if (!imageToRemove?.id) {
                 console.error("Error: imagen sin ID válido");
@@ -149,7 +158,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 const eventImageService = new EventImageService();
                 await eventImageService.deleteEventImage(imageToRemove.id as number);
 
-                // Actualizar la lista local removiendo por índice
                 setEventImages(prev => prev.filter((_, idx) => idx !== index));
 
                 console.log("✅ ItemGeneric - Imagen de evento eliminada:", imageToRemove.id);
@@ -158,8 +166,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 alert('Error al eliminar la imagen. Por favor, inténtalo de nuevo.');
             }
         } else if (type === 'post') {
-            // Para posts, solo removemos de la vista local por ahora
-            // TODO: Implementar lógica de eliminación en el backend si es necesario
             setPostImages(prev => prev.filter((_, idx) => idx !== index));
             console.log("✅ ItemGeneric - Imagen de post removida de la vista:", index);
         }
@@ -168,18 +174,22 @@ const ItemGeneric = <T extends IPost | IEvent>({
     const handleUpdate = async (updatedItem: any) => {
         if (updatedItem.title) updatedItem.title = DOMPurify.sanitize(updatedItem.title);
         if (updatedItem.message) updatedItem.message = DOMPurify.sanitize(updatedItem.message);
+        // Asegurar que el id esté presente en el payload
+        if (!updatedItem.id) {
+            // Buscar id desde props o item
+            updatedItem.id = id;
+        }
+        // Debug: mostrar el id y el payload completo que se envía a onSubmit
+        console.log('[ItemGeneric] handleUpdate - id:', updatedItem.id, 'payload:', JSON.stringify(updatedItem, null, 2));
         onSubmit(updatedItem);
     };
 
-    // Ajustar tags para el nuevo formato del backend
     const getTagNames = () => {
-        if (Array.isArray((item as any)?.tags) && (item as any).tags.length > 0) {
-            // Si los tags son objetos, extraer el campo name
-            if (typeof (item as any).tags[0] === 'object' && (item as any).tags[0].name) {
-                return (item as any).tags.map((tag: any) => tag.name);
+        if (tags.length > 0) {
+            if (typeof tags[0] === 'object' && (tags[0] as any).name) {
+                return tags.map((tag) => typeof tag === 'object' && tag.name ? tag.name : String(tag));
             }
-            // Si ya son strings
-            return (item as any).tags;
+            return tags.map(String);
         }
         return [];
     };
@@ -191,21 +201,7 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 <div className={styles.row}>
                     <span className={styles.id}>{type === 'post' ? 'Post' : 'Event'} ID: {id ?? 'No hay ID'}</span>
                     <span className={styles.date}>
-                        {creationDate && Array.isArray(creationDate)
-                            ? new Date(
-                                creationDate[0],
-                                creationDate[1] - 1,
-                                creationDate[2],
-                                creationDate[3] || 0,
-                                creationDate[4] || 0,
-                                creationDate[5] || 0,
-                                creationDate[6] || 0
-                            ).toLocaleDateString('es-ES', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                            })
-                            : '--/--/--'}
+                        {creationDate ? new Date(creationDate).toLocaleString('es-ES') : '--/--/--'}
                     </span>
                     <div className={styles.statusContainer}>
                         <span className={archived ? styles.archivedStatus : styles.publishedStatus}>
@@ -215,7 +211,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 </div>
                 <h2 className={styles.title}>{title ?? 'No hay título'}</h2>
 
-                {/* Mostrar tags para eventos y posts */}
                 {getTagNames().length > 0 && (
                     <div className={styles.tagsRow}>
                         {getTagNames().map((tag: string, idx: number) => (
@@ -224,7 +219,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </div>
                 )}
 
-                {/* Mostrar imágenes para eventos */}
                 {type === 'event' && (
                     <div>
                         {loadingImages ? (
@@ -243,7 +237,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </div>
                 )}
 
-                {/* Mostrar imágenes para posts usando el mismo sistema que eventos */}
                 {type === 'post' && postImages.length > 0 && (
                     <div>
                         <ImagePreviewGrid
@@ -274,10 +267,15 @@ const ItemGeneric = <T extends IPost | IEvent>({
                             id={id}
                             isArchived={archived}
                             onArchive={async (id, type, archive) => {
-                                if (archive) {
-                                    await onArchive(id);
-                                } else {
-                                    await onUnArchive(id);
+                                try {
+                                    if (archive) {
+                                        await onArchive(id);
+                                    } else {
+                                        await onUnArchive(id);
+                                    }
+                                } catch (error) {
+                                    console.error("Error archiving/unarchiving item:", error);
+                                    alert('Error al archivar/desarchivar el ítem. Inténtalo de nuevo.');
                                 }
                             }}
                         />

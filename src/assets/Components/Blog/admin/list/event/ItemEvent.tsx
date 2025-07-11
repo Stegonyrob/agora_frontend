@@ -27,45 +27,21 @@ const ItemEvent: React.FC<ItemEventProps> = ({
     userId,
     onCreate,
 }) => {
-    // 🗓️ Formatear fecha del evento para mostrar
-    const formatEventDate = (eventDate: string) => {
-        if (!eventDate) return null;
-
-        try {
-            const date = new Date(eventDate);
-            if (isNaN(date.getTime())) {
-                console.warn('📅 ItemEvent - Fecha inválida:', eventDate);
-                return null;
-            }
-
-            // Convertir a array para ItemGeneric
-            return [
-                date.getFullYear(),
-                date.getMonth() + 1,
-                date.getDate(),
-                date.getHours(),
-                date.getMinutes(),
-                date.getSeconds(),
-                date.getMilliseconds()
-            ];
-        } catch (error) {
-            console.error('📅 ItemEvent - Error parseando fecha:', error);
-            return null;
-        }
-    };
-
-    const formattedEventDate = formatEventDate(event.eventDate);
-
+    // Mostrar fecha como string ISO (ya no array)
+    // Si el objeto viene anidado bajo 'item', usar ese objeto
+    const data = (event && (event as any).item) ? (event as any).item : event;
+    // Debug: mostrar valores reales de fechas
+    console.log('[ItemEvent] id:', data.id, 'creationDate:', data.creationDate, 'eventDate:', data.eventDate);
     return (
         <ItemGeneric
-            item={event}
-            id={event.id}
-            title={event.title}
-            message={event.message}
-            creationDate={formattedEventDate}
-            isArchived={event.isArchived}
+            item={data}
+            id={data.id}
+            title={data.title}
+            message={data.message}
+            creationDate={data.creationDate || data.eventDate}
+            isArchived={data.isArchived ?? data.archived}
             type="event"
-            images={event.images}
+            images={data.images}
             onArchive={onArchive}
             onUnArchive={onUnArchive}
             onSelect={onSelect}

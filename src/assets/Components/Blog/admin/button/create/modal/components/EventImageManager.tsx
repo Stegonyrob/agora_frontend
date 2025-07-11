@@ -20,6 +20,11 @@ const EventImageManager: React.FC<EventImageManagerProps> = ({
             <Form.Label className={styles.imageSectionTitle}>
                 <strong>🖼️ Imágenes del Evento</strong>
             </Form.Label>
+            <ImagePreviewGrid
+                imagePreviews={imagePreviews}
+                onRemoveImage={onRemoveImage}
+                showExistingBadge={true}
+            />
             <div className={styles.newImagesUploadSection}>
                 <ImageUploadButton
                     onImagesSelected={onImagesSelected}
@@ -29,11 +34,7 @@ const EventImageManager: React.FC<EventImageManagerProps> = ({
                     💡 Puedes subir múltiples imágenes. Se mostrarán miniaturas de 80x80px
                 </Form.Text>
             </div>
-            <ImagePreviewGrid
-                imagePreviews={imagePreviews}
-                onRemoveImage={onRemoveImage}
-                showExistingBadge={true}
-            />
+
         </div>
     );
 };

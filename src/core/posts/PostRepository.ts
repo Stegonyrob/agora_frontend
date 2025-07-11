@@ -1,5 +1,9 @@
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
+import {
+  normalizeArray,
+  normalizeItem,
+} from "../normalization/normalizeApiResponse";
 import { IPost } from "./IPost";
 import { IPostDTO } from "./IPostDTO";
 
@@ -19,7 +23,25 @@ export default class PostRepository {
     const response = await axios.get(url, {
       headers: getAuthHeaders(),
     });
-    return response.data;
+    // Debug: mostrar la respuesta cruda del backend antes de normalizar
+    try {
+      console.log(
+        "[PostRepository] Raw backend response:",
+        JSON.stringify(response.data, null, 2)
+      );
+    } catch (e) {
+      console.log(
+        "[PostRepository] Raw backend response (raw):",
+        response.data
+      );
+    }
+    // Normalizar los posts en la página
+    return {
+      ...response.data,
+      content: normalizeArray(response.data.content).map((p) =>
+        normalizeItem(p)
+      ),
+    };
   }
 
   // Obtener un post por ID
@@ -27,7 +49,7 @@ export default class PostRepository {
     const response = await axios.get(`${this.uri}/${id}`, {
       headers: getAuthHeaders(),
     });
-    return response.data;
+    return normalizeItem(response.data);
   }
 
   // Crear un post (solo admin)

@@ -11,7 +11,11 @@ export type PostPayload = {
   title: string;
   message: string;
   location: string;
-  tags: any[];
+  tags: {
+    id: number;
+    name: string;
+    archived?: boolean;
+  }[];
   images: string[];
   isArchived: boolean;
   isPublished: boolean;
@@ -27,7 +31,15 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
   const [title, setTitle] = useState(post?.title || "");
   const [message, setMessage] = useState(post?.message || "");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const [tags, setTags] = useState<any[]>(post?.tags || []);
+  const [tags, setTags] = useState<
+    { id: number; name: string; archived?: boolean }[]
+  >(
+    post?.tags
+      ? post.tags.map((tag: any) =>
+          typeof tag === "string" ? { id: -1, name: tag, archived: false } : tag
+        )
+      : []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -139,12 +151,19 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
         // Combinar imágenes existentes y nuevas
         const allImages = imagePreviews.map((preview) => preview.url);
         // Construir el payload solo con los campos requeridos
+        // Normalizar tags: si algún tag es string, convertirlo a objeto
+        const normalizedTags = tags.map((tag: any) => {
+          if (typeof tag === "string") {
+            return { id: -1, name: tag, archived: false };
+          }
+          return tag;
+        });
         const postDTO: PostPayload = {
           userId: post?.userId || 0,
           title: title.trim(),
           message: message.trim(),
           location: post?.location || "",
-          tags,
+          tags: normalizedTags,
           images: allImages,
           isArchived: false,
           isPublished: true,

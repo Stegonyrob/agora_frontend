@@ -23,48 +23,27 @@ interface ItemPostProps {
 const ItemPost: React.FC<ItemPostProps> = ({
     post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, onCreate
 }) => {
+    // Debug: mostrar el objeto post recibido desde backend
+    try {
+        console.log('[ItemPost] Full post object:', JSON.stringify(post, null, 2));
+    } catch (e) {
+        console.log('[ItemPost] Full post object (raw):', post);
+    }
     const comments = post?.comments || [];
 
     if (!post) return null;
 
-    // 🗓️ Formatear fecha de creación del post para mostrar
-    const formatPostDate = (creationDate: string) => {
-        if (!creationDate) return null;
-
-        try {
-            const date = new Date(creationDate);
-            if (isNaN(date.getTime())) {
-                console.warn('📅 ItemPost - Fecha inválida:', creationDate);
-                return null;
-            }
-
-            // Convertir a array para ItemGeneric
-            return [
-                date.getFullYear(),
-                date.getMonth() + 1,
-                date.getDate(),
-                date.getHours(),
-                date.getMinutes(),
-                date.getSeconds(),
-                date.getMilliseconds()
-            ];
-        } catch (error) {
-            console.error('📅 ItemPost - Error parseando fecha:', error);
-            return null;
-        }
-    };
-
-    const formattedCreationDate = formatPostDate(post.creationDate);
-
+    // Si el objeto viene anidado bajo 'item', usar ese objeto
+    const data = (post && (post as any).item) ? (post as any).item : post;
     return (
         <div className={styles.card}>
             <ItemGeneric
-                item={post}
-                id={post.id}
-                title={post.title}
-                message={post.message} // Pasar el mensaje completo, no recortado
-                creationDate={formattedCreationDate}
-                isArchived={post.isArchived}
+                item={data}
+                id={data.id}
+                title={data.title}
+                message={data.message}
+                creationDate={data.creationDate}
+                isArchived={data.isArchived ?? data.archived}
                 type="post"
                 onArchive={onArchive}
                 onUnArchive={onUnArchive}
@@ -72,14 +51,14 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 onSubmit={onSubmit}
                 userId={userId}
                 onCreate={onCreate}
-                images={post.image}
+                images={data.image}
             />
             <AccordionComments
-                postId={post.id}
+                postId={data.id}
                 currentUserId={userId}
                 isAdmin={true}
                 commentsCount={comments.length}
-                tags={post.tags || []}
+                tags={data.tags || []}
             />
         </div>
     );

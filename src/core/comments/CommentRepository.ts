@@ -1,5 +1,9 @@
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
+import {
+  normalizeArray,
+  normalizeItem,
+} from "../normalization/normalizeApiResponse";
 import { CommentDTO } from "./CommentDTO";
 import { IComment } from "./IComment";
 
@@ -10,7 +14,8 @@ export class CommentRepository {
     const res = await axios.get(`${this.uri}/post/${postId}/with-replies`, {
       headers: getAuthHeaders(),
     });
-    return res.data.content; // <-- ¡Solo el array!
+    // Normalizar comentarios y replies
+    return normalizeArray(res.data.content).map((c) => normalizeItem(c));
   }
 
   async create(comment: CommentDTO): Promise<IComment> {

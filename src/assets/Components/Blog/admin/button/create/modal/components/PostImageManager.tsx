@@ -2,7 +2,6 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import ImagePreviewGrid, { ImagePreview as IImagePreview } from '../../../../images/ImagePreviewGrid';
 import ImageUploadButton from '../../../../images/ImageUploadButton';
-import ButtonAddImage from '../../../image/ButtonAddImage';
 import styles from '../EventForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostImageManagerProps {
@@ -23,21 +22,22 @@ const PostImageManager: React.FC<PostImageManagerProps> = ({
             <Form.Label className={styles.imageSectionTitle}>
                 <strong>🖼️ Imágenes del Post</strong>
             </Form.Label>
-            <div className={styles.newImagesUploadSection}>
-                <ImageUploadButton
-                    onImagesSelected={onImagesSelected}
-                    multiple={true}
-                />
-                <ButtonAddImage onImageSelected={onImageSelected} />
-                <Form.Text className={styles.helpText}>
-                    💡 Puedes subir múltiples imágenes para tu post
-                </Form.Text>
-            </div>
             <ImagePreviewGrid
                 imagePreviews={imagePreviews}
                 onRemoveImage={onRemoveImage}
                 showExistingBadge={true}
             />
+            <div className={styles.newImagesUploadSection}>
+                <ImageUploadButton
+                    onImagesSelected={onImagesSelected}
+                    multiple={true}
+                />
+
+                <Form.Text className={styles.helpText}>
+                    💡 Puedes subir múltiples imágenes para tu post
+                </Form.Text>
+            </div>
+
         </div>
     );
 };

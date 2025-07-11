@@ -26,7 +26,7 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
 }) => {
     const {
         title, setTitle,
-        description, setDescription,
+        message, setMessage,
         location, setLocation,
         capacity, setCapacity,
         eventDate, setEventDate,
@@ -59,8 +59,8 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
                     <EventBasicFields
                         title={title}
                         setTitle={setTitle}
-                        description={description}
-                        setDescription={setDescription}
+                        message={message}
+                        setMessage={setMessage}
                         location={location}
                         setLocation={setLocation}
                         link={link}

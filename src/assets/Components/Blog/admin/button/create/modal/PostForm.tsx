@@ -34,9 +34,16 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
     globalError
   } = usePostForm({ post, show });
 
+  // Wrapper to adapt PostPayload to IPost if possible
+  const handleSubmitWrapper = async (payload: any) => {
+    // If payload already matches IPost, just forward
+    // Otherwise, adapt as needed (add missing fields, etc.)
+    await onSubmit({ ...payload, ...post });
+  };
+
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await submitForm(onSubmit, onClose);
+    await submitForm(handleSubmitWrapper, onClose);
   };
 
   return (

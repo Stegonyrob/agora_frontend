@@ -1,5 +1,7 @@
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
+
+import { normalizeItem } from '@/core/normalization/normalizeApiResponse';
 import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
@@ -51,12 +53,15 @@ const ListAdmin = (props: ListAdminProps) => {
     console.log('Items array length:', items?.length);
     console.log('Items array:', items);
 
+    // Normalizar todos los items antes de renderizar
+    const normalizedItems = items.map(item => normalizeItem(item));
+
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
                 <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
 
-                {items && items.length === 0 && (
+                {normalizedItems && normalizedItems.length === 0 && (
                     <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                         <p>No hay {type === 'post' ? 'posts' : 'eventos'} para mostrar.</p>
                         <p>Usa el botón de arriba para crear el primero.</p>
@@ -64,7 +69,7 @@ const ListAdmin = (props: ListAdminProps) => {
                 )}
 
                 {type === 'post'
-                    ? (items as IPost[]).map(item => {
+                    ? (normalizedItems as IPost[]).map(item => {
                         console.log('ListAdmin post item:', item);
                         return (
                             <ItemPost
@@ -84,8 +89,13 @@ const ListAdmin = (props: ListAdminProps) => {
                             />
                         );
                     })
-                    : (items as IEvent[]).map(item => {
-                        console.log('ListAdmin event item:', item);
+                    : (normalizedItems as IEvent[]).map(item => {
+                        // Deep debug log for event item
+                        try {
+                            console.log('[ListAdmin] Full event item:', JSON.stringify(item, null, 2));
+                        } catch (e) {
+                            console.log('[ListAdmin] Full event item (raw):', item);
+                        }
                         return (
                             <ItemEvent
                                 key={item.id}

@@ -53,16 +53,38 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             return;
         }
         try {
-            console.log("✅ AdminEventView - Evento recibido del formulario:", {
-                id: newEvent.id,
-                title: newEvent.title,
-                message: newEvent.description
-            });
+            // Normalizar eventDate y tags si es necesario
+            let normalizedEvent = { ...newEvent };
+            // Normalizar eventDate a string ISO si es Date
+            if (normalizedEvent.eventDate && typeof normalizedEvent.eventDate !== 'string') {
+                try {
+                    normalizedEvent.eventDate = new Date(normalizedEvent.eventDate).toISOString();
+                } catch { }
+            }
+            // Normalizar tags a array de strings
+            if (Array.isArray(normalizedEvent.tags)) {
+                normalizedEvent.tags = normalizedEvent.tags.map((tag: any) =>
+                    typeof tag === 'object' && tag !== null && tag.name ? tag.name : tag
+                );
+            }
 
             // El evento ya fue creado en EventForm, solo actualizar la lista
             const eventService = new EventService();
             const updatedEvents = await eventService.fetchEvents();
-            setFetchedEvents(updatedEvents ?? []);
+            // Si el backend sigue sin normalizar, forzar normalización en todos
+            const normalizedEvents = (updatedEvents ?? []).map(ev => {
+                let eventDate = ev.eventDate;
+                if (eventDate && typeof eventDate !== 'string') {
+                    try {
+                        eventDate = new Date(eventDate).toISOString();
+                    } catch { }
+                }
+                let tags = Array.isArray(ev.tags)
+                    ? ev.tags.map((tag: any) => typeof tag === 'object' && tag !== null && tag.name ? tag.name : tag)
+                    : [];
+                return { ...ev, eventDate, tags };
+            });
+            setFetchedEvents(normalizedEvents);
 
             console.log("✅ AdminEventView - Lista de eventos actualizada");
         } catch (error) {

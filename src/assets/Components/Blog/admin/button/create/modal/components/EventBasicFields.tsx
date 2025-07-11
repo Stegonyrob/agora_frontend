@@ -5,8 +5,8 @@ import styles from '../EventForm.module.scss';
 interface EventBasicFieldsProps {
     title: string;
     setTitle: (value: string) => void;
-    description: string;
-    setDescription: (value: string) => void;
+    message: string;
+    setMessage: (value: string) => void;
     location: string;
     setLocation: (value: string) => void;
     link: string;
@@ -16,8 +16,8 @@ interface EventBasicFieldsProps {
 const EventBasicFields: React.FC<EventBasicFieldsProps> = ({
     title,
     setTitle,
-    description,
-    setDescription,
+    message,
+    setMessage,
     location,
     setLocation,
     link,
@@ -47,8 +47,8 @@ const EventBasicFields: React.FC<EventBasicFieldsProps> = ({
                 <Form.Control
                     as="textarea"
                     rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe el evento, qué actividades se realizarán, a quién está dirigido..."
                     required
                 />
@@ -62,26 +62,21 @@ const EventBasicFields: React.FC<EventBasicFieldsProps> = ({
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Ej: Aula 1, Centro Cívico, Salón de Actos..."
-                    autoComplete="off"
-                    data-lpignore="true"
+                    placeholder="Ej: Auditorio Principal, Sala 2, Online..."
                     required
                 />
             </Form.Group>
 
             <Form.Group className={styles.formGroup} controlId="formEventLink">
                 <Form.Label>
-                    <strong>🔗 Enlace adicional (opcional)</strong>
+                    <strong>🔗 Enlace (opcional)</strong>
                 </Form.Label>
                 <Form.Control
-                    type="url"
+                    type="text"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
-                    placeholder="https://ejemplo.com/mas-informacion"
+                    placeholder="Ej: https://zoom.us/j/1234567890"
                 />
-                <Form.Text className="text-muted">
-                    💡 Link para más información, inscripciones, etc.
-                </Form.Text>
             </Form.Group>
         </>
     );

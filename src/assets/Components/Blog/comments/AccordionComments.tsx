@@ -93,7 +93,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
         />
         <div>
           <span className={styles.user}>{reply.userId}</span>
-          <span className={styles.date}>{reply.creation_date ? reply.creation_date.toString().slice(0, 10) : ""}</span>
+          <span className={styles.date}>{reply.creation_date ? new Date(reply.creation_date).toLocaleString('es-ES') : ""}</span>
           <p className={styles.text}>{reply.message}</p>
         </div>
       </div>
@@ -135,7 +135,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
                     <span className={styles.user}>{c.userId}</span>
-                    <span className={styles.date}>{c.creationDate ? c.creationDate.toString().slice(0, 10) : ""}</span>
+                    <span className={styles.date}>{c.creationDate ? new Date(c.creationDate).toLocaleString('es-ES') : ""}</span>
                   </div>
                   {editId === c.id ? (
                     <>

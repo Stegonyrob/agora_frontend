@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import TagService, { Tag } from '../../../../../core/tags/TagService';
+import { ITag } from '../../../../../core/tags/ITag';
+import TagService from '../../../../../core/tags/TagService';
 import styles from './TagSelector.module.scss';
 
+import { IPostTagDTO } from '@/core/posts/IPostDTO';
 interface TagSelectorProps {
-    selectedTags: string[];
-    onTagsChange: (tags: string[]) => void;
+    selectedTags: string[] | IPostTagDTO[];
+    onTagsChange: (tags: any[]) => void;
     placeholder?: string;
+    objectMode?: boolean;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
@@ -15,8 +18,8 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     placeholder = "Agregar tags..."
 }) => {
     const [inputTag, setInputTag] = useState('');
-    const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-    const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
+    const [availableTags, setAvailableTags] = useState<ITag[]>([]);
+    const [filteredTags, setFilteredTags] = useState<ITag[]>([]);
     const [loading, setLoading] = useState(false);
 
     // Cargar tags disponibles del backend
@@ -29,7 +32,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         if (inputTag.trim()) {
             const filtered = availableTags.filter(tag =>
                 tag.name.toLowerCase().includes(inputTag.toLowerCase()) &&
-                !selectedTags.includes(tag.name)
+                !selectedTags.some(t => typeof t === "string" ? t === tag.name : t.name === tag.name)
             );
             setFilteredTags(filtered);
         } else {
@@ -66,15 +69,15 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 
     const handleAddTag = async () => {
         const trimmedTag = inputTag.trim();
-        if (!trimmedTag || selectedTags.includes(trimmedTag)) {
+        if (!trimmedTag || selectedTags.some((t: any) => (typeof t === 'string' ? t === trimmedTag : t.name === trimmedTag))) {
             return;
         }
 
         try {
             const tagService = new TagService();
             const tag = await tagService.getOrCreateTag(trimmedTag);
-
-            const newTags = [...selectedTags, tag.name];
+            const newTagObj = { id: tag.id, name: tag.name, archived: tag.archived };
+            const newTags = [...selectedTags, newTagObj];
             onTagsChange(newTags);
             setInputTag('');
 
@@ -91,21 +94,22 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                 archived: false
             };
 
-            const newTags = [...selectedTags, localTag.name];
+            const newTags = [...selectedTags, localTag];
             onTagsChange(newTags);
             setInputTag('');
             setAvailableTags(prev => [...prev, localTag]);
         }
     };
 
-    const handleRemoveTag = (tagToRemove: string) => {
-        const newTags = selectedTags.filter(tag => tag !== tagToRemove);
+    const handleRemoveTag = (tagToRemove: any) => {
+        const newTags = selectedTags.filter((tag: any) => (typeof tag === 'string' ? tag !== tagToRemove : tag.name !== (tagToRemove.name || tagToRemove)));
         onTagsChange(newTags);
     };
 
-    const handlePredefinedTagClick = (tag: Tag) => {
-        if (!selectedTags.includes(tag.name)) {
-            const newTags = [...selectedTags, tag.name];
+    const handlePredefinedTagClick = (tag: ITag) => {
+        if (!selectedTags.some((t: any) => (typeof t === 'string' ? t === tag.name : t.name === tag.name))) {
+            const newTagObj = { id: tag.id, name: tag.name, archived: tag.archived };
+            const newTags = [...selectedTags, newTagObj];
             onTagsChange(newTags);
         }
     };
@@ -174,7 +178,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                     </small>
                     <div className={styles.predefinedTags}>
                         {availableTags
-                            .filter(tag => !selectedTags.includes(tag.name))
+                            .filter(tag => !selectedTags.some(t => typeof t === "string" ? t === tag.name : t.name === tag.name))
                             .slice(0, 15) // Mostrar más tags sugeridas
                             .map((tag) => (
                                 <button
@@ -188,7 +192,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                                 </button>
                             ))}
                     </div>
-                    {availableTags.filter(tag => !selectedTags.includes(tag.name)).length > 15 && (
+                    {availableTags.filter(tag => !selectedTags.some(t => typeof t === "string" ? t === tag.name : t.name === tag.name)).length > 15 && (
                         <small className={styles.moreTagsHint}>
                             <i className="bi bi-info-circle me-1"></i>
                             Escribe para ver más opciones...
@@ -204,19 +208,23 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                         Tags seleccionados ({selectedTags.length}):
                     </small>
                     <div className={styles.selectedTags}>
-                        {selectedTags.map((tag) => (
-                            <span key={tag} className={styles.selectedTag}>
-                                {tag}
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveTag(tag)}
-                                    className={styles.removeButton}
-                                    title={`Eliminar tag: ${tag}`}
-                                >
-                                    <i className="bi bi-x"></i>
-                                </button>
-                            </span>
-                        ))}
+                        {selectedTags.map((tag) => {
+                            const tagKey = typeof tag === 'string' ? tag : tag.id;
+                            const tagLabel = typeof tag === 'string' ? tag : tag.name;
+                            return (
+                                <span key={tagKey} className={styles.selectedTag}>
+                                    {tagLabel}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className={styles.removeButton}
+                                        title={`Eliminar tag: ${tagLabel}`}
+                                    >
+                                        <i className="bi bi-x"></i>
+                                    </button>
+                                </span>
+                            );
+                        })}
                     </div>
                 </div>
             )}

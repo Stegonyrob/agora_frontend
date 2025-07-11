@@ -1,4 +1,8 @@
 import axios, { AxiosError } from "axios";
+import {
+  normalizeArray,
+  normalizeItem,
+} from "../normalization/normalizeApiResponse";
 import { IEvent } from "./IEvent";
 
 export default class EventRepository {
@@ -7,18 +11,27 @@ export default class EventRepository {
   async getAll(): Promise<IEvent[]> {
     try {
       const response = await axios.get(this.uri);
-      return response.data;
-      console.log(response.data);
+      // Debug: mostrar la respuesta cruda del backend antes de normalizar
+      try {
+        console.log(
+          "[EventRepository] Raw backend response:",
+          JSON.stringify(response.data, null, 2)
+        );
+      } catch (e) {
+        console.log(
+          "[EventRepository] Raw backend response (raw):",
+          response.data
+        );
+      }
+      // Normalizar todos los eventos
+      return normalizeArray(response.data).map((ev) => normalizeItem(ev));
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
-        // El servidor respondió con un código de estado fuera del rango 2xx
         console.error("Error API response:", axiosError.response.data);
       } else if (axiosError.request) {
-        // La solicitud fue realizada pero no se recibió respuesta
         console.error("No response received:", axiosError.request);
       } else {
-        // Ocurrió un error durante la configuración de la solicitud
         console.error("Request setup error:", axiosError.message);
       }
       throw new Error("Failed to fetch data");

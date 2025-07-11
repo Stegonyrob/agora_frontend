@@ -1,5 +1,9 @@
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
+import {
+  normalizeArray,
+  normalizeItem,
+} from "../normalization/normalizeApiResponse";
 import { IReply } from "./IReply";
 import { IReplyDTO } from "./IReplyDTO";
 
@@ -10,14 +14,14 @@ export class ReplyRepository {
     const response = await axios.get(`${this.uri}/all`, {
       headers: getAuthHeaders(),
     });
-    return response.data;
+    return normalizeArray(response.data).map((r) => normalizeItem(r));
   }
 
   async getByCommentId(commentId: number): Promise<IReply[]> {
     const response = await axios.get(`${this.uri}/comment/${commentId}`, {
       headers: getAuthHeaders(),
     });
-    return response.data;
+    return normalizeArray(response.data).map((r) => normalizeItem(r));
   }
 
   async create(reply: IReplyDTO): Promise<IReply> {
