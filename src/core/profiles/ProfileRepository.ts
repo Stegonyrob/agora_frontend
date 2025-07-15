@@ -6,8 +6,8 @@ import IProfileDTO from "./IProfileDTO";
 export class ProfileRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE;
   adminUri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE.replace(
-    "/any/user/",
-    "/any/admin/user/"
+    "/any/user/profile",
+    "/any/user/profile/admin/user/profile"
   );
 
   async getAll(): Promise<IProfile[]> {
@@ -57,35 +57,62 @@ export class ProfileRepository {
   }
 
   async update(id: number, profile: IProfileDTO): Promise<IProfile> {
-    console.log("🚀 ProfileRepository.update - id:", id);
-    console.log("🚀 ProfileRepository.update - profile:", profile);
+    console.log("[ProfileRepository.update] ---");
+    console.log("[ProfileRepository.update] Endpoint:", `${this.uri}/${id}`);
+    console.log("[ProfileRepository.update] ID:", id);
+    console.log("[ProfileRepository.update] Profile DTO:", profile);
     console.log(
-      "🚀 ProfileRepository.update - profile.avatar_id:",
-      profile.avatar_id
-    );
-    console.log(
-      "🚀 ProfileRepository.update - JSON.stringify(profile):",
+      "[ProfileRepository.update] Profile JSON:",
       JSON.stringify(profile)
     );
-    console.log(
-      "🔗 ProfileRepository.update - Using USER endpoint:",
-      `${this.uri}/${id}`
-    );
-
-    const res = await axios.put(`${this.uri}/${id}`, profile, {
-      headers: getAuthHeaders(),
-    });
-
-    console.log("🔍 ProfileRepository.update - Raw response:", res.data);
-
-    // Mapear avatarId (backend) a avatar_id (frontend)
-    const profileData = res.data;
-    if (profileData.avatarId && !profileData.avatar_id) {
-      profileData.avatar_id = profileData.avatarId;
+    if (profile.avatar_id !== undefined) {
+      console.log(
+        "[ProfileRepository.update] avatar_id:",
+        profile.avatar_id,
+        typeof profile.avatar_id
+      );
     }
-
-    console.log("🔍 ProfileRepository.update - Mapped profile:", profileData);
-    return profileData;
+    if (profile.avatarId !== undefined) {
+      console.log(
+        "[ProfileRepository.update] avatarId:",
+        profile.avatarId,
+        typeof profile.avatarId
+      );
+    }
+    try {
+      const res = await axios.put(`${this.uri}/${id}`, profile, {
+        headers: getAuthHeaders(),
+      });
+      console.log("[ProfileRepository.update] Raw response:", res.data);
+      // Mapear avatarId (backend) a avatar_id (frontend)
+      const profileData = res.data;
+      if (profileData.avatarId && !profileData.avatar_id) {
+        profileData.avatar_id = profileData.avatarId;
+      }
+      console.log("[ProfileRepository.update] Mapped profile:", profileData);
+      return profileData;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("[ProfileRepository.update] Axios error:", error.message);
+        if (error.response) {
+          console.error(
+            "[ProfileRepository.update] Response data:",
+            error.response.data
+          );
+          console.error(
+            "[ProfileRepository.update] Response status:",
+            error.response.status
+          );
+          console.error(
+            "[ProfileRepository.update] Response headers:",
+            error.response.headers
+          );
+        }
+      } else {
+        console.error("[ProfileRepository.update] Unknown error:", error);
+      }
+      throw error;
+    }
   }
 
   // ✅ Para administradores - URL corregida

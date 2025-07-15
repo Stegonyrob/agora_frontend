@@ -3,7 +3,7 @@ import type { IAvatar } from '@/core/avatars';
 import IProfile from '@/core/profiles/IProfile';
 import IProfileDTO from '@/core/profiles/IProfileDTO';
 import { useAvatars } from '@/hooks/useAvatars';
-import { sanitizeInput, validateInput } from '@/utils/validationUtils';
+import { sanitizeInput } from '@/utils/validationUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
@@ -125,51 +125,29 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
       return;
     }
 
-    // Sanitize inputs
-    const sanitizedFirstName = sanitizeInput(formState.firstName || "");
-    const sanitizedLastName1 = sanitizeInput(formState.lastName1 || "");
-    const sanitizedLastName2 = sanitizeInput(formState.lastName2 || "");
-    const sanitizedRelationship = sanitizeInput(formState.relationship || "");
-    const sanitizedEmail = sanitizeInput(formState.email || "");
-    const sanitizedCity = sanitizeInput(formState.city || "");
-    const sanitizedCountry = sanitizeInput(formState.country || "");
-    const sanitizedPhone = sanitizeInput(formState.phone || "");
-
-    // Validar los inputs antes de enviarlos al servidor
-    if (!validateInput(sanitizedFirstName) || !validateInput(sanitizedLastName1) || !validateInput(sanitizedEmail)) {
-      setErrorMessage('Se detectaron entradas no válidas.');
-      return;
-    }
-
-    console.log('🚀 ProfileForm - formState before submission:', formState);
-    console.log('🚀 ProfileForm - formState.avatar_id:', formState.avatar_id, typeof formState.avatar_id);
-
-    const updatedProfile: IProfileDTO = {
+    // Solo sanitizar los campos, pero no validar requeridos
+    const sanitizedProfile: IProfileDTO = {
       ...formState,
-      firstName: sanitizedFirstName,
-      lastName1: sanitizedLastName1,
-      lastName2: sanitizedLastName2,
-      relationship: sanitizedRelationship,
-      email: sanitizedEmail,
-      city: sanitizedCity,
-      country: sanitizedCountry,
-      phone: sanitizedPhone,
+      firstName: sanitizeInput(formState.firstName || ""),
+      lastName1: sanitizeInput(formState.lastName1 || ""),
+      lastName2: sanitizeInput(formState.lastName2 || ""),
+      relationship: sanitizeInput(formState.relationship || ""),
+      email: sanitizeInput(formState.email || ""),
+      city: sanitizeInput(formState.city || ""),
+      country: sanitizeInput(formState.country || ""),
+      phone: sanitizeInput(formState.phone || ""),
     };
 
     // Asegurar que avatar_id esté incluido si existe y mapear al nombre correcto del backend
     if (formState.avatar_id !== undefined && formState.avatar_id !== null) {
-      updatedProfile.avatar_id = formState.avatar_id;
-      // También enviar como avatarId para compatibilidad con el backend
-      updatedProfile.avatarId = formState.avatar_id;
+      sanitizedProfile.avatar_id = formState.avatar_id;
+      sanitizedProfile.avatarId = formState.avatar_id;
     }
 
-    console.log('🚀 ProfileForm - updatedProfile after explicit avatar_id:', updatedProfile);
-    console.log('🚀 ProfileForm - updatedProfile keys:', Object.keys(updatedProfile));
-    console.log('🚀 ProfileForm - updatedProfile.avatar_id:', updatedProfile.avatar_id, typeof updatedProfile.avatar_id);
-    console.log('🚀 ProfileForm - JSON.stringify(updatedProfile):', JSON.stringify(updatedProfile));
+    console.log('🚀 ProfileForm - sanitizedProfile:', sanitizedProfile);
 
     try {
-      await onSubmit(updatedProfile);
+      await onSubmit(sanitizedProfile);
       onClose();
     } catch (error) {
       setErrorMessage('Error al enviar el formulario.');

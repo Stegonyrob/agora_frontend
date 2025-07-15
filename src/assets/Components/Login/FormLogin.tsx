@@ -8,7 +8,9 @@ import { login } from '@/core/auth/sessionStore';
 import { AuthService } from '../../../core/auth/AuthService';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
+import ForgotPasswordForm from './ForgotPasswordForm';
 import styles from './FormLogin.module.scss';
+import { loginRepository } from './loginRepository';
 import SocialLogin from './SocialLogin';
 
 function parseJwt(token: string) {
@@ -33,6 +35,7 @@ const FormLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -43,6 +46,7 @@ const FormLogin: React.FC = () => {
     event.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
+    console.log('[LOGIN] Enviando login:', { useremail, password });
 
     if (!validateInput(useremail) || !validateInput(password)) {
       setErrorMessage('Por favor, ingrese un email y contraseña válidos.');
@@ -52,7 +56,13 @@ const FormLogin: React.FC = () => {
 
     try {
       const loginService = new LoginService();
-      const response = await loginService.login({ useremail, password });
+      const isEmail = useremail.includes('@');
+      const loginPayload = isEmail
+        ? { useremail, username: '', password }
+        : { useremail: '', username: useremail, password };
+      console.log('[LOGIN] Payload enviado al backend:', loginPayload);
+      const response = await loginService.login(loginPayload);
+      console.log('[LOGIN] Respuesta backend:', response);
       const jwtData = parseJwt(response.accessToken);
       if (jwtData.exp) {
         sessionStorage.setItem('sessionExpiresAt', jwtData.exp * 1000 + '');
@@ -90,9 +100,11 @@ const FormLogin: React.FC = () => {
         navigate('/blog', { state: { userId: String(response.userId) } });
       } else {
         setErrorMessage('Rol de usuario inesperado.');
+        console.error('[LOGIN] Rol inesperado:', role, jwtData);
       }
     } catch (error: any) {
       setErrorMessage('Error al iniciar sesión. Verifica tus credenciales.');
+      console.error('[LOGIN] Error en login:', error);
     } finally {
       setIsLoading(false);
     }
@@ -166,6 +178,23 @@ const FormLogin: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleForgotRequest = async (email: string) => {
+    // Detectar si es admin por el email si lo necesitas
+    await loginRepository.requestPasswordRecovery(email);
+  };
+
+  if (showForgot) {
+    return (
+      <Card className={styles.card}>
+        <Card.Body>
+          <ForgotPasswordForm
+            onBackToLogin={() => setShowForgot(false)}
+            onRequest={handleForgotRequest}
+          />
+        </Card.Body>
+      </Card>
+    );
+  }
 
   return (
     <Card className={styles.card}>
@@ -189,7 +218,7 @@ const FormLogin: React.FC = () => {
               name="useremail"
               autoComplete="username"
               autoFocus
-              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9._-]{3,}$"
+              pattern="^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}|[a-zA-Z0-9._\-]{3,})$"
               title="Debe ser un email válido o un nombre de usuario con al menos 3 caracteres."
             />
           </Form.Group>
@@ -220,6 +249,17 @@ const FormLogin: React.FC = () => {
             {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </Button>
         </Form>
+
+        <div className={styles.registerLink}>
+          <button
+            type="button"
+            className="btn btn-link"
+            style={{ padding: 0, color: '#0d6efd', background: 'none', border: 'none' }}
+            onClick={() => setShowForgot(true)}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
 
         <SocialLogin
           onGoogleLogin={handleGoogleLogin}

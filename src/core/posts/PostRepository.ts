@@ -24,17 +24,7 @@ export default class PostRepository {
       headers: getAuthHeaders(),
     });
     // Debug: mostrar la respuesta cruda del backend antes de normalizar
-    try {
-      console.log(
-        "[PostRepository] Raw backend response:",
-        JSON.stringify(response.data, null, 2)
-      );
-    } catch (e) {
-      console.log(
-        "[PostRepository] Raw backend response (raw):",
-        response.data
-      );
-    }
+
     // Normalizar los posts en la página
     return {
       ...response.data,

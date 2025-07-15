@@ -33,6 +33,7 @@ import TrasComunicationView from './assets/Views/TrasCommunication';
 import AdminView from "@/assets/Views/AdminView";
 import BlogView from "@/assets/Views/BlogView";
 
+import ResetPasswordPage from "@/assets/Components/Login/ResetPasswordPage";
 import ProfileView from "@/assets/Views/ProfileView";
 import AdminEventView from "./assets/Views/AdminEventView";
 import AdminLegalTextView from "./assets/Views/AdminLegalTextView";
@@ -136,6 +137,7 @@ const App: React.FC = () => {
             />
           } />
           <Route path="legal/:type" element={<LegalTextView />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
         </Route>
 
         {/* Rutas privadas */}

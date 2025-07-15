@@ -7,6 +7,7 @@ import ProfileService from "@/core/profiles/ProfileService";
 import { useAvatars } from "@/hooks/useAvatars";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import AdminManager from "../Components/Blog/admin/users/AdminManager";
 import Profile from "../Components/Profile/Profile";
 import styles from "./scss/Views.module.scss";
 
@@ -29,9 +30,13 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
     // Obtener el userId desde sessionStorage
     const userId = sessionStorage.getItem("userId");
 
+    const [isAdmin, setIsAdmin] = useState(false);
     useEffect(() => {
         if (userId) {
-            fetchProfileData(parseInt(userId, 10));
+            const role = sessionStorage.getItem('role');
+            const admin = role === 'ROLE_ADMIN';
+            setIsAdmin(admin);
+            fetchProfileData(parseInt(userId, 10), admin);
         }
     }, [userId]);
 
@@ -42,14 +47,14 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
         }
     }, [isLoaded, avatars]);
 
-    const fetchProfileData = async (id: number) => {
+    const fetchProfileData = async (id: number, isAdmin: boolean) => {
         if (!id) {
             console.error("Invalid user ID");
             return;
         }
 
         try {
-            const fetchedProfile = await profileService.getProfileById(id);
+            const fetchedProfile = await profileService.getProfileById(id, isAdmin);
             if (!fetchedProfile) {
                 console.error("Profile data not found");
                 return;
@@ -145,7 +150,9 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.centeredTitle}>Perfil de Usuario</h1>
+            <h1 className={styles.centeredTitle}>
+                {isAdmin ? 'Bienvenido Administrador' : 'Perfil de Usuario'}
+            </h1>
             {profile ? (
                 <Profile profile={profile} onEdit={handleOpenProfileForm} />
             ) : (
@@ -164,6 +171,9 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
                 show={showProfileForm}
                 setUserId={(value: React.SetStateAction<number>) => console.log("User ID set:", value)}
             />
+
+            {/* AdminManager como función secundaria debajo del perfil */}
+            {isAdmin && <AdminManager />}
         </div>
     );
 };

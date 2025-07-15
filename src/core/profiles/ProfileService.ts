@@ -13,8 +13,11 @@ export default class ProfileService {
     return await this.repository.getAll();
   }
 
-  async getProfileById(id: number): Promise<IProfile> {
-    return await this.repository.getById(id);
+  async getProfileById(
+    id: number,
+    isAdmin: boolean = false
+  ): Promise<IProfile> {
+    return await this.repository.getById(id, isAdmin);
   }
 
   async createProfile(profile: IProfileDTO): Promise<IProfile> {
