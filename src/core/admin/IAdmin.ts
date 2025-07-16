@@ -1,14 +1,44 @@
 export interface IAdmin {
   id: number;
+  userId?: number;
   username: string;
   email: string;
-  phone: string;
+  phone?: string;
   roles: string[];
+  admin?: boolean;
+  active?: boolean;
+  displayName?: string;
+  firstName?: string | null;
+  lastName1?: string | null;
+  lastName2?: string | null;
+  relationship?: string;
+  password?: string;
+  confirmPassword?: string;
+  city?: string;
+  country?: string;
+  avatarId?: number | null;
+  avatarUrl?: string | null;
+  avatarDisplayName?: string | null;
+  fullName?: string;
+  fullNameWithUsername?: string;
+  acceptedRules?: boolean;
+  banReason?: string | null;
+  banned?: boolean;
 }
 
 export interface IAdminDTO {
   username: string;
   email: string;
   password: string;
-  phone: string;
+  phone?: string;
+  firstName?: string;
+  lastName1?: string;
+  lastName2?: string;
+  relationship?: string;
+  city?: string;
+  country?: string;
+  avatarId?: number;
+  displayName?: string;
+  fullName?: string;
+  fullNameWithUsername?: string;
 }

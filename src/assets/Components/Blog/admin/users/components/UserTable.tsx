@@ -21,6 +21,8 @@ const UserTable: React.FC<UserTableProps> = ({
     onReactivate,
     onDelete,
 }) => {
+    console.log('[UserTable] users prop:', users);
+
     const getRoleBadge = (roles: string[]) => {
         const isAdmin = roles.includes('ROLE_ADMIN');
         const variant = isAdmin ? 'danger' : 'primary';
@@ -37,58 +39,62 @@ const UserTable: React.FC<UserTableProps> = ({
     }
 
     return (
-        <div className="table-responsive">
-            <Table striped hover>
-                <thead>
-                    <tr>
-                        <th>Avatar</th>
-                        <th>Nombre</th>
-                        <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id} className={user.banned ? 'table-warning' : ''}>
-                            <td>
-                                <img
-                                    src={user.avatarUrl || '/images/avatarGeneric.png'}
-                                    alt={user.fullName}
-                                    className={styles.avatar}
-                                    width="40"
-                                    height="40"
-                                />
-                            </td>
-                            <td>{user.fullName}</td>
-                            <td>{user.username}</td>
-                            <td>{user.email}</td>
-                            <td>{getRoleBadge(user.roles)}</td>
-                            <td>
-                                {user.banned ? (
-                                    <Badge bg="danger" title={user.banReason || 'Usuario baneado'}>
-                                        🚫 Baneado
-                                    </Badge>
-                                ) : (
-                                    <Badge bg="success">✅ Activo</Badge>
-                                )}
-                            </td>
-                            <td>
-                                <UserActionButtons
-                                    user={user}
-                                    onView={onView}
-                                    onEdit={onEdit}
-                                    onBan={onBan}
-                                    onReactivate={onReactivate}
-                                    onDelete={onDelete}
-                                />
-                            </td>
+        <div className={styles.userManager}>
+            <div className="table-responsive">
+                <Table striped hover className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th className={styles.actionsCell}>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        {users.map((user) => (
+                            <tr key={user.id} className={user.banned ? 'table-warning' : ''}>
+                                <td>
+                                    <img
+                                        src={user.avatarUrl || '/images/avatarGeneric.png'}
+                                        alt={user.fullName}
+                                        className={styles.avatar}
+                                        width="40"
+                                        height="40"
+                                    />
+                                </td>
+                                <td>{user.fullName || user.username}</td>
+                                <td>{user.username}</td>
+                                <td>{user.email}</td>
+                                <td>{getRoleBadge(user.roles)}</td>
+                                <td>
+                                    {user.banned ? (
+                                        <Badge bg="danger" title={user.banReason || 'Usuario baneado'}>
+                                            🚫 Baneado
+                                        </Badge>
+                                    ) : (
+                                        <Badge bg="success">✅ Activo</Badge>
+                                    )}
+                                </td>
+                                <td className={styles.actionsCell}>
+                                    <div className={styles.actionButtons}>
+                                        <UserActionButtons
+                                            user={user}
+                                            onView={onView}
+                                            onEdit={onEdit}
+                                            onBan={onBan}
+                                            onReactivate={onReactivate}
+                                            onDelete={onDelete}
+                                        />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
         </div>
     );
 };

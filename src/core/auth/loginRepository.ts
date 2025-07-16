@@ -4,8 +4,9 @@
 export const loginRepository = {
   async requestPasswordRecovery(email: string, isAdmin: boolean = false) {
     const url = isAdmin
-      ? "/admin/password/recovery-request"
-      : "/user/password/recovery-request";
+      ? import.meta.env.VITE_API_ENDPOINT_ADMIN_PASSWORD_RECOVERY_REQUEST
+      : import.meta.env.VITE_API_ENDPOINT_USER_PASSWORD_RECOVERY_REQUEST;
+    if (!url) throw new Error("Endpoint de recuperación no configurado");
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,7 +21,10 @@ export const loginRepository = {
     newPassword: string,
     isAdmin: boolean = false
   ) {
-    const url = isAdmin ? "/admin/password/reset" : "/user/password/reset";
+    const url = isAdmin
+      ? import.meta.env.VITE_API_ENDPOINT_ADMIN_PASSWORD_RESET
+      : import.meta.env.VITE_API_ENDPOINT_USER_PASSWORD_RESET;
+    if (!url) throw new Error("Endpoint de reseteo no configurado");
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

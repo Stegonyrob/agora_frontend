@@ -6,11 +6,11 @@ import LoginService from '../../../core/auth/LoginService';
 // Ajusta el import según la ubicación real
 import { login } from '@/core/auth/sessionStore';
 import { AuthService } from '../../../core/auth/AuthService';
+import { loginRepository } from '../../../core/auth/loginRepository';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import ForgotPasswordForm from './ForgotPasswordForm';
 import styles from './FormLogin.module.scss';
-import { loginRepository } from './loginRepository';
 import SocialLogin from './SocialLogin';
 
 function parseJwt(token: string) {

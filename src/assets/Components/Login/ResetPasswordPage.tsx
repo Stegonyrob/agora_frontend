@@ -1,7 +1,7 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
+import { loginRepository } from "../../../core/auth/loginRepository";
 import ResetPasswordForm from "./ResetPasswordForm";
-import { loginRepository } from "./loginRepository";
 
 const ResetPasswordPage: React.FC = () => {
     const [params] = useSearchParams();

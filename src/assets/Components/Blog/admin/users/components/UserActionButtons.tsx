@@ -26,16 +26,18 @@ const UserActionButtons: React.FC<UserActionButtonsProps> = ({
                 size="sm"
                 onClick={() => onView(user)}
                 title="Ver detalles"
+                style={{ borderRadius: '0.3rem', minWidth: '2.2rem', minHeight: '2.2rem', padding: 0 }}
             >
-                👁️
+                <i className="bi bi-info-lg" style={{ fontSize: '1.3rem', lineHeight: 1, display: 'inline-block', verticalAlign: 'middle' }}></i>
             </Button>
             <Button
-                variant="outline-warning"
+                variant="outline-primary"
                 size="sm"
                 onClick={() => onEdit(user)}
                 title="Editar usuario"
+                style={{ borderRadius: '0.3rem', minWidth: '2.2rem', minHeight: '2.2rem', padding: 0 }}
             >
-                ✏️
+                <i className="bi bi-vector-pen" style={{ fontSize: '1.3rem', lineHeight: 1, display: 'inline-block', verticalAlign: 'middle' }}></i>
             </Button>
             {user.banned ? (
                 <Button
@@ -43,8 +45,9 @@ const UserActionButtons: React.FC<UserActionButtonsProps> = ({
                     size="sm"
                     onClick={() => onReactivate(user)}
                     title="Reactivar usuario"
+                    style={{ borderRadius: '0.3rem', minWidth: '2.2rem', minHeight: '2.2rem', padding: 0 }}
                 >
-                    🔓
+                    <i className="bi bi-unlock" style={{ fontSize: '1.3rem', lineHeight: 1, display: 'inline-block', verticalAlign: 'middle' }}></i>
                 </Button>
             ) : (
                 <>
@@ -52,17 +55,19 @@ const UserActionButtons: React.FC<UserActionButtonsProps> = ({
                         variant="outline-warning"
                         size="sm"
                         onClick={() => onBan(user)}
-                        title="Banear usuario"
+                        title="Desactivar admin"
+                        style={{ borderRadius: '0.3rem', minWidth: '2.2rem', minHeight: '2.2rem', padding: 0 }}
                     >
-                        🚫
+                        <i className="bi bi-power" style={{ fontSize: '1.3rem', lineHeight: 1, display: 'inline-block', verticalAlign: 'middle' }}></i>
                     </Button>
                     <Button
                         variant="outline-danger"
                         size="sm"
                         onClick={() => onDelete(user)}
                         title="Eliminar usuario completamente (GDPR)"
+                        style={{ borderRadius: '0.3rem', minWidth: '2.2rem', minHeight: '2.2rem', padding: 0 }}
                     >
-                        🗑️
+                        <i className="bi bi-x" style={{ fontSize: '1.3rem', lineHeight: 1, display: 'inline-block', verticalAlign: 'middle' }}></i>
                     </Button>
                 </>
             )}

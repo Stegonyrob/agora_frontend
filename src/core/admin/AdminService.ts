@@ -9,14 +9,23 @@ export default class AdminService {
   }
 
   async getAllAdmins(): Promise<IAdmin[]> {
-    return await this.repository.getAll();
+    console.log("[AdminService] getAllAdmins: llamando a repository.getAll()");
+    const result = await this.repository.getAll();
+    console.log("[AdminService] getAllAdmins: resultado", result);
+    return result;
   }
 
   async createAdmin(admin: IAdminDTO): Promise<IAdmin> {
-    return await this.repository.create(admin);
+    console.log("[AdminService] createAdmin: datos recibidos", admin);
+    const result = await this.repository.create(admin);
+    console.log("[AdminService] createAdmin: resultado", result);
+    return result;
   }
 
   async deleteAdmin(id: number): Promise<void> {
-    return await this.repository.delete(id);
+    console.log("[AdminService] deleteAdmin: id", id);
+    const result = await this.repository.delete(id);
+    console.log("[AdminService] deleteAdmin: resultado", result);
+    return result;
   }
 }

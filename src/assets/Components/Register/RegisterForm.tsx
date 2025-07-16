@@ -16,6 +16,8 @@ function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,11 +130,11 @@ function RegisterForm() {
 
       <Card className={styles.card}>
         <Card.Body>
-          <Card.Title>Formulario de Registro</Card.Title>
+          <Card.Title className={styles.title}>Formulario de Registro</Card.Title>
           {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formUsername">
-              <Form.Label>Nombre de Usuario</Form.Label>
+              <Form.Label className={styles.label}>Nombre de Usuario</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Username"
@@ -143,7 +145,7 @@ function RegisterForm() {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email</Form.Label>
+              <Form.Label className={styles.label}>Email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="name@example.com"
@@ -153,28 +155,48 @@ function RegisterForm() {
                 className={styles.input}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formPassword">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={styles.input}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formConfirmPassword">
-              <Form.Label>Confirmar Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Confirmar Contraseña"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className={styles.input}
-              />
-            </Form.Group>
+            <div className={styles.formRow} >
+              <Form.Group className="mb-3" controlId="formPassword" style={{ flex: 1 }}>
+                <Form.Label className={styles.label}>Contraseña</Form.Label>
+                <div className={styles.passwordWrapper}>
+                  <Form.Control
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Contraseña"
+                    className={styles.passwordInput}
+                  />
+                  <i
+                    className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIconOne}`}
+                    onClick={() => setShowPassword(v => !v)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  />
+                </div>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formConfirmPassword" style={{ flex: 1 }}>
+                <Form.Label className={styles.label}>Confirmar Contraseña</Form.Label>
+                <div className={styles.passwordWrapper}>
+                  <Form.Control
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    placeholder="Confirmar Contraseña"
+                    className={styles.passwordInput}
+                  />
+                  <i
+                    className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIconTwo}`}
+                    onClick={() => setShowConfirmPassword(v => !v)}
+                    tabIndex={-1}
+                    aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  />
+                </div>
+              </Form.Group>
+            </div>
 
             {!canProceedToRegister && (
               <div className={styles.rulesNotice}>

@@ -1,12 +1,36 @@
 .card {
   width: 50%;
   margin-left: 25%;
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 2rem;
-  color: azure !important;
+  color: azure;
   margin-top: 5rem;
   margin-bottom: 8rem;
   text-align: center;
+}
+
+.card .title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card .label {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card .input, .card .passwordInput {
+  background-color: rgba(177, 161, 161, 0.8);
+  width: 70%;
+  margin: auto;
+  color: azure;
+}
+
+.card .formRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .card .button {
@@ -19,11 +43,30 @@
   cursor: not-allowed;
 }
 
-.card .recaptcha {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.card .button .input {
+  background-color: rgba(177, 161, 161, 0.8);
+  width: 70%;
+  margin: auto;
+  color: azure;
+}
+
+.card .showPasswordIconOne,
+.card .showPasswordIconTwo {
+  position: absolute;
+  width: 1.5rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ece8e8;
+}
+
+.card .showPasswordIconOne {
+  right: 14%;
+  top: 57%;
+}
+
+.card .showPasswordIconTwo {
+  right: 59%;
+  top: 57%;
 }
 
 .card .rulesNotice {

@@ -12,7 +12,8 @@
   max-width: 40rem;
   margin: 8rem auto;
 
-  .input {
+  .input,
+  .passwordInput {
     background-color: rgba(177, 161, 161, 0.8);
     width: 70%;
     margin: auto;
@@ -25,9 +26,8 @@
 
   .passwordInput {
     padding-right: 2.5rem; /* Espacio para el icono */
-    background-color: rgba(177, 161, 161, 0.8);
-    width: 70%;
-    margin: auto;
+
+ 
   }
 
   .showPasswordIcon {

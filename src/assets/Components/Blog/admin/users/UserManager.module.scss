@@ -19,22 +19,35 @@
     border: 2px solid #444;
   }
 
-  .table {
-    background: #23272b;
-    color: #f8f9fa;
-    th {
-      background-color: #343a40;
-      color: #f8f9fa;
-      font-weight: 600;
-      border-bottom: 2px solid #444;
-    }
-    td {
-      vertical-align: middle;
+    .table {
       background: #23272b;
       color: #f8f9fa;
+      th {
+        background-color: #343a40;
+        color: #f8f9fa;
+        font-weight: 600;
+        border-bottom: 2px solid #444;
+        text-align: center;
+      }
+      td {
+        vertical-align: middle;
+        background: #23272b;
+        color: #f8f9fa;
+        text-align: center;
+      }
+      .actionsCell {
+        min-width: 8rem;
+        max-width: 15rem;
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+      }
     }
-  }
 
+    .actionButtons {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+    }
   .btn {
     &:hover {
       transform: translateY(-1px);

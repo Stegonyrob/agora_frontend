@@ -1,28 +1,63 @@
 .card {
   width: 50%;
   margin-left: 25%;
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-color: rgba(0, 0, 0, 0.8) ;
   padding: 2rem;
-  color: azure !important;
+ color: azure;
   margin-top: 5rem;
   margin-bottom: 8rem;
   text-align: center;
-
-  .button {
-    margin-right: 4rem;
-    margin-left: 4rem;
+.title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.label {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.input, .passwordInput {
+    background-color: rgba(177, 161, 161, 0.8);
+    width: 70%;
+    margin: auto;
+    color: azure;
+  }
+.formRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.button {
+  margin-right: 4rem;
+  margin-left: 4rem;
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
+    .input {
+      background-color: rgba(177, 161, 161, 0.8);
+      width: 70%;
+      margin: auto;
+      color: azure;
+    }
   }
 
-  .recaptcha {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+ .showPasswordIconOne,
+ .showPasswordIconTwo {
+    position: absolute;
+ width: 1.5rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ece8e8;
+  }
+  .showPasswordIconOne {
+    right: 14%;
+    top: 57%;
+  }
+  .showPasswordIconTwo {
+     right: 59%;
+    top: 57%;
   }
 
   .rulesNotice {
