@@ -16,7 +16,7 @@ interface CardItemProps {
     attendeesCount: number;
     location?: string;
     images?: string[];
-    tags?: string[];
+    tags?: { id: number; name: string; archived?: boolean }[]
     user?: any;
     userRole?: string;
     onSelect?: (item: any) => void;
@@ -182,8 +182,8 @@ const CardItem: React.FC<CardItemProps> = ({
                 </p>
                 <ul className={styles.tags}>
                     {tags && tags.length > 0 ? (
-                        tags.map((tag, index) => (
-                            <li key={index} className={styles.tagItem}>#{tag}</li>
+                        tags.map((tag) => (
+                            <li key={tag.id} className={styles.tagItem}>#{tag.name}</li>
                         ))
                     ) : (
                         <>
