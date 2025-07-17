@@ -61,3 +61,13 @@ export const getAvatarNameBySrc = (src: string): string => {
   const avatar = avatarList.find((avatar) => avatar.src === src);
   return avatar ? avatar.name : "Avatar Personalizado";
 };
+export function getAvatarUrlByUserId(
+  userId: number,
+  profiles: any[],
+  avatars: any[]
+): string {
+  const profile = profiles.find((p) => p.userId === userId);
+  if (!profile) return "/images/avatarGeneric.png";
+  const avatar = avatars.find((a) => a.id === profile.avatar_id);
+  return avatar?.imagePath || "/images/avatarGeneric.png";
+}

@@ -3,36 +3,40 @@ import { createComment, deleteComment, fetchComments, updateComment } from "@/co
 import { IComment } from "@/core/comments/IComment";
 import { createReply } from "@/core/replies/replyStore";
 import { RootState } from "@/redux/store";
+import { getAvatarUrlByUserId } from "@/utils/avatarUtils";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./AccordionComments.module.scss";
 
+// Utilidad para obtener la URL del avatar por userId
+function getAvatarUrl(userId: number, users: any[], avatars: any[]): string {
+  const user = users.find((u) => u.id === userId);
+  const avatar = avatars.find((a) => a.id === user?.avatar_id);
+  return avatar?.imagePath || "/images/avatarGeneric.png";
+}
 interface AccordionCommentsProps {
   postId: number;
   currentUserId: number;
   isAdmin: boolean;
   commentsCount: number;
-  tags: any[];
+
 }
 
-const avatarList = [
-  "https://randomuser.me/api/portraits/lego/1.jpg",
-  "https://randomuser.me/api/portraits/lego/2.jpg",
-  "https://randomuser.me/api/portraits/lego/3.jpg",
-  "https://randomuser.me/api/portraits/lego/4.jpg",
-  "https://randomuser.me/api/portraits/lego/5.jpg",
-  "https://randomuser.me/api/portraits/lego/6.jpg",
-];
+
+
 
 const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUserId, isAdmin, commentsCount }) => {
   const dispatch = useDispatch<any>();
-
-  // Selecciona los comentarios solo de este postId (ajusta tu store si es necesario)
+  // Selecciona los comentarios solo de este postId
   const comments = useSelector((state: RootState) =>
     Array.isArray(state.comments.commentsByPostId?.[postId])
       ? state.comments.commentsByPostId[postId]
       : []
   );
+  // Selecciona usuarios y avatares del store
+  const users = useSelector((state: RootState) => state.profile.profiles);
+  const avatars = useSelector((state: RootState) => state.avatars.avatars);
+  const profiles = useSelector((state: RootState) => state.profile.profiles);
 
   const [open, setOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -82,18 +86,18 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
     setReplyText("");
   };
 
-  // Renderiza replies reales del backend (asegúrate que replies es un array)
+  // Renderiza replies reales del backend usando avatar real
   const renderReplies = (replies?: any[]) =>
     (Array.isArray(replies) ? replies : []).map((reply, idx) => (
-      <div key={reply.replyId ?? `reply-${idx}`} className={styles.reply}>
+      <div key={reply.id ?? `reply-${idx}`} className={styles.reply}>
         <img
-          src={avatarList[reply.userId % avatarList.length]}
+          src={getAvatarUrl(reply.userId, users, avatars)}
           alt={reply.userId?.toString() ?? ""}
           className={styles.avatarSmall}
         />
         <div>
           <span className={styles.user}>{reply.userId}</span>
-          <span className={styles.date}>{reply.creation_date ? new Date(reply.creation_date).toLocaleString('es-ES') : ""}</span>
+          <span className={styles.date}>{reply.creationDate ? new Date(reply.creationDate).toLocaleString('es-ES') : ""}</span>
           <p className={styles.text}>{reply.message}</p>
         </div>
       </div>
@@ -108,7 +112,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
       {open && (
         <div className={styles.accordion}>
           <div className={styles.addCommentRow}>
-            <img src={avatarList[currentUserId % avatarList.length]} alt="avatar" className={styles.avatarSmall} />
+            <img src={getAvatarUrlByUserId(currentUserId, profiles, avatars)} alt="avatar" className={styles.avatarSmall} />
             <input
               type="text"
               placeholder="Escribe un comentario..."
@@ -128,7 +132,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId, currentUs
             {comments.map((c: IComment) => (
               <div key={c.id} className={styles.comment}>
                 <img
-                  src={avatarList[c.userId % avatarList.length]}
+                  src={getAvatarUrl(c.userId, users, avatars)}
                   alt={c.userId?.toString() ?? ""}
                   className={styles.avatarSmall}
                 />
