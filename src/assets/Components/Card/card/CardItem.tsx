@@ -50,9 +50,11 @@ const CardItem: React.FC<CardItemProps> = ({
     const [showFull, setShowFull] = useState(false);
     const [shareOpen, setShareOpen] = useState(false);
 
+
     // Acceso seguro a perfiles y avatares del store
     const profiles = useSelector((state: RootState) => state.profile.profiles);
     const avatars = useSelector((state: RootState) => state.avatars.avatars);
+
     const showPrev = (e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImage((prev) => (prev === 0 ? (images?.length || 1) - 1 : prev - 1));
@@ -207,12 +209,8 @@ const CardItem: React.FC<CardItemProps> = ({
                         )}
                         {type === 'post' && (
                             <div style={{ marginTop: '1rem' }}>
-                                <AccordionComments
-                                    postId={id}
-                                    currentUserId={userId}
-                                    isAdmin={userRole === 'ADMIN'}
-                                    commentsCount={commentsCount ?? 0}
-                                />
+                                <AccordionComments postId={id} />
+
                             </div>
                         )}
                         {type === 'event' && (
@@ -249,7 +247,7 @@ const CardItem: React.FC<CardItemProps> = ({
                         </div>
                     )}
                 </div>
-            </article>
+            </article >
         </>
     );
 }

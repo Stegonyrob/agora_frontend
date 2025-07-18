@@ -1,4 +1,7 @@
 import Footer from "@/assets/Components/Footer/Footer";
+import { updateAvatarUrl } from "@/core/auth/sessionStore";
+import { fetchAvatarsForSelector } from "@/core/avatars/avatarStore";
+import { fetchProfileById } from "@/core/profiles/profileStore";
 import { RootState } from "@/redux/store";
 import PrivateLayout from "@/routes/PrivateLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
@@ -9,7 +12,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
-import { IEvent } from "./core/events/IEvent";
 import { useFontSize } from "./hooks/useFontSize";
 import swrConfig from "./swrConfig";
 
@@ -50,6 +52,10 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const session = useSelector((state: RootState) => state.session);
+  // DEBUG: Avatars global state
+  const avatars = useSelector((state: RootState) => state.avatars?.avatars || []);
+  // Log avatars state on every render
+  console.log('[App] Avatars state:', avatars);
   // Nuevo estado para controlar la hidratación
   const [isHydrating, setIsHydrating] = useState(true);
 
@@ -80,7 +86,17 @@ const App: React.FC = () => {
           viewAsUser,
         }
       });
+
+      // Cargar perfil y actualizar avatarUrl en sesión
+      (dispatch as any)(fetchProfileById(userId)).then((result: any) => {
+        const profile = result?.payload;
+        if (profile && profile.avatar) {
+          dispatch(updateAvatarUrl(profile.avatar));
+        }
+      });
     }
+    // Cargar avatares globales al iniciar la app
+    dispatch(fetchAvatarsForSelector() as any);
     setIsHydrating(false); // Ya terminamos de hidratar
   }, [dispatch, location.pathname]);
 
@@ -129,11 +145,9 @@ const App: React.FC = () => {
           <Route path="communication" element={<TrasComunicationView />} />
           <Route path="events" element={
             <EventsView
-              userId={null}
+              userId={session.userId || 0}
               events={[]}
-              onSelect={(event: IEvent) => {
-                console.error("Function not implemented.");
-              }}
+              onSelect={() => { }}
             />
           } />
           <Route path="legal/:type" element={<LegalTextView />} />
