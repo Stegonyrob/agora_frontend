@@ -17,29 +17,38 @@
   }
 }
 
-.addCommentRow .input.skeleton,
-.replyInputRow .input.skeleton {
-  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%) !important;
-  color: transparent !important;
-  border: none !important;
+.addCommentRow .input.skeleton {
+  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%);
+  color: transparent;
+  border: none;
 }
 
-.addCommentRow .sendBtn.skeleton,
+.addCommentRow .sendBtn.skeleton {
+  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%);
+  color: transparent;
+  border: none;
+}
+
+.replyInputRow .input.skeleton {
+  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%);
+  color: transparent;
+  border: none;
+}
+
 .replyInputRow .sendBtn.skeleton {
-  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%) !important;
-  color: transparent !important;
-  border: none !important;
+  background: linear-gradient(90deg, #23272f 25%, #2e3240 37%, #23272f 63%);
+  color: transparent;
+  border: none;
 }
 
 .avatarSmall,
 .avatarSmall.skeleton,
-.reply .avatarSmall,
 .comment .avatarSmall {
   width: 32px;
   height: 32px;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  aspect-ratio: 1 / 1 !important;
+  border-radius: 50%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
   display: block;
 }
 
@@ -89,31 +98,43 @@
   background: none;
   border: none;
   color: #888;
-  font-size: 1.15rem;
-  display: flex;
+  font-size: 1.5rem;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
   cursor: pointer;
   padding: 0.2rem 0.5rem;
   border-radius: 8px;
   transition: background 0.15s;
   position: relative;
+  width: 2.6em;
+  height: 2.6em;
+}
+
+.commentsContainer .iconBtn i {
+  font-size: 1.5em;
+  display: block;
 }
 
 .commentsContainer .iconBtn .counter {
+  position: absolute;
+  top: -0.45em;
+  right: -0.25em;
   background: linear-gradient(90deg, #b48be0 0%, #6dd5ed 100%);
-  color: #222;
-  font-size: 1.05rem;
+  color: #fff;
+  font-size: 0.78em;
   font-weight: 700;
   border-radius: 50%;
-  padding: 0.18em 0.7em;
-  margin-left: 0.4rem;
+  padding: 0.05em 0.45em;
   box-shadow: 0 2px 8px rgba(180, 139, 224, 0.15);
-  border: 2px solid #fff;
+  border: none;
   display: inline-block;
-  min-width: 2em;
+  min-width: 1.1em;
   text-align: center;
   transition: background 0.2s, color 0.2s;
+  z-index: 2;
+  line-height: 1.1;
+  pointer-events: none;
 }
 
 .commentsContainer .accordion {
@@ -249,13 +270,14 @@
   color: #1877f2;
 }
 
-.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow {
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow, .commentsContainer .accordion .commentsList .comment .commentBody .editRow {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   margin: 0.3rem 0 0.3rem 0;
 }
 
-.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .input {
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .input, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .input {
   flex: 1;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
@@ -266,23 +288,65 @@
   transition: border 0.2s;
 }
 
-.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .input:focus {
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .input:focus, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .input:focus {
   border: 1.5px solid #1877f2;
 }
 
-.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .sendBtn {
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon {
   background: none;
   border: none;
-  color: #1877f2;
+  outline: none;
+  box-shadow: none;
   font-size: 1.25rem;
   cursor: pointer;
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
-  transition: background 0.15s;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+  line-height: 1;
+  vertical-align: middle;
 }
 
-.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .sendBtn:hover {
-  background: #eaf1fb;
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.edit, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.edit {
+  color: #1877f2;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.edit:hover, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.edit:hover {
+  color: #0d47a1;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.delete, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.delete {
+  color: #c62828;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.delete:hover, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.delete:hover {
+  color: #8b0000;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.accept, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.accept {
+  color: #2e7d32;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.accept:hover, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.accept:hover {
+  color: #1b5e20;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.cancel, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.cancel {
+  color: #c62828;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.cancel:hover, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.cancel:hover {
+  color: #8b0000;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.reply, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.reply {
+  color: #fbc02d;
+}
+
+.commentsContainer .accordion .commentsList .comment .commentBody .replyInputRow .actionIcon.reply:hover, .commentsContainer .accordion .commentsList .comment .commentBody .editRow .actionIcon.reply:hover {
+  color: #ff9800;
 }
 
 .commentsContainer .accordion .commentsList .comment .commentBody .reply {

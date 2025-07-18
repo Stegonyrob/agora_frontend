@@ -1,67 +1,102 @@
 .reply {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-.avatarSmall {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #ccc;
-}
-.user {
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-.date {
-  color: #aaa;
-  font-size: 0.85em;
-  margin-left: 0.5rem;
-}
-.text {
-  margin: 0.5rem 0;
-}
-.replyInputRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
-}
-.input {
-  flex: 1;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 0 0.5rem;
-  font-size: 1em;
-}
-.sendBtn {
-  width: 32px;
-  height: 28px;
-  border-radius: 6px;
-  background: #e0e0e0;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    .avatarSmall {
+        width: 2em;
+        height: 2em;
+        border-radius: 50%;
+    }
+
+    .replyBody {
+        flex: 1;
+        .user {
+            font-weight: bold;
+            margin-right: 0.5em;
+            color: #fff;
+        }
+        .date {
+            color: #aaa;
+            font-size: 0.85em;
+            margin-left: 0.5em;
+        }
+        .text {
+            margin: 0.5em 0;
+        }
+
+        .replyInputRow {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin: 0.5em 0;
+
+            .inputReply {
+                flex: 1;
+                border: 1px solid #e0e0e0;
+                border-radius: 16px;
+                padding: 0.4rem 1rem;
+                font-size: 1rem;
+                outline: none;
+                background: white;
+                transition: border 0.2s;
+                &:focus {
+                    border: 1.5px solid #4caf50;
+                    background: #9fa5af;
+                }
+            }
+            .actionIcon {
+                display: flex;
+                align-items: center;
+                background: none;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                font-size: 1.2em;
+                
+            }
+            .checkIcon {
+ 
+  color: #0de40d;
+  transition: color 0.2s ease-in-out; 
+
   &:hover {
-    background: #d0ffd0;
+    color: #0e720e; 
+  }
+        }
+        .cancelIcon {
+  // Estilos generales para el icono de cancelar
+  color: #FFC0CB; // Rojo pálido
+  transition: color 0.2s ease-in-out; // Transición para el hover
+
+  &:hover {
+    color: #FF0033; // Rojo intenso
   }
 }
-.actionsRow {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.2rem;
-}
-.replyBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #888;
-  font-size: 1.1em;
+
+    }
+    .edit, .delete{
+        background: none;
+        border: none;
+        outline: none;
+    }
+    .edit {
+  // Estilos generales para el icono de editar
+  color: #FFFF99; // Amarillo claro
+  transition: color 0.2s ease-in-out; // Transición para el hover
+
   &:hover {
-    color: #333;
+    color: #FF9900; // Naranja (o amarillo oscuro)
   }
 }
+
+.delete {
+  // Estilos generales para el icono de eliminar
+  color: #FFC0CB; // Rojo claro
+  transition: color 0.2s ease-in-out; // Transición para el hover
+
+  &:hover {
+    color: #FF0033; // Rojo intenso
+  }
+}
+}}

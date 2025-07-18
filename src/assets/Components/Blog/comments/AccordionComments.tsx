@@ -9,8 +9,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from 'reselect';
 import styles from "./AccordionComments.module.scss";
+import CommentsList from "./CommentsList";
 import CommentsSkeleton from "./CommentsSkeleton";
-import Replies from "./Replies";
 
 // --- Interfaces y tipos ---
 interface AccordionCommentsProps {
@@ -196,19 +196,15 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   // Loader ahora es un componente CommentsSkeleton
 
   // --- Render principal ---
-  // Si está cargando comentarios o perfiles, muestra el loader
   if ((open && (showSkeleton || commentsLoading)) || !allProfilesReallyLoaded) {
     return <CommentsSkeleton count={Math.max(2, memoizedComments.length || 2)} />;
   }
-  // Si no, muestra el accordion normal
   return (
     <div className={styles.commentsContainer}>
       <button
         className={styles.iconBtn}
         onClick={() => {
-          if (open) {
-            setShowSkeleton(false);
-          }
+          if (open) setShowSkeleton(false);
           setOpen(!open);
         }}
       >
@@ -218,10 +214,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
       {open && (
         <div className={styles.accordion}>
           <div className={styles.addCommentRow}>
-            <img src={(() => {
-              const url = getAvatarUrlByUserId(currentUserId, profiles, avatars);
-              return url;
-            })()} alt="avatar" className={styles.avatarSmall} />
+            <img src={getAvatarUrlByUserId(currentUserId, profiles, avatars)} alt="avatar" className={styles.avatarSmall} />
             <input
               type="text"
               placeholder="Escribe un comentario..."
@@ -229,9 +222,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
               onChange={e => setNewComment(e.target.value)}
               className={styles.input}
               onKeyDown={e => {
-                if (e.key === "Enter") {
-                  handleAddComment();
-                }
+                if (e.key === "Enter") handleAddComment();
               }}
             />
             <button
@@ -241,117 +232,33 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
               <i className="bi bi-send"></i>
             </button>
           </div>
-          <div className={styles.commentsList}>
-            {comments.length === 0 && (
-              <div className={styles.noComments}>Sin comentarios aún.</div>
-            )}
-            {memoizedComments.map((c: IComment) => (
-              <div key={c.id} className={styles.comment}>
-                <img
-                  src={(() => {
-                    const url = getAvatarUrlByUserId(c.userId, profiles, avatars);
-                    return url;
-                  })()}
-                  alt={c.userId?.toString() ?? ""}
-                  className={styles.avatarSmall}
-                />
-                <div className={styles.commentBody}>
-                  <div className={styles.commentHeader}>
-                    <span className={styles.user}>{c.userId}</span>
-                    <span className={styles.date}>{c.creationDate ? new Date(c.creationDate).toLocaleString('es-ES') : ""}</span>
-                  </div>
-                  {editId === c.id ? (
-                    <div className={styles.editRow} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input
-                        value={editText}
-                        onChange={e => setEditText(e.target.value)}
-                        className={styles.input + ' ' + styles.replyInput}
-                        style={{ flex: 1 }}
-                      />
-                      <button
-                        className={styles.iconBtn}
-                        title="Guardar"
-                        onClick={() => handleUpdateComment(c)}
-                      >
-                        <i className="bi bi-check-lg" style={{ color: '#4caf50', fontSize: '1.2rem' }}></i>
-                      </button>
-                      <button
-                        className={styles.iconBtn}
-                        title="Cancelar"
-                        onClick={() => setEditId(null)}
-                      >
-                        <i className="bi bi-x-lg" style={{ color: '#f44336', fontSize: '1.2rem' }}></i>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className={styles.commentText}>{c.message}</div>
-                  )}
-                  <div className={styles.actionsRow}>
-                    <button
-                      className={styles.replyBtn}
-                      onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
-                    >
-                      <i className="bi bi-reply"></i>
-                    </button>
-                    {(c.userId === currentUserId || isAdmin) && (
-                      <>
-                        <button
-                          className={styles.replyBtn}
-                          onClick={() => handleEditComment(c)}
-                        >
-                          <i className="bi bi-pencil"></i>
-                        </button>
-                        <button
-                          className={styles.replyBtn}
-                          onClick={() => handleDeleteComment(c.id)}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  {replyTo === c.id && (
-                    <div className={styles.replyInputRow}>
-                      <input
-                        type="text"
-                        placeholder="Responder..."
-                        value={replyText}
-                        onChange={e => setReplyText(e.target.value)}
-                        className={styles.input}
-                        onKeyDown={e => {
-                          if (e.key === "Enter") {
-                            handleAddReply(c.id);
-                          }
-                        }}
-                      />
-                      <button
-                        className={styles.sendBtn}
-                        onClick={() => handleAddReply(c.id)}
-                      >
-                        <i className="bi bi-send"></i>
-                      </button>
-                    </div>
-                  )}
-                  <Replies
-                    replies={c.replies}
-                    commentId={c.id}
-                    currentUserId={currentUserId}
-                    isAdmin={isAdmin}
-                    profiles={profiles}
-                    avatars={avatars}
-                    editReplyId={editReplyId}
-                    editReplyText={editReplyText}
-                    setEditReplyId={setEditReplyId}
-                    setEditReplyText={setEditReplyText}
-                    handleUpdateReply={handleUpdateReply}
-                    handleDeleteReply={handleDeleteReply}
-                    handleEditReply={handleEditReply}
-                    getAvatarUrlByUserId={getAvatarUrlByUserId}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <CommentsList
+            comments={memoizedComments}
+            profiles={profiles}
+            avatars={avatars}
+            currentUserId={currentUserId}
+            isAdmin={isAdmin}
+            replyTo={replyTo}
+            setReplyTo={setReplyTo}
+            replyText={replyText}
+            setReplyText={setReplyText}
+            handleAddReply={handleAddReply}
+            editId={editId}
+            setEditId={setEditId}
+            editText={editText}
+            setEditText={setEditText}
+            handleEditComment={handleEditComment}
+            handleUpdateComment={handleUpdateComment}
+            handleDeleteComment={handleDeleteComment}
+            editReplyId={editReplyId}
+            setEditReplyId={setEditReplyId}
+            editReplyText={editReplyText}
+            setEditReplyText={setEditReplyText}
+            handleEditReply={handleEditReply}
+            handleUpdateReply={handleUpdateReply}
+            handleDeleteReply={handleDeleteReply}
+            getAvatarUrlByUserId={getAvatarUrlByUserId}
+          />
         </div>
       )}
     </div>

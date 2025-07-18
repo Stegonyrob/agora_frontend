@@ -42,27 +42,26 @@ const Replies: React.FC<RepliesProps> = ({
                     alt={reply.userId?.toString() ?? ""}
                     className={styles.avatarSmall}
                 />
-                <div>
-                    <span className={styles.user}>{reply.userId}</span>
+                <div className={styles.replyBody}>
+                    <span className={styles.user}>{reply.userName}</span>
                     <span className={styles.date}>{reply.creationDate ? new Date(reply.creationDate).toLocaleString('es-ES') : ""}</span>
                     {editReplyId === reply.id ? (
-                        <div className={styles.replyInputRow} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0.5rem 0' }}>
+                        <div className={styles.replyInputRow}>
                             <input
                                 type="text"
                                 placeholder="Editar respuesta..."
                                 value={editReplyText}
                                 onChange={e => setEditReplyText(e.target.value)}
-                                className={styles.input}
-                                style={{ flex: 1 }}
+                                className={styles.inputReply}
                                 onKeyDown={e => {
                                     if (e.key === "Enter") handleUpdateReply(reply, commentId);
                                 }}
                             />
-                            <button className={styles.sendBtn} title="Guardar" onClick={() => handleUpdateReply(reply, commentId)}>
-                                <i className="bi bi-check-lg" style={{ color: '#4caf50', fontSize: '1.2rem' }}></i>
+                            <button className={`${styles.actionIcon} ${styles.checkIcon}`} title="Guardar" onClick={() => handleUpdateReply(reply, commentId)}>
+                                <i className="bi bi-check-lg"></i>
                             </button>
-                            <button className={styles.sendBtn} title="Cancelar" onClick={() => setEditReplyId(null)}>
-                                <i className="bi bi-x-lg" style={{ color: '#f44336', fontSize: '1.2rem' }}></i>
+                            <button className={`${styles.actionIcon} ${styles.cancelIcon}`} title="Cancelar" onClick={() => setEditReplyId(null)}>
+                                <i className="bi bi-x-lg"></i>
                             </button>
                         </div>
                     ) : (
@@ -70,10 +69,10 @@ const Replies: React.FC<RepliesProps> = ({
                     )}
                     {(reply.userId === currentUserId || isAdmin) && (
                         <div className={styles.actionsRow}>
-                            <button className={styles.replyBtn} onClick={() => handleEditReply(reply)}>
+                            <button className={`${styles.actionIcon} ${styles.edit}`} onClick={() => handleEditReply(reply)}>
                                 <i className="bi bi-pencil"></i>
                             </button>
-                            <button className={styles.replyBtn} onClick={() => handleDeleteReply(reply.id)}>
+                            <button className={`${styles.actionIcon} ${styles.delete}`} onClick={() => handleDeleteReply(reply.id)}>
                                 <i className="bi bi-trash"></i>
                             </button>
                         </div>

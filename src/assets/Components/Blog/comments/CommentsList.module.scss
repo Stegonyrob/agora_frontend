@@ -1,0 +1,133 @@
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .comment {
+    display: flex;
+    gap: 1rem;
+
+    .avatarSmall {
+      width: 2em;
+      height: 2em;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    .commentBody {
+      flex: 1;
+
+      .commentHeader {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+
+        .user, .date {
+          border-radius: 4px;
+          min-height: 0.8em;
+          color: #fff;
+        }
+      }
+
+      .commentText {
+        margin: 0.5rem 0;
+        min-height: 1.2em;
+      }
+
+      .actionsRow {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .editRow {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+
+        .inputComment {
+          flex: 1;
+          height: 2em;
+          border-radius: 2rem;
+          padding: 0 0.5em;
+          font-size: 1em;
+          background: #f3f4f5;
+          color: black;
+          outline: none;
+          transition: border 0.2s;
+
+          &:focus {
+            border: 1.5px solid #4caf50;
+            background: #2c2c2e;
+          }
+        }
+
+        .actionIcon {
+          background: none;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.2s;
+
+          &:hover {
+            background: #d0ffd0;
+          }
+        }
+      }
+
+      .accept, .cancel {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #888;
+        font-size: 1.1em;
+
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+  }
+
+  .noComments {
+    color: #aaa;
+    font-style: italic;
+    margin: 1rem 0;
+  }
+}
+
+.accept, .cancel {
+  background: none;
+  border: none;
+}
+
+.reply, .delete, .edit, .accept, .cancel {
+  background: none;
+  border: none;
+  transition: color 0.2s ease-in-out; // Transición para el hover
+
+  &:hover {
+    color: #00698F; // Azul intenso
+  }
+}
+
+.reply {
+  color: #ADD8E6; // Azul claro
+}
+
+.delete {
+  color: #FFC0CB; // Rojo pálido
+}
+
+.edit {
+  color: #FFFF99; // Amarillo claro
+}
+
+.accept {
+  color: #008000; // Verde claro
+}
+
+.cancel {
+  color: #FFC0CB; // Rojo pálido
+}
