@@ -8,14 +8,13 @@ import LogoNavBar from "../Logo/LogoNavBar";
 import SettingsModal from "../Settings/SetttingsModal";
 import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
 import styles from "./NavBar.module.scss";
+import NavLinks from "./NavLinks";
 import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
-
 
 function NavBar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [click, setClick] = useState(false);
-    const [openDropdown, setOpenDropdown] = useState("");
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [grayScale, setGrayScale] = useState(false);
 
@@ -27,17 +26,11 @@ function NavBar() {
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);
 
-    const handleDropdown = (name: string) => {
-        setOpenDropdown(openDropdown === name ? "" : name);
-    };
-
     const handleLogout = () => {
         localStorage.clear();
         sessionStorage.clear();
         document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
         });
         dispatch(logout());
         navigate("/login");
@@ -59,190 +52,52 @@ function NavBar() {
                         <LogoNavBar className={styles.logoSmall} />
                     </NavLink>
                     <span className={styles.specialIcon}>
-                        <ToggleGrayScaleButton
-                            checked={grayScale}
-                            onChange={() => setGrayScale(prev => !prev)}
-                        />
+                        <ToggleGrayScaleButton checked={grayScale} onChange={() => setGrayScale((prev) => !prev)} />
                     </span>
                 </div>
-                <div className={styles.navIcon} onClick={handleClick}>
-                    {click ? (
-                        <span className={styles.icon}>
-                            <HamburgetMenuClose />
-                        </span>
-                    ) : (
-                        <span className={styles.icon}>
-                            <HamburgetMenuOpen />
-                        </span>
-                    )}
-                </div>
 
+                {/* El menú de navegación ahora está separado de los controles */}
                 <ul className={click ? `${styles.navMenu} ${styles.active}` : styles.navMenu}>
-                    <li className={styles.navItem}>
-                        <NavLink
-                            to="/"
-                            className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)}
-                            onClick={closeMenu}
-                        >
-                            Inicio
-                        </NavLink>
-                    </li>
-                    {/* Dropdown 1: Nosotros */}
-                    <li
-                        className={`${styles.navItem} ${styles.dropdown}`}
-                        onMouseEnter={() => setOpenDropdown("nosotros")}
-                        onMouseLeave={() => setOpenDropdown("")}
-                    >
-                        <button
-                            className={`${styles.navLinks} ${styles.dropbtn}`}
-                            onClick={() => handleDropdown("nosotros")}
-                            aria-haspopup="true"
-                            aria-expanded={openDropdown === "nosotros"}
-                            type="button"
-                        >
-                            Nosotros
-                        </button>
-                        <ul className={openDropdown === "nosotros" ? `${styles.dropdownContentOne} ${styles.show}` : styles.dropdownContentOne}>
-                            <li>
-                                <NavLink to="/agora" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Ágora</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/services" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Nuestros Servicios</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/aboutme" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Sobre Mi</NavLink>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className={styles.navItem}>
-                        <NavLink
-                            to="/events"
-                            className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)}
-                            onClick={closeMenu}
-                        >
-                            Eventos
-                        </NavLink>
-                    </li>
-                    {/* Dropdown 2: Neurodiversidad */}
-                    <li
-                        className={`${styles.navItem} ${styles.dropdown}`}
-                        onMouseEnter={() => setOpenDropdown("neuro")}
-                        onMouseLeave={() => setOpenDropdown("")}
-                    >
-                        <button
-                            className={`${styles.navLinks} ${styles.dropbtn}`}
-                            onClick={() => handleDropdown("neuro")}
-                            aria-haspopup="true"
-                            aria-expanded={openDropdown === "neuro"}
-                            type="button"
-                        >
-                            Neurodiversidad
-                        </button>
-                        <ul className={openDropdown === "neuro" ? `${styles.dropdownContentTwo} ${styles.show}` : styles.dropdownContentTwo}>
-                            <li>
-                                <NavLink
-                                    to="/neurodiversity"
-                                    className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)}
-                                    onClick={closeMenu}
-                                >¿Qué es?</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/cea" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Cea/Tea</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/tda_tdh" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Tda_Tdh</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/learningdifficulties" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/developmentconditions" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/communication" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className={styles.navItem}>
-                        <NavLink
-                            to="/blog"
-                            className={({ isActive }) => (isActive ? `${styles.navLinks} ${styles.active}` : styles.navLinks)}
-                            onClick={closeMenu}
-                        >
-                            Blog
-                        </NavLink>
-                    </li>
-                    {/* Dropdown 3: Inicio de Sesión */}
-                    <li
-                        className={`${styles.navItem} ${styles.dropdown}`}
-                        onMouseEnter={() => setOpenDropdown("sesion")}
-                        onMouseLeave={() => setOpenDropdown("")}
-                    >
-                        <button
-                            className={`${styles.navLinks} ${styles.dropbtn}`}
-                            onClick={() => handleDropdown("sesion")}
-                            aria-haspopup="true"
-                            aria-expanded={openDropdown === "sesion"}
-                            type="button"
-                        >
-                            <i className="bi bi-person" style={{ marginRight: 6 }}></i>
-                            Inicio de Sesión
-                        </button>
-                        <ul className={openDropdown === "sesion" ? `${styles.dropdownContentTree} ${styles.show}` : styles.dropdownContentTree}>
-                            <li>
-                                <NavLink to="/login" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Login</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/register" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={closeMenu}>Registro</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/logout" className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)} onClick={handleLogout}>Logout</NavLink>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className={styles.navItem}>
-                        {isAdmin && (
+                    <NavLinks closeMenu={closeMenu} isLoggedIn={isLoggedIn} />
+                    {isAdmin && (
+                        <li className={styles.navItem}>
                             <NavLink
                                 to="/admin"
-                                className={({ isActive }) => (isActive ? `${styles.dropdownLink} ${styles.active}` : styles.dropdownLink)}
-
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? `${styles.navLinks} ${styles.active}`
+                                        : styles.navLinks
+                                }
+                                onClick={closeMenu}
                             >
                                 Dashboard
                             </NavLink>
-
-
-
-                        )}
-                    </li>
-
+                        </li>
+                    )}
                 </ul>
 
-                {/* AVATAR DEL USUARIO - fuera del <ul> */}
-                {isLoggedIn && (
-                    <div className={styles.avatarNav}>
-                        <Avatar
-                            userName={userName}
-                            avatarUrl={avatarUrl}
-                            onProfile={() => navigate("/profile")}
-                            onSettings={() => setShowSettingsModal(true)}
-                            onLogout={handleLogout}
-                        />
-                    </div>
-                )}
-
-
+                {/* --- Contenedor para todos los controles de la derecha --- */}
+                <div className={styles.rightControls}>
+                    {isLoggedIn ? (
+                        <div className={styles.avatarNav}>
+                            <Avatar
+                                userName={userName}
+                                avatarUrl={avatarUrl}
+                                onProfile={() => navigate("/profile")}
+                                onSettings={() => setShowSettingsModal(true)}
+                                onLogout={handleLogout}
+                            />
+                        </div>
+                    ) : (
+                        <span className={styles.settingsIcon} title="Configuración" onClick={() => setShowSettingsModal(true)}>
+                            <i className="bi bi-gear"></i>
+                        </span>
+                    )}
+                    <button className={styles.navIcon} onClick={handleClick} aria-label="Toggle menu">
+                        {click ? <HamburgetMenuClose /> : <HamburgetMenuOpen />}
+                    </button>
+                </div>
             </div>
-
-            {!isLoggedIn && (
-                <span
-                    className={styles.settingsIcon}
-                    title="Configuración"
-
-                    onClick={() => setShowSettingsModal(true)}
-                >
-                    <i className="bi bi-gear"></i>
-                </span>
-            )}
 
             {/* Modal de settings, visible para ambos casos */}
             {showSettingsModal && (
@@ -257,4 +112,3 @@ function NavBar() {
 }
 
 export default NavBar;
-

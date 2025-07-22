@@ -1,79 +1,149 @@
+// ============================
+// GRAYSCALE TOGGLE SWITCH STYLES
+// ============================
+
 .switch {
-  margin-left: 0rem;
   position: relative;
   display: inline-block;
   width: 4rem;
   height: 2.5rem;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+  margin: 0 0.5rem;
+  
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    
+    &:checked + .slider {
+      background: #bdbdbd;
+      
+      .icon {
+        left: calc(100% - 2.7rem);
+        background: #fff;
+        border-color: #999;
+      }
+    }
+    
+    &:focus + .slider {
+      box-shadow: 0 0 2px #ffdd40;
+    }
+  }
 }
 
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #e0e0e0;
-  border-radius: 34px;
-  transition: background 0.4s;
+  border-radius: 2rem;
+  transition: background 0.3s ease;
   display: flex;
   align-items: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  
+  &:hover {
+    background: #d0d0d0;
+  }
 }
-.icon svg {
-  width: 1.8rem;
-  height: 1.8rem;
-  display: block;
-}
+
 .icon {
   position: absolute;
   top: 50%;
-
+  left: 0.2rem;
   transform: translateY(-50%);
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.1rem;
+  height: 2.1rem;
   background: white;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: left 0.4s, background 0.4s;
+  transition: left 0.3s ease, background 0.3s ease, transform 0.3s ease;
   border: 2px solid #bbb;
-}
-
-input:checked + .slider {
-  background: #bdbdbd;
-}
-
-input:checked + .slider .icon {
-  left: 24px; // Ajusta este valor para que el infinito se mueva horizontalmente pero siga centrado verticalmente
-
-}
-@media (max-width: 320px) {
-  .slider {
-    height: 1.5rem;
-    width: 2.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: translateY(-50%) scale(1.05);
   }
+  
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+}
+
+// ============================
+// RESPONSIVE STYLES
+// ============================
+
+@media (max-width: 768px) {
+  .switch {
+    width: 3.5rem;
+    height: 2.2rem;
+    margin: 0 0.3rem;
+  }
+  
+  .icon {
+    width: 1.8rem;
+    height: 1.8rem;
+    
+    svg {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+  }
+  
+  input:checked + .slider .icon {
+    left: calc(100% - 2.3rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .switch {
+    width: 3rem;
+    height: 1.8rem;
+    margin: 0 0.2rem;
+  }
+  
   .icon {
     width: 1.5rem;
     height: 1.5rem;
+    
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+  }
+  
+  input:checked + .slider .icon {
+    left: calc(100% - 1.9rem);
   }
 }
-  .icon svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
 
- 
-  
-  .toggleSwitch {
-    width: 100vw;
-    min-width: 0;
-    padding: 0;
-    justify-content: center;
-    align-items: center;
-    height: auto;
+@media (max-width: 320px) {
+  .switch {
+    width: 2.5rem;
+    height: 1.5rem;
+    margin: 0 0.1rem;
   }
+  
+  .icon {
+    width: 1.3rem;
+    height: 1.3rem;
+    
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+  
+  input:checked + .slider .icon {
+    left: calc(100% - 1.6rem);
+  }
+}

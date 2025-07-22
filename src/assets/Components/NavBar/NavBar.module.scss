@@ -1,344 +1,243 @@
 // ============================
-// NAVBAR BASE STYLES
+// VARIABLES & MIXINS
 // ============================
+$brand-yellow: #f5b921;
+$dark-background: #0c0c0c;
+$light-text: #fff;
+$breakpoint-mobile: 960px;
 
+// ============================
+// NAVBAR BASE
+// ============================
 .navbar {
-  background: #0c0c0c;
+  background: $dark-background;
   height: 80px;
   display: flex;
+  justify-content: center;
   align-items: center;
+  font-size: 1.2rem;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 999;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .navContainer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  height: 80px;
   width: 100%;
   max-width: 1500px;
-  margin: 0 auto;
-  justify-content: space-between;
+  padding: 0 2rem;
 }
 
+// ============================
+// LOGO & LEFT-SIDE
+// ============================
 .logoAndToggle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .navLogo {
-  color: #f5b921;
-  font-size: 2rem;
+  color: $brand-yellow;
+  cursor: pointer;
   text-decoration: none;
+  font-size: 2rem;
   display: flex;
   align-items: center;
 }
 
 .logoSmall {
   height: 5rem;
-}
-
-.specialIcon {
-  margin-left: 0;
-  display: flex;
-  align-items: center;
-}
-
-.navIcon {
-  display: none;
-  color: #f5b921;
-  position: absolute;
-  right: 2rem;
-  top: 2rem;
-  cursor: pointer;
-  z-index: 30;
-}
-
-.settingsIcon {
-  cursor: pointer;
-  font-size: 1.2rem;
-  margin-left: 1rem;
-  color: azure;
-  margin-right: 2rem;
-}
-
-@media (max-width: 960px) {
-  .navIcon {
-    display: block;
-    top: 50%;
-    right: 0;
-    transform: translate(-100%, -50%);
-    width: 2rem;
-    height: 2rem;
-    color: #ffdd40;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.05);
   }
 }
 
-// ============================
-// NAVIGATION MENU STYLES
-// ============================
 
+// ============================
+// NAVIGATION MENU (Desktop & Mobile)
+// ============================
 .navMenu {
   display: flex;
-  list-style: none;
   align-items: center;
+  list-style: none;
+  text-align: center;
   margin: 0;
   padding: 0;
+  gap: 0.5rem;
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    display: none; // Ocultamos el menú de enlaces en móvil
+    flex-direction: column;
+    width: 100%;
+    height: 90vh;
+    position: absolute;
+    top: 80px;
+    left: -100%;
+    opacity: 0;
+    transition: all 0.5s ease;
+    background: $dark-background;
+    padding-top: 2rem;
+    gap: 1rem; // <-- CAMBIO 2: Añade espacio vertical entre elementos
+  }
+
+  // Cuando el menú está activo (hamburguesa pulsada)
+  &.active {
+    @media screen and (max-width: $breakpoint-mobile) {
+      display: flex; // Lo mostramos
+      left: 0;
+      opacity: 1;
+      z-index: 10;
+    }
+  }
 }
 
 .navItem {
-  position: relative;
+  height: 80px;
+  display: flex;
+  align-items: center;
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    width: 100%;
+    height: auto;
+  }
 }
 
-.navLinks, .dropbtn {
-  color: #fff;
+.navLinks {
+  color: $light-text;
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1rem;
+  height: 100%;
+  border-bottom: 4px solid transparent;
+  transition: all 0.3s ease-out;
   background: none;
-  border: none;
-  font-size: 1rem;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
 
-.navLinks:hover, .dropbtn:hover {
-  background: #0c0c0c;
-  color: #ffdd40;
-}
+  &:hover,
+  &.active {
+    color: $brand-yellow;
+    border-bottom-color: $brand-yellow;
+  }
 
-.active {
-  color: #ffdd40;
-  background: #0c0c0c;
-  border-radius: 4px;
-}
+  @media screen and (max-width: $breakpoint-mobile) {
+    padding: 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-bottom: none;
 
-// ============================
-// DROPDOWN STYLES
-// ============================
-
-.dropdownContent,
-.dropdownContentOne,
-.dropdownContentTwo,
-.dropdownContentTree {
-  display: none;
-  position: absolute;
-  background: #0c0c0c;
-  min-width: 160px;
-  left: 0;
-  top: 100%;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 10;
-  padding: 0.5rem 0;
-}
-
-.dropdownContentTwo {
-  min-width: 250px;
-  background: #0c0c0c;
-}
-
-// Dropdown show/hover logic
-.dropdown:hover .dropdownContent,
-.dropdown:hover .dropdownContentOne,
-.dropdown:hover .dropdownContentTwo,
-.dropdown:hover .dropdownContentTree,
-.dropdownContent.show,
-.dropdownContentOne.show,
-.dropdownContentTwo.show,
-.dropdownContentTree.show {
-  display: block;
+    &:hover,
+    &.active {
+      background-color: #1a1a1a;
+      color: $brand-yellow;
+      border-radius: 0;
+    }
+  }
 }
 
 .dropdownLink {
-  color: #fff;
+  color: $light-text;
+  padding: 12px 16px;
   text-decoration: none;
-  padding: 0.7rem 1.2rem;
   display: block;
-  background: none;
   border: none;
+  background: none;
   text-align: left;
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.3s ease;
+  width: 100%;
   border-radius: 4px;
 
+  &:hover,
+  &.active {
+    background: #1a1a1a;
+    color: $brand-yellow;
+  }
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    padding: 1rem 2rem;
+    text-align: center;
+
+    &:hover,
+    &.active {
+      background: #2a2a2a;
+    }
+  }
+}
+
+// ============================
+// RIGHT-SIDE CONTROLS & ICONS
+// ============================
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; // Espaciado automático entre iconos
+}
+
+.avatarNav {
+  display: flex;
+  align-items: center;
+  @media (max-width: $breakpoint-mobile) {
+    display: none; // Ocultamos el avatar en móvil para dar espacio
+  }
+}
+
+.settingsIcon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: $light-text;
+  transition: all 0.3s ease;
+
   &:hover {
-    background: #232323;
-    color: #ffdd40;
+    color: $brand-yellow;
+    transform: rotate(30deg);
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    // Si el usuario no está logueado, este icono se mostrará aquí
+    // y el gap del .rightControls lo espaciará correctamente.
   }
 }
 
-.dropdownContentTwo .dropdownLink { 
-  padding: 0.7rem 1.5rem; 
+.navIcon {
+  display: none; // Oculto en desktop
+
+  @media (max-width: $breakpoint-mobile) {
+    display: block; // Visible solo en móvil
+    font-size: 1.8rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: $brand-yellow;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    line-height: 0;
+  }
 }
 
-// ============================
-// RESPONSIVE DESIGN - TABLET/MOBILE
-// ============================
-
-@media (max-width: 960px) {
-  .navMenu {
-    flex-direction: column;
-    width: 100%;
-    position: absolute;
-    top: 80px;
-    left: -110%;
-    background: #0c0c0c;
-    transition: left 0.5s;
-    z-index: 15;
-    align-items: flex-start;
-  }
+// Ocultamos el menú de enlaces en desktop si la hamburguesa está activa
+// Esto es para evitar que se vea el menú de escritorio y el móvil a la vez
+// si se redimensiona la ventana.
+@media (min-width: #{$breakpoint-mobile + 1px}) {
   .navMenu.active {
-    left: 0;
-  }
-  .navItem {
-    width: 100%;
-    text-align: center;
-  }
-  .navLinks, .dropbtn {
-    width: 100%;
-    text-align: center;
-    padding: 1.5rem;
-  }
-  .dropdownContent,
-  .dropdownContentOne,
-  .dropdownContentTwo,
-  .dropdownContentTree {
-    position: static;
-    min-width: 100%;
-    box-shadow: none;
-    border-radius: 0;
-  }
-}
-
-// ============================
-// RESPONSIVE DESIGN - SMALL MOBILE
-// ============================
-
-@media (max-width: 340px) {
-  .navbar {
-    padding: 0;
-    width: 100vw;
-    min-width: 0;
-    height: auto;
-  }
-  .navContainer {
-    width: 100vw;
-    min-width: 0;
-    padding: 0;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-  }
-  .logoAndToggle {
-    width: 100vw;
-    min-width: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.2rem;
-    padding: 0.2rem 0;
-    height: auto;
-  }
-  .logoSmall {
-    height: 3.2rem;
-    min-width: 2.4rem;
-    min-height: 2.4rem;
-    object-fit: contain;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   .navIcon {
-    height: 1.5rem;
-    width: 1.5rem;
-    min-width: 1.5rem;
-    min-height: 1.5rem;
-    font-size: 1.5rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: static;
-    color: #ffdd40;
-    z-index: 31;
-  }
-  .navMenu {
-    position: absolute;
-    top: 4.2rem;
-    left: 0;
-    width: 100vw;
-    z-index: 15;
     display: none;
-    flex-direction: column;
-    background: #0c0c0c;
   }
-  .navMenu.active {
-    display: flex;
-    top: 6.2rem;
-  }
-}
-
-// ============================
-// TOGGLE SWITCH AND BUTTON STYLES
-// ============================
-
-// Toggle switch and button styles
-.grayScaleButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  outline: none;
-  display: flex;
-  align-items: center;
-  transition: filter 0.3s;
-  
-  &:hover,
-  &:focus {
-    filter: brightness(1.2);
-  }
-}
-
-.toggleSwitch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-  
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.infinityIcon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggleSwitch input:checked + .slider {
-  background-color: #2196F3;
 }
