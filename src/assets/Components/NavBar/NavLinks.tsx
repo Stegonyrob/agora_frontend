@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import navBarStyles from './NavBar.module.scss';
-import NavDropdown from './NavDropdown';
+import NavDropdown from './NavDropdown'; // NavDropdown component, which uses NavDropdown.module.scss
+import navBarStyles from './NavLinks.module.scss'; // Note: importing NavBar.module.scss for general nav styles
 
 interface NavLinksProps {
     closeMenu: () => void;
@@ -9,11 +9,12 @@ interface NavLinksProps {
 }
 
 const NavLinks: React.FC<NavLinksProps> = ({ closeMenu, isLoggedIn }) => {
-    // Función para clases de enlaces normales
+    // Function for normal link classes (uses navBarStyles as per your original)
     const getLinkClassName = ({ isActive }: { isActive: boolean }) =>
         isActive ? `${navBarStyles.navLinks} ${navBarStyles.active}` : navBarStyles.navLinks;
 
-    // Función para clases de enlaces dentro de un dropdown
+    // Function for links inside a dropdown (uses navBarStyles as per your original)
+    // Make sure .dropdownLink is defined in NavLinks.module.scss
     const getDropdownLinkClassName = ({ isActive }: { isActive: boolean }) =>
         isActive ? `${navBarStyles.dropdownLink} ${navBarStyles.active}` : navBarStyles.dropdownLink;
 

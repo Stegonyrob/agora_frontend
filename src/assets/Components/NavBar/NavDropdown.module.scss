@@ -1,97 +1,111 @@
+@import "../../scss/variables"; // Import variables
+
 .dropdownContainer {
   position: relative;
   height: 100%;
   display: flex;
   align-items: center;
 
-  @media (max-width: 960px) {
-    flex-direction: column;
-  }
-}
-
-.dropdownButton {
-  /* Estilos base para parecerse a .navLinks */
-  color: #fff;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  height: 100%;
-  background: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease-out;
-  border: none;
-  border-bottom: 4px solid transparent; /* Mantenemos el espacio para alinear, pero es transparente */
-
-  &:hover {
-    color: #f5b921;
-    border-bottom-color: transparent; /* Nos aseguramos de que no aparezca el borde en hover */
-  }
-
-  .icon {
-    margin-left: 0.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  &.open .icon {
-    transform: rotate(180deg);
-  }
-}
-
-.dropdownContent {
-  text-decoration: none;
-  display: none;
-  position: absolute;
-  background: #0c0c0c;
-  min-width: 15rem; /* Aumentado para el menú de neurodiversidad */
-  left: 0;
-  top: 100%;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 10;
-  padding: 0.5rem 0;
-  list-style: none;
-
-  &.show {
-    display: block;
-  }
-}
-
-// ============================
-// RESPONSIVE DROPDOWN STYLES
-// ============================
-
-@media (max-width: 960px) {
   .dropdownButton {
-    justify-content: center; // Centra el título y el icono
-    padding: 1.5rem;
-    width: 100%; /* Asegura que el botón ocupe el espacio disponible en el navItem */
-    border-bottom: none;
+    color: $light-text;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    height: 100%;
+    background: none;
+    font-size: 1.2rem; // Base font: 1.2rem
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    border: none;
+    border-bottom: 4px solid transparent;
 
     &:hover {
-      background-color: #1a1a1a;
-      border-bottom: none;
+      color: $brand-yellow;
+      border-bottom-color: transparent; // No border-bottom for dropdown button
+    }
+
+    .icon {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    &.open .icon {
+      transform: rotate(180deg);
     }
   }
 
   .dropdownContent {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
-    background: #1a1a1a;
-    padding: 0;
-    box-shadow: none;
-    border-radius: 0;
-    min-width: 100%;
+    text-decoration: none;
+    display: none; // Hidden by default
+    position: absolute;
+    background: $dark-background;
+    min-width: 15rem;
+    left: 0;
+    top: 100%;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    padding: 0.5rem 0;
+    list-style: none;
 
     &.show {
-      max-height: 500px;
-      padding: 0.5rem 0;
+      display: block; // Show when active
+    }
+  }
+
+  // --- MEDIA QUERIES FOR DROPDOWN ---
+
+  // For screens from $breakpoint-desktop down to $breakpoint-tablet (1150px to 941px)
+  @media (max-width: $breakpoint-desktop) {
+    .dropdownButton {
+      font-size: 1rem; // Reduce to 1rem
+      padding: 0.4rem 0.8rem;
+    }
+  }
+
+  // For mobile menu (when hamburger is active)
+  @media (max-width: $breakpoint-tablet) {
+    flex-direction: column; // Stack button and content vertically
+
+    .dropdownButton {
+      font-size: 1.2rem; // Back to 1.2rem for mobile menu
+      justify-content: center; // Center text
+      padding: 1.5rem; // Larger padding
+      width: 100%;
+      border-bottom: none; // No border in mobile menu
+
+      &:hover {
+        background-color: #1a1a1a;
+      }
+    }
+
+    .dropdownContent {
+      position: static; // No absolute positioning in mobile menu
+      display: flex; // Always flex in mobile menu but controlled by max-height
+      flex-direction: column;
+      align-items: center;
+      max-height: 0; // Collapsed by default
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+      background: #1a1a1a; // Slightly different background for sub-menu
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+      min-width: 100%;
+
+      &.show {
+        max-height: 500px; // Expand
+        padding: 0.5rem 0;
+      }
+    }
+  }
+
+  // Small mobile screens
+  @media (max-width: $breakpoint-mobile) {
+    .dropdownButton {
+      font-size: 1rem; // Smaller for very small screens
+      padding: 1rem;
     }
   }
 }

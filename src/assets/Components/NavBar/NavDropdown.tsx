@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import styles from './NavDropdown.module.scss';
+import styles from './NavDropdown.module.scss'; // Import its own styles
 
 interface NavDropdownProps {
     title: string;
@@ -10,8 +10,8 @@ interface NavDropdownProps {
 
 const NavDropdown: React.FC<NavDropdownProps> = ({ title, children, className }) => {
     const [isOpen, setIsOpen] = useState(false);
-    // El breakpoint debe coincidir con el de tu CSS (960px)
-    const isMobile = useMediaQuery({ query: '(max-width: 960px)' });
+    // Consistent breakpoint with SCSS $breakpoint-tablet (940px)
+    const isMobile = useMediaQuery({ query: '(max-width: 940px)' });
 
     const handleMouseEnter = () => {
         if (!isMobile) {
@@ -26,6 +26,7 @@ const NavDropdown: React.FC<NavDropdownProps> = ({ title, children, className })
     };
 
     const handleClick = () => {
+        // Toggle only on mobile
         if (isMobile) {
             setIsOpen(!isOpen);
         }
@@ -39,6 +40,7 @@ const NavDropdown: React.FC<NavDropdownProps> = ({ title, children, className })
         >
             <button type="button" className={`${styles.dropdownButton} ${isOpen ? styles.open : ''}`} onClick={handleClick} aria-haspopup="true" aria-expanded={isOpen}>
                 {title}
+                {/* Show chevron down only on mobile, consistent with your original code */}
                 {isMobile && <i className={`bi bi-chevron-down ${styles.icon}`}></i>}
             </button>
             <div className={`${styles.dropdownContent} ${isOpen ? styles.show : ''}`}>{children}</div>

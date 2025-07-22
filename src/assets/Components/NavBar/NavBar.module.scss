@@ -1,243 +1,195 @@
-// ============================
-// VARIABLES & MIXINS
-// ============================
-$brand-yellow: #f5b921;
-$dark-background: #0c0c0c;
-$light-text: #fff;
-$breakpoint-mobile: 960px;
+// src/assets/Components/NavBar/NavBar.module.scss
 
-// ============================
-// NAVBAR BASE
-// ============================
+@import "../../scss/variables"; // Import variables
+
 .navbar {
   background: $dark-background;
-  height: 80px;
+  height: 5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 1.2rem; // Base font size for navbar elements (can be overridden)
   position: sticky;
   top: 0;
   z-index: 999;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
 
-.navContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 80px;
-  width: 100%;
-  max-width: 1500px;
-  padding: 0 2rem;
-}
-
-// ============================
-// LOGO & LEFT-SIDE
-// ============================
-.logoAndToggle {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.navLogo {
-  color: $brand-yellow;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-}
-
-.logoSmall {
-  height: 5rem;
-  transition: transform 0.3s ease;
-  &:hover {
-    transform: scale(1.05);
-  }
-}
-
-
-// ============================
-// NAVIGATION MENU (Desktop & Mobile)
-// ============================
-.navMenu {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  gap: 0.5rem;
-
-  @media screen and (max-width: $breakpoint-mobile) {
-    display: none; // Ocultamos el menú de enlaces en móvil
-    flex-direction: column;
-    width: 100%;
-    height: 90vh;
-    position: absolute;
-    top: 80px;
-    left: -100%;
-    opacity: 0;
-    transition: all 0.5s ease;
-    background: $dark-background;
-    padding-top: 2rem;
-    gap: 1rem; // <-- CAMBIO 2: Añade espacio vertical entre elementos
-  }
-
-  // Cuando el menú está activo (hamburguesa pulsada)
-  &.active {
-    @media screen and (max-width: $breakpoint-mobile) {
-      display: flex; // Lo mostramos
-      left: 0;
-      opacity: 1;
-      z-index: 10;
-    }
-  }
-}
-
-.navItem {
-  height: 80px;
-  display: flex;
-  align-items: center;
-
-  @media screen and (max-width: $breakpoint-mobile) {
-    width: 100%;
-    height: auto;
-  }
-}
-
-.navLinks {
-  color: $light-text;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  height: 100%;
-  border-bottom: 4px solid transparent;
-  transition: all 0.3s ease-out;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-
-  &:hover,
-  &.active {
-    color: $brand-yellow;
-    border-bottom-color: $brand-yellow;
-  }
-
-  @media screen and (max-width: $breakpoint-mobile) {
-    padding: 1.5rem;
-    width: 100%;
+  .navContainer {
     display: flex;
-    justify-content: center;
-    border-bottom: none;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1500px;
+    padding: 0 2rem;
+    height: 100%;
 
-    &:hover,
-    &.active {
-      background-color: #1a1a1a;
+    .logoAndToggle {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .navLogo {
+        color: $brand-yellow;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+
+        .logoSmall {
+          height: 5rem;
+          transition: transform 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+      }
+
+      .specialIcon { // For the ToggleGrayScaleButton
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .navMenu {
+      display: flex; // Default for desktop
+      align-items: center;
+      list-style: none;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      gap: 0.5rem; // Space between main nav items
+
+
+     
+      .navItem {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      
+   
+      }
+    }
+
+    .rightControls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      .avatarNav {
+        display: flex;
+        align-items: center;
+      }
+
+      .settingsIcon {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: $light-text;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: $brand-yellow;
+          transform: rotate(30deg);
+        }
+      }
+    }
+
+    .navIcon {
+      display: none; // Hidden by default on desktop
+      cursor: pointer;
+      background: none;
+      border: none;
       color: $brand-yellow;
-      border-radius: 0;
+    }
+  }
+
+  // --- MEDIA QUERIES FOR NAVBAR STRUCTURE ---
+  @media (max-width: $breakpoint-tablet) {
+    .navContainer {
+      padding: 0 1rem; // Adjust padding for smaller screens
+
+      .navMenu {
+        flex-direction: column;
+        width: 100vw;
+        height: calc(100vh - 5rem);
+        position: absolute;
+        top: 5rem;
+        left: -100%;
+        opacity: 0;
+        transition: all 0.5s ease;
+        background: $dark-background;
+        padding-top: 2rem;
+        gap: 1rem; // Gap between nav items in mobile menu
+        align-items: center; // Center items in hamburger menu
+
+        &.active {
+          display: flex; // Ensure it becomes flex when active
+          left: 0;
+          opacity: 1;
+          z-index: 10;
+        }
+
+        .navItem {
+          height: auto; // Allow height to be dynamic
+          width: 100%; // Take full width in mobile menu
+        }
+      }
+
+      .rightControls {
+        gap: 1rem;
+        .avatarNav {
+          display: none; // Hide avatar in mobile menu
+        }
+      }
+
+      .navIcon {
+        display: block; // Show hamburger icon
+        font-size: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        line-height: 0;
+      }
+    }
+  }
+
+  // Ensure desktop menu is visible and icon is hidden when wider than tablet
+  @media (min-width: #{$breakpoint-tablet + 1px}) {
+    .navContainer {
+      .navMenu {
+        display: flex; // Explicitly ensure flex on desktop
+        &.active {
+          display: flex; // Just in case, ensures it stays flex if JS adds active
+        }
+      }
+      .navIcon {
+        display: none; // Explicitly ensure hidden on desktop
+      }
     }
   }
 }
-
-.dropdownLink {
-  color: $light-text;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  width: 100%;
-  border-radius: 4px;
-
-  &:hover,
-  &.active {
-    background: #1a1a1a;
-    color: $brand-yellow;
-  }
-
-  @media screen and (max-width: $breakpoint-mobile) {
-    padding: 1rem 2rem;
-    text-align: center;
-
-    &:hover,
-    &.active {
-      background: #2a2a2a;
+@media (max-width: $breakpoint-small-mobile) {
+  .navbar {
+    height: 8rem;
+    .navLogo {
+      font-size: 1.5rem; /* Reduce el tamaño del logo un 20% */
+      .logoSmall {
+        height: 3.8rem; /* Reduce el tamaño del logo */
+        margin-bottom: 1.5rem; // Adjust margin for smaller screens
+      }
+      }
+      .specialIcon {
+        /* Mueve el toggle a la línea de abajo y centra */
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+       
+        margin-bottom: 1rem;
+      }
     }
-  }
-}
-
-// ============================
-// RIGHT-SIDE CONTROLS & ICONS
-// ============================
-.rightControls {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem; // Espaciado automático entre iconos
-}
-
-.avatarNav {
-  display: flex;
-  align-items: center;
-  @media (max-width: $breakpoint-mobile) {
-    display: none; // Ocultamos el avatar en móvil para dar espacio
-  }
-}
-
-.settingsIcon {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: $light-text;
-  transition: all 0.3s ease;
-
-  &:hover {
-    color: $brand-yellow;
-    transform: rotate(30deg);
-  }
-
-  @media (max-width: $breakpoint-mobile) {
-    // Si el usuario no está logueado, este icono se mostrará aquí
-    // y el gap del .rightControls lo espaciará correctamente.
-  }
-}
-
-.navIcon {
-  display: none; // Oculto en desktop
-
-  @media (max-width: $breakpoint-mobile) {
-    display: block; // Visible solo en móvil
-    font-size: 1.8rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: $brand-yellow;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    line-height: 0;
-  }
-}
-
-// Ocultamos el menú de enlaces en desktop si la hamburguesa está activa
-// Esto es para evitar que se vea el menú de escritorio y el móvil a la vez
-// si se redimensiona la ventana.
-@media (min-width: #{$breakpoint-mobile + 1px}) {
-  .navMenu.active {
-    display: flex;
-  }
-  .navIcon {
-    display: none;
-  }
+  
 }
