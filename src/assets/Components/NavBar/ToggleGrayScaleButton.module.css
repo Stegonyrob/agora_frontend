@@ -1,33 +1,29 @@
-// ============================
-// GRAYSCALE TOGGLE SWITCH STYLES
-// ============================
-
 .switch {
   position: relative;
   display: inline-block;
   width: 4rem;
   height: 2.5rem;
   margin: 0 0.5rem;
-  
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    
-    &:checked + .slider {
-      background: #bdbdbd;
-      
-      .icon {
-        left: calc(100% - 2.1rem);
-        background: #fff;
-        border-color: #999;
-      }
-    }
-    
-    &:focus + .slider {
-      box-shadow: 0 0 2px #ffdd40;
-    }
-  }
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch input:checked + .slider {
+  background: #bdbdbd;
+}
+
+.switch input:checked + .slider .icon {
+  left: calc(100% - 2.1rem);
+  background: #fff;
+  border-color: #999;
+}
+
+.switch input:focus + .slider {
+  box-shadow: 0 0 2px #ffdd40;
 }
 
 .slider {
@@ -43,10 +39,10 @@
   display: flex;
   align-items: center;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-  
-  &:hover {
-    background: #d0d0d0;
-  }
+}
+
+.slider:hover {
+  background: #d0d0d0;
 }
 
 .icon {
@@ -64,23 +60,19 @@
   transition: left 0.3s ease, background 0.3s ease, transform 0.3s ease;
   border: 2px solid #bbb;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    transform: translateY(-50%) scale(1.05);
-  }
-  
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    display: block;
-    color: #333;
-    transition: color 0.3s ease;
-  }
 }
 
-// ============================
-// RESPONSIVE STYLES
-// ============================
+.icon:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+.icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+  color: #333;
+  transition: color 0.3s ease;
+}
 
 @media (max-width: 768px) {
   .switch {
@@ -88,24 +80,20 @@
     height: 2.2rem;
     margin: 0 0.3rem;
   }
-  
   .icon {
     width: 1.8rem;
     height: 1.8rem;
-    
-    svg {
-      width: 1.3rem;
-      height: 1.3rem;
-    }
   }
-  
+  .icon svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
   input:checked + .slider .icon {
     left: calc(100% - 5rem);
   }
 }
 
 @media (max-width: 480px) {
-
   .switch {
     width: 3rem;
     height: 1.8rem;
@@ -115,10 +103,10 @@
     width: 1.5rem;
     height: 1.5rem;
     transition: left 0.3s ease, background 0.3s ease, transform 0.3s ease;
-    svg {
-      width: 1.1rem;
-      height: 1.1rem;
-    }
+  }
+  .icon svg {
+    width: 1.1rem;
+    height: 1.1rem;
   }
   .switch .slider .icon {
     left: 0.2rem;
@@ -127,8 +115,6 @@
     left: calc(100% - 1.5rem - 0.1rem);
   }
 }
-
-
 
 @media (max-width: 360px) {
   .switch {
@@ -140,10 +126,10 @@
     width: 1.3rem;
     height: 1.3rem;
     transition: left 0.3s ease, background 0.3s ease, transform 0.3s ease;
-    svg {
-      width: 0.9rem;
-      height: 0.9rem;
-    }
+  }
+  .icon svg {
+    width: 0.9rem;
+    height: 0.9rem;
   }
   .switch .slider .icon {
     left: 0.1rem;
