@@ -1,7 +1,7 @@
 import ButtonAttendee from '@/assets/Components/Blog/admin/button/attendee/ButtonAttendee';
 import LikeButton from '@/assets/Components/Blog/admin/button/favorite/ButtonFavoriteHeart';
 import { RootState } from '@/redux/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AccordionComments from '../../Blog/comments/AccordionComments';
 import styles from './CardItem.module.scss';
@@ -44,25 +44,82 @@ const CardItem: React.FC<CardItemProps> = ({
     maxCapacity = 0,
     userId = 1,
     userRole,
-
 }) => {
     const [currentImage, setCurrentImage] = useState(0);
     const [showFull, setShowFull] = useState(false);
     const [shareOpen, setShareOpen] = useState(false);
 
-
     // Acceso seguro a perfiles y avatares del store
     const profiles = useSelector((state: RootState) => state.profile.profiles);
     const avatars = useSelector((state: RootState) => state.avatars.avatars);
 
+
+    // --- Lógica admin REAL para eventos: cargar imágenes del backend ---
+    const [processedImages, setProcessedImages] = useState<string[]>([]);
+    const [loadingImages, setLoadingImages] = useState(false);
+
+    useEffect(() => {
+        let isMounted = true;
+        async function fetchImages() {
+            setLoadingImages(true);
+            try {
+                if (type === 'event' && id) {
+                    // Eventos públicos: cargar usando EventImageRepository
+                    const { EventImageRepository } = await import('@/core/events/images/EventImageRepository');
+                    const eventImageRepo = new EventImageRepository();
+                    // Obtener metadatos de la imagen del evento por id (siempre array)
+                    const metaResponse = await eventImageRepo.getPublicEventImages(id);
+                    const urls = Array.isArray(metaResponse)
+                        ? metaResponse.map(img => eventImageRepo.buildPublicImageUrl(img.id))
+                        : [];
+                    if (isMounted) {
+                        setProcessedImages(urls);
+                        console.log('🖼️ [CardItem] Imágenes públicas de evento cargadas:', { id, urls });
+                    }
+                } else if (type === 'post') {
+                    let imageUrls: any[] = [];
+                    if (Array.isArray(images)) {
+                        imageUrls = images.map(url => url.startsWith('http') ? url : `/images/posts/${url}`);
+                    } else if (typeof images === 'string' && images) {
+                        const imgStr = images as string;
+                        imageUrls = [imgStr.startsWith('http') ? imgStr : `/images/posts/${imgStr}`];
+                    }
+                    setProcessedImages(imageUrls.filter(Boolean));
+                    console.log('🖼️ [CardItem] Imágenes de post cargadas:', { id, imageUrls });
+                } else {
+                    setProcessedImages([]);
+                }
+            } catch (error) {
+                console.error('Error cargando imágenes en CardItem:', error);
+                if (isMounted) setProcessedImages([]);
+            } finally {
+                if (isMounted) setLoadingImages(false);
+            }
+        }
+        fetchImages();
+        return () => { isMounted = false; };
+    }, [type, id, images]);
+
+    // LOGS detallados como en admin
+    useEffect(() => {
+        console.log('🔍 [CardItem] Debug:', {
+            id,
+            type,
+            title,
+            description,
+            images,
+            processedImages
+        });
+    }, [id, type, title, description, images, processedImages]);
+
     const showPrev = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setCurrentImage((prev) => (prev === 0 ? (images?.length || 1) - 1 : prev - 1));
+        setCurrentImage((prev) => (prev === 0 ? (processedImages.length || 1) - 1 : prev - 1));
     };
 
     const showNext = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setCurrentImage((prev) => (images && prev === images.length - 1 ? 0 : prev + 1));
+        setCurrentImage((prev) => (processedImages && prev === processedImages.length - 1 ? 0 : prev + 1));
     };
 
     // Fecha y lugar juntos para eventos
@@ -76,63 +133,33 @@ const CardItem: React.FC<CardItemProps> = ({
         : undefined;
 
     // Share Button Popup
+    // ...existing code...
 
-    const sharebtns = document.querySelectorAll(".share-btn");
-
-    sharebtns.forEach((btn) => {
-        btn.addEventListener("click", (event) => {
-            const eventFooter = btn.closest(".event-footer");
-            if (!eventFooter) return;
-            const popup = eventFooter.querySelector(".popup");
-            if (!popup) return;
-
-            btn.classList.toggle("active");
-            popup.classList.toggle("active");
-
-            event.stopPropagation();
-        });
-    });
-
-    document.addEventListener("click", (event) => {
-        const popups = document.querySelectorAll(".popup");
-        popups.forEach((popup) => {
-            if (popup.classList.contains("active") && !popup.contains(event.target as Node)) {
-                popup.classList.remove("active");
-                const eventFooter = popup.closest(".event-footer");
-                if (eventFooter) {
-                    const shareBtn = eventFooter.querySelector(".share-btn");
-                    if (shareBtn) {
-                        shareBtn.classList.remove("active");
-                    }
-                }
-            }
-        });
-    });
-
-
-
-
-
-
+    // Renderizado de imágenes replicando lógica admin
     return (
         <>
             <article className={`${styles.card} ${type === 'event' ? styles.event : ''}`} onClick={() => onSelect && onSelect({ id })}>
                 <div className={styles.header}>
-                    {images && images.length > 1 ? (
+                    {loadingImages ? (
+                        <div className={styles.imagePlaceholder}>
+                            <div className={styles.loadingSpinner}></div>
+                            <span className={styles.loadingText}>Cargando imágenes...</span>
+                        </div>
+                    ) : processedImages && processedImages.length > 1 ? (
                         <div className={styles.carousel}>
                             <button className={styles.arrow} onClick={showPrev}>&lt;</button>
                             <img
                                 className={styles.thumbnail}
-                                src={images[currentImage]}
+                                src={processedImages[currentImage] || "/images/blocks-8866100_1280.png"}
                                 alt={`Imagen ${currentImage + 1} de ${title}`}
                                 onError={(e) => {
-                                    console.error('Error cargando imagen en CardItem:', images[currentImage]);
+                                    console.error('[CardItem] Error cargando imagen:', processedImages[currentImage]);
                                     e.currentTarget.src = "/images/blocks-8866100_1280.png";
                                 }}
                             />
                             <button className={styles.arrow} onClick={showNext}>&gt;</button>
                             <div className={styles.dots}>
-                                {images.map((_, idx) => (
+                                {processedImages.map((_, idx) => (
                                     <span
                                         key={idx}
                                         className={currentImage === idx ? styles.dot + ' ' + styles.active : styles.dot}
@@ -144,10 +171,10 @@ const CardItem: React.FC<CardItemProps> = ({
                     ) : (
                         <img
                             className={styles.thumbnail}
-                            src={images && images.length === 1 ? images[0] : "/images/blocks-8866100_1280.png"}
+                            src={processedImages && processedImages.length > 0 && processedImages[0] ? processedImages[0] : "/images/blocks-8866100_1280.png"}
                             alt="thumbnail"
                             onError={(e) => {
-                                console.error('Error cargando imagen en CardItem:', images && images.length === 1 ? images[0] : 'sin imagen');
+                                console.error('[CardItem] Error cargando imagen:', processedImages && processedImages.length > 0 ? processedImages[0] : 'sin imagen');
                                 e.currentTarget.src = "/images/blocks-8866100_1280.png";
                             }}
                         />

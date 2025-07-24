@@ -35,6 +35,15 @@ const ItemPost: React.FC<ItemPostProps> = ({
 
     // Si el objeto viene anidado bajo 'item', usar ese objeto
     const data = (post && (post as any).item) ? (post as any).item : post;
+    // Unificar imágenes: puede venir como data.image, data.images, o images prop
+    let postImages = [];
+    if (Array.isArray(data.images)) {
+        postImages = data.images;
+    } else if (Array.isArray(data.image)) {
+        postImages = data.image;
+    } else if (typeof data.image === 'string' && data.image) {
+        postImages = [data.image];
+    }
     return (
         <div className={styles.card}>
             <ItemGeneric
@@ -51,14 +60,10 @@ const ItemPost: React.FC<ItemPostProps> = ({
                 onSubmit={onSubmit}
                 userId={userId}
                 onCreate={onCreate}
-                images={data.image}
+                images={postImages}
             />
             <AccordionComments
                 postId={data.id}
-                currentUserId={userId}
-                isAdmin={true}
-                commentsCount={comments.length}
-                tags={data.tags || []}
             />
         </div>
     );

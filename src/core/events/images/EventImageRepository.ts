@@ -4,15 +4,31 @@ import { IEventImage } from "./IEventImage";
 
 export class EventImageRepository {
   private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES;
+  private publicUri: string = import.meta.env
+    .VITE_API_ENDPOINT_EVENT_IMAGES_PUBLIC;
 
   /**
    * Obtener todas las imágenes de un evento
    * Endpoint: GET /api/v1/event-images/event/{eventId}
    */
+  /**
+   * Obtener todas las imágenes de un evento (privado)
+   */
   async getEventImages(eventId: number): Promise<IEventImage[]> {
     const response: AxiosResponse<IEventImage[]> = await axios.get(
       `${this.uri}/event/${eventId}`,
       { headers: getAuthHeaders() }
+    );
+    return response.data;
+  }
+
+  /**
+   * Obtener todas las imágenes públicas de un evento
+   * Endpoint: GET /api/v1/all/event-images/{eventId}
+   */
+  async getPublicEventImages(eventId: number): Promise<IEventImage[]> {
+    const response: AxiosResponse<IEventImage[]> = await axios.get(
+      `${this.publicUri}/${eventId}`
     );
     return response.data;
   }
@@ -78,7 +94,17 @@ export class EventImageRepository {
   /**
    * Construir URL para obtener imagen
    */
+  /**
+   * Construir URL para obtener imagen (privada)
+   */
   buildImageUrl(imageId: number): string {
     return `${this.uri}/${imageId}/data`;
+  }
+
+  /**
+   * Construir URL para obtener imagen pública
+   */
+  buildPublicImageUrl(imageId: number): string {
+    return `${this.publicUri}/${imageId}/data`;
   }
 }

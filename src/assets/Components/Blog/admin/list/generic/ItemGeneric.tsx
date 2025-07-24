@@ -88,13 +88,20 @@ const ItemGeneric = <T extends IPost | IEvent>({
     const loadPostImages = () => {
         try {
             let imageUrls: string[] = [];
+            // Unificar todas las fuentes posibles de imágenes
             if (Array.isArray((item as any)?.images)) {
-                imageUrls = (item as any).images.map((url: string) =>
-                    url.startsWith('http') ? url : `/images/posts/${url}`
-                );
-            } else if (images && Array.isArray(images)) {
-                imageUrls = images;
+                imageUrls = (item as any).images;
+            } else if (Array.isArray((item as any)?.image)) {
+                imageUrls = (item as any).image;
+            } else if (typeof (item as any)?.image === 'string' && (item as any)?.image) {
+                imageUrls = [(item as any).image];
             }
+            // También agregar las imágenes de la prop images si existen y no están ya
+            if (images && Array.isArray(images)) {
+                imageUrls = imageUrls.concat(images.filter(url => !imageUrls.includes(url)));
+            }
+            // Convertir a URLs absolutas si es necesario
+            imageUrls = imageUrls.map((url: string) => url.startsWith('http') ? url : `/images/posts/${url}`);
             const imagePreviewsData: ImagePreview[] = imageUrls.map((url, index) => ({
                 url: url,
                 isLoading: false,
