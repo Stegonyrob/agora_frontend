@@ -67,8 +67,26 @@
         display: flex;
         align-items: center;
         height: 100%;
+     
       
    
+      }
+      .navDashboard {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 1rem;
+  
+        transition: background-color 0.3s ease;
+
+
+        a {
+          text-decoration: none;
+          color: $light-text;
+          font-weight: bold;
+        }
+      }
+  
       }
     }
 
@@ -170,7 +188,7 @@
       }
     }
   }
-}
+
 @media (max-width: $breakpoint-small-mobile) {
   .navbar {
     height: 8rem;

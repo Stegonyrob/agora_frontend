@@ -60,7 +60,7 @@ function NavBar() {
                 <ul className={click ? `${styles.navMenu} ${styles.active}` : styles.navMenu}>
                     <NavLinks closeMenu={closeMenu} isLoggedIn={isLoggedIn} />
                     {isAdmin && (
-                        <li className={styles.navItem}>
+                        <li className={styles.navDashboard}>
                             <NavLink
                                 to="/admin"
                                 className={({ isActive }) =>

@@ -1,4 +1,5 @@
 import React, { Key } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './NavigationMenu.module.scss';
 import { iconMap } from './iconMap';
 
@@ -20,6 +21,7 @@ interface NavigationMenuProps {
 const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, onNavigate }) => {
     const adminItems = items.filter(item => item.role === "ROLE_ADMIN" && !item.viewAsUser);
     const userItems = items.filter(item => item.viewAsUser);
+    const navigate = useNavigate();
 
     const handleClick = (item: NavMenuItem) => {
         if (item.viewAsUser) {
@@ -30,7 +32,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ items, onNavigate }) =>
         if (onNavigate) {
             onNavigate(item.path);
         } else {
-            window.location.href = item.path;
+            navigate(item.path);
         }
     };
 

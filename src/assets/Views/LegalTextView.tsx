@@ -5,19 +5,31 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const LegalTextView: React.FC = () => {
-    const validTypes = ["terms", "privacy", "cookies"];;
+    const validTypes = ["terms", "privacy", "cookies"];
     const { type } = useParams<{ type?: string }>();
+    console.log('[LegalTextView] useParams type:', type);
     const selectedType = validTypes.includes(type ?? "") ? type! : "terms";
+    console.log('[LegalTextView] selectedType:', selectedType);
     const [legalText, setLegalText] = useState<LegalTextDTO | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true);
         const legalTextService = new LegalTextService();
+        console.log('[LegalTextView] Fetching legal text for type:', selectedType);
         legalTextService.getLegalTextByType(selectedType)
-            .then(data => setLegalText(data))
-            .catch(() => setLegalText(null))
-            .finally(() => setLoading(false));
+            .then(data => {
+                console.log('[LegalTextView] Backend response:', data);
+                setLegalText(data);
+            })
+            .catch((err) => {
+                console.error('[LegalTextView] Error fetching legal text:', err);
+                setLegalText(null);
+            })
+            .finally(() => {
+                console.log('[LegalTextView] Loading finished');
+                setLoading(false);
+            });
     }, [selectedType]);
 
     return (
@@ -25,14 +37,20 @@ const LegalTextView: React.FC = () => {
             {loading ? (
                 <p>Cargando...</p>
             ) : legalText ? (
-                <LegalTextGeneric
-                    type={selectedType}
-                    mainTitle={legalText.title}
-                    text={legalText.content}
-                    updatedAt={legalText.updatedAt ?? ""}
-                />
+                <>
+                    {console.log('[LegalTextView] Renderizando LegalTextGeneric:', legalText)}
+                    <LegalTextGeneric
+                        type={selectedType}
+                        mainTitle={legalText.title}
+                        text={legalText.content}
+                        updatedAt={legalText.updatedAt ?? ""}
+                    />
+                </>
             ) : (
-                <p>No encontrado</p>
+                <>
+                    {console.log('[LegalTextView] No encontrado para type:', selectedType)}
+                    <p>No encontrado</p>
+                </>
             )}
         </div>
     );

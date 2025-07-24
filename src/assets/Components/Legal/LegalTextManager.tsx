@@ -20,19 +20,20 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
     const displayName = LEGAL_TEXT_TYPES[type] || 'Texto Legal';
 
     useEffect(() => {
+        console.log('[LegalTextManager] useEffect - tipo:', type, 'asAdmin:', asAdmin);
         loadLegalText();
     }, [type]);
 
     const loadLegalText = async () => {
         try {
             setLoading(true);
-            console.log(`🔍 Cargando texto legal para tipo: ${type}`);
+            console.log(`[LegalTextManager] Cargando texto legal para tipo: ${type}, asAdmin:`, asAdmin);
             const service = new LegalTextService();
             const data = await service.getLegalTextByType(type);
-            console.log(`✅ Texto legal cargado:`, data);
+            console.log(`[LegalTextManager] Texto legal cargado:`, data);
             setLegalText(data);
         } catch (error) {
-            console.error(`❌ Error loading legal text for type ${type}:`, error);
+            console.error(`[LegalTextManager] Error loading legal text for type ${type}:`, error, 'asAdmin:', asAdmin);
             setLegalText(null);
         } finally {
             setLoading(false);
@@ -40,19 +41,17 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
     };
 
     const handleSave = (updatedText: LegalTextDTO) => {
-        console.log(`✅ LegalTextManager.handleSave - Texto legal guardado exitosamente:`, updatedText);
-        console.log(`🔄 LegalTextManager.handleSave - Actualizando estado local con el nuevo texto`);
+        console.log(`[LegalTextManager] handleSave - Texto legal guardado exitosamente:`, updatedText, 'asAdmin:', asAdmin);
         setLegalText(updatedText);
         setShowEditor(false);
-        console.log(`⏰ LegalTextManager.handleSave - Programando recarga en 500ms para asegurar consistencia`);
-        // Recargar para asegurar consistencia
         setTimeout(() => {
-            console.log(`🔄 LegalTextManager.handleSave - Ejecutando recarga programada`);
+            console.log(`[LegalTextManager] handleSave - Ejecutando recarga programada, asAdmin:`, asAdmin);
             loadLegalText();
         }, 500);
     };
 
     if (loading) {
+        console.log('[LegalTextManager] loading... asAdmin:', asAdmin);
         return (
             <Container>
                 <div className={styles.loading}>
@@ -65,6 +64,7 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
 
     // Vista de usuario (similar a tu TermsView original)
     if (!asAdmin) {
+        console.log('[LegalTextManager] Renderizando vista usuario. asAdmin:', asAdmin);
         return (
             <div className={styles.userView}>
                 {legalText ? (
@@ -82,6 +82,7 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
     }
 
     // Vista de administrador
+    console.log('[LegalTextManager] Renderizando vista admin. asAdmin:', asAdmin);
     return (
         <Container fluid className={styles.adminContainer}>
             <Row className="mb-4">
@@ -94,7 +95,10 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
                             <div className={styles.adminControls}>
                                 <Button
                                     variant="primary"
-                                    onClick={() => setShowEditor(true)}
+                                    onClick={() => {
+                                        console.log('[LegalTextManager] Botón editar/crear presionado. asAdmin:', asAdmin);
+                                        setShowEditor(true);
+                                    }}
                                     className="me-2"
                                 >
                                     {legalText ? '✏️ Editar' : '➕ Crear'}
@@ -132,7 +136,10 @@ const LegalTextManager: React.FC<LegalTextManagerProps> = ({ type, asAdmin = fal
 
             <LegalTextEditorModal
                 show={showEditor}
-                onHide={() => setShowEditor(false)}
+                onHide={() => {
+                    console.log('[LegalTextManager] Modal cerrado. asAdmin:', asAdmin);
+                    setShowEditor(false);
+                }}
                 onSave={handleSave}
                 type={type}
                 existingText={legalText}
