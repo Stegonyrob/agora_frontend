@@ -1,0 +1,111 @@
+/* src/components/DashboardSkeleton/DashboardSkeleton.module.scss */
+
+// --- Animación y clases base de esqueleto ---
+@keyframes skeletonPulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.skeletonPulse {
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.skeleton {
+  // El color de fondo base para los elementos que "cargan"
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden; // Esencial para el pseudo-elemento de brillo (si se agregara)
+  // Se aplica a .menuItem dentro del esqueleto para darle el fondo base y el comportamiento de overflow.
+}
+
+// --- Placeholders específicos con tus dimensiones y la animación de pulso ---
+.skeletonBadge {
+  position: absolute;
+  top: 0.25rem; // 4px
+  left: 0.25rem; // 4px
+  width: 2.2rem; // 35.2px
+  height: 0.7rem; // 11.2px
+  border-radius: 0.7rem; // 11.2px
+  background-color: #e0e0e0; // Color del placeholder
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+  z-index: 4;
+}
+
+.skeletonIcon {
+  width: 2.8rem; // 44.8px
+  height: 2.8rem; // 44.8px
+  border-radius: 50%; // Asumiendo que quieres un círculo para el icono esqueleto
+  background-color: #e0e0e0; // Color del placeholder
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+  margin-bottom: 0.7rem; // 11.2px
+  margin-top: 0.7rem; // 11.2px
+}
+
+.skeletonLabel {
+  background-color: #e0e0e0; // Color del placeholder
+  color: transparent; // Oculta cualquier texto accidental
+  border-radius: 0.5rem; // 8px
+  width: 70%; // Ancho relativo para simular el texto
+  height: 1.4rem; // 22.4px
+  margin: 0 auto; // Centrar el "texto" del label
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+  display: block; // Asegura que tome ancho y alto
+}
+
+// --- Estructura y Estilos de Layout (COPIADOS LITERALMENTE Y ANIDADOS DE TU NavigationMenu.module.scss) ---
+.dashboardWrap {
+  padding: 2rem 0; // 32px
+  
+  .sectionBlock {
+    margin-bottom: 3rem; // 48px
+
+    .sectionTitle {
+      text-align: left;
+      margin: 1rem 0 1.5rem 2rem; // 16px 0 24px 32px
+      font-size: 1.6rem; // 25.6px - Mantén el font-size para el contenedor h2
+
+      // Placeholder para el texto dentro del título
+      .skeletonTitlePlaceholder {
+        width: 10rem; // Un ancho fijo que simule un título
+        height: 1.6rem; // La altura de tu font-size original para .sectionTitle
+        // Hereda el background y animación de .skeletonLabel
+      }
+    }
+
+    .menuGrid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.2rem; // 35.2px
+      justify-content: center;
+      align-items: center;
+      margin: 0 2rem 0 2rem; // 32px
+
+      .menuItem {
+        width: 7.8rem; // 124.8px
+        height: 8rem; // 128px
+        border-radius: 0.7rem; // 11.2px
+
+        // El background para el skeletonMenuItem debe ser similar al original.
+        // Usaremos un color sólido que se asemeje al degradado del original.
+        background-color: #c2d2bb; // Color base de tu degradado original (background: linear-gradient(135deg, #e0ffe8 0%, #a8e2c7 100%))
+
+        // No tendrá bordes ni sombras reales, solo el color de fondo.
+        border: none;
+        box-shadow: none;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: default; // El esqueleto no es interactivo
+        position: relative;
+        overflow: hidden; // Esencial para la animación de pulso
+        user-select: none;
+
+        // Se eliminan los pseudo-clases :focus, :hover, :active y el pseudo-elemento ::before del original
+        // ya que no aplican al esqueleto.
+      }
+    }
+  }
+}

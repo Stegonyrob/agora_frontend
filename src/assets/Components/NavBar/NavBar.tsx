@@ -18,11 +18,35 @@ function NavBar() {
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [grayScale, setGrayScale] = useState(false);
 
-    const userName = useSelector((state: RootState) => state.session.userName) || sessionStorage.getItem("userName") || "Usuario";
-    const avatarUrl = useSelector((state: RootState) => state.session.avatarUrl) || "/images/avatarGeneric.png";
-    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
-    const userId = Number(sessionStorage.getItem("userId")) || 0;
+    const userId = useSelector((state: RootState) => state.session.userId) || Number(sessionStorage.getItem("userId")) || 0;
     const isLoggedIn = userId > 0;
+    // Get the user's profile from the profiles slice
+    const userProfile = useSelector((state: RootState) =>
+        state.profile.profiles.find((p) => p.id === userId)
+    );
+    const avatarsList = useSelector((state: RootState) => state.avatars.avatars);
+    console.log('[NavBar] userId:', userId);
+    console.log('[NavBar] isLoggedIn:', isLoggedIn);
+    console.log('[NavBar] userProfile:', userProfile);
+    console.log('[NavBar] avatarsList:', avatarsList);
+    let avatarUrl = "/images/avatarGeneric.png";
+    if (userProfile) {
+        if (userProfile.avatar && userProfile.avatar !== "") {
+            avatarUrl = userProfile.avatar;
+        } else if (userProfile.avatar_id && avatarsList && avatarsList.length > 0) {
+            const foundAvatar = avatarsList.find(a => a.id === userProfile.avatar_id);
+            if (foundAvatar && foundAvatar.imagePath) {
+                avatarUrl = foundAvatar.imagePath;
+            }
+        }
+    }
+    const sessionUserName = useSelector((state: RootState) => state.session.userName) || sessionStorage.getItem("userName") || "Usuario";
+    const userName = userProfile?.firstName
+        ? `${userProfile.firstName} ${userProfile.lastName1 || ""}`.trim()
+        : sessionUserName;
+    console.log('[NavBar] userName:', userName);
+    console.log('[NavBar] avatarUrl:', avatarUrl);
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);
 

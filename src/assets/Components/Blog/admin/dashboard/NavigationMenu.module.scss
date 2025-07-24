@@ -45,6 +45,12 @@
   background-position: center;
   overflow: hidden;
   user-select: none;
+      background-color: #c2d2bb;
+
+  &:focus {
+    outline: none;
+  }
+
   &:hover {
     box-shadow:
       0 2px 0 0 #2ecc40,

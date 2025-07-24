@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import DashboardSkeleton from "./DashboardSkeleton";
 import NavigationMenu, { NavMenuItem } from "./NavigationMenu";
 
 const adminMenuItems: NavMenuItem[] = [
@@ -36,6 +38,19 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "reglas-blog-preview", label: "Reglas Blog", path: "/blog-rules-preview", background: "/images/bg-blogrules-preview.jpg", viewAsUser: true },
 ];
 
-const AdminDashboardMenu = () => <NavigationMenu items={adminMenuItems} />;
+
+
+
+const AdminDashboardMenu: React.FC = () => {
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 6000);
+        return () => clearTimeout(timer);
+    }, []);
+    if (loading) {
+        return <DashboardSkeleton />;
+    }
+    return <NavigationMenu items={adminMenuItems} />;
+};
 
 export default AdminDashboardMenu;
