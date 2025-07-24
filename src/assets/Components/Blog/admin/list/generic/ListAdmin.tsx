@@ -1,11 +1,14 @@
+// src/components/Admin/ListAdmin/ListAdmin.tsx
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
+import { useEffect, useState } from "react";
 
 import { normalizeItem } from '@/core/normalization/normalizeApiResponse';
 import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
 import styles from './ListAdmin.module.scss';
+import ListAdminSkeleton from './ListAdminSkeleton'; // Importa el esqueleto
 
 interface ListAdminPropsPost {
     items: IPost[];
@@ -49,6 +52,24 @@ const ListAdmin = (props: ListAdminProps) => {
         userId,
     } = props;
 
+    // Estado local para manejar la carga. Asume que está cargando si no hay items.
+    // En una aplicación real, probablemente pasarías un prop 'isLoading' desde el padre.
+    const [localIsLoading, setLocalIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Establece isLoading a false una vez que los ítems se cargan.
+        // Se puede añadir un retraso mínimo si se quiere que el skeleton sea visible por un tiempo.
+        if (items && items.length > 0) {
+            setLocalIsLoading(false);
+        } else {
+            // Si no hay items, espera un momento para mostrar el skeleton antes de mostrar "no hay datos"
+            const timer = setTimeout(() => {
+                setLocalIsLoading(false);
+            }, 500); // Muestra el skeleton por al menos 500ms
+            return () => clearTimeout(timer);
+        }
+    }, [items]); // Dependencia de items para reaccionar cuando cambien
+
     console.log('ListAdmin props:', props);
     console.log('Items array length:', items?.length);
     console.log('Items array:', items);
@@ -56,13 +77,20 @@ const ListAdmin = (props: ListAdminProps) => {
     // Normalizar todos los items antes de renderizar
     const normalizedItems = items.map(item => normalizeItem(item));
 
+    // Si está cargando, renderiza el esqueleto
+    if (localIsLoading) {
+        // Puedes pasar un itemCount basado en la paginación o un número fijo
+        const skeletonItemCount = type === 'post' ? 5 : 3; // Ejemplo: 5 posts, 3 eventos
+        return <ListAdminSkeleton type={type} itemCount={skeletonItemCount} />;
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
                 <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
 
                 {normalizedItems && normalizedItems.length === 0 && (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                    <div className={styles.noItemsMessage}> {/* Asegúrate de que .noItemsMessage existe en ListAdmin.module.scss */}
                         <p>No hay {type === 'post' ? 'posts' : 'eventos'} para mostrar.</p>
                         <p>Usa el botón de arriba para crear el primero.</p>
                     </div>
@@ -85,12 +113,11 @@ const ListAdmin = (props: ListAdminProps) => {
                                 onCreate={onCreate}
                                 postId={item.id}
                                 id={item.id}
-                                title={item.title}
+                                title={item.title} // Asegúrate de pasar las props correctas a ItemPost
                             />
                         );
                     })
                     : (normalizedItems as IEvent[]).map(item => {
-                        // Deep debug log for event item
                         try {
                             console.log('[ListAdmin] Full event item:', JSON.stringify(item, null, 2));
                         } catch (e) {
@@ -109,7 +136,7 @@ const ListAdmin = (props: ListAdminProps) => {
                                 userId={userId}
                                 onCreate={onCreate}
                                 id={item.id}
-                                title={item.title}
+                                title={item.title} // Asegúrate de pasar las props correctas a ItemEvent
                             />
                         );
                     })

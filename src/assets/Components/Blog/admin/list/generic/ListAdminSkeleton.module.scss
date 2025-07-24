@@ -1,0 +1,90 @@
+
+// --- Variables y Animación de Esqueleto ---
+$skeleton-bg-base: #2a2a2a; // Color de fondo base de los esqueletos (gris oscuro)
+$skeleton-bg-element: #3a3a3a; // Color para los elementos "hueso" (gris un poco más claro)
+
+@keyframes skeletonPulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+// Clases generales para las formas del esqueleto
+.skeletonLine {
+  background-color: $skeleton-bg-element;
+  border-radius: 0.25rem; // Pequeño radio para líneas
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.skeletonRect {
+  background-color: $skeleton-bg-element;
+  border-radius: 0.25rem;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+// --- Estilos de la Estructura de ListAdmin ---
+.container {
+  padding: 2rem; // 32px
+  margin: 0 auto;
+  max-width: 75rem; // Asumiendo un max-width para el contenedor principal (ej. 1200px)
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; // 24px - Espacio entre el botón y los ítems de la lista
+
+    .createButtonPlaceholder {
+      width: 10rem; // Ancho para simular el botón de crear
+      height: 2.5rem; // Altura para simular el botón (40px)
+      background-color: $skeleton-bg-element;
+      border-radius: 0.5rem; // Borde redondeado del botón
+      animation: skeletonPulse 1.2s infinite ease-in-out;
+      margin-left: 2rem; // Simula el margen del botón si lo tiene
+    }
+
+    .noItemsMessagePlaceholder {
+        padding: 1.25rem; // 20px
+        text-align: center;
+        .skeletonLine {
+            width: 80%;
+            height: 1rem;
+            margin: 0.5rem auto;
+            &.skeletonLineShort {
+                width: 60%;
+            }
+        }
+    }
+
+    .itemList {
+      display: flex;
+      flex-direction: column; // Los ItemGeneric están apilados verticalmente
+      // El gap y los márgenes de los ItemGeneric (esqueletos) se manejarán en su propio SCSS
+      // Pero si ItemGeneric tiene margin-bottom, aquí se reflejará el espaciado entre ellos.
+    }
+  }
+}
+
+// --- Responsive Media Queries para ListAdminSkeleton ---
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  .panel {
+    .createButtonPlaceholder {
+        width: 8rem;
+        height: 2.2rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+  .panel {
+    .createButtonPlaceholder {
+        width: 7rem;
+        height: 2rem;
+    }
+  }
+}

@@ -1,4 +1,3 @@
-// src/components/DashboardSkeleton/DashboardSkeleton.tsx
 import React from 'react';
 import styles from './DashboardSkeleton.module.scss'; // Su propio archivo SCSS
 
@@ -7,7 +6,7 @@ interface DashboardSkeletonProps {
     itemCount?: number;
 }
 
-const DashboardSkeleton: React.FC<DashboardSkeletonProps> = ({ itemCount = 6 }) => {
+const DashboardSkeleton: React.FC<DashboardSkeletonProps> = ({ itemCount = 8 }) => {
     // Función auxiliar para renderizar una sección de esqueleto
     const renderSkeletonGrid = () => (
         <div className={styles.sectionBlock}>

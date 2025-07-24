@@ -44,7 +44,7 @@ const adminMenuItems: NavMenuItem[] = [
 const AdminDashboardMenu: React.FC = () => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 6000);
+        const timer = setTimeout(() => setLoading(false), 60);
         return () => clearTimeout(timer);
     }, []);
     if (loading) {
