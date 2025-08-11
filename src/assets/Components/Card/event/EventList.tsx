@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import EventService from "../../../../core/events/EventService";
+import React, { useState } from "react";
 import { IEvent } from "../../../../core/events/IEvent";
+import { useEvents } from "../../../../hooks/useEvents";
 import Pagination from "../../Pagination";
 import CardItem from "../card/CardItem";
 import styles from "../card/CardItem.module.scss";
@@ -12,41 +12,16 @@ interface EventListProps {
     onSelect: (event: IEvent) => void;
 }
 
-interface Page<T> {
-    content: T[];
-    totalPages: number;
-    number: number;
-    size: number;
-    totalElements: number;
-}
-
 const EventList: React.FC<EventListProps> = ({ onSelect }) => {
-    const [events, setEvents] = useState<IEvent[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-
-    const eventService = new EventService();
     const EVENTS_PER_PAGE = 6; // Define cuántos esqueletos mostrar
 
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                setIsLoading(true);
-                const pageData: Page<IEvent> = await eventService.fetchEventsPaginated(page, EVENTS_PER_PAGE);
-                console.log('[EventList] Eventos recibidos:', pageData.content);
-                setEvents(pageData.content);
-                setTotalPages(pageData.totalPages);
-            } catch (error) {
-                console.error("Error fetching events:", error);
-                // Opcional: Manejar el estado de error para mostrar un mensaje al usuario
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchEvents();
-    }, [page]);
+    // Usar el nuevo hook useEvents que maneja automáticamente público vs privado
+    const { events, isLoading, error, totalPages, refetch } = useEvents({
+        page,
+        size: EVENTS_PER_PAGE,
+        autoFetch: true,
+    });
 
     const handleSelect = (item: any) => {
         console.log("Selected event:", item);
@@ -56,6 +31,18 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
     };
+
+    // Mostrar error si existe
+    if (error) {
+        return (
+            <div className={styles.errorContainer}>
+                <p>Error cargando eventos: {error}</p>
+                <button onClick={refetch} className={styles.retryButton}>
+                    Reintentar
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div>

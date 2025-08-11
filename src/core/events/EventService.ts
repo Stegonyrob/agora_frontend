@@ -1,75 +1,150 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
+import EventRepository from "./EventRepository";
 import { IEvent } from "./IEvent";
 import {
   IEventCreateDTO,
   IEventResponseDTO,
   IEventUpdateDTO,
 } from "./IEventBackendDTO";
+import PublicEventRepository from "./PublicEventRepository";
 
 // Index:
-// 1. Get all events - fetchEvents()
-// 2. Get event by ID - fetchEventById()
-// 3. Create event - createEvent()
-// 4. Update event - updateEvent()
-// 5. Delete event - deleteEvent()
-// 6. Archive event - archiveEvent()
-// 7. Unarchive event - unarchiveEvent()
-// 8. Register attendee to event (Public)
+// 1. PUBLIC METHODS (No authentication required)
+//    - fetchPublicEvents()
+//    - fetchPublicEventsPaginated()
+//    - fetchPublicEventById()
+//    - getPopularEvents()
+// 2. PRIVATE METHODS (Authentication required)
+//    - fetchEvents()
+//    - fetchEventsPaginated()
+//    - fetchEventById()
+//    - createEvent()
+//    - updateEvent()
+//    - deleteEvent()
+//    - archiveEvent()
+//    - unarchiveEvent()
+// 3. ATTENDEE METHODS
+//    - registerAttendee()
+// 4. FAVORITES METHODS
+//    - addToFavorites()
+//    - removeFromFavorites()
+//    - getUserFavorites()
 
 export default class EventService {
   private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENTS;
+  private eventRepository: EventRepository;
+  private publicEventRepository: PublicEventRepository;
 
-  // 1. Get all events - fetchEvents() (Public)
-  async fetchEvents(): Promise<IEvent[]> {
-    console.log("Fetching all events...");
+  constructor() {
+    this.eventRepository = new EventRepository();
+    this.publicEventRepository = new PublicEventRepository();
+  }
+
+  // ========== PUBLIC METHODS (No authentication required) ==========
+
+  // 1. Get all public events - fetchPublicEvents() (Public)
+  async fetchPublicEvents(): Promise<IEvent[]> {
+    console.log("Fetching all public events...");
     try {
-      const response: AxiosResponse<IEvent[]> = await axios.get<IEvent[]>(
-        this.uri,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Response Data:", response.data);
-      console.log("Events fetched successfully.");
-      return response.data;
+      const events = await this.publicEventRepository.getAll();
+      console.log("Public events fetched successfully.");
+      return events;
     } catch (error: any) {
-      console.error("Error fetching events:", error.message);
-      throw new Error(`Error fetching events: ${error.message}`);
-    } finally {
-      console.log("End fetching events.");
+      console.error("Error fetching public events:", error.message);
+      throw new Error(`Error fetching public events: ${error.message}`);
     }
   }
 
-  // 1.1 Get events with pagination - fetchEventsPaginated() (Public)
-  async fetchEventsPaginated(
-    page: number = 0,
-    size: number = 6
-  ): Promise<{
-    content: IEvent[];
-    totalPages: number;
-    number: number;
-    size: number;
-    totalElements: number;
-  }> {
+  // 1.1 Get public events with pagination - fetchPublicEventsPaginated() (Public)
+  async fetchPublicEventsPaginated(page: number = 0, size: number = 6) {
     console.log(
-      `Fetching events with pagination - Page: ${page}, Size: ${size}`
+      `Fetching public events with pagination - Page: ${page}, Size: ${size}`
     );
     try {
-      const response = await axios.get(
-        `${this.uri}/paginated?page=${page}&size=${size}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Paginated events fetched successfully:", response.data);
-      return response.data;
+      const result = await this.publicEventRepository.getPaginated(page, size);
+      console.log("Paginated public events fetched successfully:", result);
+      return result;
     } catch (error: any) {
-      console.error("Error fetching paginated events:", error.message);
+      console.error("Error fetching paginated public events:", error.message);
+      // Fallback: Si no existe el endpoint paginado, simular paginación
+      console.log("Falling back to client-side pagination...");
+      const allEvents = await this.fetchPublicEvents();
+      const startIndex = page * size;
+      const endIndex = startIndex + size;
+      const paginatedEvents = allEvents.slice(startIndex, endIndex);
+
+      return {
+        content: paginatedEvents,
+        totalPages: Math.ceil(allEvents.length / size),
+        number: page,
+        size: size,
+        totalElements: allEvents.length,
+        currentPage: page,
+        hasNext: endIndex < allEvents.length,
+        hasPrevious: page > 0,
+      };
+    }
+  }
+
+  // 2. Get public event by ID - fetchPublicEventById() (Public)
+  async fetchPublicEventById(id: number): Promise<IEvent> {
+    console.log(`Fetching public event by ID: ${id}`);
+    try {
+      const event = await this.publicEventRepository.getById(id);
+      console.log("Public event fetched successfully:", event);
+      return event;
+    } catch (error: any) {
+      console.error(`Error fetching public event by ID: ${error.message}`);
+      throw new Error(`Error fetching public event by ID: ${error.message}`);
+    }
+  }
+
+  // 3. Get popular events - getPopularEvents() (Public)
+  async getPopularEvents(limit: number = 10): Promise<IEvent[]> {
+    console.log(`Fetching popular events with limit: ${limit}`);
+    try {
+      const events = await this.publicEventRepository.getPopular(limit);
+      console.log("Popular events fetched successfully:", events);
+      return events;
+    } catch (error: any) {
+      console.error("Error fetching popular events:", error.message);
+      throw new Error(`Error fetching popular events: ${error.message}`);
+    }
+  }
+
+  // ========== PRIVATE METHODS (Authentication required) ==========
+
+  // 1. Get all events - fetchEvents() (Private)
+  async fetchEvents(): Promise<IEvent[]> {
+    console.log("Fetching all events (authenticated)...");
+    try {
+      const events = await this.eventRepository.getAll();
+      console.log("Events fetched successfully (authenticated).");
+      return events;
+    } catch (error: any) {
+      console.error("Error fetching events (authenticated):", error.message);
+      throw new Error(`Error fetching events: ${error.message}`);
+    }
+  }
+
+  // 1.1 Get events with pagination - fetchEventsPaginated() (Private)
+  async fetchEventsPaginated(page: number = 0, size: number = 6) {
+    console.log(
+      `Fetching events with pagination (authenticated) - Page: ${page}, Size: ${size}`
+    );
+    try {
+      const result = await this.eventRepository.getPaginated(page, size);
+      console.log(
+        "Paginated events fetched successfully (authenticated):",
+        result
+      );
+      return result;
+    } catch (error: any) {
+      console.error(
+        "Error fetching paginated events (authenticated):",
+        error.message
+      );
       // Fallback: Si no existe el endpoint paginado, simular paginación con el método normal
       console.log("Falling back to client-side pagination...");
       const allEvents = await this.fetchEvents();
@@ -83,28 +158,24 @@ export default class EventService {
         number: page,
         size: size,
         totalElements: allEvents.length,
+        currentPage: page,
+        hasNext: endIndex < allEvents.length,
+        hasPrevious: page > 0,
       };
-    } finally {
-      console.log("End fetching paginated events.");
     }
   }
 
-  // 2. Get event by ID - fetchEventById() (Public)
+  // 2. Get event by ID - fetchEventById() (Private)
   async fetchEventById(id: number): Promise<IEvent> {
-    console.log(`Fetching event by ID: ${id}`);
+    console.log(`Fetching event by ID (authenticated): ${id}`);
     try {
-      const response: AxiosResponse<IEvent> = await axios.get<IEvent>(
-        `${this.uri}/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Event fetched successfully:", response.data);
-      return response.data;
+      const event = await this.eventRepository.getById(id);
+      console.log("Event fetched successfully (authenticated):", event);
+      return event;
     } catch (error: any) {
-      console.error(`Error fetching event by ID: ${error.message}`);
+      console.error(
+        `Error fetching event by ID (authenticated): ${error.message}`
+      );
       throw new Error(`Error fetching event by ID: ${error.message}`);
     }
   }
@@ -176,7 +247,6 @@ export default class EventService {
   // 5. Delete event - deleteEvent() (Admin Only)
   async deleteEvent(id: number): Promise<void> {
     console.log(`Deleting event with ID: ${id}`);
-
     try {
       await axios.delete(`${this.uri}/${id}`, {
         headers: getAuthHeaders(),
@@ -191,19 +261,9 @@ export default class EventService {
   // 6. Archive event - archiveEvent() (Admin Only)
   async archiveEvent(id: number, archive: boolean): Promise<boolean> {
     console.log(`Archiving event with ID: ${id}, archive status: ${archive}`);
-    const config: AxiosRequestConfig = {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
-    };
-
     try {
-      const response = await axios.patch(
-        `${this.uri}/${id}/archive?archive=${archive}`,
-        null,
-        config
-      );
-      console.log("Event archive status updated successfully:", response.data);
+      await this.eventRepository.archive(id, archive);
+      console.log("Event archive status updated successfully");
       return true;
     } catch (error: any) {
       console.error(`Error archiving event with ID ${id}:`, error.message);
@@ -214,22 +274,9 @@ export default class EventService {
   // 7. Unarchive event - unarchiveEvent() (Admin Only)
   async unarchiveEvent(id: number, archive: boolean): Promise<boolean> {
     console.log(`Unarchiving event with ID: ${id}, archive status: ${archive}`);
-    const config: AxiosRequestConfig = {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
-    };
-
     try {
-      const response = await axios.patch(
-        `${this.uri}/${id}/archive?archive=${archive}`,
-        null,
-        config
-      );
-      console.log(
-        "Event unarchive status updated successfully:",
-        response.data
-      );
+      await this.eventRepository.archive(id, archive);
+      console.log("Event unarchive status updated successfully");
       return true;
     } catch (error: any) {
       console.error(`Error unarchiving event with ID ${id}:`, error.message);
@@ -238,6 +285,9 @@ export default class EventService {
       );
     }
   }
+
+  // ========== ATTENDEE METHODS ==========
+
   // 8. Register attendee to event (Public)
   async registerAttendee(
     eventId: number,
@@ -256,6 +306,81 @@ export default class EventService {
       throw new Error(
         error.response?.data?.message || "Error registrando asistente"
       );
+    }
+  }
+
+  // ========== FAVORITES METHODS (Authentication required) ==========
+
+  // 9. Add event to favorites
+  async addToFavorites(eventId: number, userId: number): Promise<void> {
+    console.log(`Adding event ${eventId} to favorites for user ${userId}`);
+    try {
+      await this.eventRepository.addToFavorites(eventId, userId);
+      console.log("Event added to favorites successfully");
+    } catch (error: any) {
+      console.error("Error adding event to favorites:", error.message);
+      throw new Error(`Error adding event to favorites: ${error.message}`);
+    }
+  }
+
+  // 10. Remove event from favorites
+  async removeFromFavorites(eventId: number, userId: number): Promise<void> {
+    console.log(`Removing event ${eventId} from favorites for user ${userId}`);
+    try {
+      await this.eventRepository.removeFromFavorites(eventId, userId);
+      console.log("Event removed from favorites successfully");
+    } catch (error: any) {
+      console.error("Error removing event from favorites:", error.message);
+      throw new Error(`Error removing event from favorites: ${error.message}`);
+    }
+  }
+
+  // 11. Get user favorite events
+  async getUserFavorites(userId: number): Promise<IEvent[]> {
+    console.log(`Getting favorite events for user ${userId}`);
+    try {
+      const favorites = await this.eventRepository.getUserFavorites(userId);
+      console.log("User favorite events fetched successfully:", favorites);
+      return favorites;
+    } catch (error: any) {
+      console.error("Error fetching user favorite events:", error.message);
+      throw new Error(`Error fetching user favorite events: ${error.message}`);
+    }
+  }
+
+  // ========== UTILITY METHODS ==========
+
+  /**
+   * Smart method to get events based on authentication status
+   * @param isAuthenticated - Whether user is authenticated
+   * @param page - Page number for pagination (optional)
+   * @param size - Page size for pagination (optional)
+   */
+  async getEventsSmart(isAuthenticated: boolean, page?: number, size?: number) {
+    if (isAuthenticated) {
+      return page !== undefined && size !== undefined
+        ? this.fetchEventsPaginated(page, size)
+        : this.fetchEvents();
+    } else {
+      return page !== undefined && size !== undefined
+        ? this.fetchPublicEventsPaginated(page, size)
+        : this.fetchPublicEvents();
+    }
+  }
+
+  /**
+   * Smart method to get event by ID based on authentication status
+   * @param id - Event ID
+   * @param isAuthenticated - Whether user is authenticated
+   */
+  async getEventByIdSmart(
+    id: number,
+    isAuthenticated: boolean
+  ): Promise<IEvent> {
+    if (isAuthenticated) {
+      return this.fetchEventById(id);
+    } else {
+      return this.fetchPublicEventById(id);
     }
   }
 }

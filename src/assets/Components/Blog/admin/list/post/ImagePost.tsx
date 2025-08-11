@@ -1,6 +1,6 @@
 import { IPost } from "../../../../../../core/posts/IPost";
 import style from './ImagePost.module.scss';
-const DEFAULT_POST_PHOTO_URL = "../../../../../../../public/images/blocks-8866100_1280.png"
+const DEFAULT_POST_PHOTO_URL = "/images/blocks-8866100_1280.png"
 
 interface ImagePostProps {
     post: IPost;

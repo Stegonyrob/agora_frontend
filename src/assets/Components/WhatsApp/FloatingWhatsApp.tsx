@@ -9,10 +9,10 @@ import { reducer } from "../../../core/whatsApp/whatsAppStore";
 import styles from "./FloatingWhatsApp.module.scss";
 import { CheckSVG, CloseSVG, SendSVG, WhatsappSVG } from "./IconsWhatsApp";
 
-import dummyAvatar from "../../../../public/images/agoraLogo.png";
 import lightBG from "./bg-chat-tile-dark.png";
 import darkBG from "./bg-chat-tile-light.png";
 import SoundBeep from "./whatsapp-notification.mp3";
+import dummyAvatar from "/images/agoraLogo.png?url";
 
 export interface FloatingWhatsAppProps {
     /** Callback function fires on click */
