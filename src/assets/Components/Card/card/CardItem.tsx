@@ -1,11 +1,16 @@
 import ButtonAttendee from '@/assets/Components/Blog/admin/button/attendee/ButtonAttendee';
 import LikeButton from '@/assets/Components/Blog/admin/button/favorite/ButtonFavoriteHeart';
 import { IEventImage } from '@/core/events/IEvent';
+import { IPostImage } from '@/core/posts/images/IPostImage';
+import { useImageLoader } from '@/hooks/useImageLoader';
 import { RootState } from '@/redux/store';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import AccordionComments from '../../Blog/comments/AccordionComments';
 import styles from './CardItem.module.scss';
+
+// Tipo union para soportar tanto imágenes de eventos como de posts
+type SupportedImages = string[] | IEventImage[] | IPostImage[];
 
 interface CardItemProps {
     type: 'event' | 'post';
@@ -18,7 +23,7 @@ interface CardItemProps {
     commentsCount?: number;
     attendeesCount: number;
     location?: string;
-    images?: string[] | IEventImage[]; // Soporte para ambos formatos
+    images?: SupportedImages; // Homogeneizado - soporte para strings, IEventImage[], IPostImage[]
     tags?: { id: number; name: string; archived?: boolean }[]
     user?: any;
     userRole?: string;
@@ -54,171 +59,22 @@ const CardItem: React.FC<CardItemProps> = ({
     const profiles = useSelector((state: RootState) => state.profile.profiles);
     const avatars = useSelector((state: RootState) => state.avatars.avatars);
 
+    // Use custom hook for image loading
+    const { images: processedImages, loading: loadingImages, error: imageError } = useImageLoader(type, images);
 
-    // --- Usar directamente las imágenes que vienen del repository ---
-    const [processedImages, setProcessedImages] = useState<string[]>([]);
-    const [loadingImages, setLoadingImages] = useState(false);
+    // Debug logs
+    console.log('🔍 [CardItem] Hook result:', {
+        processedImages,
+        loadingImages,
+        imageError,
+        inputImages: images,
+        type
+    });
 
-    useEffect(() => {
-        async function processImages() {
-            setLoadingImages(true);
-            try {
-                if (type === 'event' && images && Array.isArray(images) && images.length > 0) {
-                    const imagePromises = images.map(async (img: any) => {
-                        // Si img es un objeto IEventImage con id, obtener JSON del backend
-                        if (typeof img === 'object' && img.id !== undefined) {
-                            console.log(`🔍 [CardItem] Obteniendo imagen del backend para ID: ${img.id}`);
-                            try {
-                                const response = await fetch(`http://localhost:8080/api/v1/all/event-images/${img.id}`);
-                                if (response.ok) {
-                                    const imageData = await response.json();
-
-                                    // Análisis detallado del contenido base64
-                                    const base64Data = imageData.imageData;
-                                    let detectedMimeType = 'image/jpeg'; // default
-
-                                    if (base64Data) {
-                                        // Detectar tipo por header base64
-                                        if (base64Data.startsWith('/9j/')) {
-                                            detectedMimeType = 'image/jpeg';
-                                        } else if (base64Data.startsWith('iVBORw0KGgo')) {
-                                            detectedMimeType = 'image/png';
-                                        } else if (base64Data.startsWith('R0lGODlh')) {
-                                            detectedMimeType = 'image/gif';
-                                        }
-
-                                        console.log(`📦 [CardItem] ANÁLISIS COMPLETO para imagen ${img.id}:`, {
-                                            id: imageData.id,
-                                            imageName: imageData.imageName,
-                                            imageTypeFromBackend: imageData.imageType,
-                                            detectedMimeType: detectedMimeType,
-                                            base64Length: base64Data.length,
-                                            base64Header: base64Data.substring(0, 50),
-                                            base64First100: base64Data.substring(0, 100),
-                                            isValidJpegHeader: base64Data.startsWith('/9j/'),
-                                            isValidPngHeader: base64Data.startsWith('iVBORw0KGgo')
-                                        });
-
-                                        // Log separado del contenido base64 completo
-                                        console.log(`🔍 [CardItem] BASE64 COMPLETO para imagen ${img.id}:`, base64Data);
-                                    }
-
-                                    // ✨ LÓGICA HÍBRIDA: Detectar placeholders vs imágenes reales
-                                    if (imageData.imageData && imageData.imageData.length > 1000) {
-                                        // Base64 largo = imagen real del backend
-                                        const dataUrl = `data:${detectedMimeType};base64,${imageData.imageData}`;
-                                        console.log(`✅ [CardItem] Usando imagen REAL del backend para ${img.id}:`, {
-                                            mimeUsed: detectedMimeType,
-                                            dataUrlLength: dataUrl.length,
-                                            source: 'backend'
-                                        });
-                                        return dataUrl;
-                                    } else {
-                                        // Base64 corto = placeholder, usar imagen local temporal
-                                        const localImages = {
-                                            // Mapeo de IDs a imágenes locales temporales
-                                            1: '/images/img/niñoFichas.jpg',       // Taller juegos mesa 1
-                                            2: '/images/img/adolescentesGrupal.jpg', // Taller juegos mesa 2  
-                                            3: '/images/img/ivan.jpg',             // Escuela padres 1
-                                            4: '/images/img/edificio.jpg'          // Escuela padres 2
-                                        };
-
-                                        const fallbackImage = localImages[img.id as keyof typeof localImages] || '/images/img/alumnosOrdenador.jpg';
-                                        console.log(`🖼️ [CardItem] Usando imagen LOCAL temporal para ${img.id}:`, {
-                                            originalLength: imageData.imageData ? imageData.imageData.length : 0,
-                                            localImage: fallbackImage,
-                                            source: 'local-fallback',
-                                            reason: 'backend-image-too-small'
-                                        });
-                                        return fallbackImage;
-                                    }
-                                } else {
-                                    console.warn(`❌ [CardItem] Respuesta no OK para imagen ${img.id}: ${response.status}`);
-                                    return null;
-                                }
-                            } catch (error) {
-                                console.error(`❌ [CardItem] Error obteniendo imagen ${img.id}:`, error);
-                                return null;
-                            }
-                        }
-
-                        // Si img es un objeto con imageData (base64 o URL)
-                        if (typeof img === 'object' && img.imageData) {
-                            console.log(`🔍 [CardItem] Procesando imagen con imageData`);
-                            // Si es base64, crear data URL
-                            if (img.imageData.startsWith('/9j/') || img.imageData.startsWith('iVBORw0KGgo')) {
-                                return `data:image/jpeg;base64,${img.imageData}`;
-                            }
-                            // Si es una URL, usarla directamente
-                            return img.imageData;
-                        }
-
-                        // Si img es una URL directa (string)
-                        if (typeof img === 'string') {
-                            console.log(`🔍 [CardItem] Procesando imagen string: ${img}`);
-                            if (img.startsWith('http')) {
-                                return img;
-                            }
-                            // Si es base64 sin data URL prefix
-                            if (img.startsWith('/9j/') || img.startsWith('iVBORw0KGgo')) {
-                                return `data:image/jpeg;base64,${img}`;
-                            }
-                            return img;
-                        }
-                        return null;
-                    });
-
-                    const urls = await Promise.all(imagePromises);
-                    const validUrls = urls.filter((url): url is string => url !== null);
-                    setProcessedImages(validUrls);
-                    console.log('🖼️ [CardItem] Imágenes procesadas para evento:', { id, urls: validUrls });
-
-                } else if (type === 'post' && images) {
-                    // Lógica para posts (sin cambios)
-                    let imageUrls: any[] = [];
-                    if (Array.isArray(images)) {
-                        imageUrls = images.map((img: any) => {
-                            if (typeof img === 'string') {
-                                return img.startsWith('http') ? img : `/images/posts/${img}`;
-                            }
-                            if (typeof img === 'object' && img.id) {
-                                return `/api/v1/post-images/${img.id}/data`;
-                            }
-                            return img;
-                        });
-                    } else if (typeof images === 'string' && images) {
-                        const imgStr = images as string;
-                        imageUrls = [imgStr.startsWith('http') ? imgStr : `/images/posts/${imgStr}`];
-                    }
-                    setProcessedImages(imageUrls.filter(Boolean));
-                    console.log('🖼️ [CardItem] Imágenes de post procesadas:', { id, imageUrls });
-                } else {
-                    // Sin imágenes disponibles
-                    setProcessedImages([]);
-                    console.log('📭 [CardItem] Sin imágenes para mostrar:', { id, type });
-                }
-            } catch (error) {
-                console.error('❌ [CardItem] Error procesando imágenes:', error);
-                setProcessedImages([]);
-            } finally {
-                setLoadingImages(false);
-            }
-        }
-
-        processImages();
-    }, [type, id, images]);    // LOGS detallados como en admin
-    useEffect(() => {
-        console.log('🔍 [CardItem] Debug:', {
-            id,
-            type,
-            title,
-            description,
-            images,
-            processedImages
-        });
-    }, [id, type, title, description, images, processedImages]);
-
-    const showPrev = (e: React.MouseEvent) => {
+    // Log image loading errors
+    if (imageError) {
+        console.error('Image loading error:', imageError);
+    } const showPrev = (e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImage((prev) => (prev === 0 ? (processedImages.length || 1) - 1 : prev - 1));
     };
@@ -238,10 +94,6 @@ const CardItem: React.FC<CardItemProps> = ({
         })}`
         : undefined;
 
-    // Share Button Popup
-    // ...existing code...
-
-    // Renderizado de imágenes replicando lógica admin
     return (
         <>
             <article className={`${styles.card} ${type === 'event' ? styles.event : ''}`} onClick={() => onSelect && onSelect({ id })}>
@@ -259,15 +111,40 @@ const CardItem: React.FC<CardItemProps> = ({
                                 src={processedImages[currentImage] || "/images/blocks-8866100_1280.png"}
                                 alt={`Imagen ${currentImage + 1} de ${title}`}
                                 onError={(e) => {
+                                    const failedUrl = processedImages[currentImage];
                                     console.error('❌ [CardItem] Error cargando imagen carousel:', {
-                                        originalSrc: processedImages[currentImage],
+                                        originalSrc: failedUrl,
                                         imageIndex: currentImage,
                                         totalImages: processedImages.length,
                                         allImages: processedImages,
                                         errorEvent: e,
-                                        fallbackUsed: "/images/blocks-8866100_1280.png"
+                                        isPostImage: failedUrl?.includes('/api/v1/post-images/'),
+                                        hasToken: failedUrl?.includes('token=')
                                     });
-                                    e.currentTarget.src = "/images/blocks-8866100_1280.png";
+
+                                    // Si es una URL de post image que falló, intentar diagnosticar
+                                    if (failedUrl?.includes('/api/v1/post-images/')) {
+                                        console.warn('🚨 [CardItem] POST IMAGE FAILED:', {
+                                            url: failedUrl,
+                                            hasToken: failedUrl.includes('token='),
+                                            possibleCauses: [
+                                                'Backend no acepta token como query parameter',
+                                                'Token expirado o inválido',
+                                                'Endpoint /data no existe o no está configurado',
+                                                'CORS issues con autenticación'
+                                            ]
+                                        });
+                                    }
+
+                                    // Smart fallback: try local images first, then default
+                                    const localImages = {
+                                        0: '/images/img/niñoFichas.jpg',       // First image
+                                        1: '/images/img/adolescentesGrupal.jpg' // Second image  
+                                    };
+
+                                    const smartFallback = localImages[currentImage as keyof typeof localImages] || "/images/blocks-8866100_1280.png";
+                                    console.log(`🔄 [CardItem] Using smart fallback: ${smartFallback}`);
+                                    e.currentTarget.src = smartFallback;
                                 }}
                             />
                             <button className={styles.arrow} onClick={showNext}>&gt;</button>

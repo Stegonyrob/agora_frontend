@@ -85,24 +85,27 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                     ))
                 ) : (
                     // Muestra los posts reales cuando cargan
-                    fetchedPosts.map((post) => (
-                        <CardItem
-                            key={post.id}
-                            type="post"
-                            id={post.id}
-                            title={post.title}
-                            description={post.message}
-                            creationDate={post.creationDate}
-                            favoritesCount={post.favoritesCount ?? 0}
-                            commentsCount={post.commentsCount ?? 0}
-                            images={post.image}
-                            tags={mapTagsForCardItem(post.tags)} // <-- USANDO LA FUNCIÓN DE NORMALIZACIÓN AQUÍ
-                            user={post.user}
-                            userRole={post.userRole}
-                            attendeesCount={post.attendeesCount ?? 0} // Asumiendo que attendeesCount puede estar en post también
-                            onSelect={handleSelect}
-                        />
-                    ))
+                    fetchedPosts.map((post) => {
+                        console.log('[PostList] Renderizando CardItem con post.images:', post.images || post.image);
+                        return (
+                            <CardItem
+                                key={post.id}
+                                type="post"
+                                id={post.id}
+                                title={post.title}
+                                description={post.message}
+                                creationDate={post.creationDate}
+                                favoritesCount={post.favoritesCount ?? 0}
+                                commentsCount={post.commentsCount ?? 0}
+                                images={post.images || post.image} // Usar images (nuevo) o image (legacy) para compatibilidad
+                                tags={mapTagsForCardItem(post.tags)} // <-- USANDO LA FUNCIÓN DE NORMALIZACIÓN AQUÍ
+                                user={post.user}
+                                userRole={post.userRole}
+                                attendeesCount={post.attendeesCount ?? 0} // Asumiendo que attendeesCount puede estar en post también
+                                onSelect={handleSelect}
+                            />
+                        );
+                    })
                 )}
             </div>
 

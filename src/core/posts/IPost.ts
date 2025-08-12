@@ -1,3 +1,5 @@
+import { IPostImage } from "./images/IPostImage";
+
 export interface IPost {
   [x: string]: any;
   id: number;
@@ -9,7 +11,8 @@ export interface IPost {
   comments: any[];
   isArchived: boolean;
   tags: string[];
-  image: string[];
+  images: string[] | IPostImage[]; // Homogeneizado con IEvent - soporte para ambos formatos
+  image?: string[]; // Mantener compatibilidad con formato legacy
   isPublished: boolean;
   alt_image: string;
   source_image: string;
@@ -23,4 +26,8 @@ export interface IPost {
   createdAt: string;
   description: string;
   ondelete: () => void;
+  // Campos adicionales para homogeneizar con IEvent
+  favoritesCount?: number;
+  commentsCount?: number;
+  user?: any; // Información del usuario creador
 }

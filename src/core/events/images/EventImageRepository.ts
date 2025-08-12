@@ -76,6 +76,22 @@ export class EventImageRepository {
   }
 
   /**
+   * Obtener datos de una imagen específica como JSON con base64
+   * Endpoint: GET /api/v1/all/event-images/{id}
+   */
+  async getPublicImageJson(imageId: number): Promise<{
+    id: number;
+    imageName: string;
+    imageType: string;
+    imageData: string;
+  }> {
+    const response = await axios.get(`${this.publicUri}/${imageId}`, {
+      timeout: 10000,
+    });
+    return response.data;
+  }
+
+  /**
    * Obtener datos de una imagen específica
    * Endpoint: GET /api/v1/event-images/{id}/data
    */
