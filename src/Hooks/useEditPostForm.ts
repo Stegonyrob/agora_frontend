@@ -1,4 +1,5 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
+import { PostImageRepository } from "@/core/posts/images/PostImageRepository";
 import { IPostDTO } from "@/core/posts/IPostDTO";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
@@ -52,17 +53,43 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
         setDate("");
       }
 
-      // Cargar imágenes existentes del post
+      // Cargar imágenes existentes del post como blob URLs autenticadas
       if (post.images && post.images.length > 0) {
-        const existingImages: IImagePreview[] = post.images.map(
-          (imageUrl: string, index: number) => ({
-            url: imageUrl,
-            isLoading: false,
-            isExisting: true,
-            id: index,
-          })
-        );
-        setImagePreviews(existingImages);
+        const loadImages = async () => {
+          const repo = new PostImageRepository();
+          const previews: IImagePreview[] = await Promise.all(
+            post.images.map(async (img: any) => {
+              if (img.id) {
+                try {
+                  const blobUrl = await repo.getImageAsBlob(img.id);
+                  return {
+                    url: blobUrl,
+                    isLoading: false,
+                    isExisting: true,
+                    id: img.id,
+                  };
+                } catch (e) {
+                  // Si falla, usar fallback local
+                  return {
+                    url: img.imageName || "",
+                    isLoading: false,
+                    isExisting: true,
+                    id: img.id,
+                  };
+                }
+              } else {
+                return {
+                  url: img.imageName || "",
+                  isLoading: false,
+                  isExisting: true,
+                  id: img.id,
+                };
+              }
+            })
+          );
+          setImagePreviews(previews);
+        };
+        loadImages();
       } else {
         setImagePreviews([]);
       }
@@ -80,18 +107,20 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
   }, [post, show]);
 
   // Manejo de imágenes
+  // Añadir nuevas imágenes sin eliminar las existentes
   const handleImagesSelected = useCallback((files: File[]) => {
     const newImagePreviews: IImagePreview[] = files.map((file: File) => ({
       url: URL.createObjectURL(file),
       isLoading: false,
       file,
       isExisting: false,
+      id: undefined,
     }));
-
     setImagePreviews((prev) => [...prev, ...newImagePreviews]);
     console.log("Nuevas imágenes seleccionadas:", files.length);
   }, []);
 
+  // Eliminar imagen del preview (revoca blob si es nueva)
   const handleRemoveImage = useCallback((idx: number) => {
     setImagePreviews((prev) => {
       const imageToRemove = prev[idx];
@@ -119,49 +148,55 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
 
   // Submit del formulario
   const submitForm = useCallback(
-    async (onSubmit: (post: PostPayload) => void, onClose: () => void) => {
+    async (
+      onSubmit: (
+        post: PostPayload,
+        files: File[],
+        removedIds: number[]
+      ) => void,
+      onClose: () => void
+    ) => {
       console.log("🚀 useEditPostForm - Iniciando proceso de actualización");
-
       if (isSubmitting) return;
-
       setIsSubmitting(true);
       setGlobalError(null);
-
       try {
         validateForm();
-
         const sanitizedTitle = DOMPurify.sanitize(title);
         const sanitizedMessage = DOMPurify.sanitize(message);
-
         if (!post || typeof post.id !== "number") {
           throw new Error(
             "El post original debe tener un id válido para la edición."
           );
         }
-
-        // Combinar imágenes existentes y nuevas
-        const existingImageUrls = imagePreviews
-          .filter((preview) => preview.isExisting)
-          .map((preview) => preview.url);
-
-        const newImageUrls = imagesState.images
-          .map((img: any) => img.url)
-          .filter((url: string) => url && url.length > 0);
-
-        const allImages = [...existingImageUrls, ...newImageUrls];
-
+        // Imágenes existentes (mantener id)
+        const existingImages = imagePreviews.filter(
+          (preview) => preview.isExisting && preview.id
+        );
+        // Imágenes nuevas (files)
+        const newImages = imagePreviews.filter(
+          (preview) => !preview.isExisting && preview.file
+        );
+        // Para el payload, enviar los ids de las existentes y los nombres de los nuevos blobs (el backend debe recibir los files aparte)
+        const imagesPayload = [
+          ...existingImages.map((img) => img.id),
+          ...newImages.map((img, idx) => `new_${idx}`), // marcador para nuevas
+        ];
+        // Archivos a subir
+        const filesToUpload = newImages.map((img) => img.file as File);
+        // TODO: ids de imágenes eliminadas si se requiere
+        const removedIds: number[] = [];
         const updatedPost: PostPayload = {
           userId: post.userId,
           title: sanitizedTitle,
           message: sanitizedMessage,
           location: post.location || "",
-          tags: tags, // array de objetos {id, name, archived}
-          images: allImages,
+          tags: tags,
+          images: imagesPayload as any,
           isArchived: post.isArchived ?? false,
           isPublished: post.isPublished ?? true,
         };
-
-        await onSubmit(updatedPost);
+        await onSubmit(updatedPost, filesToUpload, removedIds);
         onClose();
       } catch (error) {
         const errorMessage =
@@ -173,16 +208,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
         setIsSubmitting(false);
       }
     },
-    [
-      isSubmitting,
-      validateForm,
-      title,
-      message,
-      tags,
-      imagePreviews,
-      imagesState,
-      post,
-    ]
+    [isSubmitting, validateForm, title, message, tags, imagePreviews, post]
   );
 
   return {

@@ -2,9 +2,10 @@ import { IPostDTO } from "@/core/posts/IPostDTO";
 import { useEditPostForm } from "@/hooks/useEditPostForm";
 import React from "react";
 import { Modal } from "react-bootstrap";
+import ImagePreviewGrid from "../../images/ImagePreviewGrid";
+import ImageUploadButton from "../../images/ImageUploadButton";
 import EditPostBasicFields from "./components/EditPostBasicFields";
 import EditPostFormActions from "./components/EditPostFormActions";
-import EditPostImageManager from "./components/EditPostImageManager";
 import EditPostTagsField from "./components/EditPostTagsField";
 import styles from "./EditModalForm.module.scss";
 
@@ -31,9 +32,15 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
     globalError
   } = useEditPostForm({ post, show });
 
+  // Adapter to convert PostPayload to IPostDTO before calling onSubmit
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await submitForm(onSubmit, onClose);
+    const handleSubmit = (postPayload: any) => {
+      // You should replace this with the actual conversion logic
+      // For now, we assume post has all required fields
+      onSubmit({ ...post, ...postPayload });
+    };
+    await submitForm(handleSubmit, onClose);
   };
 
   return (
@@ -42,7 +49,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
       centered
       show={show}
       onHide={onClose}
-      className={styles.eventForm} // Usar el mismo estilo que eventos
+      className={styles.eventForm}
       style={{ zIndex: 10000 }}
       backdropClassName="custom-backdrop"
     >
@@ -58,11 +65,21 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
             setMessage={setMessage}
           />
 
-          <EditPostImageManager
-            imagePreviews={imagePreviews}
-            onImagesSelected={handleImagesSelected}
-            onRemoveImage={handleRemoveImage}
-          />
+          <div className={styles.imageSection}>
+            <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
+            <div className={styles.newImagesUploadSection}>
+              <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
+              <ImageUploadButton onImagesSelected={handleImagesSelected} />
+              <small className={styles.helpText}>
+                Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
+              </small>
+            </div>
+            <ImagePreviewGrid
+              imagePreviews={imagePreviews}
+              onRemoveImage={handleRemoveImage}
+
+            />
+          </div>
 
           <EditPostTagsField
             tags={tags}

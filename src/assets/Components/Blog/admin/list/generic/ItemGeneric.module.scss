@@ -167,6 +167,19 @@
     }
   }
   
+  .imageContainer {
+    margin: 1rem 0;
+  }
+
+  .imageError {
+    color: #ff4757;
+    background: rgba(255, 71, 87, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 4px solid #ff4757;
+  }
+  
   /* Estilos para mostrar imágenes existentes con botón de eliminar */
   .imagePreviewContainer {
     display: grid;

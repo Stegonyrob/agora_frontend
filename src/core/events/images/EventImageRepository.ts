@@ -4,8 +4,9 @@ import { IEventImage } from "./IEventImage";
 
 export class EventImageRepository {
   private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES;
-  private publicUri: string = import.meta.env
-    .VITE_API_ENDPOINT_EVENT_IMAGES_PUBLIC;
+  private publicUri: string =
+    import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES_PUBLIC ||
+    `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/all/event-images`;
 
   /**
    * Obtener todas las imágenes de un evento
@@ -92,10 +93,10 @@ export class EventImageRepository {
   }
 
   /**
-   * Obtener datos de una imagen específica
-   * Endpoint: GET /api/v1/event-images/{id}/data
+   * Obtener datos de una imagen específica como blob usando endpoint privado (admin)
+   * Endpoint: GET /api/v1/any/event-images/{id}/data
    */
-  async getImageData(imageId: number): Promise<Blob> {
+  async getImageAsBlob(imageId: number): Promise<string> {
     const response: AxiosResponse<Blob> = await axios.get(
       `${this.uri}/${imageId}/data`,
       {
@@ -104,7 +105,22 @@ export class EventImageRepository {
         timeout: 30000,
       }
     );
-    return response.data;
+    return URL.createObjectURL(response.data);
+  }
+
+  /**
+   * Obtener datos de una imagen específica como blob usando endpoint público
+   * Endpoint: GET /api/v1/all/event-images/{id}/data
+   */
+  async getPublicImageAsBlob(imageId: number): Promise<string> {
+    const response: AxiosResponse<Blob> = await axios.get(
+      `${this.publicUri}/${imageId}/data`,
+      {
+        responseType: "blob",
+        timeout: 30000,
+      }
+    );
+    return URL.createObjectURL(response.data);
   }
 
   /**

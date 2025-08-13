@@ -130,11 +130,11 @@
     }
   }
 
-  .existingBadge {
+  .errorBadge {
     position: absolute;
     bottom: 5px;
-    left: 5px;
-    background: linear-gradient(45deg, #00bcd4, #26c6da);
+    right: 5px;
+    background: linear-gradient(45deg, #ff4757, #ff6b7a);
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
@@ -143,10 +143,22 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 
-      0 2px 8px rgba(0, 188, 212, 0.4),
+      0 2px 8px rgba(255, 71, 87, 0.4),
       0 1px 3px rgba(0, 0, 0, 0.3);
     z-index: 5;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    i {
+      font-size: 10px;
+      color: white;
+    }
+
+    span {
+      font-size: 9px;
+    }
   }
 
   .imagePlaceholder {
@@ -195,11 +207,6 @@
     i {
       font-size: 18px;
     }
-  }
-  
-  .existingBadge {
-    font-size: 9px;
-    padding: 3px 6px;
   }
 }
 

@@ -1,14 +1,18 @@
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
-import EventImageService from '../../../../../../core/events/EventImageService';
+import { useImageLoader } from '../../../../../../hooks/useImageLoader';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
-import ImagePreviewGrid, { ImagePreview } from '../../images/ImagePreviewGrid';
+import ImagePreviewGrid from '../../images/ImagePreviewGrid';
 import styles from './ItemGeneric.module.scss';
 
-import type { IEvent } from '../../../../../../core/events/IEvent';
+import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
+import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
+
+// Tipo union para soportar tanto imágenes de eventos como de posts (igual que CardItem)
+type SupportedImages = string[] | IEventImage[] | IPostImage[];
 
 interface ItemGenericProps<T> {
     item: T;
@@ -22,7 +26,7 @@ interface ItemGenericProps<T> {
     userId: number;
     onCreate: (newItem: any) => Promise<void>;
     type: 'post' | 'event';
-    images?: any[];
+    images?: SupportedImages; // Homogeneizado - igual que CardItem
     onArchive: (id: number) => Promise<boolean>;
     onUnArchive: (id: number) => Promise<boolean>;
 }
@@ -55,127 +59,68 @@ const ItemGeneric = <T extends IPost | IEvent>({
     const tags: TagType[] = Array.isArray(data.tags) ? data.tags : [];
     const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);
 
+    // Usar el hook moderno useImageLoader con contexto de administración
+    const {
+        images: processedImages,
+        loading: loadingImagesHook,
+        error: imageError
+    } = useImageLoader(type, images, true); // isAdminContext = true
+
     const [showFullText, setShowFullText] = useState(false);
-    const [eventImages, setEventImages] = useState<ImagePreview[]>([]);
-    const [postImages, setPostImages] = useState<ImagePreview[]>([]);
-    const [loadingImages, setLoadingImages] = useState(false);
+    const [loadingImages, setLoadingImages] = useState(false); // Mantenido para compatibilidad
     const messagePreview = message?.slice(0, 200) ?? '';
 
     const toggleText = () => setShowFullText(prev => !prev);
 
     useEffect(() => {
-        console.log(`🔍 ItemGeneric - Debug ${type}:`, {
-            id,
-            title,
-            item,
-            images,
-            message,
-            creationDate,
-            archived,
-            itemImages: (item as any)?.images,
-            itemImage: (item as any)?.image
+        // Log simplificado del estado de imágenes
+        console.log(`[ItemGeneric] ${type} ${id}:`, {
+            loading: loadingImagesHook,
+            processedCount: processedImages?.length || 0,
+            hasError: !!imageError
         });
-    }, [type, id, item, images]);
+    }, [type, id, loadingImagesHook, processedImages, imageError]);
 
-    useEffect(() => {
-        if (type === 'event' && id) {
-            loadEventImages();
-        } else if (type === 'post') {
-            loadPostImages();
-        }
-    }, [type, id, item, images]);
+    // Convertir processedImages a formato ImagePreview (limpio y simple)
+    const convertToImagePreviews = (processedUrls: string[]): any[] => {
+        const originalImages = Array.isArray(images) ? images : [];
+        console.log('🔄 [ItemGeneric] Converting images:', {
+            processedUrls: processedUrls.length,
+            processedPreview: processedUrls.map(url => url.substring(0, 50) + '...'),
+            originalImages: originalImages.length
+        });
 
-    const loadPostImages = () => {
-        try {
-            let imageUrls: string[] = [];
-            // Unificar todas las fuentes posibles de imágenes
-            if (Array.isArray((item as any)?.images)) {
-                imageUrls = (item as any).images;
-            } else if (Array.isArray((item as any)?.image)) {
-                imageUrls = (item as any).image;
-            } else if (typeof (item as any)?.image === 'string' && (item as any)?.image) {
-                imageUrls = [(item as any).image];
-            }
-            // También agregar las imágenes de la prop images si existen y no están ya
-            if (images && Array.isArray(images)) {
-                imageUrls = imageUrls.concat(images.filter(url => !imageUrls.includes(url)));
-            }
-            // Convertir a URLs absolutas si es necesario
-            imageUrls = imageUrls.map((url: string) => url.startsWith('http') ? url : `/images/posts/${url}`);
-            const imagePreviewsData: ImagePreview[] = imageUrls.map((url, index) => ({
-                url: url,
+        const result = processedUrls.map((url, index) => {
+            const originalImage = originalImages[index];
+            const imageId = typeof originalImage === 'object' ? originalImage?.id : undefined;
+
+            const preview = {
+                url,
                 isLoading: false,
-                isExisting: true,
-                id: index
-            }));
-            setPostImages(imagePreviewsData);
-            console.log("🖼️ ItemGeneric - Post images loaded:", {
-                postId: id,
-                cantidad: imagePreviewsData.length,
-                imagenes: imagePreviewsData.map(img => ({ id: img.id, url: img.url }))
+                isExisting: !!originalImage && typeof originalImage === 'object',
+                id: imageId || index
+            };
+
+            console.log(`📋 [ItemGeneric] Preview ${index}:`, {
+                hasUrl: !!url,
+                urlStart: url?.substring(0, 30),
+                isExisting: preview.isExisting,
+                id: preview.id
             });
-        } catch (error) {
-            console.error("Error loading post images:", error);
-            setPostImages([]);
-        }
-    };
 
-    const loadEventImages = async () => {
-        if (type !== 'event' || !id) return;
+            return preview;
+        });
 
-        setLoadingImages(true);
-        try {
-            const eventImageService = new EventImageService();
-            const images = await eventImageService.getEventImages(id);
-
-            const imagePreviewsData: ImagePreview[] = images.map((img) => ({
-                url: eventImageService.buildImageUrl(img.id),
-                isLoading: false,
-                isExisting: true,
-                id: img.id
-            }));
-
-            setEventImages(imagePreviewsData);
-            console.log("🖼️ ItemGeneric - Imágenes cargadas:", {
-                eventId: id,
-                cantidad: imagePreviewsData.length,
-                imagenes: imagePreviewsData.map(img => ({ id: img.id, url: img.url }))
-            });
-        } catch (error) {
-            console.error("Error loading event images:", error);
-            setEventImages([]);
-        } finally {
-            setLoadingImages(false);
-        }
+        console.log('✅ [ItemGeneric] Final conversion result:', result.length, 'previews');
+        return result;
     };
 
     const handleRemoveImage = async (index: number) => {
         if (!window.confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
             return;
         }
-
-        if (type === 'event') {
-            const imageToRemove = eventImages[index];
-            if (!imageToRemove?.id) {
-                console.error("Error: imagen sin ID válido");
-                return;
-            }
-
-            try {
-                const eventImageService = new EventImageService();
-                await eventImageService.deleteEventImage(imageToRemove.id as number);
-
-                setEventImages(prev => prev.filter((_, idx) => idx !== index));
-
-                console.log("✅ ItemGeneric - Imagen de evento eliminada:", imageToRemove.id);
-            } catch (error) {
-                console.error("Error deleting event image:", error);
-                alert('Error al eliminar la imagen. Por favor, inténtalo de nuevo.');
-            }
-        } else if (type === 'post') {
-            setPostImages(prev => prev.filter((_, idx) => idx !== index));
-            console.log("✅ ItemGeneric - Imagen de post removida de la vista:", index);
-        }
+        // TODO: Implementar eliminación real
+        console.log(`Eliminando imagen ${index}`);
     };
 
     const handleUpdate = async (updatedItem: any) => {
@@ -226,32 +171,33 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </div>
                 )}
 
-                {type === 'event' && (
-                    <div>
-                        {loadingImages ? (
-                            <div className={styles.imagePlaceholder}>
-                                <div className={styles.loadingSpinner}></div>
-                                <span className={styles.loadingText}>Cargando imágenes...</span>
-                            </div>
-                        ) : (
-                            <ImagePreviewGrid
-                                imagePreviews={eventImages}
-                                onRemoveImage={handleRemoveImage}
-                                showExistingBadge={true}
-                                className={styles.eventImagesGrid}
-                            />
-                        )}
+                {/* Renderizar imágenes con estado de carga (igual que CardItem) */}
+                {loadingImagesHook ? (
+                    <div className={styles.imageContainer}>
+                        <div className={styles.imagePlaceholder}>
+                            <div className={styles.loadingSpinner}></div>
+                            <span className={styles.loadingText}>Cargando imágenes...</span>
+                        </div>
                     </div>
-                )}
-
-                {type === 'post' && postImages.length > 0 && (
-                    <div>
+                ) : processedImages && processedImages.length > 0 ? (
+                    <div className={styles.imageContainer}>
                         <ImagePreviewGrid
-                            imagePreviews={postImages}
+                            imagePreviews={convertToImagePreviews(processedImages)}
                             onRemoveImage={handleRemoveImage}
-                            showExistingBadge={true}
-                            className={styles.postImagesGrid}
+                            fallbackImageUrl="/images/blocks-8866100_1280.png"
                         />
+                    </div>
+                ) : images && Array.isArray(images) && images.length > 0 ? (
+                    <div className={styles.imageContainer}>
+                        <div className={styles.imagePlaceholder}>
+                            <span className={styles.loadingText}>Procesando {images.length} imágenes...</span>
+                        </div>
+                    </div>
+                ) : null}
+
+                {imageError && (
+                    <div className={styles.imageError}>
+                        <span>Error cargando imágenes: {imageError}</span>
                     </div>
                 )}
                 <div className={styles.messageRow}>

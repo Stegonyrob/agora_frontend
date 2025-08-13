@@ -1,193 +1,199 @@
-import React from 'react';
-import AuthenticatedImage from './AuthenticatedImage';
+import React, { useState } from 'react';
+import styles from './ImagePreviewGrid.module.scss';
 
 export interface ImagePreview {
     url: string;
     isLoading: boolean;
     file?: File;
     isExisting?: boolean;
-    id?: number; // Para imágenes existentes del backend
+    id?: number;
 }
 
-interface ImagePreviewGridProps {
+// Función para validar si una imagen es válida (base64, blob URL o URL regular)
+const isValidBase64Image = (url: string): boolean => {
+    if (!url) {
+        return false;
+    }
+
+    // ✅ Blob URLs son siempre válidas (creadas por URL.createObjectURL)
+    if (url.startsWith('blob:')) {
+        console.log('✅ [ImagePreviewGrid] Blob URL válida:', url.substring(0, 50));
+        return true;
+    }
+
+    // ✅ URLs HTTP/HTTPS regulares son válidas
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+        console.log('✅ [ImagePreviewGrid] URL regular válida:', url.substring(0, 50));
+        return true;
+    }
+
+    // ✅ Validar data URLs (base64)
+    if (url.startsWith('data:image/')) {
+        // Extraer la parte base64
+        const base64Part = url.split(',')[1];
+        if (!base64Part || base64Part.length < 1000) { // Aumentado a 1000 para detectar imágenes demasiado pequeñas
+            console.warn('🚨 [ImagePreviewGrid] Imagen base64 muy pequeña o vacía:', {
+                hasBase64Part: !!base64Part,
+                length: base64Part?.length,
+                threshold: 1000
+            });
+            return false;
+        }
+
+        try {
+            // Verificar que el base64 sea válido
+            const decoded = atob(base64Part);
+
+            // Verificar que tenga un tamaño mínimo razonable para una imagen real
+            if (decoded.length < 500) {
+                console.warn('🚨 [ImagePreviewGrid] Imagen decodificada muy pequeña:', {
+                    decodedLength: decoded.length,
+                    minSize: 500
+                });
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('🚨 [ImagePreviewGrid] Base64 inválido:', error);
+            return false;
+        }
+    }
+
+    console.warn('🚨 [ImagePreviewGrid] URL no reconocida:', url.substring(0, 50));
+    return false;
+}; interface ImagePreviewGridProps {
     imagePreviews: ImagePreview[];
     onRemoveImage: (index: number) => void;
     fallbackImageUrl?: string;
-    showExistingBadge?: boolean;
     className?: string;
 }
 
 const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
     imagePreviews,
     onRemoveImage,
-    fallbackImageUrl = '/images/avatarGeneric.png',
-    showExistingBadge = true,
+    fallbackImageUrl = '/images/blocks-8866100_1280.png', // Imagen que ya existe en tu proyecto
     className
 }) => {
+    const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+
+    console.log('🖼️ [ImagePreviewGrid] Renderizando:', {
+        imagePreviewsCount: imagePreviews.length,
+        imagePreviews: imagePreviews.map((p, i) => {
+            const urlStr = typeof p.url === 'string' ? p.url : '';
+            return {
+                index: i,
+                hasUrl: !!p.url,
+                urlStart: urlStr.substring(0, 30),
+                isLoading: p.isLoading,
+                isExisting: p.isExisting,
+                id: p.id,
+                isValid: isValidBase64Image(urlStr)
+            };
+        })
+    });
+
+    const handleImageError = (idx: number, preview: ImagePreview) => {
+        const urlStr = typeof preview.url === 'string' ? preview.url : '';
+        console.error(`❌ [ImagePreviewGrid] Error cargando imagen ${idx}:`, {
+            src: urlStr.substring(0, 100),
+            isValid: isValidBase64Image(urlStr),
+            fallback: fallbackImageUrl
+        });
+        setImageErrors(prev => new Set(prev).add(idx));
+    };
+
+    const getImageSrc = (preview: ImagePreview, idx: number): string => {
+        const urlStr = typeof preview.url === 'string' ? preview.url : '';
+        // Si ya tuvimos un error con esta imagen, usar fallback
+        if (imageErrors.has(idx)) {
+            return fallbackImageUrl;
+        }
+
+        // ✅ Para blob URLs, usar directamente sin validación adicional
+        if (urlStr.startsWith('blob:')) {
+            return urlStr;
+        }
+
+        // ✅ Para URLs regulares, usar directamente
+        if (urlStr.startsWith('http') || urlStr.startsWith('/')) {
+            return urlStr;
+        }
+
+        // ✅ Para data URLs, validar antes de usar
+        if (urlStr.startsWith('data:image/') && !isValidBase64Image(urlStr)) {
+            console.warn(`⚠️ [ImagePreviewGrid] Usando fallback para imagen base64 inválida ${idx}`);
+            return fallbackImageUrl;
+        }
+
+        return urlStr || fallbackImageUrl;
+    };
+
     if (imagePreviews.length === 0) {
+        console.log('📝 [ImagePreviewGrid] No hay imágenes para mostrar');
         return null;
     }
 
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>, url: string) => {
-        console.error('Error al cargar imagen:', url);
-        e.currentTarget.src = fallbackImageUrl;
-    };
-
     return (
-        <div className={`image-preview-container ${className || ''}`} style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-            gap: '1.2rem',
-            margin: '1.5rem 0',
-            padding: '1.5rem',
-            background: 'linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%)',
-            borderRadius: '1rem',
-            border: '2px solid #00bcd4',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            maxHeight: '300px',
-            overflowY: 'auto'
-        }}>
+        <div className={`${styles.imagePreviewContainer} ${className || ''}`}>
             {imagePreviews.map((preview, idx) => {
-                // Use a stable key that doesn't change when the array order changes
+                const urlStr = typeof preview.url === 'string' ? preview.url : '';
+                console.log(`🔍 [ImagePreviewGrid] Renderizando imagen ${idx}:`, {
+                    hasUrl: !!preview.url,
+                    isLoading: preview.isLoading,
+                    urlLength: urlStr.length,
+                    urlStart: urlStr.substring(0, 50),
+                    isValid: isValidBase64Image(urlStr),
+                    hasError: imageErrors.has(idx)
+                });
+
                 const key = preview.isExisting && preview.id
                     ? `existing-${preview.id}`
                     : preview.url || `new-${idx}`;
 
+                const imageSrc = getImageSrc(preview, idx);
+                const isUsingFallback = imageSrc === fallbackImageUrl;
+
                 return (
-                    <div key={key} style={{
-                        position: 'relative',
-                        width: '100%',
-                        aspectRatio: '1',
-                        overflow: 'hidden',
-                        borderRadius: '0.8rem',
-                        border: '3px solid transparent',
-                        background: 'linear-gradient(#2a2a2a, #2a2a2a) padding-box, linear-gradient(45deg, #00bcd4, #00e5ff, #26c6da) border-box',
-                        boxShadow: '0 4px 15px rgba(0, 188, 212, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3)',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        cursor: 'pointer'
-                    }}>
+                    <div key={key} className={styles.imagePreview}>
                         {preview.isLoading ? (
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '100%',
-                                width: '100%',
-                                color: '#00bcd4',
-                                fontSize: '0.9rem',
-                                background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%)',
-                                borderRadius: '0.5rem'
-                            }}>
-                                <div style={{
-                                    border: '3px solid rgba(0, 188, 212, 0.3)',
-                                    borderTop: '3px solid #00bcd4',
-                                    borderRadius: '50%',
-                                    width: '30px',
-                                    height: '30px',
-                                    animation: 'spin 1s linear infinite'
-                                }}></div>
-                                <span style={{
-                                    marginTop: '8px',
-                                    fontWeight: '500',
-                                    color: '#b3e5fc'
-                                }}>Cargando...</span>
+                            <div className={styles.imagePlaceholder}>
+                                <div className={styles.loadingSpinner}></div>
+                                <span>Cargando...</span>
                             </div>
                         ) : (
                             <>
-                                {preview.isExisting && preview.id ? (
-                                    <AuthenticatedImage
-                                        imageId={preview.id}
-                                        alt={`preview-${idx}`}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '0',
-                                            left: '0',
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            borderRadius: '0.5rem',
-                                            transition: 'transform 0.3s ease'
-                                        }}
-                                    />
-                                ) : (
-                                    <img
-                                        src={preview.url}
-                                        alt={`preview-${idx}`}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '0',
-                                            left: '0',
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            borderRadius: '0.5rem',
-                                            transition: 'transform 0.3s ease'
-                                        }}
-                                        onError={(e) => handleImageError(e, preview.url)}
-                                    />
+                                <img
+                                    src={imageSrc}
+                                    alt={`preview-${idx}`}
+                                    className={styles.previewImage}
+                                    onLoad={() => {
+                                        console.log(`✅ [ImagePreviewGrid] Imagen ${idx} cargada:`, {
+                                            src: imageSrc.substring(0, 50),
+                                            isUsingFallback
+                                        });
+                                    }}
+                                    onError={() => handleImageError(idx, preview)}
+                                />
+                                {isUsingFallback && (
+                                    <div className={styles.errorBadge}>
+                                        <i className="bi bi-exclamation-triangle"></i>
+                                        <span>Error</span>
+                                    </div>
                                 )}
                                 <button
                                     type="button"
-                                    style={{
-                                        position: 'absolute',
-                                        top: '8px',
-                                        right: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '0',
-                                        margin: '0',
-                                        width: 'auto',
-                                        height: 'auto',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        zIndex: 10
-                                    }}
+                                    className={styles.removeButton}
                                     onClick={() => onRemoveImage(idx)}
                                     title="Eliminar imagen"
                                 >
-                                    <i className="bi bi-x-octagon" style={{
-                                        fontSize: '20px',
-                                        color: 'rgba(255, 255, 255, 0.8)',
-                                        textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
-                                        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        lineHeight: '1',
-                                        display: 'block'
-                                    }}></i>
+                                    <i className="bi bi-x-octagon"></i>
                                 </button>
-                                {showExistingBadge && preview.isExisting && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        bottom: '5px',
-                                        left: '5px',
-                                        background: 'linear-gradient(45deg, #00bcd4, #26c6da)',
-                                        color: 'white',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        fontSize: '10px',
-                                        fontWeight: '600',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                        boxShadow: '0 2px 8px rgba(0, 188, 212, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)',
-                                        zIndex: 5,
-                                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                                    }}>Existente</span>
-                                )}
                             </>
                         )}
                     </div>
                 );
             })}
-            <style>{`
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `}</style>
         </div>
     );
 };

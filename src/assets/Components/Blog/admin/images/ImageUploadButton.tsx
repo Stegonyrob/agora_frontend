@@ -1,3 +1,4 @@
+import { ImageCompressorToHex } from "@/components/tools/ImageCompressorToHex";
 import React, { useRef, useState } from "react";
 import EventImageService, { EventImageResponse } from "../../../../../core/events/EventImageService";
 import styles from "./ImageUploadButton.module.scss";
@@ -6,6 +7,7 @@ interface ImageUploadButtonProps {
     eventId?: number;
     onImagesUploaded?: (images: EventImageResponse[]) => void;
     onImagesSelected?: (images: File[]) => void;
+    onImagesHexReady?: (hexImages: string[]) => void;
     multiple?: boolean;
     className?: string;
     disabled?: boolean;
@@ -15,12 +17,15 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
     eventId,
     onImagesUploaded,
     onImagesSelected,
+    onImagesHexReady,
     multiple = true,
     className = "",
     disabled = false
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+    const [hexResults, setHexResults] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const eventImageService = new EventImageService();
 
@@ -77,7 +82,11 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
             onImagesSelected(filesArray);
         }
 
-        // Si hay eventId y onImagesUploaded, subir directamente
+        // Nueva lógica: preparar para conversión a hex
+        setPendingFiles(filesArray);
+        setHexResults([]);
+
+        // Si hay eventId y onImagesUploaded, subir directamente (flujo original)
         if (eventId && onImagesUploaded) {
             try {
                 setIsUploading(true);
@@ -108,6 +117,19 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
 
     const isDisabled = disabled || isUploading;
     const shouldShowUploadingState = isUploading && eventId;
+
+    // Manejar resultado de cada imagen convertida a hex
+    const handleHexReady = (hex: string, idx: number) => {
+        setHexResults((prev) => {
+            const next = [...prev];
+            next[idx] = hex;
+            // Si ya están todos, llamar callback
+            if (next.filter(Boolean).length === pendingFiles.length && typeof onImagesHexReady === 'function') {
+                onImagesHexReady(next);
+            }
+            return next;
+        });
+    };
 
     return (
         <div className={`${styles.imageUploadButton} ${className}`}>
@@ -149,6 +171,16 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
                     )}
                 </div>
             </button>
+
+            {/* Renderizar microcomponentes para cada archivo pendiente */}
+            {pendingFiles.map((file, idx) => (
+                <ImageCompressorToHex
+                    key={file.name + idx}
+                    file={file}
+                    onHexReady={(hex) => handleHexReady(hex, idx)}
+                    onError={(err) => setUploadError(err)}
+                />
+            ))}
 
             {uploadError && (
                 <div className={styles.errorMessage}>

@@ -12,7 +12,8 @@ interface UseImageLoaderResult {
 
 export const useImageLoader = (
     type: 'event' | 'post',
-    imageData?: string[] | IEventImage[] | IPostImage[]
+    imageData?: string[] | IEventImage[] | IPostImage[],
+    isAdminContext: boolean = false  // Nuevo parámetro para contexto de admin
 ): UseImageLoaderResult => {
     const [images, setImages] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -115,42 +116,32 @@ export const useImageLoader = (
                         imageData: img
                     });
 
-                    // Load from backend API for events with IDs
+                    // Load from backend API for events with IDs - Using correct endpoint based on context
                     if (type === 'event' && typeof img === 'object' && img.id !== undefined) {
                         try {
-                            console.log(`🖼️ [useImageLoader] Loading from API for image ID: ${img.id}`);
-                            const imageData = await eventImageRepo.getPublicImageJson(img.id);
-                            console.log(`🖼️ [useImageLoader] API response for ${img.id}:`, imageData);
+                            console.log(`🖼️ [useImageLoader] Loading binary data from API for image ID: ${img.id}`, {
+                                isAdminContext,
+                                endpoint: isAdminContext ? 'private/any' : 'public/all'
+                            });
 
-                            if (imageData.imageData) {
-                                const mimeType = detectMimeType(imageData.imageData);
-                                const dataUrl = `data:${mimeType};base64,${imageData.imageData}`;
+                            let blobUrl: string;
 
-                                // Si es muy pequeño (< 500 chars), usar fallback local directamente
-                                if (imageData.imageData.length < 500) {
-                                    const localImages = {
-                                        1: '/images/img/niñoFichas.jpg',
-                                        2: '/images/img/adolescentesGrupal.jpg',
-                                        3: '/images/img/ivan.jpg',
-                                        4: '/images/img/edificio.jpg'
-                                    };
-                                    const fallbackImage = localImages[img.id as keyof typeof localImages] || '/images/img/alumnosOrdenador.jpg';
-                                    console.log(`🖼️ [useImageLoader] Using LOCAL fallback (too small) for ${img.id}:`, {
-                                        originalLength: imageData.imageData.length,
-                                        fallbackImage
-                                    });
-                                    return fallbackImage;
-                                } else {
-                                    console.log(`✅ [useImageLoader] Using backend image for ${img.id}:`, {
-                                        mimeType,
-                                        base64Length: imageData.imageData.length,
-                                        dataUrlLength: dataUrl.length
-                                    });
-                                    return dataUrl;
-                                }
+                            if (isAdminContext) {
+                                // Usar endpoint privado con autenticación para admin
+                                blobUrl = await eventImageRepo.getImageAsBlob(img.id);
+                            } else {
+                                // Usar endpoint público para vistas públicas
+                                blobUrl = await eventImageRepo.getPublicImageAsBlob(img.id);
                             }
+
+                            console.log(`✅ [useImageLoader] Created blob URL for event image ${img.id}:`, {
+                                isAdminContext,
+                                blobUrl: blobUrl.substring(0, 50) + '...'
+                            });
+
+                            return blobUrl;
                         } catch (error) {
-                            console.error(`🖼️ [useImageLoader] Error loading image ${img.id}:`, error);
+                            console.error(`🖼️ [useImageLoader] Error loading event image ${img.id}:`, error);
                         }
                     }
 
@@ -191,7 +182,9 @@ export const useImageLoader = (
                     return processedImage;
                 });
 
+                console.log('🔄 [useImageLoader] About to resolve all image promises:', imagePromises.length);
                 const urls = await Promise.all(imagePromises);
+                console.log('✅ [useImageLoader] All promises resolved:', urls);
                 const validUrls = urls.filter((url): url is string => url !== null);
                 console.log('🖼️ [useImageLoader] Final processed images:', validUrls);
                 setImages(validUrls);
@@ -206,7 +199,7 @@ export const useImageLoader = (
         };
 
         loadImages();
-    }, [type, imageData]);
+    }, [type, imageData, isAdminContext]);
 
     // Cleanup blob URLs when component unmounts or images change
     useEffect(() => {
