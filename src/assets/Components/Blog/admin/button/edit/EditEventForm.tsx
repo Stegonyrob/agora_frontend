@@ -1,3 +1,4 @@
+import EventImageService from "@/core/events/EventImageService";
 import { IEventDTO } from "@/core/events/IEventDTO";
 import React from "react";
 import { Modal } from "react-bootstrap";
@@ -40,6 +41,8 @@ const EditEventForm = ({
         handleRemoveImage,
         submitForm
     } = useEditEventForm({ event, show });
+
+    const apiEventImage = new EventImageService();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -92,7 +95,10 @@ const EditEventForm = ({
 
                         <div className={styles.newImagesUploadSection}>
                             <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
-                            <ImageUploadButton onImagesSelected={handleNewImagesSelected} />
+                            <ImageUploadButton
+                                onImagesSelected={handleNewImagesSelected}
+                                onUploadImages={(files) => event ? apiEventImage.uploadEventImages(event.id, files) : Promise.reject("Event no definido")}
+                            />
                             <small className={styles.helpText}>
                                 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
                             </small>
@@ -100,7 +106,7 @@ const EditEventForm = ({
 
                         <ImagePreviewGrid
                             imagePreviews={imagePreviews}
-                            onRemoveImage={handleRemoveImage}
+                            onRemoveImage={(identifier) => handleRemoveImage(typeof identifier === 'number' ? identifier : parseInt(identifier, 10))}
                             showExistingBadge={true}
                         />
                     </div>

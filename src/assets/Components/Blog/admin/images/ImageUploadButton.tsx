@@ -1,6 +1,6 @@
 import { ImageCompressorToHex } from "@/components/tools/ImageCompressorToHex";
 import React, { useRef, useState } from "react";
-import EventImageService, { EventImageResponse } from "../../../../../core/events/EventImageService";
+import { EventImageResponse } from "../../../../../core/events/EventImageService";
 import styles from "./ImageUploadButton.module.scss";
 
 interface ImageUploadButtonProps {
@@ -8,6 +8,7 @@ interface ImageUploadButtonProps {
     onImagesUploaded?: (images: EventImageResponse[]) => void;
     onImagesSelected?: (images: File[]) => void;
     onImagesHexReady?: (hexImages: string[]) => void;
+    onUploadImages?: (files: File[]) => Promise<EventImageResponse[]>; // Nuevo callback para subir imágenes
     multiple?: boolean;
     className?: string;
     disabled?: boolean;
@@ -18,6 +19,7 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
     onImagesUploaded,
     onImagesSelected,
     onImagesHexReady,
+    onUploadImages, // Usar este callback en lugar de EventImageService
     multiple = true,
     className = "",
     disabled = false
@@ -27,7 +29,6 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
     const [hexResults, setHexResults] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const eventImageService = new EventImageService();
 
     const validateFiles = (files: File[]): { isValid: boolean; error?: string } => {
         const maxSize = 5 * 1024 * 1024; // 5MB
@@ -86,16 +87,18 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
         setPendingFiles(filesArray);
         setHexResults([]);
 
-        // Si hay eventId y onImagesUploaded, subir directamente (flujo original)
-        if (eventId && onImagesUploaded) {
+        // Usar el callback onUploadImages si está definido
+        if (onUploadImages) {
             try {
                 setIsUploading(true);
-                console.log('📤 ImageUploadButton - Subiendo imágenes al evento:', eventId);
+                console.log('📤 ImageUploadButton - Subiendo imágenes usando onUploadImages...');
 
-                const uploadedImages = await eventImageService.uploadEventImages(eventId, filesArray);
+                const uploadedImages = await onUploadImages(filesArray);
                 console.log('✅ ImageUploadButton - Imágenes subidas exitosamente:', uploadedImages);
 
-                onImagesUploaded(uploadedImages);
+                if (onImagesUploaded) {
+                    onImagesUploaded(uploadedImages);
+                }
             } catch (error) {
                 console.error('❌ ImageUploadButton - Error uploading images:', error);
                 setUploadError(error instanceof Error ? error.message : 'Error uploading images');

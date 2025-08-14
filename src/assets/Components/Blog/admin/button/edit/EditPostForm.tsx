@@ -1,3 +1,4 @@
+import PostImageService from "@/core/posts/images/PostImageService";
 import { IPostDTO } from "@/core/posts/IPostDTO";
 import { useEditPostForm } from "@/hooks/useEditPostForm";
 import React from "react";
@@ -31,6 +32,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
     isSubmitting,
     globalError
   } = useEditPostForm({ post, show });
+
+  const postImageService = new PostImageService();
 
   // Adapter to convert PostPayload to IPostDTO before calling onSubmit
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -69,7 +72,17 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
             <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
             <div className={styles.newImagesUploadSection}>
               <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
-              <ImageUploadButton onImagesSelected={handleImagesSelected} />
+              <ImageUploadButton
+                onImagesSelected={handleImagesSelected}
+                onUploadImages={(files) => post ? postImageService.uploadPostImages(post.id, files).then(images => images.map(img => ({
+                  ...img,
+                  id: img.id || 0, // Asegurar que id nunca sea null
+                  eventId: post.id, // Agregar campo faltante
+                  imageType: 'post', // Ejemplo de tipo
+                  createdAt: new Date().toISOString(), // Fecha actual como ejemplo
+                  imageData: img.imageData || '' // Asignar valor predeterminado si es undefined
+                }))) : Promise.reject("Post no definido")}
+              />
               <small className={styles.helpText}>
                 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
               </small>
@@ -82,8 +95,11 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
           </div>
 
           <EditPostTagsField
-            tags={tags}
-            setTags={setTags}
+            tags={tags.map(tag => typeof tag === "string" ? tag : tag.name)} // or tag.id if you use IDs
+            setTags={(newTags: string[]) => {
+              // If your tags state expects IPostTagDTO[], map strings back to objects
+              setTags(newTags.map((tagName, idx) => ({ id: -1 * (idx + 1), name: tagName, archived: false })));
+            }}
           />
 
           <EditPostFormActions
