@@ -42,7 +42,7 @@ const EditEventForm = ({
 
         submitForm,
         globalError
-    } = useEditEventForm({ event, show });
+    } = useEditEventForm({ event, show, onClose });
 
     const apiEventImage = new EventImageService();
 
