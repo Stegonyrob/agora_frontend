@@ -36,10 +36,12 @@ const EditEventForm = ({
         capacity, setCapacity,
         tags, setTags,
         imagePreviews,
+        handleRemoveImage,
         formErrors,
         handleNewImagesSelected,
-        handleRemoveImage,
-        submitForm
+
+        submitForm,
+        globalError
     } = useEditEventForm({ event, show });
 
     const apiEventImage = new EventImageService();
@@ -73,10 +75,8 @@ const EditEventForm = ({
                         setPlace={setPlace}
                         link={link}
                         setLink={setLink}
-
                         formErrors={formErrors}
                     />
-
                     <EditEventDateCapacityFields
                         date={date}
                         setDate={setDate}
@@ -84,20 +84,14 @@ const EditEventForm = ({
                         setCapacity={setCapacity}
                         formErrors={formErrors}
                     />
-
-                    <EditEventTagsField
-                        tags={tags}
-                        setTags={setTags}
-                    />
-
                     <div className={styles.imageSection}>
                         <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
 
                         <div className={styles.newImagesUploadSection}>
                             <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
-                           // Código corregido en EditPostForm.tsx
+
                             <ImageUploadButton
-                                onImagesSelected={handleImagesSelected}
+                                onImagesSelected={handleNewImagesSelected}
                             // Aquí solo pasamos onImagesSelected.
                             // La subida real se hará cuando el usuario presione el botón de Guardar/Actualizar.
                             />
@@ -108,14 +102,19 @@ const EditEventForm = ({
 
                         <ImagePreviewGrid
                             imagePreviews={imagePreviews}
-                            onRemoveImage={(identifier) => handleRemoveImage(typeof identifier === 'number' ? identifier : parseInt(identifier, 10))}
-                            showExistingBadge={true}
+                            onRemoveImage={handleRemoveImage}
+
                         />
                     </div>
-
+                    <EditEventTagsField
+                        tags={tags}
+                        setTags={setTags}
+                    />
                     <EditEventFormActions
+                        onSubmit={() => { }}
+                        onCancel={onClose}
                         isSubmitting={isSubmitting}
-                        submitError={submitError}
+                        globalError={globalError}
                     />
                 </form>
             </Modal.Body>

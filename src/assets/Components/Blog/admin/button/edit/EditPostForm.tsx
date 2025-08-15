@@ -72,7 +72,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
             <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
             <div className={styles.newImagesUploadSection}>
               <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
-             // Código corregido en EditPostForm.tsx
+
               <ImageUploadButton
                 onImagesSelected={handleImagesSelected}
               // Aquí solo pasamos onImagesSelected.

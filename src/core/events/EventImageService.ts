@@ -131,4 +131,16 @@ export default class EventImageService {
     if (!imageId) return "";
     return `${this.uri}/${imageId}/data`;
   }
+
+  // Get image as Blob
+  async getImageAsBlob(imageId: number): Promise<string> {
+    const response: AxiosResponse<Blob> = await axios.get(
+      `${this.uri}/${imageId}/data`,
+      {
+        responseType: "blob",
+        headers: getAuthHeaders(), // Include authorization headers
+      }
+    );
+    return URL.createObjectURL(response.data);
+  }
 }

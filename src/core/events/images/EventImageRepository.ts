@@ -16,11 +16,29 @@ export class EventImageRepository {
    * Obtener todas las imágenes de un evento (privado)
    */
   async getEventImages(eventId: number): Promise<IEventImage[]> {
-    const response: AxiosResponse<IEventImage[]> = await axios.get(
-      `${this.uri}/event/${eventId}`,
-      { headers: getAuthHeaders() }
+    console.log(
+      `[EventImageRepository] Fetching event images for event: ${eventId}`
     );
-    return response.data;
+
+    const headers = getAuthHeaders();
+    console.log("[EventImageRepository] Headers being sent:", headers);
+
+    try {
+      const response: AxiosResponse<IEventImage[]> = await axios.get(
+        `${this.uri}/event/${eventId}`,
+        { headers }
+      );
+      console.log(
+        `[EventImageRepository] Fetched ${response.data.length} event images`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "[EventImageRepository] Error fetching event images:",
+        error
+      );
+      throw error;
+    }
   }
 
   /**
@@ -97,15 +115,44 @@ export class EventImageRepository {
    * Endpoint: GET /api/v1/any/event-images/{id}/data
    */
   async getImageAsBlob(imageId: number): Promise<string> {
-    const response: AxiosResponse<Blob> = await axios.get(
-      `${this.uri}/${imageId}/data`,
-      {
+    try {
+      console.log(
+        `[EventImageRepository] Fetching blob for image ID: ${imageId}`
+      );
+      const response = await axios.get(`${this.uri}/${imageId}/data`, {
         headers: getAuthHeaders(),
         responseType: "blob",
-        timeout: 30000,
+        timeout: 15000,
+      });
+
+      const blob = response.data;
+
+      if (blob.size < 1000) {
+        try {
+          const text = await blob.text();
+          throw new Error(
+            `Suspicious small blob for image ${imageId}: ${text.substring(
+              0,
+              200
+            )}`
+          );
+        } catch (readError) {
+          // no-op
+        }
       }
-    );
-    return URL.createObjectURL(response.data);
+
+      const blobUrl = URL.createObjectURL(blob);
+      console.log(
+        `[EventImageRepository] Blob fetched successfully for image ID: ${imageId}`
+      );
+      return blobUrl;
+    } catch (error) {
+      console.error(
+        `[EventImageRepository] Error fetching blob for image ID: ${imageId}`,
+        error
+      );
+      throw error;
+    }
   }
 
   /**

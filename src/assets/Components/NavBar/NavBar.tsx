@@ -25,10 +25,7 @@ function NavBar() {
         state.profile.profiles.find((p) => p.id === userId)
     );
     const avatarsList = useSelector((state: RootState) => state.avatars.avatars);
-    console.log('[NavBar] userId:', userId);
-    console.log('[NavBar] isLoggedIn:', isLoggedIn);
-    console.log('[NavBar] userProfile:', userProfile);
-    console.log('[NavBar] avatarsList:', avatarsList);
+
     let avatarUrl = "/images/avatarGeneric.png";
     if (userProfile) {
         if (userProfile.avatar && userProfile.avatar !== "") {

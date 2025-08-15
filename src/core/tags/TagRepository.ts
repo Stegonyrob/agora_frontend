@@ -33,17 +33,9 @@ class TagRepository implements ITagRepository {
   // Endpoints públicos (no requieren autenticación)
   async getAllTags(): Promise<ITag[]> {
     try {
-      console.log("🏷️ TagRepository - Obteniendo todos los tags...");
       const response = await axios.get(this.publicTagsUrl);
-
-      console.log("✅ TagRepository - Tags obtenidos:", {
-        cantidad: response.data?.length || 0,
-        tags: response.data,
-      });
-
       return response.data || [];
     } catch (error) {
-      console.error("❌ TagRepository - Error al obtener tags:", error);
       throw error;
     }
   }

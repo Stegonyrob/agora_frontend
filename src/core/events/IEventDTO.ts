@@ -1,3 +1,8 @@
+export interface EventImage {
+  id?: number;
+  imageName: string;
+}
+
 export interface IEventDTO {
   id: number;
   title: string;
@@ -12,7 +17,7 @@ export interface IEventDTO {
   alt_avatar: string;
   source_avatar: string;
   url_avatar: string;
-  images: string[];
+  images: EventImage[]; // Ensure this type is correct
   isPublished: boolean;
   location: string;
   createdAt: string;

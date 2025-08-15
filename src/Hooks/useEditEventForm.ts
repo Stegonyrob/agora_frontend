@@ -1,15 +1,21 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import EventImageService from "@/core/events/EventImageService";
-import { IEventDTO } from "@/core/events/IEventDTO";
+import { EventImage, IEventDTO } from "@/core/events/IEventDTO";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface UseEditEventFormProps {
   event?: IEventDTO;
   show: boolean;
+  onClose: () => void; // Agregado onClose aquí
 }
 
-export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
+export const useEditEventForm = ({
+  event,
+  show,
+  onClose,
+}: UseEditEventFormProps) => {
   // Estados del formulario
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -21,12 +27,47 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [globalError, setGlobalError] = useState<string | null>(null);
 
   // Servicio memoizado
   const apiEventImage = new EventImageService();
 
   // Cargar datos del evento cuando se abre el modal
   useEffect(() => {
+    const loadImages = async () => {
+      const previews: IImagePreview[] = await Promise.all(
+        event!.images.map(async (img: EventImage) => {
+          const identifier = img.id ? img.id : img.imageName;
+          try {
+            if (img.id) {
+              const blobUrl = await apiEventImage.getImageAsBlob(img.id);
+              return {
+                url: blobUrl,
+                isLoading: false,
+                isExisting: true,
+                id: img.id,
+              };
+            } else {
+              return {
+                url: `/images/events/${img.imageName}`,
+                isLoading: false,
+                isExisting: true,
+                tempId: uuidv4(),
+              };
+            }
+          } catch (e) {
+            return {
+              url: `/images/events/${img.imageName}`,
+              isLoading: false,
+              isExisting: true,
+              tempId: uuidv4(),
+            };
+          }
+        })
+      );
+      setImagePreviews(previews);
+    };
+
     if (show && event) {
       setTitle(event.title || "");
       setMessage(event.message || "");
@@ -34,10 +75,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       setCapacity(event.capacity || 0);
       setLink(event.link || "");
       setTags(event.tags || []);
-      console.log(
-        "🏷️ useEditEventForm - Tags cargadas del evento:",
-        event.tags
-      );
+      setImagesToDelete([]);
 
       if (event.eventDate) {
         try {
@@ -57,79 +95,12 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
         setDate("");
       }
 
-      // Cargar imágenes existentes del evento
-      const loadEventImages = async () => {
-        if (event?.id) {
-          try {
-            console.log(
-              "📷 useEditEventForm - Cargando imágenes existentes del evento:",
-              event.id
-            );
-            const eventImages = await apiEventImage.getEventImages(event.id);
-
-            const existingImages: IImagePreview[] = eventImages.map((img) => ({
-              url: apiEventImage.buildImageUrl(img.id),
-              isLoading: false,
-              isExisting: true,
-              id: img.id,
-            }));
-
-            setImagePreviews(existingImages);
-            console.log(
-              "✅ useEditEventForm - Imágenes existentes cargadas:",
-              existingImages.length
-            );
-          } catch (error) {
-            console.error(
-              "💥 useEditEventForm - Error cargando imágenes:",
-              error
-            );
-            if (event.images && event.images.length > 0) {
-              const fallbackImages: IImagePreview[] = event.images.map(
-                (imageUrl, index) => ({
-                  url: imageUrl,
-                  isLoading: false,
-                  isExisting: true,
-                  id: index,
-                })
-              );
-              setImagePreviews(fallbackImages);
-              console.log(
-                "🔄 useEditEventForm - Usando URLs de fallback:",
-                fallbackImages.length
-              );
-            } else {
-              setImagePreviews([]);
-            }
-          }
-        } else if (event.images && event.images.length > 0) {
-          console.log(
-            "📷 useEditEventForm - Cargando imágenes desde URLs del evento:",
-            event.images
-          );
-          const existingImages: IImagePreview[] = event.images.map(
-            (imageUrl, index) => ({
-              url: imageUrl,
-              isLoading: false,
-              isExisting: true,
-              id: index,
-            })
-          );
-          setImagePreviews(existingImages);
-          console.log(
-            "✅ useEditEventForm - Imágenes existentes cargadas:",
-            existingImages.length
-          );
-        } else {
-          console.log(
-            "🗂️ useEditEventForm - No hay imágenes existentes, limpiando array"
-          );
-          setImagePreviews([]);
-        }
-      };
-
-      loadEventImages();
-      setFormErrors({});
+      if (event.images && event.images.length > 0) {
+        loadImages();
+      } else {
+        setImagePreviews([]);
+      }
+      setGlobalError(null);
     } else if (!show) {
       // Reiniciar el formulario cuando el modal se cierra
       setTitle("");
@@ -143,7 +114,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       setImagesToDelete([]);
       setFormErrors({});
     }
-  }, [event?.id, event?.images, show]);
+  }, [event, show]);
 
   // Manejo de imágenes
   const handleNewImagesSelected = useCallback((files: File[] | null) => {
@@ -163,26 +134,25 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
     console.log("Nuevas imágenes seleccionadas:", files.length);
   }, []);
 
-  const handleRemoveImage = useCallback((idx: number) => {
+  const handleRemoveImage = useCallback((identifier: number | string) => {
     setImagePreviews((prev) => {
-      const imageToRemove = prev[idx];
-
-      // Si la imagen es una imagen existente, la añadimos a la lista de imágenes a eliminar
-      if (imageToRemove?.isExisting && typeof imageToRemove.id === "number") {
-        setImagesToDelete((prevIds) => [...prevIds, imageToRemove.id!]);
-      }
-
-      // Si la imagen es una nueva imagen (aún no subida), revocamos el Object URL para liberar memoria
+      const imgToRemove = prev.find((img) =>
+        img.isExisting ? img.id === identifier : img.tempId === identifier
+      );
       if (
-        imageToRemove?.url &&
-        !imageToRemove.isExisting &&
-        imageToRemove.file
+        imgToRemove &&
+        imgToRemove.isExisting &&
+        typeof imgToRemove.id === "number"
       ) {
-        URL.revokeObjectURL(imageToRemove.url);
+        setImagesToDelete((ids) =>
+          ids.includes(imgToRemove.id as number)
+            ? ids
+            : [...ids, imgToRemove.id as number]
+        );
       }
-
-      // Eliminamos la imagen de la vista previa
-      return prev.filter((_, i) => i !== idx);
+      return prev.filter((img) =>
+        img.isExisting ? img.id !== identifier : img.tempId !== identifier
+      );
     });
   }, []);
 
@@ -232,9 +202,10 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
         // 1. Eliminar imágenes marcadas para borrado
         if (imagesToDelete.length > 0) {
           console.log(`🗑️ Eliminando ${imagesToDelete.length} imágenes...`);
-          const eventImageService = new EventImageService();
-          // La función de borrado múltiple solo necesita los IDs de las imágenes
-          await eventImageService.deleteMultipleEventImages(imagesToDelete);
+          const deletePromises = imagesToDelete.map((imageId) =>
+            apiEventImage.deleteEventImage(imageId)
+          );
+          await Promise.all(deletePromises);
           console.log("✅ Imágenes eliminadas exitosamente");
         }
 
@@ -243,36 +214,59 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
           .filter((preview) => !preview.isExisting && preview.file)
           .map((preview) => preview.file!);
 
+        let uploadedNewImages: EventImage[] = [];
         if (newImageFiles.length > 0) {
-          console.log(`📷 Subiendo ${newImageFiles.length} nuevas imágenes...`);
-          const eventImageService = new EventImageService();
-          await eventImageService.uploadEventImages(event.id, newImageFiles);
+          console.log(`📤 Subiendo ${newImageFiles.length} nuevas imágenes...`);
+          uploadedNewImages = await apiEventImage.uploadEventImages(
+            event.id,
+            newImageFiles
+          );
           console.log("✅ Nuevas imágenes subidas exitosamente");
         }
 
-        // 3. Validar y formatear la fecha
-        const dateObj = new Date(date);
-        if (isNaN(dateObj.getTime())) {
-          console.error("Fecha inválida:", date);
-          return;
-        }
+        // 3. Construir payload de imágenes
+        const finalImagesPayload = imagePreviews
+          .filter(
+            (img) =>
+              img.isExisting &&
+              typeof img.id === "number" &&
+              !imagesToDelete.includes(img.id)
+          )
+          .map((img) => {
+            const eventImage = event.images.find((i: any) => i.id === img.id);
+            return {
+              id: img.id,
+              imageName: eventImage?.imageName || "",
+              eventId: event.id,
+            };
+          });
 
-        // 4. Actualizar el evento (sin imágenes, ya que se manejan por separado)
+        const newImagesPayload = uploadedNewImages.map((img) => ({
+          id: img.id,
+          imageName: img.imageName,
+          eventId: event.id,
+        }));
+
+        const imagesPayload = [...finalImagesPayload, ...newImagesPayload];
+
+        // 4. Actualizar el evento
         const updatedEvent: IEventDTO = {
           ...event,
           id: event.id,
           title: sanitizedTitle,
           message: sanitizedMessage,
           place,
-          eventDate: dateObj.toISOString(),
+          eventDate: new Date(date).toISOString(),
           link,
           capacity: Number(capacity),
           tags,
+          images: imagesPayload,
         };
 
         console.log("📝 Actualizando datos del evento...");
         onSubmit(updatedEvent);
         console.log("✅ Evento actualizado exitosamente");
+        onClose(); // Close the modal after successful update
       } catch (error) {
         console.error("❌ Error al actualizar el evento:", error);
         throw error;
@@ -290,6 +284,7 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
       imagePreviews,
       event,
       imagesToDelete,
+      apiEventImage,
     ]
   );
 
@@ -316,5 +311,6 @@ export const useEditEventForm = ({ event, show }: UseEditEventFormProps) => {
     handleNewImagesSelected,
     handleRemoveImage,
     submitForm,
+    globalError,
   };
 };
