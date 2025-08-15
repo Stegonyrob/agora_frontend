@@ -72,16 +72,11 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
             <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
             <div className={styles.newImagesUploadSection}>
               <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
+             // Código corregido en EditPostForm.tsx
               <ImageUploadButton
                 onImagesSelected={handleImagesSelected}
-                onUploadImages={(files) => post ? postImageService.uploadPostImages(post.id, files).then(images => images.map(img => ({
-                  ...img,
-                  id: img.id || 0, // Asegurar que id nunca sea null
-                  eventId: post.id, // Agregar campo faltante
-                  imageType: 'post', // Ejemplo de tipo
-                  createdAt: new Date().toISOString(), // Fecha actual como ejemplo
-                  imageData: img.imageData || '' // Asignar valor predeterminado si es undefined
-                }))) : Promise.reject("Post no definido")}
+              // Aquí solo pasamos onImagesSelected.
+              // La subida real se hará cuando el usuario presione el botón de Guardar/Actualizar.
               />
               <small className={styles.helpText}>
                 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.

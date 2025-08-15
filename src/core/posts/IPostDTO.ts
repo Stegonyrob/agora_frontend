@@ -1,3 +1,5 @@
+import { IPostImageDTO } from "./images/IPostImageDTO";
+
 export interface IPostTagDTO {
   id: number;
   name: string;
@@ -17,7 +19,7 @@ export interface IPostDTO {
   comments: any[];
   isArchived: boolean;
   tags: IPostTagDTO[];
-  images: string[];
+  images: IPostImageDTO[];
   isPublished: boolean;
   alt_image: string;
   source_image: string;

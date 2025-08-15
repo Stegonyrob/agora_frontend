@@ -1,33 +1,21 @@
-import { ImageCompressorToHex } from "@/components/tools/ImageCompressorToHex";
-import React, { useRef, useState } from "react";
-import { EventImageResponse } from "../../../../../core/events/EventImageService";
+import React, { useCallback, useRef, useState } from "react";
 import styles from "./ImageUploadButton.module.scss";
 
+// Se eliminan las props relacionadas con la subida. El componente solo notifica la selección de archivos.
 interface ImageUploadButtonProps {
-    eventId?: number;
-    onImagesUploaded?: (images: EventImageResponse[]) => void;
-    onImagesSelected?: (images: File[]) => void;
-    onImagesHexReady?: (hexImages: string[]) => void;
-    onUploadImages?: (files: File[]) => Promise<EventImageResponse[]>; // Nuevo callback para subir imágenes
+    onImagesSelected: (files: File[]) => void;
     multiple?: boolean;
     className?: string;
     disabled?: boolean;
 }
 
 const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
-    eventId,
-    onImagesUploaded,
     onImagesSelected,
-    onImagesHexReady,
-    onUploadImages, // Usar este callback en lugar de EventImageService
     multiple = true,
     className = "",
     disabled = false
 }) => {
-    const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
-    const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-    const [hexResults, setHexResults] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const validateFiles = (files: File[]): { isValid: boolean; error?: string } => {
@@ -48,11 +36,10 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
                 };
             }
         }
-
         return { isValid: true };
     };
 
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files || files.length === 0) {
             console.log('❌ ImageUploadButton - No files selected');
@@ -60,16 +47,8 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
         }
 
         const filesArray = Array.from(files);
-        console.log('📤 ImageUploadButton - handleFileChange iniciado:', {
-            cantidadArchivos: filesArray.length,
-            eventId,
-            archivos: filesArray.map(f => ({ name: f.name, size: f.size, type: f.type }))
-        });
-
-        // Limpiar errores previos
         setUploadError(null);
 
-        // Validar archivos
         const validation = validateFiles(filesArray);
         if (!validation.isValid) {
             console.error('❌ ImageUploadButton - Validación fallida:', validation.error);
@@ -77,62 +56,23 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
             return;
         }
 
-        // Si hay onImagesSelected, llamarlo (para compatibilidad)
+        // Aquí solo se llama al callback para pasar los archivos.
+        // La subida real se manejará fuera de este componente.
         if (onImagesSelected) {
             console.log('📤 ImageUploadButton - Llamando onImagesSelected...');
             onImagesSelected(filesArray);
         }
 
-        // Nueva lógica: preparar para conversión a hex
-        setPendingFiles(filesArray);
-        setHexResults([]);
-
-        // Usar el callback onUploadImages si está definido
-        if (onUploadImages) {
-            try {
-                setIsUploading(true);
-                console.log('📤 ImageUploadButton - Subiendo imágenes usando onUploadImages...');
-
-                const uploadedImages = await onUploadImages(filesArray);
-                console.log('✅ ImageUploadButton - Imágenes subidas exitosamente:', uploadedImages);
-
-                if (onImagesUploaded) {
-                    onImagesUploaded(uploadedImages);
-                }
-            } catch (error) {
-                console.error('❌ ImageUploadButton - Error uploading images:', error);
-                setUploadError(error instanceof Error ? error.message : 'Error uploading images');
-            } finally {
-                setIsUploading(false);
-            }
-        }
-
-        // Reset input
+        // Se limpia el valor del input para poder subir el mismo archivo de nuevo.
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
-    };
+    }, [onImagesSelected]);
 
-    const handleClick = () => {
-        if (disabled || isUploading) return;
+    const handleClick = useCallback(() => {
+        if (disabled) return;
         fileInputRef.current?.click();
-    };
-
-    const isDisabled = disabled || isUploading;
-    const shouldShowUploadingState = isUploading && eventId;
-
-    // Manejar resultado de cada imagen convertida a hex
-    const handleHexReady = (hex: string, idx: number) => {
-        setHexResults((prev) => {
-            const next = [...prev];
-            next[idx] = hex;
-            // Si ya están todos, llamar callback
-            if (next.filter(Boolean).length === pendingFiles.length && typeof onImagesHexReady === 'function') {
-                onImagesHexReady(next);
-            }
-            return next;
-        });
-    };
+    }, [disabled]);
 
     return (
         <div className={`${styles.imageUploadButton} ${className}`}>
@@ -143,48 +83,27 @@ const ImageUploadButton: React.FC<ImageUploadButtonProps> = ({
                 accept="image/jpeg,image/jpg,image/png,image/gif"
                 multiple={multiple}
                 style={{ display: 'none' }}
-                disabled={isDisabled}
+                disabled={disabled}
             />
             <button
                 type="button"
                 className={`${styles.uploadButton} ${uploadError ? styles['uploadButton--error'] : ''}`}
                 onClick={handleClick}
-                disabled={isDisabled}
-                aria-label={multiple ? "Subir imágenes" : "Subir imagen"}
+                disabled={disabled}
+                aria-label={multiple ? "Seleccionar imágenes" : "Seleccionar imagen"}
             >
                 <div className={styles.buttonContent}>
-                    {shouldShowUploadingState ? (
-                        <>
-                            <div className={styles.loadingSpinner} />
-                            <span className={styles.text}>Subiendo...</span>
-                        </>
-                    ) : (
-                        <>
-                            <i className={styles.icon}>📷</i>
-                            <span className={styles.text}>
-                                {eventId
-                                    ? (multiple ? "Subir Imágenes" : "Subir Imagen")
-                                    : (multiple ? "Seleccionar Imágenes" : "Seleccionar Imagen")
-                                }
-                            </span>
-                            <small className={styles.subtext}>
-                                JPG, PNG, GIF hasta 5MB
-                            </small>
-                        </>
-                    )}
+                    <>
+                        <i className={styles.icon}>📷</i>
+                        <span className={styles.text}>
+                            {multiple ? "Seleccionar Imágenes" : "Seleccionar Imagen"}
+                        </span>
+                        <small className={styles.subtext}>
+                            JPG, PNG, GIF hasta 5MB
+                        </small>
+                    </>
                 </div>
             </button>
-
-            {/* Renderizar microcomponentes para cada archivo pendiente */}
-            {pendingFiles.map((file, idx) => (
-                <ImageCompressorToHex
-                    key={file.name + idx}
-                    file={file}
-                    onHexReady={(hex) => handleHexReady(hex, idx)}
-                    onError={(err) => setUploadError(err)}
-                />
-            ))}
-
             {uploadError && (
                 <div className={styles.errorMessage}>
                     {uploadError}

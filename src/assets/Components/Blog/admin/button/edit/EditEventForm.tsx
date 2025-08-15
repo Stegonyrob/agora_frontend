@@ -95,9 +95,11 @@ const EditEventForm = ({
 
                         <div className={styles.newImagesUploadSection}>
                             <h4 className={styles.subsectionTitle}>Seleccionar imágenes:</h4>
+                           // Código corregido en EditPostForm.tsx
                             <ImageUploadButton
-                                onImagesSelected={handleNewImagesSelected}
-                                onUploadImages={(files) => event ? apiEventImage.uploadEventImages(event.id, files) : Promise.reject("Event no definido")}
+                                onImagesSelected={handleImagesSelected}
+                            // Aquí solo pasamos onImagesSelected.
+                            // La subida real se hará cuando el usuario presione el botón de Guardar/Actualizar.
                             />
                             <small className={styles.helpText}>
                                 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.
