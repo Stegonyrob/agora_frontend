@@ -1,6 +1,46 @@
 import axios from "axios";
+import mitt from "mitt";
 import { getAuthHeaders } from "../auth/AuthHeaders";
 import IAvatar from "./IAvatar";
+
+const loginEventEmitter = mitt();
+
+export const onLogin = (callback: () => void) => {
+  loginEventEmitter.on("login", callback);
+};
+
+export const triggerLoginEvent = () => {
+  loginEventEmitter.emit("login");
+};
+export const fetchAvatarsForSelector = async () => {
+  try {
+    const headers = getAuthHeaders();
+    if (!headers.Authorization) {
+      console.warn(
+        "⚠️ No se encontró un token de autenticación. Abortando fetchAvatarsForSelector..."
+      );
+      return; // No ejecutar si no hay token
+    }
+
+    const baseURL = import.meta.env.VITE_API_ENDPOINT_AVATARS;
+    const response = await axios.get(`${baseURL}/selector`, {
+      headers,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      console.error("Unauthorized: Please log in.");
+    }
+    throw error;
+  }
+};
+
+// Escuchar el evento de login para disparar fetchAvatarsForSelector
+onLogin(() => {
+  fetchAvatarsForSelector()
+    .then((data) => console.log("Avatars fetched successfully:", data))
+    .catch((error) => console.error("Error fetching avatars:", error));
+});
 
 export class AvatarRepository {
   private baseURL = import.meta.env.VITE_API_ENDPOINT_AVATARS;
@@ -180,3 +220,10 @@ export class AvatarRepository {
     });
   }
 }
+
+// Escuchar el evento de login para disparar fetchAvatarsForSelector
+onLogin(() => {
+  fetchAvatarsForSelector()
+    .then((data) => console.log("Avatars fetched successfully:", data))
+    .catch((error) => console.error("Error fetching avatars:", error));
+});

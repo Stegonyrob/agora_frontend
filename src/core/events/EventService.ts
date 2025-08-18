@@ -171,6 +171,7 @@ export default class EventService {
     try {
       const event = await this.eventRepository.getById(id);
       console.log("Event fetched successfully (authenticated):", event);
+      console.log("Debug: eventDate in fetched event:", event.eventDate);
       return event;
     } catch (error: any) {
       console.error(
@@ -188,6 +189,7 @@ export default class EventService {
       message: newEvent.message,
       capacity: newEvent.capacity,
       tags: newEvent.tags,
+      eventDate: newEvent.eventDate,
     });
 
     try {
@@ -196,6 +198,7 @@ export default class EventService {
         method: "POST",
         data: newEvent,
       });
+      console.log("📤 EventService - Payload sent to backend:", newEvent);
 
       const response: AxiosResponse<IEvent> = await axios.post<IEvent>(
         this.uri,

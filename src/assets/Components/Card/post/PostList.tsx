@@ -103,6 +103,8 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                                 userRole={post.userRole}
                                 attendeesCount={post.attendeesCount ?? 0} // Asumiendo que attendeesCount puede estar en post también
                                 onSelect={handleSelect}
+                                eventDate={post.eventDate} // Added eventDate
+                                eventTime={post.eventTime} // Added eventTime
                             />
                         );
                     })

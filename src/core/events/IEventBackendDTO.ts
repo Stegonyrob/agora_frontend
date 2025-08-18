@@ -4,6 +4,8 @@ export interface IEventCreateDTO {
   message: string; // max 300 chars, required
   capacity?: number; // optional
   tags?: string[]; // optional - array of strings
+  eventDate?: string; // optional - fecha del evento en formato ISO 8601
+  creationDate?: string; // optional - fecha de creación en formato ISO 8601
 }
 
 // DTO para EDITAR al backend

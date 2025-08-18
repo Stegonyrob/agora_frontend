@@ -12,31 +12,16 @@ export class EventImageRepository {
    * Obtener todas las imágenes de un evento
    * Endpoint: GET /api/v1/event-images/event/{eventId}
    */
-  /**
-   * Obtener todas las imágenes de un evento (privado)
-   */
   async getEventImages(eventId: number): Promise<IEventImage[]> {
-    console.log(
-      `[EventImageRepository] Fetching event images for event: ${eventId}`
-    );
-
     const headers = getAuthHeaders();
-    console.log("[EventImageRepository] Headers being sent:", headers);
 
     try {
       const response: AxiosResponse<IEventImage[]> = await axios.get(
         `${this.uri}/event/${eventId}`,
         { headers }
       );
-      console.log(
-        `[EventImageRepository] Fetched ${response.data.length} event images`
-      );
       return response.data;
     } catch (error) {
-      console.error(
-        "[EventImageRepository] Error fetching event images:",
-        error
-      );
       throw error;
     }
   }
@@ -116,9 +101,6 @@ export class EventImageRepository {
    */
   async getImageAsBlob(imageId: number): Promise<string> {
     try {
-      console.log(
-        `[EventImageRepository] Fetching blob for image ID: ${imageId}`
-      );
       const response = await axios.get(`${this.uri}/${imageId}/data`, {
         headers: getAuthHeaders(),
         responseType: "blob",
@@ -141,16 +123,8 @@ export class EventImageRepository {
         }
       }
 
-      const blobUrl = URL.createObjectURL(blob);
-      console.log(
-        `[EventImageRepository] Blob fetched successfully for image ID: ${imageId}`
-      );
-      return blobUrl;
+      return URL.createObjectURL(blob);
     } catch (error) {
-      console.error(
-        `[EventImageRepository] Error fetching blob for image ID: ${imageId}`,
-        error
-      );
       throw error;
     }
   }
@@ -172,9 +146,6 @@ export class EventImageRepository {
 
   /**
    * Construir URL para obtener imagen
-   */
-  /**
-   * Construir URL para obtener imagen (privada)
    */
   buildImageUrl(imageId: number): string {
     return `${this.uri}/${imageId}/data`;

@@ -8,6 +8,8 @@ interface EditEventDateCapacityFieldsProps {
     capacity: number | string;
     setCapacity: (value: string) => void;
     formErrors: { [key: string]: string };
+    time: string;
+    setTime: (value: string) => void;
 }
 
 const EditEventDateCapacityFields: React.FC<EditEventDateCapacityFieldsProps> = ({
@@ -15,7 +17,9 @@ const EditEventDateCapacityFields: React.FC<EditEventDateCapacityFieldsProps> = 
     setDate,
     capacity,
     setCapacity,
-    formErrors
+    formErrors,
+    time,
+    setTime
 }) => {
     return (
         <>
@@ -33,7 +37,20 @@ const EditEventDateCapacityFields: React.FC<EditEventDateCapacityFieldsProps> = 
                     <div className={styles.errorText}>{formErrors.date}</div>
                 )}
             </div>
-
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Hora del Evento *
+                </Form.Label>
+                <Form.Control
+                    type="time"
+                    className={`form-control ${formErrors.time ? 'is-invalid' : ''}`}
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                />
+                {formErrors.time && (
+                    <div className={styles.errorText}>{formErrors.time}</div>
+                )}
+            </div>
             <div className={styles.formGroup}>
                 <Form.Label className="form-label">
                     Aforo máximo

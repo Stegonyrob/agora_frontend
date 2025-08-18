@@ -1,8 +1,10 @@
+
+
 import { AttendeeService } from '@/core/attendees/AttendeeService';
 import { IAttendee } from '@/core/attendees/IAttendee';
+import { Workbook } from 'exceljs';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Spinner, Table } from 'react-bootstrap';
-import * as XLSX from 'xlsx';
 import styles from './AttendeesListModal.module.scss';
 
 interface AttendeesListModalProps {
@@ -49,27 +51,38 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
             return;
         }
 
-        // Preparar los datos para el Excel
-        const dataForExcel = attendees.map((attendee, index) => ({
-            'Nº': index + 1,
-            'Nombre': attendee.name,
-            'Email': attendee.email,
-            'Teléfono': (attendee as any).phone || 'No proporcionado',
-            'Fecha de Inscripción': new Date(attendee.registeredAt).toLocaleString('es-ES')
-        }));
+        // Preparar los datos para el Excel en formato AOA (Array of Arrays)
+        const headers = ['Nº', 'Nombre', 'Email', 'Teléfono', 'Fecha de Inscripción'];
+        const dataForExcel = attendees.map((attendee, index) => [
+            index + 1,
+            attendee.name,
+            attendee.email,
+            (attendee as any).phone || 'No proporcionado',
+            new Date(attendee.registeredAt).toLocaleString('es-ES')
+        ]);
+        const aoa = [headers, ...dataForExcel];
 
         // Crear el libro de trabajo
-        const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
-        const workbook = XLSX.utils.book_new();
+        const workbook = new Workbook();
+        const worksheet = workbook.addWorksheet('Inscritos');
 
-        // Añadir la hoja al libro
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Inscritos');
+        // Añadir los datos al libro de trabajo
+        worksheet.columns = headers.map(header => ({ header }));
+        worksheet.addRows(dataForExcel);
 
         // Crear el nombre del archivo
         const fileName = `Inscritos_${eventTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
         // Descargar el archivo
-        XLSX.writeFile(workbook, fileName);
+        workbook.xlsx.writeBuffer().then(buffer => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(url);
+        });
     };
 
     const formatDate = (dateString: string) => {
@@ -81,7 +94,6 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
             minute: '2-digit'
         });
     };
-
     return (
         <Modal show={show} onHide={onHide} size="lg" className={styles.modal}>
             <Modal.Header closeButton className={styles.modalHeader}>

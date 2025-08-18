@@ -82,8 +82,9 @@ const EditEventForm = ({
                         setDate={setDate}
                         capacity={capacity}
                         setCapacity={setCapacity}
-                        formErrors={formErrors}
-                    />
+                        formErrors={formErrors} time={""} setTime={function (value: string): void {
+                            throw new Error("Function not implemented.");
+                        }} />
                     <div className={styles.imageSection}>
                         <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
 

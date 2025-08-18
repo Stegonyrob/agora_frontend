@@ -71,8 +71,9 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
                         eventDate={eventDate}
                         setEventDate={setEventDate}
                         capacity={capacity}
-                        setCapacity={setCapacity}
-                    />
+                        setCapacity={setCapacity} time={""} setTime={function (value: string): void {
+                            throw new Error("Function not implemented.");
+                        }} />
 
                     <EventImageManager
                         imagePreviews={imagePreviews}

@@ -52,10 +52,10 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const session = useSelector((state: RootState) => state.session);
+
   // DEBUG: Avatars global state
   const avatars = useSelector((state: RootState) => state.avatars?.avatars || []);
-  // Log avatars state on every render
-  console.log('[App] Avatars state:', avatars);
+
   // Nuevo estado para controlar la hidratación
   const [isHydrating, setIsHydrating] = useState(true);
 
@@ -94,9 +94,10 @@ const App: React.FC = () => {
           dispatch(updateAvatarUrl(profile.avatar));
         }
       });
+
+      // Solo cargar avatares si el usuario está autenticado
+      dispatch(fetchAvatarsForSelector() as any);
     }
-    // Cargar avatares globales al iniciar la app
-    dispatch(fetchAvatarsForSelector() as any);
     setIsHydrating(false); // Ya terminamos de hidratar
   }, [dispatch, location.pathname]);
 

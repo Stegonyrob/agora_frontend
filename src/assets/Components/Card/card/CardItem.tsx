@@ -19,12 +19,13 @@ interface CardItemProps {
     description: string;
     creationDate: string;
     eventDate?: string; // Fecha específica del evento
+    eventTime?: string; // Hora específica del evento
     favoritesCount: number;
     commentsCount?: number;
     attendeesCount: number;
     location?: string;
     images?: SupportedImages; // Homogeneizado - soporte para strings, IEventImage[], IPostImage[]
-    tags?: { id: number; name: string; archived?: boolean }[]
+    tags?: { id: number; name: string; archived?: boolean }[];
     user?: any;
     userRole?: string;
     onSelect?: (item: any) => void;
@@ -40,6 +41,7 @@ const CardItem: React.FC<CardItemProps> = ({
     description,
     creationDate,
     eventDate,
+    eventTime, // Added eventTime
     favoritesCount,
     commentsCount,
     attendeesCount = 0,
@@ -84,15 +86,34 @@ const CardItem: React.FC<CardItemProps> = ({
         setCurrentImage((prev) => (processedImages && prev === processedImages.length - 1 ? 0 : prev + 1));
     };
 
+    // Debug: Verificar si eventDate es null o vacío
+    console.log('🔍 [CardItem] Valor de eventDate:', eventDate);
+
+    // Hardcodear fecha y hora del evento para pruebas
+    const hardcodedEventDate = '2025-08-20';
+    const hardcodedEventTime = '18:30';
+
     // Fecha y lugar juntos para eventos
     const displayDate = type === 'event' && eventDate ? eventDate : creationDate;
     const eventInfo = type === 'event' && location
-        ? `${location} · ${new Date(displayDate).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        })}`
-        : undefined;
+        ? `${location} · ${eventDate} ${eventTime}`
+        : `${eventDate} ${eventTime}`;
+
+    // Debug: Verificar datos recibidos
+    console.log('🔍 [CardItem] Props recibidos:', {
+        id,
+        title,
+        description,
+        creationDate,
+        eventDate,
+        eventTime, // Added eventTime
+        type,
+        location,
+        images,
+    });
+
+    // Debug: Verificar fecha calculada para mostrar
+    console.log('🔍 [CardItem] Fecha calculada (displayDate):', displayDate);
 
     return (
         <>
@@ -122,24 +143,9 @@ const CardItem: React.FC<CardItemProps> = ({
                                         hasToken: failedUrl?.includes('token=')
                                     });
 
-                                    // Si es una URL de post image que falló, intentar diagnosticar
-                                    if (failedUrl?.includes('/api/v1/post-images/')) {
-                                        console.warn('🚨 [CardItem] POST IMAGE FAILED:', {
-                                            url: failedUrl,
-                                            hasToken: failedUrl.includes('token='),
-                                            possibleCauses: [
-                                                'Backend no acepta token como query parameter',
-                                                'Token expirado o inválido',
-                                                'Endpoint /data no existe o no está configurado',
-                                                'CORS issues con autenticación'
-                                            ]
-                                        });
-                                    }
-
-                                    // Smart fallback: try local images first, then default
                                     const localImages = {
-                                        0: '/images/img/niñoFichas.jpg',       // First image
-                                        1: '/images/img/adolescentesGrupal.jpg' // Second image  
+                                        0: '/images/img/niñoFichas.jpg',
+                                        1: '/images/img/adolescentesGrupal.jpg'
                                     };
 
                                     const smartFallback = localImages[currentImage as keyof typeof localImages] || "/images/blocks-8866100_1280.png";
@@ -223,7 +229,6 @@ const CardItem: React.FC<CardItemProps> = ({
                         )}
                     </ul>
                 </div>
-                {/* !-- stadistic!  */}
                 <div className={styles.footer}>
                     <div className={styles.stats}>
                         {type === 'event' && (

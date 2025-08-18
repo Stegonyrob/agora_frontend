@@ -70,11 +70,6 @@ const ListAdmin = (props: ListAdminProps) => {
         }
     }, [items]); // Dependencia de items para reaccionar cuando cambien
 
-    console.log('ListAdmin props:', props);
-    console.log('Items array length:', items?.length);
-    console.log('Items array:', items);
-
-    // Normalizar todos los items antes de renderizar
     const normalizedItems = items.map(item => normalizeItem(item));
 
     // Si está cargando, renderiza el esqueleto
@@ -97,49 +92,39 @@ const ListAdmin = (props: ListAdminProps) => {
                 )}
 
                 {type === 'post'
-                    ? (normalizedItems as IPost[]).map(item => {
-                        console.log('ListAdmin post item:', item);
-                        return (
-                            <ItemPost
-                                key={item.id}
-                                post={item}
-                                onArchive={onArchive}
-                                onUnArchive={onUnArchive}
-                                onSelect={onSelect}
-                                onEdit={onEdit}
-                                onDelete={onDelete}
-                                onSubmit={onSubmit}
-                                userId={userId}
-                                onCreate={onCreate}
-                                postId={item.id}
-                                id={item.id}
-                                title={item.title} // Asegúrate de pasar las props correctas a ItemPost
-                            />
-                        );
-                    })
-                    : (normalizedItems as IEvent[]).map(item => {
-                        try {
-                            console.log('[ListAdmin] Full event item:', JSON.stringify(item, null, 2));
-                        } catch (e) {
-                            console.log('[ListAdmin] Full event item (raw):', item);
-                        }
-                        return (
-                            <ItemEvent
-                                key={item.id}
-                                event={item}
-                                onArchive={onArchive}
-                                onUnArchive={onUnArchive}
-                                onSelect={onSelect}
-                                onEdit={onEdit}
-                                onDelete={onDelete}
-                                onSubmit={onSubmit}
-                                userId={userId}
-                                onCreate={onCreate}
-                                id={item.id}
-                                title={item.title} // Asegúrate de pasar las props correctas a ItemEvent
-                            />
-                        );
-                    })
+                    ? (normalizedItems as IPost[]).map(item => (
+                        <ItemPost
+                            key={item.id}
+                            post={item}
+                            onArchive={onArchive}
+                            onUnArchive={onUnArchive}
+                            onSelect={onSelect}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onSubmit={onSubmit}
+                            userId={userId}
+                            onCreate={onCreate}
+                            postId={item.id}
+                            id={item.id}
+                            title={item.title} // Asegúrate de pasar las props correctas a ItemPost
+                        />
+                    ))
+                    : (normalizedItems as IEvent[]).map(item => (
+                        <ItemEvent
+                            key={item.id}
+                            event={item}
+                            onArchive={onArchive}
+                            onUnArchive={onUnArchive}
+                            onSelect={onSelect}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            onSubmit={onSubmit}
+                            userId={userId}
+                            onCreate={onCreate}
+                            id={item.id}
+                            title={item.title} // Asegúrate de pasar las props correctas a ItemEvent
+                        />
+                    ))
                 }
             </div>
         </div>

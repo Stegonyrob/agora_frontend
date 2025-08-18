@@ -32,6 +32,14 @@ export const useEventForm = ({
     }
     return "";
   });
+  const [eventTime, setEventTime] = useState(() => {
+    if (event?.eventDate) {
+      return (
+        new Date(event.eventDate).toISOString().split("T")[1]?.slice(0, 5) || ""
+      );
+    }
+    return "";
+  });
   const [link, setLink] = useState(event?.link || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -66,24 +74,28 @@ export const useEventForm = ({
         } catch (error) {
           console.error("💥 useEventForm - Error cargando imágenes:", error);
           if (event.images && event.images.length > 0) {
-            const fallbackImages: IImagePreview[] = event.images.map(
-              (imageUrl) => ({
+            const fallbackImages: IImagePreview[] = event.images
+              .filter(
+                (imageUrl): imageUrl is string => typeof imageUrl === "string"
+              )
+              .map((imageUrl) => ({
                 url: imageUrl,
                 isLoading: false,
                 isExisting: true,
-              })
-            );
+              }));
             setImagePreviews(fallbackImages);
           }
         }
       } else if (event?.images && event.images.length > 0) {
-        const existingImages: IImagePreview[] = event.images.map(
-          (imageUrl) => ({
+        const existingImages: IImagePreview[] = event.images
+          .filter(
+            (imageUrl): imageUrl is string => typeof imageUrl === "string"
+          )
+          .map((imageUrl) => ({
             url: imageUrl,
             isLoading: false,
             isExisting: true,
-          })
-        );
+          }));
         setImagePreviews(existingImages);
       } else {
         setImagePreviews([]);
@@ -136,21 +148,32 @@ export const useEventForm = ({
     console.log("🔐 useEventForm - Validando permisos y campos");
 
     if (userRole !== "ROLE_ADMIN") {
+      console.error("❌ Validación fallida: El usuario no es administrador.");
       throw new Error("Solo los administradores pueden crear/editar eventos.");
     }
 
     if (userId !== 1) {
+      console.error(
+        "❌ Validación fallida: El usuario no es el administrador principal."
+      );
       throw new Error(
         "Solo el usuario administrador (ID: 1) puede crear/editar eventos."
       );
     }
 
     if (!title.trim() || !message.trim() || !eventDate || !location.trim()) {
+      console.error("❌ Validación fallida: Campos obligatorios faltantes.", {
+        title,
+        message,
+        eventDate,
+        location,
+      });
       throw new Error(
         "Título, mensaje, fecha y ubicación son campos obligatorios."
       );
     }
 
+    console.log("✅ Validación exitosa: Todos los campos son válidos.");
     return true;
   }, [title, message, eventDate, location, userRole, userId]);
 
@@ -163,15 +186,26 @@ export const useEventForm = ({
     setLocation("");
     setCapacity(0);
     setEventDate("");
+    setEventTime("");
     setLink("");
   }, []);
 
   // Submit del formulario
   const submitForm = useCallback(
     async (onSubmit: (event: IEvent) => Promise<void>, onClose: () => void) => {
-      console.log("🚀 useEventForm - Iniciando proceso de envío");
+      console.log("🚀 useEventForm - Iniciando proceso de envío", {
+        title,
+        message,
+        location,
+        capacity,
+        eventDate,
+        tags,
+      });
 
-      if (isSubmitting) return;
+      if (isSubmitting) {
+        console.warn("⚠️ Proceso de envío ya en curso. Abortando nuevo envío.");
+        return;
+      }
 
       setIsSubmitting(true);
       setGlobalError(null);
@@ -179,7 +213,6 @@ export const useEventForm = ({
       try {
         validateForm();
 
-        // Separar archivos nuevos vs imágenes existentes
         const newImageFiles: File[] = [];
         const existingImageUrls: string[] = [];
 
@@ -191,12 +224,14 @@ export const useEventForm = ({
           }
         });
 
-        // Construir DTO del evento
-        // Preparar datos según si es creación o edición
+        console.log("📷 Imágenes procesadas:", {
+          newImageFiles,
+          existingImageUrls,
+        });
+
         let resultEvent: IEvent;
 
         if (event?.id) {
-          // Edición - usar IEventUpdateDTO
           const updateData: IEventUpdateDTO = {
             title: title.trim(),
             message: message.trim(),
@@ -204,11 +239,11 @@ export const useEventForm = ({
             archived: false,
           };
 
+          console.log("✏️ Actualizando evento existente:", updateData);
           const updatedEventDTO = await apiEvent.updateEvent(
             event.id,
             updateData
           );
-          // Convertir la respuesta DTO a IEvent para mantener compatibilidad
           resultEvent = {
             ...event,
             id: updatedEventDTO.id,
@@ -219,33 +254,35 @@ export const useEventForm = ({
             tags: updatedEventDTO.tags,
           };
         } else {
-          // Creación - usar IEventCreateDTO
           const createData: IEventCreateDTO = {
             title: title.trim(),
             message: message.trim(),
             capacity: Number(capacity) || undefined,
             tags: tags.length > 0 ? tags : undefined,
+            eventDate: eventDate || undefined, // Asegurarse de incluir eventDate
           };
 
+          console.log("🆕 Creando nuevo evento:", createData);
           resultEvent = await apiEvent.createEvent(createData);
         }
 
-        // Subir imágenes nuevas si las hay
         if (newImageFiles.length > 0 && resultEvent.id) {
           try {
+            console.log("📤 Subiendo nuevas imágenes:", newImageFiles);
             await apiEventImage.uploadEventImages(
               resultEvent.id,
               newImageFiles
             );
-            // REFRESH: volver a pedir el evento actualizado
             resultEvent = await apiEvent.fetchEventById(resultEvent.id);
           } catch (imageError: any) {
+            console.error("💥 Error subiendo imágenes:", imageError);
             setGlobalError(
               `Evento guardado, pero error subiendo imágenes: ${imageError.message}`
             );
           }
         }
 
+        console.log("✅ Evento procesado exitosamente:", resultEvent);
         await onSubmit(resultEvent);
 
         if (!event?.id) {
@@ -258,6 +295,7 @@ export const useEventForm = ({
           error instanceof Error
             ? error.message
             : "Error desconocido al guardar el evento.";
+        console.error("💥 Error en el proceso de envío:", errorMessage);
         setGlobalError(errorMessage);
       } finally {
         setIsSubmitting(false);
@@ -273,6 +311,7 @@ export const useEventForm = ({
       location,
       capacity,
       eventDate,
+      eventTime,
       link,
       tags,
       userId,
@@ -294,6 +333,8 @@ export const useEventForm = ({
     setCapacity,
     eventDate,
     setEventDate,
+    eventTime,
+    setEventTime,
     link,
     setLink,
     tags,

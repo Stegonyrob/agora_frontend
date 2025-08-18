@@ -7,13 +7,17 @@ interface EventDateCapacityFieldsProps {
     setEventDate: (value: string) => void;
     capacity: number;
     setCapacity: (value: number) => void;
+    time: string;
+    setTime: (value: string) => void;
 }
 
 const EventDateCapacityFields: React.FC<EventDateCapacityFieldsProps> = ({
     eventDate,
     setEventDate,
     capacity,
-    setCapacity
+    setCapacity,
+    time,
+    setTime
 }) => {
     return (
         <div className={`${styles.formGroup} row`}>
@@ -28,6 +32,17 @@ const EventDateCapacityFields: React.FC<EventDateCapacityFieldsProps> = ({
                     required
                 />
             </Form.Group>
+            <div className={styles.formGroup}>
+                <Form.Label className="form-label">
+                    Hora del Evento *
+                </Form.Label>
+                <Form.Control
+                    type="time"
+                    className="form-control"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                />
+            </div>
             <Form.Group className="col-md-6" controlId="formEventCapacity">
                 <Form.Label>
                     <strong>Aforo máximo 👥</strong>

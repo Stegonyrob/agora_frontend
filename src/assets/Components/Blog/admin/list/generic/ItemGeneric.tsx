@@ -74,22 +74,12 @@ const ItemGeneric = <T extends IPost | IEvent>({
 
     useEffect(() => {
         // Log simplificado del estado de imágenes
-        console.log(`[ItemGeneric] ${type} ${id}:`, {
-            loading: loadingImagesHook,
-            processedCount: processedImages?.length || 0,
-            hasError: !!imageError
-        });
+        // Quitado
     }, [type, id, loadingImagesHook, processedImages, imageError]);
 
     // Convertir processedImages a formato ImagePreview (limpio y simple)
     const convertToImagePreviews = (processedUrls: string[]): any[] => {
         const originalImages = Array.isArray(images) ? images : [];
-        console.log('🔄 [ItemGeneric] Converting images:', {
-            processedUrls: processedUrls.length,
-            processedPreview: processedUrls.map(url => url.substring(0, 50) + '...'),
-            originalImages: originalImages.length
-        });
-
         const result = processedUrls.map((url, index) => {
             const originalImage = originalImages[index];
             const imageId = typeof originalImage === 'object' ? originalImage?.id : undefined;
@@ -101,26 +91,34 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 id: imageId || index
             };
 
-            console.log(`📋 [ItemGeneric] Preview ${index}:`, {
-                hasUrl: !!url,
-                urlStart: url?.substring(0, 30),
-                isExisting: preview.isExisting,
-                id: preview.id
-            });
-
             return preview;
         });
 
-        console.log('✅ [ItemGeneric] Final conversion result:', result.length, 'previews');
         return result;
     };
 
-    const handleRemoveImage = async (index: number) => {
+    const handleRemoveImage = async (identifier: number | string) => {
         if (!window.confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
             return;
         }
-        // TODO: Implementar eliminación real
-        console.log(`Eliminando imagen ${index}`);
+        try {
+            if (type === 'post') {
+                await onCreate({
+                    id,
+                    type: 'delete',
+                    imageId: identifier as number
+                });
+            } else {
+                await onCreate({
+                    id,
+                    type: 'eventDelete',
+                    imageId: identifier as number
+                });
+            }
+            window.alert('Imagen eliminada correctamente');
+        } catch (error: any) {
+            window.alert(`Error eliminando imagen: ${error.message}`);
+        }
     };
 
     const handleUpdate = async (updatedItem: any) => {
@@ -131,8 +129,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
             // Buscar id desde props o item
             updatedItem.id = id;
         }
-        // Debug: mostrar el id y el payload completo que se envía a onSubmit
-        console.log('[ItemGeneric] handleUpdate - id:', updatedItem.id, 'payload:', JSON.stringify(updatedItem, null, 2));
         onSubmit(updatedItem);
     };
 
@@ -227,7 +223,6 @@ const ItemGeneric = <T extends IPost | IEvent>({
                                         await onUnArchive(id);
                                     }
                                 } catch (error) {
-                                    console.error("Error archiving/unarchiving item:", error);
                                     alert('Error al archivar/desarchivar el ítem. Inténtalo de nuevo.');
                                 }
                             }}

@@ -32,13 +32,18 @@ const ItemEvent: React.FC<ItemEventProps> = ({
     const data = (event && (event as any).item) ? (event as any).item : event;
     // Debug: mostrar valores reales de fechas
     console.log('[ItemEvent] id:', data.id, 'creationDate:', data.creationDate, 'eventDate:', data.eventDate);
+
+    // Priorizar eventDate sobre creationDate
+    const displayDate = data.eventDate || data.creationDate;
+    console.log('[ItemEvent] Fecha mostrada:', displayDate);
+
     return (
         <ItemGeneric
             item={data}
             id={data.id}
             title={data.title}
             message={data.message}
-            creationDate={data.creationDate || data.eventDate}
+            creationDate={displayDate} // Usar displayDate para mostrar la fecha correcta
             isArchived={data.isArchived ?? data.archived}
             type="event"
             images={data.images}
