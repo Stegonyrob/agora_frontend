@@ -73,6 +73,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                                 location={event.location}
                                 maxCapacity={typeof event.capacity === "number" ? event.capacity : (typeof event.capacity === "string" ? Number(event.capacity) || undefined : undefined)}
                                 attendeesCount={typeof event.attendeesCount === "number" ? event.attendeesCount : 0}
+                                eventTime={event.eventTime} // Asegúrate de pasar eventTime aquí
                             />
                         );
                     })

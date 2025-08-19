@@ -35,11 +35,10 @@ const EditEventForm = ({
         link, setLink,
         capacity, setCapacity,
         tags, setTags,
-        imagePreviews,
         handleRemoveImage,
         formErrors,
         handleNewImagesSelected,
-
+        imagePreviews,
         submitForm,
         globalError
     } = useEditEventForm({ event, show, onClose });

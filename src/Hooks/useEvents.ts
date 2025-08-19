@@ -53,6 +53,14 @@ export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
       }
 
       console.log(`[useEvents] Events fetched successfully:`, result);
+      console.log(
+        "[useEvents] Verificando contenido de events:",
+        result.content
+      );
+      console.log(
+        "eventTime:",
+        result.content.map((event) => event.eventTime)
+      );
 
       setEvents(result.content);
       setTotalPages(result.totalPages);

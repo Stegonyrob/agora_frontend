@@ -82,8 +82,12 @@ export function normalizeItem<T extends Record<string, any>>(
     attendees: normalizeArray(item.attendees),
     creationDate: normalizeDate(item.creationDate),
     eventDate: normalizeDate(item.eventDate),
+    eventTime: normalizeString(item.eventTime),
     ...extraDefaults,
   };
+
+  console.log("🔍 [normalizeItem] Raw item before normalization:", raw);
+  console.log("eventTime:", normalized.eventTime);
 
   return normalized as T;
 }

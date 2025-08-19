@@ -33,6 +33,9 @@ export const useEventForm = ({
     return "";
   });
   const [eventTime, setEventTime] = useState(() => {
+    if (event?.eventTime) {
+      return event.eventTime; // Use eventTime directly from backend
+    }
     if (event?.eventDate) {
       return (
         new Date(event.eventDate).toISOString().split("T")[1]?.slice(0, 5) || ""

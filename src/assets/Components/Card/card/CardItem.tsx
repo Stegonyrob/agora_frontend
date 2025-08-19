@@ -115,6 +115,9 @@ const CardItem: React.FC<CardItemProps> = ({
     // Debug: Verificar fecha calculada para mostrar
     console.log('🔍 [CardItem] Fecha calculada (displayDate):', displayDate);
 
+    // Debug: Verificar si eventTime es null o vacío
+    console.log('🔍 [CardItem] Valor de eventTime:', eventTime);
+
     return (
         <>
             <article className={`${styles.card} ${type === 'event' ? styles.event : ''}`} onClick={() => onSelect && onSelect({ id })}>
