@@ -21,6 +21,7 @@ export const useEditEventForm = ({
   const [message, setMessage] = useState("");
   const [place, setPlace] = useState("");
   const [date, setDate] = useState("");
+  const [time, setTime] = useState(""); // Agregar estado para el tiempo
   const [link, setLink] = useState("");
   const [capacity, setCapacity] = useState<number | string>(0);
   const [tags, setTags] = useState<string[]>([]);
@@ -82,17 +83,22 @@ export const useEditEventForm = ({
           const eventDateObj = new Date(event.eventDate);
           if (!isNaN(eventDateObj.getTime())) {
             const formattedDate = eventDateObj.toISOString().split("T")[0];
+            const formattedTime = eventDateObj.toTimeString().split(" ")[0]; // Extraer el tiempo
             setDate(formattedDate);
+            setTime(formattedTime); // Establecer el tiempo
           } else {
             console.warn("Fecha del evento inválida:", event.eventDate);
             setDate("");
+            setTime(""); // Reiniciar el tiempo
           }
         } catch (error) {
           console.error("Error al procesar fecha del evento:", error);
           setDate("");
+          setTime(""); // Reiniciar el tiempo
         }
       } else {
         setDate("");
+        setTime(""); // Reiniciar el tiempo
       }
 
       if (event.images && event.images.length > 0) {
@@ -107,6 +113,7 @@ export const useEditEventForm = ({
       setMessage("");
       setPlace("");
       setDate("");
+      setTime(""); // Reiniciar el tiempo
       setLink("");
       setCapacity(0);
       setTags([]);
@@ -256,7 +263,8 @@ export const useEditEventForm = ({
           title: sanitizedTitle,
           message: sanitizedMessage,
           place,
-          eventDate: new Date(date).toISOString(),
+          eventDate: `${new Date(date).toISOString().split("T")[0]}T${time}`, // Combinar fecha y tiempo
+          eventTime: time, // Agregar el campo eventTime
           link,
           capacity: Number(capacity),
           tags,
@@ -278,6 +286,7 @@ export const useEditEventForm = ({
       message,
       place,
       date,
+      time,
       link,
       capacity,
       tags,
@@ -298,6 +307,8 @@ export const useEditEventForm = ({
     setPlace,
     date,
     setDate,
+    time,
+    setTime,
     link,
     setLink,
     capacity,

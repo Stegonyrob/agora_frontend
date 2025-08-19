@@ -24,6 +24,7 @@ export interface IEventDTO {
   updatedAt: string;
   place?: string;
   eventDate: string; // Fecha del evento en formato ISO
+  eventTime?: string; // Hora del evento en formato HH:mm:ss
   link: string;
   capacity: number; // Campo de aforo
 }

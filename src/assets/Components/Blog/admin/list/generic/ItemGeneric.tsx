@@ -235,6 +235,17 @@ const ItemGeneric = <T extends IPost | IEvent>({
                         )}
                     </div>
                 </div>
+                {type === 'event' && (
+                    <span className={styles.date}>
+                        <strong>Fecha del evento:</strong> {data.eventDate ? new Date(data.eventDate).toLocaleDateString('es-ES') : '--/--/--'}
+                        {data.eventTime && (
+                            <>
+                                {' '}
+                                <strong>Hora:</strong> {data.eventTime}
+                            </>
+                        )}
+                    </span>
+                )}
             </div>
         </div>
     );

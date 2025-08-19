@@ -35,6 +35,7 @@ const EditEventForm = ({
         link, setLink,
         capacity, setCapacity,
         tags, setTags,
+        time, setTime, // Agregado para manejar el tiempo
         handleRemoveImage,
         formErrors,
         handleNewImagesSelected,
@@ -81,9 +82,10 @@ const EditEventForm = ({
                         setDate={setDate}
                         capacity={capacity}
                         setCapacity={setCapacity}
-                        formErrors={formErrors} time={""} setTime={function (value: string): void {
-                            throw new Error("Function not implemented.");
-                        }} />
+                        formErrors={formErrors}
+                        time={time} // Pasar el estado del tiempo
+                        setTime={setTime} // Pasar la función para actualizar el tiempo
+                    />
                     <div className={styles.imageSection}>
                         <h3 className={styles.imageSectionTitle}>Gestión de Imágenes</h3>
 
