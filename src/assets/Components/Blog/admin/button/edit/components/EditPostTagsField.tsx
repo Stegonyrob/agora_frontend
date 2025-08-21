@@ -1,11 +1,12 @@
+import { IEventTag } from '@/core/events/IEvent';
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import TagSelector from '../../../tags/TagSelector';
 import styles from '../EditModalForm.module.scss';
 
 interface EditPostTagsFieldProps {
-    tags: string[];
-    setTags: (tags: string[]) => void;
+    tags: IEventTag[];
+    setTags: (tags: IEventTag[]) => void;
 }
 
 const EditPostTagsField: React.FC<EditPostTagsFieldProps> = ({

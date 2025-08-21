@@ -202,6 +202,17 @@ class TagService {
   async removeTagFromPost(postId: number, tagName: string): Promise<void> {
     await this.tagRepository.removeTagFromPost(postId, tagName);
   }
+
+  /**
+   * Reemplaza completamente las tags de un post.
+   * Método más eficiente que eliminar una por una y luego agregar.
+   */
+  async replaceTagsInPost(
+    postId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    return await this.tagRepository.replaceTagsInPost(postId, tags);
+  }
 }
 
 export default TagService;

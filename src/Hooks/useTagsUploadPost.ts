@@ -5,16 +5,14 @@ export function useTagsUploadPost() {
   const apiTag = new TagService();
 
   /**
-   * Sube las tags asociadas a un post (batch).
-   * Sigue el mismo patrón que useTagsUpload para eventos
+   * Actualiza completamente las tags de un post usando el método de reemplazo optimizado.
    */
   const uploadTagsToPost = async (
     postId: number,
-    tags: ITag[] | null | undefined
+    newTags: ITag[] | null | undefined
   ) => {
-    if (!tags || tags.length === 0) {
-      console.warn("No se pueden subir tags a post porque no se pasaron tags");
-      return;
+    if (!newTags) {
+      newTags = [];
     }
 
     try {
@@ -22,25 +20,24 @@ export function useTagsUploadPost() {
         throw new Error("El id del post debe ser un número mayor a 0");
       }
 
-      if (!Array.isArray(tags)) {
+      if (!Array.isArray(newTags)) {
         throw new Error("Las tags deben ser un array");
       }
 
-      if (tags.some((tag) => !tag || !tag.id || !tag.name)) {
-        throw new Error("Las tags deben tener id y name");
-      }
-
-      console.log("🏷️ useTagsUploadPost - Subiendo tags al post:", {
+      console.log("🏷️ useTagsUploadPost - Actualizando tags del post:", {
         postId,
-        tags: tags.map((t) => ({ id: t.id, name: t.name })),
+        newTags: newTags.map((t) => ({ id: t.id, name: t.name })),
       });
 
-      await apiTag.addTagsToPost(postId, tags);
+      // Usar el método de reemplazo directo que es más eficiente
+      await apiTag.replaceTagsInPost(postId, newTags);
 
-      console.log("✅ useTagsUploadPost - Tags subidas exitosamente al post");
+      console.log(
+        "✅ useTagsUploadPost - Actualización completa de tags exitosa"
+      );
     } catch (error) {
       console.error(
-        "❌ useTagsUploadPost - Error al subir tags a post:",
+        "❌ useTagsUploadPost - Error al actualizar tags del post:",
         error
       );
       throw error;

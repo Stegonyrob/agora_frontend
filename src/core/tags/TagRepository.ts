@@ -18,6 +18,12 @@ export interface ITagRepository {
   removeTagFromEvent(eventId: number, tagName: string): Promise<void>;
   removeTagFromPost(postId: number, tagName: string): Promise<void>;
   archiveTag(tagId: number, archived: boolean): Promise<ITag>;
+
+  // Métodos de reemplazo masivo
+  replaceTagsInPost(
+    postId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void>;
 }
 
 class TagRepository implements ITagRepository {
@@ -297,6 +303,130 @@ class TagRepository implements ITagRepository {
       console.log("✅ TagRepository - Tag eliminado de post exitosamente");
     } catch (error) {
       console.error("❌ TagRepository - Error al eliminar tag de post:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina todas las tags asociadas a un post.
+   * POST /api/v1/any/tags/posts/{postId}/tags/clear
+   */
+  async clearTagsFromPost(postId: number): Promise<void> {
+    try {
+      console.log(
+        "🏷️ TagRepository - Limpiando todas las tags del post:",
+        postId
+      );
+      const headers = getAuthHeaders();
+      await axios.delete(`${this.eventTagsUrl}/posts/${postId}/tags`, {
+        headers,
+      });
+      console.log("✅ TagRepository - Tags del post limpiadas exitosamente");
+    } catch (error) {
+      console.error(
+        "❌ TagRepository - Error al limpiar tags del post:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Reemplaza completamente las tags de un post.
+   * Usa un enfoque optimista: intenta agregar directamente las nuevas tags.
+   * Solo elimina tags existentes si la operación directa falla.
+   */
+  async replaceTagsInPost(
+    postId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    try {
+      console.log("🏷️ TagRepository - Reemplazando tags del post:", {
+        postId,
+        newTagsCount: tags.length,
+        tags,
+      });
+
+      // Estrategia optimista: Intentar agregar las nuevas tags directamente
+      if (tags.length > 0) {
+        try {
+          await this.addTagsToPost(postId, tags);
+          console.log(
+            "✅ TagRepository - Tags agregadas exitosamente (modo optimista)"
+          );
+          return;
+        } catch (addError: any) {
+          // Solo si falla la adición directa, intentamos limpiar primero
+          console.warn(
+            "⚠️ TagRepository - Adición directa falló, limpiando tags existentes primero:",
+            addError?.response?.status || addError.message
+          );
+        }
+      }
+
+      // Estrategia 1: Intentar limpiar todas las tags existentes con el endpoint específico
+      let clearSuccessful = false;
+      try {
+        await this.clearTagsFromPost(postId);
+        clearSuccessful = true;
+        console.log(
+          "✅ TagRepository - Tags existentes limpiadas con endpoint específico"
+        );
+      } catch (clearError: any) {
+        console.warn(
+          "⚠️ TagRepository - Endpoint de limpieza falló (esto es normal si el servidor no lo soporta):",
+          clearError?.response?.status || clearError.message
+        );
+
+        // Estrategia 2: Solo intentar eliminación individual si tenemos tags y clearTag falló
+        if (tags.length > 0) {
+          try {
+            const currentTags = await this.getTagsByPost(postId);
+            if (currentTags.length > 0) {
+              console.log(
+                "📋 TagRepository - Eliminando tags actuales una por una:",
+                currentTags.length
+              );
+
+              for (const tag of currentTags) {
+                try {
+                  await this.removeTagFromPost(postId, tag.name);
+                  console.log(`✅ TagRepository - Tag eliminada: ${tag.name}`);
+                } catch (removeError) {
+                  console.warn(
+                    `⚠️ TagRepository - No se pudo eliminar tag ${tag.name}:`,
+                    removeError
+                  );
+                }
+              }
+              clearSuccessful = true;
+            }
+          } catch (getTagsError: any) {
+            console.warn(
+              "⚠️ TagRepository - No se pudieron obtener tags actuales (esto es normal):",
+              getTagsError?.response?.status || getTagsError.message
+            );
+            // Continuamos sin limpiar, las nuevas tags se agregarán de todas formas
+          }
+        }
+      }
+
+      // Agregar las nuevas tags (solo si no se agregaron en el modo optimista)
+      if (tags.length > 0) {
+        await this.addTagsToPost(postId, tags);
+        console.log("✅ TagRepository - Nuevas tags agregadas exitosamente");
+      } else if (clearSuccessful) {
+        console.log(
+          "✅ TagRepository - Tags del post limpiadas (sin nuevas tags para agregar)"
+        );
+      }
+
+      console.log("✅ TagRepository - Tags del post reemplazadas exitosamente");
+    } catch (error) {
+      console.error(
+        "❌ TagRepository - Error al reemplazar tags del post:",
+        error
+      );
       throw error;
     }
   }

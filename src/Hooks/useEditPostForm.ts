@@ -1,4 +1,5 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
+import { IEventTag } from "@/core/events/IEvent";
 import { IPostImageDTO } from "@/core/posts/images/IPostImageDTO"; // Asegúrate de importar IPostImageDTO
 import { PostImageRepository } from "@/core/posts/images/PostImageRepository";
 import PostImageService from "@/core/posts/images/PostImageService";
@@ -6,6 +7,8 @@ import { IPostDTO } from "@/core/posts/IPostDTO";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useTagsLoader } from "./useTagsLoader";
+import { useTagsUploadPost } from "./useTagsUploadPost";
 
 // Tipo para el payload mínimo de edición de post
 export type PostPayload = {
@@ -13,7 +16,7 @@ export type PostPayload = {
   title: string;
   message: string;
   location: string;
-  tags: any[];
+  tags: IEventTag[];
   images: IPostImageDTO[]; // Cambiar a IPostImageDTO[]
   isArchived: boolean;
   isPublished: boolean;
@@ -28,7 +31,6 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
   const [title, setTitle] = useState(post?.title || "");
   const [message, setMessage] = useState(post?.message || "");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const [tags, setTags] = useState(post?.tags || []);
   const [date, setDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -36,11 +38,43 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
   const postImageService = new PostImageService();
   const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
 
+  // Normalizar tags del post para usar con useTagsLoader
+  const normalizedPostTags: IEventTag[] = post?.tags
+    ? post.tags.map((tag: any) =>
+        typeof tag === "string"
+          ? { id: -1, name: tag, archived: false }
+          : {
+              id: tag.id || -1,
+              name: tag.name,
+              archived: tag.archived ?? false,
+            }
+      )
+    : [];
+
+  const { tags, setTags } = useTagsLoader(normalizedPostTags);
+  const { uploadTagsToPost } = useTagsUploadPost();
+
   useEffect(() => {
     if (show && post) {
       setTitle(post.title || "");
       setMessage(post.message || "");
-      setTags(post.tags || []);
+
+      // Normalizar tags y actualizar estado
+      if (post.tags && Array.isArray(post.tags)) {
+        const normalizedTags: IEventTag[] = post.tags.map((tag: any) =>
+          typeof tag === "string"
+            ? { id: -1, name: tag, archived: false }
+            : {
+                id: tag.id || -1,
+                name: tag.name,
+                archived: tag.archived ?? false,
+              }
+        );
+        setTags(normalizedTags);
+      } else {
+        setTags([]);
+      }
+
       setRemovedImageIds([]);
 
       if (post.createdAt) {
@@ -229,6 +263,33 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
 
         console.info("[useEditPostForm][PUT] Payload enviado:", updatedPost);
 
+        // Primero subimos las tags usando el servicio optimizado
+        if (post.id && tags.length >= 0) {
+          // Permitir array vacío para limpiar tags
+          try {
+            console.log(
+              "🏷️ [useEditPostForm] Actualizando tags del post ANTES de actualizar post:",
+              {
+                postId: post.id,
+                tags: tags,
+              }
+            );
+            await uploadTagsToPost(post.id, tags);
+            console.log("✅ [useEditPostForm] Tags actualizadas exitosamente");
+          } catch (tagsError) {
+            console.error(
+              "❌ [useEditPostForm] Error actualizando tags:",
+              tagsError
+            );
+            // Continuar con la actualización del post aunque falle las tags
+            // Pero mostrar una advertencia al usuario
+            setGlobalError(
+              "Las tags no se pudieron actualizar, pero el post se guardará."
+            );
+          }
+        }
+
+        // Después actualizamos el post con toda la información (excepto tags que ya se subieron)
         await onSubmit(updatedPost, filesToUpload, removedIds);
 
         if (removedIds.length > 0) {
@@ -267,6 +328,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
       imagePreviews,
       post,
       removedImageIds,
+      uploadTagsToPost,
     ]
   );
 

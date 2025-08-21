@@ -90,11 +90,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
           </div>
 
           <EditPostTagsField
-            tags={tags.map(tag => typeof tag === "string" ? tag : tag.name)} // or tag.id if you use IDs
-            setTags={(newTags: string[]) => {
-              // If your tags state expects IPostTagDTO[], map strings back to objects
-              setTags(newTags.map((tagName, idx) => ({ id: -1 * (idx + 1), name: tagName, archived: false })));
-            }}
+            tags={tags}
+            setTags={setTags}
           />
 
           <EditPostFormActions
