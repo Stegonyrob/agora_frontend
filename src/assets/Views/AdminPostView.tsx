@@ -40,14 +40,13 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         }
     };
 
-    const handleCreate = async (newPost: IPostDTO) => {
+    const handleCreate = async (newPost: IPost) => {
         try {
-            const postService = new PostService();
-            await postService.createPost(newPost);
-            const updatedPosts = await postService.getAllPosts(0, 100);
-            setFetchedPosts(updatedPosts?.content ?? []);
+            // El post ya fue creado en usePostForm, solo actualizar la lista local
+            console.log("✅ AdminPostView - Post recibido desde usePostForm:", newPost);
+            setFetchedPosts(prev => [...prev, newPost]);
         } catch (error) {
-            console.error("Error creating post:", error);
+            console.error("Error adding post to list:", error);
         }
     };
 

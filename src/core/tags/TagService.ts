@@ -3,6 +3,25 @@ import { ITagDTO } from "./ITagDTO";
 import TagRepository from "./TagRepository";
 
 class TagService {
+  /**
+   * Asocia varias tags a un evento usando el endpoint batch.
+   */
+  async addTagsToEvent(
+    eventId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    return this.tagRepository.addTagsToEvent(eventId, tags);
+  }
+
+  /**
+   * Asocia varias tags a un post usando el endpoint batch.
+   */
+  async addTagsToPost(
+    postId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    return this.tagRepository.addTagsToPost(postId, tags);
+  }
   private tagRepository: TagRepository;
 
   private popularTags = [

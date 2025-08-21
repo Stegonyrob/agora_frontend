@@ -90,7 +90,6 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
       }
     });
     const arr = Array.from(ids);
-    console.log('[AccordionComments] getAllUserIds:', arr, 'from comments:', comments);
     return arr;
   }
   function isProfileLoaded(userId: number, profiles: any[]): boolean {

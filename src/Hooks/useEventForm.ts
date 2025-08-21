@@ -7,6 +7,8 @@ import {
   IEventUpdateDTO,
 } from "@/core/events/IEventBackendDTO";
 import { useCallback, useEffect, useState } from "react";
+import { useTagsLoader } from "./useTagsLoader";
+import { useTagsUpload } from "./useTagsUpload";
 
 interface UseEventFormProps {
   event?: IEvent;
@@ -23,7 +25,35 @@ export const useEventForm = ({
   const [title, setTitle] = useState(event?.title || "");
   const [message, setMessage] = useState(event?.message || "");
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const [tags, setTags] = useState<string[]>(event?.tags || []);
+  const { tags, setTags } = useTagsLoader(event?.tags || []);
+
+  // Sincroniza el estado de tags cuando el modal se abre/cierra o cambia el evento
+  // - Si es creación (sin event), limpia tags al abrir
+  // - Si es edición (con event), sincroniza tags con event.tags
+  useEffect(() => {
+    console.log(
+      "%cUSE EFFECT SINCRONIZANDO TAGS:",
+      "color: #9c27b0; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+      { show, event: event?.id, eventTags: event?.tags, tagsState: tags }
+    );
+    if (show) {
+      if (event && Array.isArray(event.tags)) {
+        console.log(
+          "%cSETTING TAGS FROM EVENT:",
+          "color: #9c27b0; font-weight: bold;",
+          event.tags
+        );
+        setTags(event.tags);
+      } else if (!event) {
+        console.log(
+          "%cCLEARING TAGS FOR NEW EVENT:",
+          "color: #9c27b0; font-weight: bold;"
+        );
+        setTags([]);
+      }
+    }
+  }, [show, event, setTags]);
+  const { uploadTagsToEvent } = useTagsUpload();
   const [location, setLocation] = useState(event?.location || "");
   const [capacity, setCapacity] = useState(event?.capacity || 0);
   const [eventDate, setEventDate] = useState(() => {
@@ -205,6 +235,17 @@ export const useEventForm = ({
         tags,
       });
 
+      // Log adicional para debuggear el estado de tags justo antes del submit
+      console.log(
+        "%cESTADO DE TAGS AL INICIO DEL SUBMIT:",
+        "color: #e91e63; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px; font-size: 1.2em;",
+        JSON.stringify(
+          { tags, tagsLength: tags.length, tagsType: typeof tags },
+          null,
+          2
+        )
+      );
+
       if (isSubmitting) {
         console.warn("⚠️ Proceso de envío ya en curso. Abortando nuevo envío.");
         return;
@@ -235,18 +276,39 @@ export const useEventForm = ({
         let resultEvent: IEvent;
 
         if (event?.id) {
+          // EDICIÓN: Actualizar evento sin tags y luego asociar tags
           const updateData: IEventUpdateDTO = {
             title: title.trim(),
             message: message.trim(),
             capacity: Number(capacity) || undefined,
             archived: false,
+            eventTime: eventTime || undefined,
           };
-
-          console.log("✏️ Actualizando evento existente:", updateData);
+          console.log(
+            "%cPAYLOAD ENVIADO (UPDATE EVENT):",
+            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+            JSON.stringify(updateData, null, 2)
+          );
           const updatedEventDTO = await apiEvent.updateEvent(
             event.id,
             updateData
           );
+          // Asociar tags después de actualizar
+          try {
+            console.log(
+              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (UPDATE EVENT):",
+              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
+            );
+            console.log({ tags });
+            await uploadTagsToEvent(event.id, tags);
+            console.log(
+              "%cTAGS ASOCIADAS (UPDATE EVENT):",
+              "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+              JSON.stringify({ tags }, null, 2)
+            );
+          } catch (err) {
+            console.error("Error asociando tags al evento:", err);
+          }
           resultEvent = {
             ...event,
             id: updatedEventDTO.id,
@@ -254,19 +316,47 @@ export const useEventForm = ({
             message: updatedEventDTO.message,
             capacity: updatedEventDTO.capacity,
             isArchived: updatedEventDTO.archived,
-            tags: updatedEventDTO.tags,
+            tags: tags,
           };
         } else {
+          // CREACIÓN: Crear evento sin tags y luego asociar tags
           const createData: IEventCreateDTO = {
             title: title.trim(),
             message: message.trim(),
             capacity: Number(capacity) || undefined,
-            tags: tags.length > 0 ? tags : undefined,
-            eventDate: eventDate || undefined, // Asegurarse de incluir eventDate
+            eventDate: eventDate || undefined,
+            eventTime: eventTime || undefined,
+            archived: false,
           };
-
-          console.log("🆕 Creando nuevo evento:", createData);
+          console.log(
+            "%cPAYLOAD ENVIADO (CREATE EVENT):",
+            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+            JSON.stringify(createData, null, 2)
+          );
           resultEvent = await apiEvent.createEvent(createData);
+          // Asociar tags después de crear
+          if (resultEvent.id) {
+            console.log(
+              "%cTAGS EN useEventForm ANTES DE SUBMIT (CREATE EVENT):",
+              "color: #ff9800; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px; font-size: 1.1em;",
+              JSON.stringify(tags, null, 2)
+            );
+            console.log(
+              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (CREATE EVENT):",
+              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
+            );
+            try {
+              console.log({ tags });
+              await uploadTagsToEvent(resultEvent.id, tags);
+              console.log(
+                "%cTAGS ASOCIADAS (CREATE EVENT):",
+                "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+                JSON.stringify({ tags }, null, 2)
+              );
+            } catch (err) {
+              console.error("Error asociando tags al evento:", err);
+            }
+          }
         }
 
         if (newImageFiles.length > 0 && resultEvent.id) {
@@ -314,10 +404,10 @@ export const useEventForm = ({
       location,
       capacity,
       eventDate,
+      tags,
       eventTime,
       link,
-      tags,
-      userId,
+      uploadTagsToEvent,
       apiEvent,
       apiEventImage,
       resetForm,
@@ -325,7 +415,6 @@ export const useEventForm = ({
   );
 
   return {
-    // Estados
     title,
     setTitle,
     message,

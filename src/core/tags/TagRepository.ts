@@ -21,6 +21,56 @@ export interface ITagRepository {
 }
 
 class TagRepository implements ITagRepository {
+  /**
+   * Asocia varias tags a un evento usando el endpoint batch.
+   * POST /api/v1/any/tags/events/{eventId}/tags
+   */
+  async addTagsToEvent(
+    eventId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    try {
+      console.log("🏷️ TagRepository - Asociando varias tags al evento:", {
+        eventId,
+        tags,
+      });
+      const headers = getAuthHeaders();
+      // El endpoint espera { tags: [...] }
+      const url = `${this.eventTagsUrl}/events/${eventId}/tags`;
+      await axios.post(url, { tags }, { headers });
+      console.log("✅ TagRepository - Tags asociadas al evento exitosamente");
+    } catch (error) {
+      console.error(
+        "❌ TagRepository - Error al asociar tags al evento:",
+        error
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Asocia varias tags a un post usando el endpoint batch.
+   * POST /api/v1/any/tags/posts/{postId}/tags
+   */
+  async addTagsToPost(
+    postId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    try {
+      console.log("🏷️ TagRepository - Asociando varias tags al post:", {
+        postId,
+        tags,
+      });
+      const headers = getAuthHeaders();
+      // El endpoint espera { tags: [...] }
+      const url = `${this.eventTagsUrl}/posts/${postId}/tags`;
+      await axios.post(url, { tags }, { headers });
+      console.log("✅ TagRepository - Tags asociadas al post exitosamente");
+    } catch (error) {
+      console.error("❌ TagRepository - Error al asociar tags al post:", error);
+      throw error;
+    }
+  }
   // URLs específicas para cada endpoint según las variables de entorno
   private readonly publicTagsUrl = import.meta.env
     .VITE_API_ENDPOINT_TAGS_BY_EVENT_PUBLIC;
@@ -122,9 +172,12 @@ class TagRepository implements ITagRepository {
     try {
       console.log("🏷️ TagRepository - Obteniendo tags del post:", postId);
       const headers = getAuthHeaders();
-      const response = await axios.get(`${this.postTagsUrl}/${postId}/tags`, {
-        headers,
-      });
+      const response = await axios.get(
+        `${this.eventTagsUrl}/posts/${postId}/tags`,
+        {
+          headers,
+        }
+      );
 
       console.log("✅ TagRepository - Tags del post obtenidas:", {
         postId,
@@ -191,7 +244,9 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.post(
-        `${this.postTagsUrl}/${postId}/tags/${encodeURIComponent(tagName)}`,
+        `${this.eventTagsUrl}/posts/${postId}/tags/${encodeURIComponent(
+          tagName
+        )}`,
         {},
         { headers }
       );
@@ -233,7 +288,9 @@ class TagRepository implements ITagRepository {
       });
       const headers = getAuthHeaders();
       await axios.delete(
-        `${this.postTagsUrl}/${postId}/tags/${encodeURIComponent(tagName)}`,
+        `${this.eventTagsUrl}/posts/${postId}/tags/${encodeURIComponent(
+          tagName
+        )}`,
         { headers }
       );
 

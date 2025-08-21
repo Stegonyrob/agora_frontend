@@ -41,8 +41,8 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
     await onSubmit({ ...payload, ...post });
   };
 
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleButtonSubmit = async () => {
+    console.log("🚀 PostForm - Button submit triggered");
     await submitForm(handleSubmitWrapper, onClose);
   };
 
@@ -62,7 +62,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
-        <form onSubmit={handleFormSubmit}>
+        <form>
           <PostBasicFields
             title={title}
             setTitle={setTitle}
@@ -83,7 +83,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           />
 
           <PostFormActions
-            onSubmit={() => { }}
+            onSubmit={handleButtonSubmit}
             onCancel={onClose}
             isSubmitting={isSubmitting}
             globalError={globalError}

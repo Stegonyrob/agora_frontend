@@ -23,13 +23,6 @@ interface ItemPostProps {
 const ItemPost: React.FC<ItemPostProps> = ({
     post, onEdit, onDelete, onArchive, onUnArchive, onSelect, onSubmit, userId, onCreate
 }) => {
-    // Debug: mostrar el objeto post recibido desde backend
-    try {
-        console.log('[ItemPost] Full post object:', JSON.stringify(post, null, 2));
-    } catch (e) {
-        console.log('[ItemPost] Full post object (raw):', post);
-    }
-    const comments = post?.comments || [];
 
     if (!post) return null;
 

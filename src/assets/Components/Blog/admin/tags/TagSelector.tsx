@@ -4,12 +4,12 @@ import { ITag } from '../../../../../core/tags/ITag';
 import TagService from '../../../../../core/tags/TagService';
 import styles from './TagSelector.module.scss';
 
-import { IPostTagDTO } from '@/core/posts/IPostDTO';
+
+import { IEventTag } from '@/core/events/IEvent';
 interface TagSelectorProps {
-    selectedTags: string[] | IPostTagDTO[];
-    onTagsChange: (tags: any[]) => void;
+    selectedTags: IEventTag[];
+    onTagsChange: (tags: IEventTag[]) => void;
     placeholder?: string;
-    objectMode?: boolean;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
@@ -17,6 +17,25 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     onTagsChange,
     placeholder = "Agregar tags..."
 }) => {
+    // Log destacado solo cuando cambian las tags y no está vacío
+    React.useEffect(() => {
+        if (selectedTags && selectedTags.length > 0) {
+            // eslint-disable-next-line no-console
+            console.log("%cTAGS RECIBIDAS EN TAGSELECTOR:", "color: #00bcd4; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;", JSON.stringify(selectedTags, null, 2));
+        }
+    }, [selectedTags]);
+
+    // Normaliza las tags: si existe en availableTags, devuelve {id, name}, si es nueva solo {name}
+    const normalizeTagsToObjects = (tags: any[]): IEventTag[] => {
+        return tags.map(tag => {
+            if (typeof tag === 'object' && typeof tag.id === 'number' && tag.name) {
+                return { id: tag.id, name: tag.name, archived: tag.archived ?? false };
+            }
+            const found = availableTags.find(t => t.name === (typeof tag === 'string' ? tag : tag.name));
+            if (found) return { id: found.id, name: found.name, archived: found.archived };
+            return { id: -1, name: typeof tag === 'string' ? tag : tag.name, archived: false };
+        });
+    };
     const [inputTag, setInputTag] = useState('');
     const [availableTags, setAvailableTags] = useState<ITag[]>([]);
     const [filteredTags, setFilteredTags] = useState<ITag[]>([]);
@@ -25,6 +44,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     // Cargar tags disponibles del backend
     useEffect(() => {
         loadAvailableTags();
+        console.log("📦 useEffect - Cargando tags disponibles", loadAvailableTags());
     }, []);
 
     // Filtrar tags basado en el input del usuario
@@ -78,7 +98,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             const tag = await tagService.getOrCreateTag(trimmedTag);
             const newTagObj = { id: tag.id, name: tag.name, archived: tag.archived };
             const newTags = [...selectedTags, newTagObj];
-            onTagsChange(newTags);
+            onTagsChange(normalizeTagsToObjects(newTags));
             setInputTag('');
 
             if (!availableTags.find(t => t.name.toLowerCase() === tag.name.toLowerCase())) {
@@ -95,7 +115,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             };
 
             const newTags = [...selectedTags, localTag];
-            onTagsChange(newTags);
+            onTagsChange(normalizeTagsToObjects(newTags));
             setInputTag('');
             setAvailableTags(prev => [...prev, localTag]);
         }
@@ -103,21 +123,23 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 
     const handleRemoveTag = (tagToRemove: any) => {
         const newTags = selectedTags.filter((tag: any) => (typeof tag === 'string' ? tag !== tagToRemove : tag.name !== (tagToRemove.name || tagToRemove)));
-        onTagsChange(newTags);
+        onTagsChange(normalizeTagsToObjects(newTags));
     };
 
     const handlePredefinedTagClick = (tag: ITag) => {
         if (!selectedTags.some((t: any) => (typeof t === 'string' ? t === tag.name : t.name === tag.name))) {
             const newTagObj = { id: tag.id, name: tag.name, archived: tag.archived };
             const newTags = [...selectedTags, newTagObj];
-            onTagsChange(newTags);
+            onTagsChange(normalizeTagsToObjects(newTags));
         }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleAddTag();
+            e.stopPropagation(); // Evita submit global
+            // NO llamamos a handleAddTag aquí para evitar asincronía de estado
+            // El usuario debe usar el botón "+" para agregar la tag
         }
     };
 
@@ -140,6 +162,8 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                         placeholder={placeholder}
                         className={styles.tagInput}
                         autoComplete="off"
+                        // Evita submit global en móviles
+                        onSubmit={e => e.preventDefault()}
                     />
 
                     {/* Mostrar sugerencias filtradas */}
@@ -149,7 +173,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                                 <button
                                     key={tag.id}
                                     type="button"
-                                    onClick={() => handlePredefinedTagClick(tag)}
+                                    onClick={e => { e.stopPropagation(); handlePredefinedTagClick(tag); }}
                                     className={styles.suggestionItem}
                                 >
                                     {tag.name}
@@ -164,6 +188,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                     onClick={handleAddTag}
                     disabled={!inputTag.trim() || loading}
                     className={styles.addButton}
+                    type="button"
                 >
                     <i className="bi bi-plus-lg"></i>
                 </Button>
@@ -184,7 +209,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                                 <button
                                     key={tag.id}
                                     type="button"
-                                    onClick={() => handlePredefinedTagClick(tag)}
+                                    onClick={e => { e.stopPropagation(); handlePredefinedTagClick(tag); }}
                                     className={styles.predefinedTag}
                                     title={`Añadir tag: ${tag.name}`}
                                 >
@@ -216,7 +241,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
                                     {tagLabel}
                                     <button
                                         type="button"
-                                        onClick={() => handleRemoveTag(tag)}
+                                        onClick={e => { e.stopPropagation(); handleRemoveTag(tag); }}
                                         className={styles.removeButton}
                                         title={`Eliminar tag: ${tagLabel}`}
                                     >

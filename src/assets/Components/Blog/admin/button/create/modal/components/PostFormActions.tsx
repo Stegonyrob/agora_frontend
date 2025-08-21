@@ -37,7 +37,7 @@ const PostFormActions: React.FC<PostFormActionsProps> = ({
                 </Button>
 
                 <Button
-                    type="submit"
+                    type="button"
                     variant="primary"
                     onClick={onSubmit}
                     disabled={isSubmitting}

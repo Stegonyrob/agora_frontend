@@ -32,6 +32,7 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
         eventDate, setEventDate,
         link, setLink,
         tags, setTags,
+        eventTime, setEventTime, // Updated to match the hook
         imagePreviews,
         isSubmitting,
         globalError,
@@ -71,9 +72,10 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
                         eventDate={eventDate}
                         setEventDate={setEventDate}
                         capacity={capacity}
-                        setCapacity={setCapacity} time={""} setTime={function (value: string): void {
-                            throw new Error("Function not implemented.");
-                        }} />
+                        setCapacity={setCapacity}
+                        time={eventTime} // Updated to use eventTime
+                        setTime={setEventTime} // Updated to use setEventTime
+                    />
 
                     <EventImageManager
                         imagePreviews={imagePreviews}

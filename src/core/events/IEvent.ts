@@ -7,6 +7,12 @@ export interface IEventImage {
   createdAt: string;
 }
 
+export interface IEventTag {
+  id: number;
+  name: string;
+  archived: boolean;
+}
+
 export interface IEvent {
   id: number;
   title: string;
@@ -14,7 +20,7 @@ export interface IEvent {
   location: string;
   loves: number;
   isArchived: boolean;
-  tags: string[];
+  tags: IEventTag[];
   images: string[] | IEventImage[]; // Soporte para ambos formatos
   isPublished: boolean;
   alt_image: string;
