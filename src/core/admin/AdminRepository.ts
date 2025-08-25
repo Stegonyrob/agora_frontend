@@ -10,11 +10,9 @@ export class AdminRepository {
    * Obtener todos los administradores
    */
   async getAll(): Promise<IAdmin[]> {
-    console.log("[AdminRepository] getAll: llamando a", this.createUri);
     const res = await axios.get(this.createUri, {
       headers: getAuthHeaders(),
     });
-    console.log("[AdminRepository] getAll: respuesta", res.data);
     return res.data;
   }
 
@@ -22,11 +20,9 @@ export class AdminRepository {
    * Crear un nuevo administrador
    */
   async create(admin: IAdminDTO): Promise<IAdmin> {
-    console.log("[AdminRepository] create: datos enviados", admin);
     const res = await axios.post(this.createUri, admin, {
       headers: getAuthHeaders(),
     });
-    console.log("[AdminRepository] create: respuesta", res.data);
     return res.data;
   }
 
@@ -54,11 +50,9 @@ export class AdminRepository {
    * Eliminar un administrador
    */
   async delete(id: number): Promise<void> {
-    console.log("[AdminRepository] delete: id", id);
     const res = await axios.delete(`${this.createUri}/${id}`, {
       headers: getAuthHeaders(),
     });
-    console.log("[AdminRepository] delete: respuesta", res.data);
     return res.data;
   }
 }

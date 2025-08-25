@@ -11,10 +11,8 @@ const AdminPostView = ({ userId }: { userId: number }) => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                console.log("🚀 Starting to fetch posts...");
                 const postService = new PostService();
                 const page = await postService.getAllPosts(0, 100); // Obtener los primeros 100 posts
-                console.log("📦 Posts loaded successfully:", page?.totalElements, "total posts");
                 setFetchedPosts(page?.content ?? []);
             } catch (error: any) {
                 console.error("❌ Error fetching posts:", error);
@@ -31,11 +29,9 @@ const AdminPostView = ({ userId }: { userId: number }) => {
 
     const handleUpdate = async (post: IPost) => {
         try {
-            console.log("🚀 AdminPostView - Actualizando post completo:", post);
 
             // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente
             setFetchedPosts(prev => prev.map(p => (p.id === post.id ? { ...p, ...post } : p)));
-            console.log("⚡ AdminPostView - UI actualizada optimistamente");
 
             const postService = new PostService();
             // Crear un DTO limpio del post sin las tags (las tags se manejan separadamente)
@@ -65,16 +61,13 @@ const AdminPostView = ({ userId }: { userId: number }) => {
                 url_avatar: (post as any).url_avatar || ""
             };
 
-            console.log("📤 AdminPostView - Payload del post (sin tags):", postDTO);
             await postService.updatePost(post.id, postDTO);
-            console.log("✅ AdminPostView - Post actualizado en backend");
         } catch (error) {
             console.error("❌ AdminPostView - Error updating post:", error);
             // En caso de error, revertir la actualización optimista
             const originalPost = fetchedPosts.find(p => p.id === post.id);
             if (originalPost) {
                 setFetchedPosts(prev => prev.map(p => (p.id === post.id ? originalPost : p)));
-                console.log("🔄 AdminPostView - Revertida actualización optimista por error");
             }
         }
     };
@@ -82,7 +75,6 @@ const AdminPostView = ({ userId }: { userId: number }) => {
     const handleCreate = async (newPost: IPost) => {
         try {
             // El post ya fue creado en usePostForm, solo actualizar la lista local
-            console.log("✅ AdminPostView - Post recibido desde usePostForm:", newPost);
             setFetchedPosts(prev => [...prev, newPost]);
         } catch (error) {
             console.error("Error adding post to list:", error);

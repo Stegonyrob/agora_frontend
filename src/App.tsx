@@ -14,6 +14,10 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-
 import { SWRConfig } from "swr";
 import { useFontSize } from "./hooks/useFontSize";
 import swrConfig from "./swrConfig";
+// 🛡️ Error Boundary para capturar errores
+import ErrorBoundary from "./components/common/ErrorBoundary";
+// 📝 Logger para logging estructurado
+import { logger } from "./core/logging/LoggerService";
 
 // Vistas públicas
 import Error404View from "@/assets/Views/404View";
@@ -125,84 +129,97 @@ const App: React.FC = () => {
   if (isHydrating) {
     return <div>Cargando sesión...</div>;
   }
+
+  // 📝 Log del renderizado de la aplicación
+  logger.debug('App: Renderizando aplicación principal', {
+    isLoggedIn: session.isLoggedIn,
+    userId: session.userId,
+    role: session.role,
+    pathname: location.pathname
+  }, {
+    component: 'App'
+  });
+
   return (
-    <SWRConfig value={swrConfig}>
-      <Routes>
-        {/* Vista de error 404 */}
-        {/* Rutas públicas */}
-        <Route path="/" element={<PublicLayout />}>
-          <Route index element={<HomeView />} />
-          <Route path="aboutMe" element={<AboutMeView />} />
-          <Route path="neurodiversity" element={<NeurodiversityView />} />
-          <Route path="services" element={<ServiceView />} />
-          <Route path="agora" element={<AgoraView />} />
-          <Route path="cea" element={<CeaView />} />
-          <Route path="tda_Tdh" element={<Tda_TdhView />} />
-          <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
-          <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
-          <Route path="login" element={<LoginView />} />
-          <Route path="register" element={<RegisterView />} />
-          <Route path="*" element={<Error404View />} />
-          <Route path="communication" element={<TrasComunicationView />} />
-          <Route path="events" element={
-            <EventsView
-              userId={session.userId || 0}
-              events={[]}
-              onSelect={() => { }}
-            />
+    <ErrorBoundary>
+      <SWRConfig value={swrConfig}>
+        <Routes>
+          {/* Vista de error 404 */}
+          {/* Rutas públicas */}
+          <Route path="/" element={<PublicLayout />}>
+            <Route index element={<HomeView />} />
+            <Route path="aboutMe" element={<AboutMeView />} />
+            <Route path="neurodiversity" element={<NeurodiversityView />} />
+            <Route path="services" element={<ServiceView />} />
+            <Route path="agora" element={<AgoraView />} />
+            <Route path="cea" element={<CeaView />} />
+            <Route path="tda_Tdh" element={<Tda_TdhView />} />
+            <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
+            <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
+            <Route path="login" element={<LoginView />} />
+            <Route path="register" element={<RegisterView />} />
+            <Route path="*" element={<Error404View />} />
+            <Route path="communication" element={<TrasComunicationView />} />
+            <Route path="events" element={
+              <EventsView
+                userId={session.userId || 0}
+                events={[]}
+                onSelect={() => { }}
+              />
+            } />
+            <Route path="legal/:type" element={<LegalTextView />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
+          </Route>
+
+          {/* Rutas privadas */}
+          <Route path="/blog" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<BlogView />} />
+            </PrivateLayout>
           } />
-          <Route path="legal/:type" element={<LegalTextView />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
-        </Route>
+          <Route path="/admin" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminView />} />
+            </PrivateLayout>
+          } />
 
-        {/* Rutas privadas */}
-        <Route path="/blog" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<BlogView />} />
-          </PrivateLayout>
-        } />
-        <Route path="/admin" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<AdminView />} />
-          </PrivateLayout>
-        } />
+          <Route path="/admin/posts" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminPostView userId={session.userId || 0} />} />
+            </PrivateLayout>
+          } />
 
-        <Route path="/admin/posts" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<AdminPostView userId={session.userId || 0} />} />
-          </PrivateLayout>
-        } />
+          <Route path="/admin/events" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminEventView userId={session.userId || 0} />} />
+            </PrivateLayout>
+          } />
 
-        <Route path="/admin/events" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<AdminEventView userId={session.userId || 0} />} />
-          </PrivateLayout>
-        } />
+          <Route path="/admin/legal/:type" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminLegalTextView />} />
+            </PrivateLayout>
+          } />
 
-        <Route path="/admin/legal/:type" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<AdminLegalTextView />} />
-          </PrivateLayout>
-        } />
+          <Route path="/admin/users" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminUsersView />} />
+            </PrivateLayout>
+          } />
 
-        <Route path="/admin/users" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<AdminUsersView />} />
-          </PrivateLayout>
-        } />
+          <Route path="/profile" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<ProfileView posts={[]} />} />
+            </PrivateLayout>
+          } />
 
-        <Route path="/profile" element={
-          <PrivateLayout>
-            <ProtectedRoute element={<ProfileView posts={[]} />} />
-          </PrivateLayout>
-        } />
+          {/* Redirección de logout */}
+          <Route path="/logout" element={<Navigate to="/" replace />} />
+        </Routes>
 
-        {/* Redirección de logout */}
-        <Route path="/logout" element={<Navigate to="/" replace />} />
-      </Routes>
-
-      <Footer />
-    </SWRConfig>
+        <Footer />
+      </SWRConfig>
+    </ErrorBoundary>
   );
 };
 

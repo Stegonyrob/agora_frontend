@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { getAuthHeaders } from "./AuthHeaders";
 import type { ILoginDTO } from "./ILoginDTO";
 import type { ITokenDTO } from "./ITokenDTO";
 
@@ -9,6 +10,7 @@ export default class LoginService {
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
     };
 
@@ -28,6 +30,7 @@ export default class LoginService {
         isLoggedIn: true,
       };
     } catch (error) {
+      console.error(" LoginService: Error en login:", error);
       throw new Error("Error with API calling: " + error);
     }
   }

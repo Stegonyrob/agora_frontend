@@ -6,7 +6,6 @@ import {
   IEventCreateDTO,
   IEventUpdateDTO,
 } from "@/core/events/IEventBackendDTO";
-import { log } from "@/core/logging/LoggerService";
 import { useCallback, useEffect, useState } from "react";
 import { useTagsLoader } from "./useTagsLoader";
 import { useTagsUpload } from "./useTagsUpload";
@@ -32,10 +31,24 @@ export const useEventForm = ({
   // - Si es creación (sin event), limpia tags al abrir
   // - Si es edición (con event), sincroniza tags con event.tags
   useEffect(() => {
+    console.log(
+      "%cUSE EFFECT SINCRONIZANDO TAGS:",
+      "color: #9c27b0; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
+      { show, event: event?.id, eventTags: event?.tags, tagsState: tags }
+    );
     if (show) {
       if (event && Array.isArray(event.tags)) {
+        console.log(
+          "%cSETTING TAGS FROM EVENT:",
+          "color: #9c27b0; font-weight: bold;",
+          event.tags
+        );
         setTags(event.tags);
       } else if (!event) {
+        console.log(
+          "%cCLEARING TAGS FOR NEW EVENT:",
+          "color: #9c27b0; font-weight: bold;"
+        );
         setTags([]);
       }
     }
@@ -78,6 +91,10 @@ export const useEventForm = ({
     const loadEventImages = async () => {
       if (event?.id && show) {
         try {
+          console.log(
+            "📷 useEventForm - Cargando imágenes existentes del evento:",
+            event.id
+          );
           const eventImages = await apiEventImage.getEventImages(event.id);
 
           const existingImages: IImagePreview[] = eventImages.map((img) => ({
@@ -88,7 +105,7 @@ export const useEventForm = ({
 
           setImagePreviews(existingImages);
         } catch (error) {
-          log.error("useEventForm - Error cargando imágenes:", error);
+          console.error("💥 useEventForm - Error cargando imágenes:", error);
           if (event.images && event.images.length > 0) {
             const fallbackImages: IImagePreview[] = event.images
               .filter(
@@ -161,16 +178,16 @@ export const useEventForm = ({
 
   // Validación de formulario
   const validateForm = useCallback(() => {
+    console.log("🔐 useEventForm - Validando permisos y campos");
+
     if (userRole !== "ROLE_ADMIN") {
-      log.error(
-        "useEventForm - Validación fallida: El usuario no es administrador."
-      );
+      console.error("❌ Validación fallida: El usuario no es administrador.");
       throw new Error("Solo los administradores pueden crear/editar eventos.");
     }
 
     if (userId !== 1) {
-      log.error(
-        "useEventForm - Validación fallida: El usuario no es el administrador principal."
+      console.error(
+        "❌ Validación fallida: El usuario no es el administrador principal."
       );
       throw new Error(
         "Solo el usuario administrador (ID: 1) puede crear/editar eventos."
@@ -178,20 +195,18 @@ export const useEventForm = ({
     }
 
     if (!title.trim() || !message.trim() || !eventDate || !location.trim()) {
-      log.error(
-        "useEventForm - Validación fallida: Campos obligatorios faltantes.",
-        {
-          title,
-          message,
-          eventDate,
-          location,
-        }
-      );
+      console.error("❌ Validación fallida: Campos obligatorios faltantes.", {
+        title,
+        message,
+        eventDate,
+        location,
+      });
       throw new Error(
         "Título, mensaje, fecha y ubicación son campos obligatorios."
       );
     }
 
+    console.log("✅ Validación exitosa: Todos los campos son válidos.");
     return true;
   }, [title, message, eventDate, location, userRole, userId]);
 
@@ -211,10 +226,28 @@ export const useEventForm = ({
   // Submit del formulario
   const submitForm = useCallback(
     async (onSubmit: (event: IEvent) => Promise<void>, onClose: () => void) => {
+      console.log("🚀 useEventForm - Iniciando proceso de envío", {
+        title,
+        message,
+        location,
+        capacity,
+        eventDate,
+        tags,
+      });
+
+      // Log adicional para debuggear el estado de tags justo antes del submit
+      console.log(
+        "%cESTADO DE TAGS AL INICIO DEL SUBMIT:",
+        "color: #e91e63; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px; font-size: 1.2em;",
+        JSON.stringify(
+          { tags, tagsLength: tags.length, tagsType: typeof tags },
+          null,
+          2
+        )
+      );
+
       if (isSubmitting) {
-        log.warn(
-          "useEventForm - Proceso de envío ya en curso. Abortando nuevo envío."
-        );
+        console.warn("⚠️ Proceso de envío ya en curso. Abortando nuevo envío.");
         return;
       }
 
@@ -233,6 +266,11 @@ export const useEventForm = ({
           } else if (preview.isExisting) {
             existingImageUrls.push(preview.url);
           }
+        });
+
+        console.log("📷 Imágenes procesadas:", {
+          newImageFiles,
+          existingImageUrls,
         });
 
         let resultEvent: IEvent;
@@ -269,7 +307,7 @@ export const useEventForm = ({
               JSON.stringify({ tags }, null, 2)
             );
           } catch (err) {
-            log.error("useEventForm - Error asociando tags al evento:", err);
+            console.error("Error asociando tags al evento:", err);
           }
           resultEvent = {
             ...event,
@@ -316,7 +354,7 @@ export const useEventForm = ({
                 JSON.stringify({ tags }, null, 2)
               );
             } catch (err) {
-              log.error("useEventForm - Error asociando tags al evento:", err);
+              console.error("Error asociando tags al evento:", err);
             }
           }
         }
@@ -330,7 +368,7 @@ export const useEventForm = ({
             );
             resultEvent = await apiEvent.fetchEventById(resultEvent.id);
           } catch (imageError: any) {
-            log.error("useEventForm - Error subiendo imágenes:", imageError);
+            console.error("💥 Error subiendo imágenes:", imageError);
             setGlobalError(
               `Evento guardado, pero error subiendo imágenes: ${imageError.message}`
             );
@@ -350,7 +388,7 @@ export const useEventForm = ({
           error instanceof Error
             ? error.message
             : "Error desconocido al guardar el evento.";
-        log.error("useEventForm - Error en el proceso de envío:", errorMessage);
+        console.error("💥 Error en el proceso de envío:", errorMessage);
         setGlobalError(errorMessage);
       } finally {
         setIsSubmitting(false);

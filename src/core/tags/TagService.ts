@@ -188,7 +188,9 @@ class TagService {
   }
 
   async addTagToEvent(eventId: number, tagName: string): Promise<void> {
-    await this.tagRepository.addTagToEvent(eventId, tagName);
+    await this.tagRepository.addTagsToEvent(eventId, [
+      { id: 0, name: tagName, archived: false },
+    ]);
   }
 
   async addTagToPost(postId: number, tagName: string): Promise<void> {

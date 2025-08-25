@@ -24,22 +24,24 @@ const ColorPickerMenu = () => {
     { name: "Trans.Comunicación", path: "/Communication" },
   ];
   const colors = [
-    "rgba(255, 105, 180, 0.95)",   // rosa intenso
-    "rgba(255, 230, 80, 0.95)",    // amarillo intenso
-    "rgba(80, 255, 180, 0.95)",    // verde menta intenso
-    "rgba(255, 167, 38, 0.95)",    // naranja intenso
-    "rgba(150, 120, 255, 0.95)",   // lila intenso
-    "rgba(255, 120, 120, 0.95)",   // coral intenso
-    "rgba(255, 220, 60, 0.95)",    // crema intenso
-    "rgba(80, 255, 200, 0.95)",    // verde agua intenso
-    "rgba(255, 200, 221, 0.95)",   // rosa pastel
-    "rgba(197, 255, 221, 0.95)"    // verde menta pastel
+    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",      // Púrpura elegante
+    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",      // Rosa profesional
+    "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",      // Verde menta suave
+    "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",      // Rosa-amarillo
+    "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",      // Verde agua-rosa pastel
+    "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",      // Naranja suave
+    "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",      // Rosa coral
+    "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",      // Lavanda-rosa
+    "linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)",      // Melocotón-rosa
+    "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)"       // Malva-crema
   ];
   const menuItemsJSX = menuItems.map((item, index) => {
     const isMobile = window.innerWidth <= 768;
     const deg = index * (360 / menuItems.length);
     const transformStyle = active ? `rotate(${deg}deg) translate(${isMobile ? 7 : 15.5}rem)` : 'translate(0)';
     const reverseDeg = -deg;
+    const gradientColor = colors[index % colors.length];
+
     return (
       <a
         key={index}
@@ -47,10 +49,14 @@ const ColorPickerMenu = () => {
         className={styles.menuItem}
         style={{
           transform: `${transformStyle} rotate(${reverseDeg}deg)`,
-          transitionDelay: `${index * 0.1}s`,
-          backgroundColor: colors[index % colors.length]
-        }}
+          transitionDelay: `${index * 0.06}s`,
+          '--gradient-overlay': gradientColor,
+        } as React.CSSProperties & { '--gradient-overlay': string }}
       >
+        <div
+          className={styles.gradientOverlay}
+          style={{ background: gradientColor }}
+        />
         {item.name}
       </a>
     );

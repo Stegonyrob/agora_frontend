@@ -10,38 +10,63 @@ const LogoPicker = () => {
     if (!canvas) return;
     const context = canvas.getContext('2d');
 
+    let lastBubbleTime = 0;
+    const BUBBLE_INTERVAL = 50;
+
     const handleMouseMove = (event: MouseEvent) => {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
       const offsetX = event.clientX - rect.left;
       const offsetY = event.clientY - rect.top;
       context?.clearRect(0, 0, canvas.width, canvas.height);
-      if (context) context.font = '1.5rem Arial';
-      if (context) context.fillStyle = 'white';
-      context?.fillText('Click Me!', offsetX, offsetY);
+      if (context) {
+        context.font = '1.5rem Arial';
+        context.fillStyle = 'white';
+        context.fillText('Click Me!', offsetX, offsetY);
+      }
+    };
+
+    const handleBodyMouseMove = (event: MouseEvent) => {
+      const currentTime = Date.now();
+
+      if (currentTime - lastBubbleTime > BUBBLE_INTERVAL) {
+        let circle = document.createElement('span');
+
+        // Obtiene las coordenadas del cursor
+        const x = event.clientX;
+        const y = event.clientY;
+
+        // Aplica los estilos en línea, imitando el código original para asegurar el posicionamiento
+        circle.style.position = "absolute";
+        circle.style.pointerEvents = "none";
+        circle.style.zIndex = "1000"; // Se asegura que la burbuja esté en la parte superior
+        circle.style.left = 50 + x + "px";
+        circle.style.top = 50 + y + "px";
+
+        // La clave: Centra el elemento en las coordenadas del cursor
+        circle.style.transform = "translate(-50%, -50%)";
+
+        // Aplica los estilos para el tamaño y la forma
+        let size = Math.random() * 100;
+        circle.style.width = 20 + size + "px";
+        circle.style.height = 20 + size + "px";
+        circle.style.borderRadius = "50%";
+
+        // Usa la clase de tu archivo SCSS para el resto de los estilos (animación y color)
+        circle.className = style.circle;
+
+        document.body.appendChild(circle);
+
+        // Temporizador para eliminar la burbuja una vez que la animación haya terminado
+        setTimeout(function () {
+          circle.remove();
+        }, 1800);
+
+        lastBubbleTime = currentTime;
+      }
     };
 
     canvas.addEventListener('mousemove', handleMouseMove);
-
-    // Burbuja más lenta: aumenta el delay y la duración
-    const handleBodyMouseMove = (event: MouseEvent) => {
-      setTimeout(() => {
-        let circle = document.createElement('span');
-        let x = event.clientX;
-        let y = event.clientY;
-        circle.className = style.circle;
-        circle.style.left = x + "px";
-        circle.style.top = y + "px";
-        let size = Math.random() * 80 + 20; // burbujas más uniformes
-        circle.style.width = 1 + size + "px";
-        circle.style.height = 1 + size + "px";
-        document.body.appendChild(circle);
-        setTimeout(function () {
-          circle.remove();
-        }, 6000); // burbuja más lenta (antes 3800)
-      }, 300); // delay más largo (antes 100)
-    };
-
     document.body.addEventListener('mousemove', handleBodyMouseMove);
 
     return () => {
@@ -59,7 +84,7 @@ const LogoPicker = () => {
         width={320}
         height={320}
       />
-      <span className={style.clickMe}>Click Me</span>
+
     </div>
   );
 };

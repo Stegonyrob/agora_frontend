@@ -52,71 +52,26 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
   const apiPost = new PostService();
   const apiPostImage = new PostImageService();
 
-  // Sincronizar tags cuando cambia el post o se abre/cierra el modal
   useEffect(() => {
-    console.log(
-      "%cUSE EFFECT SINCRONIZANDO TAGS (POST):",
-      "color: #9c27b0; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-      { show, post: post?.id, postTags: post?.tags, tagsState: tags }
-    );
     if (show) {
-      if (post && Array.isArray(post.tags)) {
-        console.log(
-          "%cSETTING TAGS FROM POST:",
-          "color: #9c27b0; font-weight: bold;",
-          post.tags
+      if (post?.images && post.images.length > 0) {
+        const existingImages: IImagePreview[] = post.images.map(
+          (image: any, index: number) => ({
+            url:
+              typeof image === "string" ? image : image.imagePath || image.url,
+            isLoading: false,
+            isExisting: true,
+            id: typeof image === "object" ? image.id : index,
+          })
         );
-        // Normalizar las tags antes de asignar
-        const normalizedTags: IEventTag[] = post.tags.map((tag: any) =>
-          typeof tag === "string"
-            ? { id: -1, name: tag, archived: false }
-            : {
-                id: tag.id || -1,
-                name: tag.name,
-                archived: tag.archived ?? false,
-              }
-        );
-        setTags(normalizedTags);
-      } else if (!post) {
-        console.log(
-          "%cCLEARING TAGS FOR NEW POST:",
-          "color: #9c27b0; font-weight: bold;"
-        );
-        setTags([]);
+        setImagePreviews(existingImages);
+      } else {
+        setImagePreviews([]);
       }
+      setGlobalError(null);
     }
-  }, [show, post, setTags]);
-
-  // Cargar imágenes existentes del post
-  useEffect(() => {
-    if (post?.images && post.images.length > 0 && show) {
-      const existingImages: IImagePreview[] = post.images.map(
-        (image: any, index: number) => ({
-          url: typeof image === "string" ? image : image.imagePath || image.url,
-          isLoading: false,
-          isExisting: true,
-          id: typeof image === "object" ? image.id : index,
-        })
-      );
-      setImagePreviews(existingImages);
-    } else {
-      setImagePreviews([]);
-    }
-    setGlobalError(null);
   }, [post?.images, show]);
 
-  // Limpiar URLs de objetos
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((preview) => {
-        if (preview.url && !preview.isExisting && preview.file) {
-          URL.revokeObjectURL(preview.url);
-        }
-      });
-    };
-  }, [imagePreviews]);
-
-  // Manejo de imágenes
   const handleImagesSelected = useCallback((files: File[]) => {
     const newPreviews: IImagePreview[] = files.map((file) => ({
       url: URL.createObjectURL(file),
@@ -128,7 +83,6 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
     setImagePreviews((prev) => [...prev, ...newPreviews]);
   }, []);
 
-  // Manejar selección de imagen desde ButtonAddImage (legacy)
   const handleImageSelected = useCallback(
     (imageSrc: string, imageTitle: string) => {
       const newPreview: IImagePreview = {
@@ -155,10 +109,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
     });
   }, []);
 
-  // Validación del formulario
   const validateForm = useCallback(() => {
-    console.log("🔐 usePostForm - Validando campos");
-
     if (!title.trim() || !message.trim()) {
       throw new Error("Título y mensaje son campos obligatorios.");
     }
@@ -166,7 +117,6 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
     return true;
   }, [title, message]);
 
-  // Reset del formulario
   const resetForm = useCallback(() => {
     setTitle("");
     setMessage("");
@@ -174,26 +124,9 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
     setTags([]);
   }, []);
 
-  // Submit del formulario
   const submitForm = useCallback(
     async (onSubmit: (post: IPost) => void, onClose: () => void) => {
-      const sessionId = Date.now(); // ID único para rastrear esta sesión
-      console.log(
-        `🚀 [${sessionId}] usePostForm - Iniciando proceso de envío`,
-        {
-          title,
-          message,
-          tags,
-          imagesCount: imagePreviews.length,
-          isSubmitting,
-          submissionRef: submissionRef.current,
-        }
-      );
-
       if (isSubmitting || submissionRef.current) {
-        console.warn(
-          `⚠️ [${sessionId}] Proceso de envío ya en curso. Abortando nuevo envío.`
-        );
         return;
       }
 
@@ -202,10 +135,8 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
       setGlobalError(null);
 
       try {
-        console.log(`🔐 [${sessionId}] Validando formulario...`);
         validateForm();
 
-        // Separar imágenes nuevas de las existentes
         const newImageFiles: File[] = [];
         const existingImageUrls: string[] = [];
 
@@ -217,118 +148,81 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
           }
         });
 
-        console.log(`📷 [${sessionId}] Imágenes procesadas:`, {
-          newImageFiles: newImageFiles.length,
-          existingImageUrls: existingImageUrls.length,
-        });
-
-        // Debug: Seguimiento de tags antes de crear el payload
-        console.log(`🐞 [${sessionId}] Estado de tags antes de payload:`, tags);
         let resultPost: IPost;
 
         if (post?.id) {
-          // Actualizar post existente SIN tags (SRP)
-          const updateData: PostCreatePayload = {
+          // Para actualización, creamos un DTO completo basado en el post existente
+          const updateData: any = {
+            ...post,
             title: title.trim(),
             message: message.trim(),
             archived: false,
+            updatedAt: new Date().toISOString(),
+            description: post.description || "",
+            location: post.location || "",
+            loves: post.loves || 0,
+            comments: post.comments || [],
+            isArchived: false,
+            isPublished: true,
+            alt_image: post.alt_image || "",
+            source_image: post.source_image || "",
+            alt_avatar: post.alt_avatar || "",
+            source_avatar: post.source_avatar || "",
+            userName: post.userName || "",
+            role: post.role || "",
+            url_avatar: post.url_avatar || "",
+            tags: [],
+            images: [],
           };
-          console.log(
-            `🐞 [${sessionId}] Payload de actualización de post (SIN tags):`,
-            updateData
-          );
-          resultPost = await apiPost.updatePost(post.id, updateData as any);
+          resultPost = await apiPost.updatePost(post.id, updateData);
 
-          // Asociar tags después de actualizar (SRP)
           if (resultPost.id) {
-            console.log(
-              `🏷️ [${sessionId}] TAGS EN usePostForm ANTES DE SUBMIT (UPDATE POST):`,
-              tags
-            );
-            try {
-              await uploadTagsToPost(resultPost.id, tags);
-              console.log(
-                `✅ [${sessionId}] TAGS ASOCIADAS (UPDATE POST):`,
-                tags
-              );
-            } catch (err) {
-              console.error(
-                `❌ [${sessionId}] Error asociando tags al post:`,
-                err
-              );
-            }
+            await uploadTagsToPost(resultPost.id, tags);
           }
-          console.log(
-            `✅ [${sessionId}] Post actualizado con ID:`,
-            resultPost.id
-          );
         } else {
-          // Crear nuevo post SIN tags (SRP)
-          const createData: PostCreatePayload = {
+          // Para creación, creamos un DTO mínimo con los campos requeridos
+          const createData: any = {
+            id: 0, // Se asignará en el backend
             title: title.trim(),
             message: message.trim(),
-            archived: false,
+            userId: parseInt(sessionStorage.getItem("userId") || "0"),
+            location: "",
+            loves: 0,
+            comments: [],
+            isArchived: false,
+            isPublished: true,
+            alt_image: "",
+            source_image: "",
+            alt_avatar: "",
+            source_avatar: "",
+            userName: sessionStorage.getItem("userEmail") || "",
+            role: sessionStorage.getItem("role") || "",
+            url_avatar: "",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            description: "",
+            tags: [],
+            images: [],
           };
-          console.log(
-            `🐞 [${sessionId}] Payload de creación de post (SIN tags):`,
-            createData
-          );
-          resultPost = await apiPost.createPost(createData as any);
+          resultPost = await apiPost.createPost(createData);
 
-          // Asociar tags después de crear (SRP)
           if (resultPost.id) {
-            console.log(
-              `🏷️ [${sessionId}] TAGS EN usePostForm ANTES DE SUBMIT (CREATE POST):`,
-              tags
-            );
-            try {
-              await uploadTagsToPost(resultPost.id, tags);
-              console.log(
-                `✅ [${sessionId}] TAGS ASOCIADAS (CREATE POST):`,
-                tags
-              );
-            } catch (err) {
-              console.error(
-                `❌ [${sessionId}] Error asociando tags al post:`,
-                err
-              );
-            }
+            // Para posts nuevos, usar isNewPost = true para evitar eliminar tags inexistentes
+            await uploadTagsToPost(resultPost.id, tags, true);
           }
-          console.log(`✅ [${sessionId}] Post creado con ID:`, resultPost.id);
         }
 
-        // Subir imágenes si las hay
         if (newImageFiles.length > 0 && resultPost.id) {
           try {
-            console.log(
-              `📤 [${sessionId}] Subiendo nuevas imágenes:`,
-              newImageFiles.length
-            );
             await apiPostImage.uploadPostImages(resultPost.id, newImageFiles);
-
-            // Refrescar el post para obtener las imágenes actualizadas
-            console.log(
-              `🔄 [${sessionId}] Refrescando post después de subir imágenes...`
-            );
-            resultPost = await apiPost.getPostById(resultPost.id);
-            console.log(
-              `✅ [${sessionId}] Imágenes subidas y post actualizado`
-            );
           } catch (imageError: any) {
-            console.error(
-              `💥 [${sessionId}] Error subiendo imágenes:`,
-              imageError
-            );
+            console.error(`Error subiendo imágenes: ${imageError.message}`);
             setGlobalError(
               `Post guardado, pero error subiendo imágenes: ${imageError.message}`
             );
           }
         }
 
-        console.log(
-          `✅ [${sessionId}] Post procesado exitosamente:`,
-          resultPost
-        );
         await onSubmit(resultPost);
 
         if (!post?.id) {
@@ -341,13 +235,9 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
           error instanceof Error
             ? error.message
             : "Error desconocido al guardar el post.";
-        console.error(
-          `💥 [${sessionId}] Error en el proceso de envío:`,
-          errorMessage
-        );
+        console.error(`Error en el proceso de envío: ${errorMessage}`);
         setGlobalError(errorMessage);
       } finally {
-        console.log(`🏁 [${sessionId}] Finalizando proceso de envío`);
         submissionRef.current = false;
         setIsSubmitting(false);
       }

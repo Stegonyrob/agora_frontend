@@ -10,3 +10,8 @@ $breakpoint-tablet: 940px;  // Where hamburger menu appears
 $breakpoint-mid: 800px;    // Intermediate font size adjustment
 $breakpoint-mobile: 400px;  
 $breakpoint-small-mobile: 375px; // For very small mobile screens
+
+// Accessibility improvements
+$button-font-color: #000000; // Black for high contrast
+$button-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); // Subtle text shadow
+$button-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3); // Subtle button shadow
