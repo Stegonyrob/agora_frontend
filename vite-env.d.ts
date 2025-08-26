@@ -19,11 +19,19 @@ interface ImportMetaEnv {
   readonly VITE_API_ENDPOINT_ADMIN_PASSWORD_RECOVERY_REQUEST: string;
   readonly VITE_API_ENDPOINT_ADMIN_PASSWORD_RESET: string;
 
-  // Users
+  // Users and Profiles - OPTIMIZED
   readonly VITE_API_ENDPOINT_USERS: string;
   readonly VITE_API_ENDPOINT_REGISTER: string;
-  readonly VITE_API_ENDPOINT_PROFILE: string;
   readonly VITE_API_ENDPOINT_AVATARS: string;
+
+  // Profile endpoints - UNIFIED AND OPTIMIZED
+  readonly VITE_API_ENDPOINT_PROFILE_BASE: string;
+  readonly VITE_API_ENDPOINT_PROFILE_GET_BY_ID: string;
+  readonly VITE_API_ENDPOINT_PROFILE_UPDATE_BY_ID: string;
+  readonly VITE_API_ENDPOINT_PROFILE_DELETE_BY_ID: string;
+  readonly VITE_API_ENDPOINT_PROFILE_ME_UPDATE: string;
+  readonly VITE_API_ENDPOINT_PROFILE_ME_DELETE: string;
+  readonly VITE_API_ENDPOINT_PROFILE_FAVORITES: string;
 
   // Admin endpoints - COMPLETO SEGÚN SWAGGER
   readonly VITE_API_ENDPOINT_ADMIN_BASE: string;

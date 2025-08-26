@@ -21,20 +21,20 @@ interface AccordionCommentsProps {
 function getAvatarUrlByUserId(userId: number, profiles: any[], avatars: any[]): string {
   const profile = profiles.find((p) => p.id === userId);
   if (!profile) {
-    console.log(`[getAvatarUrlByUserId] userId=${userId} -> profile NOT FOUND. profiles:`, profiles);
+    // console.log(`[getAvatarUrlByUserId] userId=${userId} -> profile NOT FOUND. profiles:`, profiles);
     return "/images/avatarGeneric.png";
   }
   const avatarId = profile.avatar_id ?? profile.avatarId;
   if (!avatarId) {
-    console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id/avatarId NOT FOUND in profile:`, profile);
+    // console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id/avatarId NOT FOUND in profile:`, profile);
     return profile.avatar || "/images/avatarGeneric.png";
   }
   const avatar = avatars.find((a) => String(a.id) === String(avatarId));
   if (!avatar) {
-    console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id=${avatarId} NOT FOUND. avatars:`, avatars);
+    // console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id=${avatarId} NOT FOUND. avatars:`, avatars);
     return profile.avatar || "/images/avatarGeneric.png";
   }
-  console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id=${avatarId} -> imagePath=${avatar.imagePath}`);
+  // console.log(`[getAvatarUrlByUserId] userId=${userId} -> avatar_id=${avatarId} -> imagePath=${avatar.imagePath}`);
   return avatar.imagePath || profile.avatar || "/images/avatarGeneric.png";
 }
 

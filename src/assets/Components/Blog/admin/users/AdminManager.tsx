@@ -1,33 +1,17 @@
 import AdminService from "@/core/admin/AdminService";
+import { IAdmin } from "@/core/admin/IAdmin";
+import { IAdminDTO } from "@/core/admin/IAdminDTO";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./AdminManager.module.scss";
 import UserDeleteModal from "./components/UserDeleteModal";
 import UserTable from "./components/UserTable";
 
-interface AdminUser {
-    id: number;
-    username: string;
-    email: string;
-    roles: string[];
-    admin?: boolean; // Permite compatibilidad con backend que retorna 'admin: true'
-    avatarUrl?: string | null;
-    fullName?: string;
-    acceptedRules?: boolean;
-    firstName?: string | null;
-    lastName1?: string | null;
-    lastName2?: string | null;
-    avatarId?: number | null;
-    avatarDisplayName?: string | null;
-    banReason?: string | null;
-    banned?: boolean;
-}
-
 const AdminManager: React.FC = () => {
-    const [admins, setAdmins] = useState<AdminUser[]>([]);
+    const [admins, setAdmins] = useState<IAdmin[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
+    const [selectedAdmin, setSelectedAdmin] = useState<IAdmin | null>(null);
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -39,7 +23,7 @@ const AdminManager: React.FC = () => {
         phone: "",
         firstName: "",
         lastName1: "",
-        lastName2: "", // opcional
+        lastName2: "", // único opcional
     });
 
     // Comprobar si el usuario es admin
@@ -75,46 +59,50 @@ const AdminManager: React.FC = () => {
         e.preventDefault();
         setError(null);
 
-        // Validar que las contraseñas coincidan
-        if (form.password !== form.confirmPassword) {
-            setError("Las contraseñas no coinciden");
-            return;
-        }
-
-        // Construir el objeto con el formato requerido por backend
-        const payload = {
-            username: form.username,
-            email: form.email,
-            password: form.password,
-            confirmPassword: form.confirmPassword,
-            phone: form.phone,
-            firstName: form.firstName,
-            lastName1: form.lastName1,
-            lastName2: form.lastName2,
-        };
         try {
+            // Crear payload con campos del formulario + campos requeridos por backend
+            const payload: IAdminDTO = {
+                username: form.username,
+                email: form.email,
+                password: form.password,
+                confirmPassword: form.confirmPassword,
+                phone: form.phone,
+                firstName: form.firstName,
+                lastName1: form.lastName1,
+                lastName2: form.lastName2 || "", // del formulario o vacío
+                // Campos adicionales requeridos por backend (vacíos)
+                city: "",
+                country: "",
+                relationship: "",
+                avatarId: null,
+            };
+
             console.log(
                 "[AdminManager] handleCreate - Datos enviados al backend:",
                 payload
             );
             await adminService.createAdmin(payload);
+
+            // Limpiar formulario después de crear exitosamente
             setForm({
                 username: "",
                 email: "",
                 password: "",
                 confirmPassword: "",
+                phone: "",
                 firstName: "",
                 lastName1: "",
-                lastName2: "",
-                phone: "",
+                lastName2: "", // único opcional
             });
+
             await loadAdmins();
         } catch (err: any) {
+            console.error("[AdminManager] Error al crear admin:", err);
             setError(err.message || "Error al crear admin");
         }
     };
 
-    const handleDelete = (admin: AdminUser) => {
+    const handleDelete = (admin: IAdmin) => {
         setSelectedAdmin(admin);
         setShowDeleteModal(true);
     };
@@ -233,7 +221,7 @@ const AdminManager: React.FC = () => {
 
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
-                                <label className={styles.label} >Nombre de Usuario *</label>
+                                <label className={styles.label}>Nombre de Usuario *</label>
                                 <input
                                     type="text"
                                     placeholder="Usuario"

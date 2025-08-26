@@ -4,152 +4,184 @@ import IProfile from "./IProfile";
 import IProfileDTO from "./IProfileDTO";
 
 export class ProfileRepository {
-  uri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE;
-  adminUri: string = import.meta.env.VITE_API_ENDPOINT_PROFILE.replace(
-    "/any/user/profile",
-    "/any/user/profile/admin/user/profile"
-  );
+  // Base URL unificada para el ProfileController optimizado
+  private profileBaseUri: string = import.meta.env
+    .VITE_API_ENDPOINT_PROFILE_BASE; // http://localhost:8080/api/v1/any/user/profile
+  private favoritesBaseUri: string = import.meta.env
+    .VITE_API_ENDPOINT_PROFILE_FAVORITES; // favoritos
 
-  async getAll(): Promise<IProfile[]> {
-    const res = await axios.get(`${this.uri}`, {
+  // === GESTIÓN BÁSICA DE PERFILES ===
+
+  /**
+   * POST /api/v1/any/user/profile/{id} - Obtener perfil por DTO (legacy)
+   */
+  async getByDTO(id: number, dto: any): Promise<IProfile> {
+    const res = await axios.post(`${this.profileBaseUri}/${id}`, dto, {
       headers: getAuthHeaders(),
     });
-
-    // Mapear avatarId (backend) a avatar_id (frontend) para cada perfil
-    const profiles = res.data.map((profileData: any) => {
-      if (profileData.avatarId && !profileData.avatar_id) {
-        profileData.avatar_id = profileData.avatarId;
-      }
-      return profileData;
-    });
-
-    return profiles;
+    return this.mapProfileResponse(res.data);
   }
 
+  /**
+   * GET /api/v1/any/user/profile/{id} - Obtener perfil por ID
+   */
   async getById(id: number): Promise<IProfile> {
-    const res = await axios.get(`${this.uri}/${id}`, {
+    const res = await axios.get(`${this.profileBaseUri}/${id}`, {
       headers: getAuthHeaders(),
     });
     console.log("🔍 ProfileRepository.getById - Raw response:", res.data);
-
-    // Mapear avatarId (backend) a avatar_id (frontend)
-    const profileData = res.data;
-    if (profileData.avatarId && !profileData.avatar_id) {
-      profileData.avatar_id = profileData.avatarId;
-    }
-
-    console.log("🔍 ProfileRepository.getById - Mapped profile:", profileData);
-    return profileData;
+    return this.mapProfileResponse(res.data);
   }
 
-  async create(profile: IProfileDTO): Promise<IProfile> {
-    const res = await axios.post(`${this.uri}`, profile, {
-      headers: getAuthHeaders(),
-    });
-
-    // Mapear avatarId (backend) a avatar_id (frontend)
-    const profileData = res.data;
-    if (profileData.avatarId && !profileData.avatar_id) {
-      profileData.avatar_id = profileData.avatarId;
-    }
-
-    return profileData;
-  }
-
+  /**
+   * PUT /api/v1/any/user/profile/{id} - Actualizar perfil (USER propio / ADMIN cualquiera)
+   * ✅ Lógica unificada: USER solo su perfil, ADMIN cualquier perfil
+   */
   async update(id: number, profile: IProfileDTO): Promise<IProfile> {
     console.log("[ProfileRepository.update] ---");
-    console.log("[ProfileRepository.update] Endpoint:", `${this.uri}/${id}`);
+    console.log(
+      "[ProfileRepository.update] Endpoint:",
+      `${this.profileBaseUri}/${id}`
+    );
     console.log("[ProfileRepository.update] ID:", id);
     console.log("[ProfileRepository.update] Profile DTO:", profile);
-    console.log(
-      "[ProfileRepository.update] Profile JSON:",
-      JSON.stringify(profile)
-    );
-    if (profile.avatar_id !== undefined) {
-      console.log(
-        "[ProfileRepository.update] avatar_id:",
-        profile.avatar_id,
-        typeof profile.avatar_id
-      );
-    }
-    if (profile.avatarId !== undefined) {
-      console.log(
-        "[ProfileRepository.update] avatarId:",
-        profile.avatarId,
-        typeof profile.avatarId
-      );
-    }
+
     try {
-      const res = await axios.put(`${this.uri}/${id}`, profile, {
+      const res = await axios.put(`${this.profileBaseUri}/${id}`, profile, {
         headers: getAuthHeaders(),
       });
       console.log("[ProfileRepository.update] Raw response:", res.data);
-      // Mapear avatarId (backend) a avatar_id (frontend)
-      const profileData = res.data;
-      if (profileData.avatarId && !profileData.avatar_id) {
-        profileData.avatar_id = profileData.avatarId;
-      }
-      console.log("[ProfileRepository.update] Mapped profile:", profileData);
-      return profileData;
+      return this.mapProfileResponse(res.data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("[ProfileRepository.update] Axios error:", error.message);
-        if (error.response) {
-          console.error(
-            "[ProfileRepository.update] Response data:",
-            error.response.data
-          );
-          console.error(
-            "[ProfileRepository.update] Response status:",
-            error.response.status
-          );
-          console.error(
-            "[ProfileRepository.update] Response headers:",
-            error.response.headers
-          );
-        }
-      } else {
-        console.error("[ProfileRepository.update] Unknown error:", error);
-      }
+      console.error("[ProfileRepository.update] Error:", error);
       throw error;
     }
   }
 
-  // ✅ Para administradores - URL corregida
-  async updateAsAdmin(id: number, profile: IProfileDTO): Promise<IProfile> {
-    console.log("🚀 ProfileRepository.updateAsAdmin - id:", id);
-    console.log("🚀 ProfileRepository.updateAsAdmin - profile:", profile);
+  /**
+   * DELETE /api/v1/any/user/profile/{id} - Eliminar perfil (USER propio / ADMIN cualquiera)
+   * ✅ Lógica unificada: Detecta automáticamente permisos y aplica GDPR
+   */
+  async delete(id: number): Promise<void> {
     console.log(
-      "🔗 ProfileRepository.updateAsAdmin - Using ADMIN endpoint:",
-      `${this.adminUri}/${id}`
+      "🗑️ ProfileRepository.delete - Endpoint:",
+      `${this.profileBaseUri}/${id}`
     );
-
-    const res = await axios.put(`${this.adminUri}/${id}`, profile, {
+    await axios.delete(`${this.profileBaseUri}/${id}`, {
       headers: getAuthHeaders(),
     });
+  }
 
-    console.log("🔍 ProfileRepository.updateAsAdmin - Raw response:", res.data);
+  // === AUTO-GESTIÓN (USUARIO LOGUEADO) ===
 
-    // Mapear avatarId (backend) a avatar_id (frontend)
-    const profileData = res.data;
+  /**
+   * PUT /api/v1/any/user/profile/me - Actualizar mi propio perfil
+   */
+  async updateMyProfile(profile: IProfileDTO): Promise<IProfile> {
+    console.log("[ProfileRepository.updateMyProfile] Profile DTO:", profile);
+
+    const res = await axios.put(`${this.profileBaseUri}/me`, profile, {
+      headers: getAuthHeaders(),
+    });
+    console.log("[ProfileRepository.updateMyProfile] Raw response:", res.data);
+    return this.mapProfileResponse(res.data);
+  }
+
+  /**
+   * DELETE /api/v1/any/user/profile/me - Eliminar mi cuenta (GDPR)
+   */
+  async deleteMyProfile(): Promise<void> {
+    console.log("🗑️ ProfileRepository.deleteMyProfile - Self-deletion (GDPR)");
+    await axios.delete(`${this.profileBaseUri}/me`, {
+      headers: getAuthHeaders(),
+    });
+  }
+
+  // === GESTIÓN DE FAVORITOS ===
+
+  /**
+   * GET /api/v1/any/user/profile/user/profile/favorite/{id} - Obtener favoritos
+   */
+  async getFavorites(id: number): Promise<any[]> {
+    const res = await axios.get(`${this.favoritesBaseUri}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return res.data;
+  }
+
+  /**
+   * PUT /api/v1/any/user/profile/user/profile/favorite/{id} - Añadir/quitar favorito (toggle)
+   */
+  async toggleFavorite(id: number, data: any): Promise<any> {
+    const res = await axios.put(`${this.favoritesBaseUri}/${id}`, data, {
+      headers: getAuthHeaders(),
+    });
+    return res.data;
+  }
+
+  /**
+   * POST /api/v1/any/user/profile/user/profile/favorite/{id} - Obtener favorito específico
+   */
+  async getFavoriteSpecific(id: number, data: any): Promise<any> {
+    const res = await axios.post(`${this.favoritesBaseUri}/${id}`, data, {
+      headers: getAuthHeaders(),
+    });
+    return res.data;
+  }
+
+  /**
+   * DELETE /api/v1/any/user/profile/user/profile/favorite/{id} - Eliminar favorito (toggle)
+   */
+  async removeFavorite(id: number): Promise<void> {
+    await axios.delete(`${this.favoritesBaseUri}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+  }
+
+  // === MÉTODOS AUXILIARES ===
+
+  /**
+   * Mapear respuesta del backend (avatarId -> avatar_id)
+   */
+  private mapProfileResponse(profileData: any): IProfile {
     if (profileData.avatarId && !profileData.avatar_id) {
       profileData.avatar_id = profileData.avatarId;
     }
-
-    console.log(
-      "🔍 ProfileRepository.updateAsAdmin - Mapped profile:",
-      profileData
-    );
+    console.log("🔍 ProfileRepository - Mapped profile:", profileData);
     return profileData;
   }
 
-  async delete(id: number): Promise<void> {
-    console.log(
-      "🗑️ ProfileRepository.delete - Using ADMIN endpoint:",
-      `${this.adminUri}/${id}`
+  // === MÉTODOS LEGACY (COMPATIBILIDAD) ===
+
+  /**
+   * @deprecated Usar getById() instead
+   */
+  async getAll(): Promise<IProfile[]> {
+    console.warn(
+      "⚠️ ProfileRepository.getAll() is deprecated - ProfileController no longer supports bulk listing"
     );
-    await axios.delete(`${this.adminUri}/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    throw new Error(
+      "Bulk profile listing is no longer supported. Use getById() for specific profiles."
+    );
+  }
+
+  /**
+   * @deprecated No longer needed - create is handled by registration
+   */
+  async create(profile: IProfileDTO): Promise<IProfile> {
+    console.warn(
+      "⚠️ ProfileRepository.create() is deprecated - Use registration endpoint instead"
+    );
+    throw new Error("Profile creation is handled by registration endpoint");
+  }
+
+  /**
+   * @deprecated Usar update() instead (now handles both USER and ADMIN automatically)
+   */
+  async updateAsAdmin(id: number, profile: IProfileDTO): Promise<IProfile> {
+    console.warn(
+      "⚠️ ProfileRepository.updateAsAdmin() is deprecated - Use update() which handles permissions automatically"
+    );
+    return this.update(id, profile);
   }
 }

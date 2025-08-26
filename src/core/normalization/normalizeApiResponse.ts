@@ -63,7 +63,13 @@ export function normalizeItem<T extends Record<string, any>>(
   extraDefaults: Partial<T> = {}
 ): T {
   // Si viene anidado bajo 'item', usar ese objeto
-  const item = raw.item ? raw.item : raw;
+  let item = raw.item ? raw.item : raw;
+
+  // Si existe 'profile', aplanar sus propiedades en la raíz
+  if (item.profile && typeof item.profile === "object") {
+    item = { ...item.profile, ...item };
+    delete item.profile;
+  }
 
   // Procesar imágenes: priorizar 'image' (singular) del backend
   let processedImages;
@@ -85,9 +91,6 @@ export function normalizeItem<T extends Record<string, any>>(
     eventTime: normalizeString(item.eventTime),
     ...extraDefaults,
   };
-
-  console.log("🔍 [normalizeItem] Raw item before normalization:", raw);
-  console.log("eventTime:", normalized.eventTime);
 
   return normalized as T;
 }

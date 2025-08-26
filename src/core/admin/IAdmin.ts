@@ -25,21 +25,3 @@ export interface IAdmin {
   banReason?: string | null;
   banned?: boolean;
 }
-
-export interface IAdminDTO {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-  phone?: string;
-  firstName?: string;
-  lastName1?: string;
-  lastName2?: string;
-  relationship?: string;
-  city?: string;
-  country?: string;
-  avatarId?: number;
-  displayName?: string;
-  fullName?: string;
-  fullNameWithUsername?: string;
-}
