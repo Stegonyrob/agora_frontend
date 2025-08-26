@@ -178,6 +178,23 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
 
           if (resultPost.id) {
             await uploadTagsToPost(resultPost.id, tags);
+
+            // 🔄 REFRESCAR POST ACTUALIZADO para obtener tags actualizadas
+            if (tags.length > 0) {
+              try {
+                console.log("🔄 Refrescando post actualizado desde backend...");
+                resultPost = await apiPost.getPostById(resultPost.id);
+                console.log(
+                  "✅ Post actualizado refrescado con tags:",
+                  resultPost
+                );
+              } catch (refreshError) {
+                console.warn(
+                  "⚠️ Error al refrescar post actualizado:",
+                  refreshError
+                );
+              }
+            }
           }
         } else {
           // Para creación, creamos un DTO mínimo con los campos requeridos
@@ -219,6 +236,25 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
             console.error(`Error subiendo imágenes: ${imageError.message}`);
             setGlobalError(
               `Post guardado, pero error subiendo imágenes: ${imageError.message}`
+            );
+          }
+        }
+
+        // 🔄 REFRESCAR POST DESDE BACKEND para obtener tags e imágenes actualizadas
+        if (
+          resultPost.id &&
+          (!post?.id || newImageFiles.length > 0 || tags.length > 0)
+        ) {
+          try {
+            console.log(
+              "🔄 Refrescando post desde backend para obtener datos completos..."
+            );
+            resultPost = await apiPost.getPostById(resultPost.id);
+            console.log("✅ Post refrescado con datos completos:", resultPost);
+          } catch (refreshError) {
+            console.warn(
+              "⚠️ Error al refrescar post, usando datos parciales:",
+              refreshError
             );
           }
         }

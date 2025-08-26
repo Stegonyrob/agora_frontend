@@ -8,12 +8,24 @@ const AdminPostView = ({ userId }: { userId: number }) => {
     const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
     const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
 
+    // 🔄 HELPER: Función para ordenar posts (más nuevo primero)
+    const sortPostsByDate = (posts: IPost[]): IPost[] => {
+        return posts.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0).getTime();
+            const dateB = new Date(b.createdAt || 0).getTime();
+            return dateB - dateA; // Descendente: más nuevo primero
+        });
+    };
+
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const postService = new PostService();
                 const page = await postService.getAllPosts(0, 100); // Obtener los primeros 100 posts
-                setFetchedPosts(page?.content ?? []);
+                const posts = page?.content ?? [];
+
+                // 🔄 ORDENAR POSTS: Más nuevo primero (descendente por fecha de creación)
+                setFetchedPosts(sortPostsByDate(posts));
             } catch (error: any) {
                 console.error("❌ Error fetching posts:", error);
                 if (error.response) {
@@ -31,7 +43,11 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         try {
 
             // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente
-            setFetchedPosts(prev => prev.map(p => (p.id === post.id ? { ...p, ...post } : p)));
+            setFetchedPosts(prev => {
+                const updated = prev.map(p => (p.id === post.id ? { ...p, ...post } : p));
+                // 🔄 MANTENER ORDEN: Reordenar después de actualizar para mantener consistencia
+                return sortPostsByDate(updated);
+            });
 
             const postService = new PostService();
             // Crear un DTO limpio del post sin las tags (las tags se manejan separadamente)
@@ -64,18 +80,35 @@ const AdminPostView = ({ userId }: { userId: number }) => {
             await postService.updatePost(post.id, postDTO);
         } catch (error) {
             console.error("❌ AdminPostView - Error updating post:", error);
-            // En caso de error, revertir la actualización optimista
+            // En caso de error, revertir la actualización optimista y mantener orden
             const originalPost = fetchedPosts.find(p => p.id === post.id);
             if (originalPost) {
-                setFetchedPosts(prev => prev.map(p => (p.id === post.id ? originalPost : p)));
+                setFetchedPosts(prev => {
+                    const reverted = prev.map(p => (p.id === post.id ? originalPost : p));
+                    // 🔄 MANTENER ORDEN después de revertir
+                    return sortPostsByDate(reverted);
+                });
             }
         }
     };
 
     const handleCreate = async (newPost: IPost) => {
         try {
-            // El post ya fue creado en usePostForm, solo actualizar la lista local
-            setFetchedPosts(prev => [...prev, newPost]);
+            console.log("📝 AdminPostView - Nuevo post recibido:", newPost);
+
+            // Verificar si el post ya existe en la lista (prevenir duplicados)
+            setFetchedPosts(prev => {
+                const exists = prev.some(p => p.id === newPost.id);
+                if (exists) {
+                    console.log("📝 Post ya existe, actualizando...");
+                    // Si ya existe, actualizar en lugar de agregar
+                    return prev.map(p => p.id === newPost.id ? newPost : p);
+                } else {
+                    console.log("📝 Añadiendo nuevo post AL PRINCIPIO de la lista");
+                    // 🆕 NUEVO POST AL PRINCIPIO: [newPost, ...prev] en lugar de [...prev, newPost]
+                    return [newPost, ...prev];
+                }
+            });
         } catch (error) {
             console.error("Error adding post to list:", error);
         }
