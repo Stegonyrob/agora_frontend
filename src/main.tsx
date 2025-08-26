@@ -11,7 +11,7 @@ import { log } from './core/logging/LoggerService';
 import './index.scss';
 import store from './redux/store.js';
 
-// 🛡️ Inicializar protección CSRF
+
 
 
 const rootElement = document.getElementById('root');

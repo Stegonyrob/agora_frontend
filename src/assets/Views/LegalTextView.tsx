@@ -2,13 +2,17 @@ import LegalTextGeneric from "@/assets/Components/Legal/LegalTextGeneric";
 import { LegalTextDTO } from "@/core/legals/LegalTextDTO";
 import { LegalTextService } from "@/core/legals/LegalTextService";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const LegalTextView: React.FC = () => {
-    const validTypes = ["terms", "privacy", "cookies"];
+    const validTypes = ["terms", "privacy", "cookies", "blog-rules"];
     const { type } = useParams<{ type?: string }>();
-    console.log('[LegalTextView] useParams type:', type);
-    const selectedType = validTypes.includes(type ?? "") ? type! : "terms";
+    const location = useLocation();
+
+    // Si estamos en /blog-rules-preview, usar "blog-rules" como tipo
+    const selectedType = location.pathname === '/blog-rules-preview'
+        ? 'blog-rules'
+        : validTypes.includes(type ?? "") ? type! : "terms";
     console.log('[LegalTextView] selectedType:', selectedType);
     const [legalText, setLegalText] = useState<LegalTextDTO | null>(null);
     const [loading, setLoading] = useState(true);

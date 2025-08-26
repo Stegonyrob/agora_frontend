@@ -168,6 +168,7 @@ const App: React.FC = () => {
               />
             } />
             <Route path="legal/:type" element={<LegalTextView />} />
+            <Route path="blog-rules-preview" element={<LegalTextView />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
 

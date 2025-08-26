@@ -34,7 +34,7 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "privacidad-user", label: "Privacidad", path: "/legal/privacy", background: "/images/bg-privacy-user.jpg", viewAsUser: true },
     { key: "cookies-admin", label: "Cookies", path: "/admin/legal/cookies", background: "/images/bg-cookies.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "cookies-user", label: "Cookies", path: "/legal/cookies", background: "/images/bg-cookies-user.jpg", viewAsUser: true },
-    { key: "reglas-blog-admin", label: "Reglas Blog", path: "/admin/blog-rules", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
+    { key: "reglas-blog-admin", label: "Reglas Blog", path: "/admin/legal/blog-rules", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "reglas-blog-preview", label: "Reglas Blog", path: "/blog-rules-preview", background: "/images/bg-blogrules-preview.jpg", viewAsUser: true },
 ];
 
