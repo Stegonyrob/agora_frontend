@@ -1,5 +1,5 @@
 import AdminService from "@/core/admin/AdminService";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./AdminManager.module.scss";
 import UserDeleteModal from "./components/UserDeleteModal";
 import UserTable from "./components/UserTable";
@@ -61,16 +61,8 @@ const AdminManager: React.FC = () => {
         try {
             console.log("[AdminManager] Llamando a adminService.getAllAdmins()...");
             const admins = await adminService.getAllAdmins();
-            // Map profile fields to root for each admin
-            const mappedAdmins = admins.map((admin: any) => ({
-                ...admin,
-                ...(admin.profile || {}),
-            }));
-            console.log(
-                "[AdminManager] Respuesta de getAllAdmins (mapeada):",
-                mappedAdmins
-            );
-            setAdmins(mappedAdmins);
+            console.log("[AdminManager] Respuesta de getAllAdmins:", admins);
+            setAdmins(admins);
         } catch (err: any) {
             console.error("[AdminManager] Error al cargar administradores:", err);
             setError(err.message || "Error al cargar administradores");
@@ -82,6 +74,13 @@ const AdminManager: React.FC = () => {
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        // Validar que las contraseñas coincidan
+        if (form.password !== form.confirmPassword) {
+            setError("Las contraseñas no coinciden");
+            return;
+        }
+
         // Construir el objeto con el formato requerido por backend
         const payload = {
             username: form.username,
@@ -133,32 +132,50 @@ const AdminManager: React.FC = () => {
         }
     };
 
-    // Solo mostrar admins (corrige para incluir los que tienen admin: true)
-    // Mapea los admins para que tengan avatar y nombre correctos
-    const adminList: import("@/core/user/IUser").default[] = admins
-        .map((a) => ({
-            ...a,
-            roles:
-                a.roles && a.roles.length > 0 ? a.roles : a.admin ? ["ROLE_ADMIN"] : [],
-            avatarUrl:
-                a.avatarUrl && a.avatarUrl !== null
-                    ? a.avatarUrl
-                    : a.admin
-                        ? "/images/avatars/onron.png"
-                        : "/images/avatarGeneric.png",
-            fullName: a.fullName || a.username,
-            acceptedRules: a.acceptedRules ?? true,
-            firstName: a.firstName ?? null,
-            lastName1: a.lastName1 ?? null,
-            lastName2: a.lastName2 ?? null,
-            avatarId: a.avatarId ?? null,
-            avatarDisplayName: a.avatarDisplayName ?? null,
-            banReason: a.banReason ?? null,
-            banned: a.banned ?? false,
-            admin: a.admin ?? true,
-        }))
-        .filter((a) => a.roles.includes("ROLE_ADMIN"));
-    console.log("[AdminManager] adminList final:", adminList);
+    // Convertir los admins al formato esperado por UserTable
+    // Ya no necesitamos filtrar porque el backend solo devuelve admins
+    const adminList: import("@/core/user/IUser").default[] = useMemo(() => {
+        const mappedList = admins.map((admin) => ({
+            id: admin.id,
+            username: admin.username,
+            email: admin.email,
+            roles: admin.roles || ["ROLE_ADMIN"],
+            avatarUrl: admin.avatarUrl || "/images/avatars/onron.png",
+            fullName: admin.fullName || `${admin.firstName || ''} ${admin.lastName1 || ''}`.trim() || admin.username,
+            acceptedRules: admin.acceptedRules ?? true,
+            firstName: admin.firstName || null,
+            lastName1: admin.lastName1 || null,
+            lastName2: admin.lastName2 || null,
+            avatarId: admin.avatarId || null,
+            avatarDisplayName: admin.avatarDisplayName || null,
+            banReason: admin.banReason || null,
+            banned: admin.banned ?? false,
+            admin: admin.admin ?? true,
+        }));
+
+        // Solo log cuando hay cambios reales en los datos (evita spam en consola)
+        console.log("[AdminManager] adminList recalculado:", mappedList.length, "admins");
+        return mappedList;
+    }, [admins]); // Solo se recalcula cuando cambian los admins, no en cada keystroke
+
+    // Funciones de callback memorizadas para evitar re-renders innecesarios
+    const handleView = useCallback((user: any) => {
+        console.log("[AdminManager] Ver info admin:", user);
+        alert("Info admin: " + (user.fullName || user.username));
+    }, []);
+
+    const handleEdit = useCallback((user: any) => {
+        console.log("[AdminManager] Editar admin:", user);
+        alert("Editar admin: " + (user.fullName || user.username));
+    }, []);
+
+    const handleBan = useCallback(() => {
+        // Empty function for now
+    }, []);
+
+    const handleReactivate = useCallback(() => {
+        // Empty function for now
+    }, []);
 
     return (
         <div className={styles.adminManagerWrapper}>
@@ -261,70 +278,69 @@ const AdminManager: React.FC = () => {
 
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
-
                                 <label htmlFor="admin-password" className={styles.label}>
                                     Contraseña *
                                 </label>
-
-                                <input
-                                    id="admin-password"
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    value={form.password}
-                                    onChange={(e) =>
-                                        setForm((f) => ({ ...f, password: e.target.value }))
-                                    }
-                                    required
-                                    placeholder="Contraseña"
-                                    className={styles.passwordInput}
-                                    autoComplete="new-password"
-                                />
-                                <i
-                                    className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"
-                                        } ${styles.showPasswordIconOne}`}
-                                    onClick={() => setShowPassword((v) => !v)}
-                                    tabIndex={0}
-                                    aria-label={
-                                        showPassword ? "Ocultar contraseña" : "Ver contraseña"
-                                    }
-                                    role="button"
-                                />
+                                <div className={styles.passwordWrapper}>
+                                    <input
+                                        id="admin-password"
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={form.password}
+                                        onChange={(e) =>
+                                            setForm((f) => ({ ...f, password: e.target.value }))
+                                        }
+                                        required
+                                        placeholder="Contraseña"
+                                        className={styles.passwordInput}
+                                        autoComplete="new-password"
+                                    />
+                                    <i
+                                        className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"
+                                            } ${styles.showPasswordIconOne}`}
+                                        onClick={() => setShowPassword((v) => !v)}
+                                        tabIndex={0}
+                                        aria-label={
+                                            showPassword ? "Ocultar contraseña" : "Ver contraseña"
+                                        }
+                                        role="button"
+                                    />
+                                </div>
                             </div>
                             <div className={styles.formGroup}>
                                 <label className={styles.label}>
-
                                     Confirmar Contraseña *
                                 </label>
-
-                                <input
-                                    id="admin-confirm-password"
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    name="confirmPassword"
-                                    value={form.confirmPassword}
-                                    onChange={(e) =>
-                                        setForm((f) => ({
-                                            ...f,
-                                            confirmPassword: e.target.value,
-                                        }))
-                                    }
-                                    required
-                                    placeholder="Confirmar Contraseña"
-                                    className={styles.passwordInput}
-                                    autoComplete="new-password"
-                                />
-                                <i
-                                    className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"
-                                        } ${styles.showPasswordIconTwo}`}
-                                    onClick={() => setShowConfirmPassword((v) => !v)}
-                                    tabIndex={-1}
-                                    aria-label={
-                                        showConfirmPassword
-                                            ? "Ocultar contraseña"
-                                            : "Ver contraseña"
-                                    }
-                                />
-
-
+                                <div className={styles.passwordWrapper}>
+                                    <input
+                                        id="admin-confirm-password"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        value={form.confirmPassword}
+                                        onChange={(e) =>
+                                            setForm((f) => ({
+                                                ...f,
+                                                confirmPassword: e.target.value,
+                                            }))
+                                        }
+                                        required
+                                        placeholder="Confirmar Contraseña"
+                                        className={styles.passwordInput}
+                                        autoComplete="new-password"
+                                    />
+                                    <i
+                                        className={`bi ${showConfirmPassword ? "bi-eye" : "bi-eye-slash"
+                                            } ${styles.showPasswordIconTwo}`}
+                                        onClick={() => setShowConfirmPassword((v) => !v)}
+                                        tabIndex={0}
+                                        aria-label={
+                                            showConfirmPassword
+                                                ? "Ocultar contraseña"
+                                                : "Ver contraseña"
+                                        }
+                                        role="button"
+                                    />
+                                </div>
                             </div>
                         </div>
                         <div> <p>* Campos obligatorios</p></div>
@@ -340,17 +356,11 @@ const AdminManager: React.FC = () => {
                     </form>
                     <UserTable
                         users={adminList as any}
-                        onView={(user) => {
-                            console.log("[AdminManager] Ver info admin:", user);
-                            alert("Info admin: " + (user.fullName || user.username));
-                        }}
-                        onEdit={(user) => {
-                            console.log("[AdminManager] Editar admin:", user);
-                            alert("Editar admin: " + (user.fullName || user.username));
-                        }}
+                        onView={handleView}
+                        onEdit={handleEdit}
                         onDelete={handleDelete}
-                        onBan={() => { }}
-                        onReactivate={() => { }}
+                        onBan={handleBan}
+                        onReactivate={handleReactivate}
                     />
                 </div>
             </div>

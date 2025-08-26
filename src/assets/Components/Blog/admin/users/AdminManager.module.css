@@ -141,23 +141,49 @@
   align-items: center;
 }
 
+.adminManagerWrapper .adminCard .adminBody .passwordWrapper .passwordInput {
+  background-color: rgba(177, 161, 161, 0.65);
+  width: 100%;
+  border: 1px solid #bdbdbd;
+  border-radius: 0.4rem;
+  padding: 0.7rem 3rem 0.7rem 1rem;
+  margin: 0;
+  color: #f8f4f4;
+  font-weight: 500;
+  box-sizing: border-box;
+  display: block;
+  font-size: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: none;
+}
+
+.adminManagerWrapper .adminCard .adminBody .passwordWrapper .passwordInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.15);
+}
+
 .adminManagerWrapper .adminCard .adminBody .showPasswordIconOne,
 .adminManagerWrapper .adminCard .adminBody .showPasswordIconTwo {
   position: absolute;
   width: 1.5rem;
+  height: 1.5rem;
+  right: 0.8rem;
+  top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   color: #ece8e8;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
 }
 
-.adminManagerWrapper .adminCard .adminBody .showPasswordIconOne {
-  right: 27%;
-  top: 38%;
-}
-
-.adminManagerWrapper .adminCard .adminBody .showPasswordIconTwo {
-  right: 53%;
-  top: 38%;
+.adminManagerWrapper .adminCard .adminBody .showPasswordIconOne:hover,
+.adminManagerWrapper .adminCard .adminBody .showPasswordIconTwo:hover {
+  color: #007bff;
 }
 
 .adminManagerWrapper .adminCard .adminBody .adminForm {

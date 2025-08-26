@@ -13,7 +13,7 @@ interface UserTableProps {
     onDelete: (user: IUser) => void;
 }
 
-const UserTable: React.FC<UserTableProps> = ({
+const UserTable: React.FC<UserTableProps> = React.memo(({
     users,
     onView,
     onEdit,
@@ -21,7 +21,7 @@ const UserTable: React.FC<UserTableProps> = ({
     onReactivate,
     onDelete,
 }) => {
-    console.log('[UserTable] users prop:', users);
+    // console.log('[UserTable] users prop:', users); // Removido para evitar spam
 
     const getRoleBadge = (roles: string[]) => {
         const isAdmin = roles.includes('ROLE_ADMIN');
@@ -97,6 +97,6 @@ const UserTable: React.FC<UserTableProps> = ({
             </div>
         </div>
     );
-};
+});
 
 export default UserTable;

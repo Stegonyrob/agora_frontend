@@ -33,9 +33,38 @@ class TagRepository implements ITagRepository {
     .VITE_API_ENDPOINT_TAGS_BY_EVENT_PUBLIC;
   private readonly privateEventTagsUrl = import.meta.env
     .VITE_API_ENDPOINT_TAGS_BY_EVENT_PRIVATE;
-  private readonly postTagsUrl = import.meta.env.VITE_API_ENDPOINT_TAGS_POST;
+  private readonly postTagsUrl = import.meta.env.VITE_API_ENDPOINT_POST_TAGS;
   private readonly tagsUrl = import.meta.env.VITE_API_ENDPOINT_TAGS;
   private readonly eventTagsUrl = import.meta.env.VITE_API_ENDPOINT_EVENT_TAGS;
+
+  // 🔧 Helper para construir URLs correctas usando variables de entorno con fallback
+  private getEventTagsUrl(eventId: number): string {
+    const baseUrl =
+      this.eventTagsUrl ||
+      `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/any/tags`;
+    return `${baseUrl}/events/${eventId}/tags`;
+  }
+
+  private getPostTagsUrl(postId: number): string {
+    const baseUrl =
+      this.postTagsUrl ||
+      `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/any/tags`;
+    return `${baseUrl}/posts/${postId}/tags`;
+  }
+
+  private getEventTagRemoveUrl(eventId: number, tagName: string): string {
+    const baseUrl =
+      this.eventTagsUrl ||
+      `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/any/tags`;
+    return `${baseUrl}/events/${eventId}/tags/${encodeURIComponent(tagName)}`;
+  }
+
+  private getPostTagRemoveUrl(postId: number, tagName: string): string {
+    const baseUrl =
+      this.postTagsUrl ||
+      `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/any/tags`;
+    return `${baseUrl}/posts/${postId}/tags/${encodeURIComponent(tagName)}`;
+  }
 
   async getAllTags(): Promise<ITag[]> {
     try {
@@ -59,7 +88,7 @@ class TagRepository implements ITagRepository {
 
   async getTagsByEvent(eventId: number): Promise<ITag[]> {
     try {
-      const response = await axios.get(`${this.eventTagsUrl}/${eventId}/tags`);
+      const response = await axios.get(this.getEventTagsUrl(eventId));
       return response.data || [];
     } catch (error) {
       throw error;
@@ -68,9 +97,7 @@ class TagRepository implements ITagRepository {
 
   async getTagsByPost(postId: number): Promise<ITag[]> {
     try {
-      const response = await axios.get(
-        `${this.eventTagsUrl}/posts/${postId}/tags`
-      );
+      const response = await axios.get(this.getPostTagsUrl(postId));
       return response.data || [];
     } catch (error) {
       throw error;
@@ -94,7 +121,7 @@ class TagRepository implements ITagRepository {
     try {
       const headers = getAuthHeaders();
       const response = await axios.post(
-        `${this.eventTagsUrl}/${eventId}/tags`,
+        this.getEventTagsUrl(eventId),
         { tags },
         { headers }
       );
@@ -110,7 +137,7 @@ class TagRepository implements ITagRepository {
     try {
       const headers = getAuthHeaders();
       const response = await axios.post(
-        `${this.eventTagsUrl}/posts/${postId}/tags`,
+        this.getPostTagsUrl(postId),
         { tags },
         { headers }
       );
@@ -122,10 +149,9 @@ class TagRepository implements ITagRepository {
   async removeTagFromEvent(eventId: number, tagName: string): Promise<void> {
     try {
       const headers = getAuthHeaders();
-      await axios.delete(
-        `${this.eventTagsUrl}/${eventId}/tags/${encodeURIComponent(tagName)}`,
-        { headers }
-      );
+      await axios.delete(this.getEventTagRemoveUrl(eventId, tagName), {
+        headers,
+      });
     } catch (error) {
       throw error;
     }
@@ -134,12 +160,9 @@ class TagRepository implements ITagRepository {
   async removeTagFromPost(postId: number, tagName: string): Promise<void> {
     try {
       const headers = getAuthHeaders();
-      await axios.delete(
-        `${this.eventTagsUrl}/posts/${postId}/tags/${encodeURIComponent(
-          tagName
-        )}`,
-        { headers }
-      );
+      await axios.delete(this.getPostTagRemoveUrl(postId, tagName), {
+        headers,
+      });
     } catch (error) {
       throw error;
     }
@@ -148,7 +171,7 @@ class TagRepository implements ITagRepository {
   async clearTagsFromPost(postId: number): Promise<void> {
     try {
       const headers = getAuthHeaders();
-      await axios.delete(`${this.eventTagsUrl}/posts/${postId}/tags`, {
+      await axios.delete(this.getPostTagsUrl(postId), {
         headers,
       });
     } catch (error) {

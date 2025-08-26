@@ -30,6 +30,7 @@ export interface IAdminDTO {
   username: string;
   email: string;
   password: string;
+  confirmPassword?: string;
   phone?: string;
   firstName?: string;
   lastName1?: string;
