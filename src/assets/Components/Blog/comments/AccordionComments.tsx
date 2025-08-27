@@ -6,8 +6,8 @@ import { fetchProfileById } from "@/core/profiles/profileStore";
 import { createReply, deleteReply, updateReply } from "@/core/replies/replyStore";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useMemo, useState } from "react";
+import { FaRegCommentDots } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { createSelector } from 'reselect';
 import styles from "./AccordionComments.module.scss";
 import CommentsList from "./CommentsList";
 import CommentsSkeleton from "./CommentsSkeleton";
@@ -41,30 +41,23 @@ function getAvatarUrlByUserId(userId: number, profiles: any[], avatars: any[]): 
 
 // --- Componente principal ---
 const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
+  // LOG: Montaje del componente
+  console.log('[AccordionComments] MONTAR componente para postId:', postId);
   const dispatch = useDispatch<any>();
   // Obtén el usuario logueado y rol directamente del store
   const { userId: currentUserId, role } = useSelector((state: RootState) => state.session);
   const isAdmin = role === 'ROLE_ADMIN';
 
   // Selectores y estado
-  const makeSelectCommentsByPostId = () => createSelector(
-    [
-      (state: RootState) => state.comments.commentsByPostId,
-      (_: RootState, postId: number) => postId
-    ],
-    (commentsByPostId, postId) =>
-      Array.isArray(commentsByPostId?.[postId]) ? commentsByPostId[postId] : []
-  );
-  const selectProfiles = (state: RootState) =>
-    Array.isArray(state.profile?.profiles) ? state.profile.profiles : [];
-  const selectAvatars = (state: RootState) =>
-    Array.isArray(state.avatars?.avatars) ? state.avatars.avatars : [];
-  const selectComments = useMemo(makeSelectCommentsByPostId, []);
-  const comments = useSelector((state: RootState) => selectComments(state, postId));
-  const memoizedComments = useMemo(() => comments, [comments]);
-  const commentsCount = memoizedComments.length;
-  const profiles = useSelector(selectProfiles);
-  const avatars = useSelector(selectAvatars);
+  // Selector directo para forzar re-render cuando cambia el store
+  const commentsByPostId = useSelector((state: RootState) => state.comments.commentsByPostId);
+  console.log('[AccordionComments] commentsByPostId store:', commentsByPostId);
+  const comments = Array.isArray(commentsByPostId?.[postId]) ? commentsByPostId[postId] : [];
+  console.log('[AccordionComments] comments para postId', postId, '->', comments);
+  const commentsCount = comments.length;
+  console.log('[AccordionComments] commentsCount para postId', postId, '->', commentsCount);
+  const profiles = useSelector((state: RootState) => Array.isArray(state.profile?.profiles) ? state.profile.profiles : []);
+  const avatars = useSelector((state: RootState) => Array.isArray(state.avatars?.avatars) ? state.avatars.avatars : []);
 
   // Estado local
   const [open, setOpen] = useState(false);
@@ -77,6 +70,13 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   const [editReplyText, setEditReplyText] = useState("");
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
+
+  // Cargar comentarios al montar el componente para que el contador sea correcto
+  useEffect(() => {
+    console.log('[AccordionComments] useEffect MONTAR: dispatch(fetchComments)', postId);
+    dispatch(fetchComments(postId));
+    // eslint-disable-next-line
+  }, [dispatch, postId]);
 
   // --- Helpers internos ---
   function getAllUserIds(comments: any[]): number[] {
@@ -101,7 +101,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   }
 
   // --- Efectos ---
-  const allUserIds = useMemo(() => getAllUserIds(memoizedComments), [memoizedComments]);
+  const allUserIds = useMemo(() => getAllUserIds(comments), [comments]);
   const allProfilesReallyLoaded = allUserIds.every((userId) => isProfileLoaded(userId, profiles));
   useEffect(() => {
     if (!open) {
@@ -118,9 +118,11 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   // Cargar comentarios solo al abrir el accordion
   useEffect(() => {
     if (!open) return;
+    console.log('[AccordionComments] useEffect ABRIR: dispatch(fetchComments)', postId);
     setCommentsLoading(true);
     dispatch(fetchComments(postId)).then(() => {
       setCommentsLoading(false);
+      console.log('[AccordionComments] fetchComments terminado al abrir para postId', postId);
     });
     // eslint-disable-next-line
   }, [dispatch, postId, open]);
@@ -128,14 +130,14 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   // Cargar perfiles solo cuando llegan comentarios nuevos
   useEffect(() => {
     if (!open) return;
-    const allUserIds = getAllUserIds(memoizedComments);
+    const allUserIds = getAllUserIds(comments);
     allUserIds.forEach((userId) => {
       if (!isProfileLoaded(userId, profiles)) {
         dispatch(fetchProfileById(userId));
       }
     });
     // eslint-disable-next-line
-  }, [open, memoizedComments, profiles, dispatch]);
+  }, [open, comments, profiles, dispatch]);
 
   // --- Handlers ---
   const handleAddComment = () => {
@@ -195,20 +197,33 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   // Loader ahora es un componente CommentsSkeleton
 
   // --- Render principal ---
-  if ((open && (showSkeleton || commentsLoading)) || !allProfilesReallyLoaded) {
-    return <CommentsSkeleton count={Math.max(2, memoizedComments.length || 2)} />;
+  console.log('[AccordionComments] RENDER PRINCIPAL - postId:', postId, 'commentsCount:', commentsCount, 'showSkeleton:', showSkeleton, 'commentsLoading:', commentsLoading);
+
+  if (open && (showSkeleton || commentsLoading || !allProfilesReallyLoaded)) {
+    console.log('[AccordionComments] MOSTRANDO SKELETON para postId:', postId);
+    return <CommentsSkeleton count={Math.max(2, comments.length || 2)} />;
   }
+
+  console.log('[AccordionComments] MOSTRANDO BOTÓN para postId:', postId, 'con count:', commentsCount);
   return (
     <div className={styles.commentsContainer}>
       <button
-        className={styles.iconBtn}
+        className={styles.commentBtn}
         onClick={() => {
           if (open) setShowSkeleton(false);
           setOpen(!open);
         }}
+        aria-label={open ? "Cerrar comentarios" : "Abrir comentarios"}
+        style={{
+          // Force visibility for debugging
+          display: 'inline-flex',
+          visibility: 'visible',
+          opacity: 1
+        }}
       >
-        <i className="bi bi-chat-dots"></i>
-        <span className={styles.counter}>{commentsCount}</span>
+        <span className={styles.commentIcon}><FaRegCommentDots size={20} /></span>
+        <span className={styles.commentCount} style={{ color: '#6dd5ed', fontWeight: 'bold' }}>{commentsCount}</span>
+        <span className={styles.commentLabel}>comentarios</span>
       </button>
       {open && (
         <div className={styles.accordion}>
@@ -232,7 +247,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
             </button>
           </div>
           <CommentsList
-            comments={memoizedComments}
+            comments={comments}
             profiles={profiles}
             avatars={avatars}
             currentUserId={currentUserId}
