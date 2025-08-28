@@ -3,29 +3,25 @@ import { IReplyDTO } from "./IReplyDTO";
 import { ReplyRepository } from "./ReplyRepository";
 
 export class ReplyService {
-  repository: ReplyRepository;
+  static repository = new ReplyRepository();
 
-  constructor(repository = new ReplyRepository()) {
-    this.repository = repository;
+  static async get(): Promise<IReply[]> {
+    return await ReplyService.repository.getAll();
   }
 
-  async get(): Promise<IReply[]> {
-    return await this.repository.getAll();
+  static async getByCommentId(commentId: number): Promise<IReply[]> {
+    return await ReplyService.repository.getByCommentId(commentId);
   }
 
-  async getByCommentId(commentId: number): Promise<IReply[]> {
-    return await this.repository.getByCommentId(commentId);
+  static async create(reply: IReplyDTO): Promise<IReply> {
+    return await ReplyService.repository.create(reply);
   }
 
-  async create(reply: IReplyDTO): Promise<IReply> {
-    return await this.repository.create(reply);
+  static async update(replyId: number, reply: IReplyDTO): Promise<IReply> {
+    return await ReplyService.repository.update(replyId, reply);
   }
 
-  async update(replyId: number, reply: IReplyDTO): Promise<IReply> {
-    return await this.repository.update(replyId, reply);
-  }
-
-  async delete(replyId: number): Promise<void> {
-    return await this.repository.delete(replyId);
+  static async delete(replyId: number): Promise<void> {
+    return await ReplyService.repository.delete(replyId);
   }
 }

@@ -1,4 +1,5 @@
 import { IReply } from "../replies/IReply";
+import IUser from "../user/IUser";
 
 export interface IComment {
   id: number;
@@ -7,4 +8,5 @@ export interface IComment {
   message: string;
   creationDate: string;
   replies?: IReply[];
+  user?: IUser; // Optional user object for username/avatar
 }

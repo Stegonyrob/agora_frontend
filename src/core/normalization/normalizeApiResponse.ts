@@ -81,8 +81,17 @@ export function normalizeItem<T extends Record<string, any>>(
     processedImages = [];
   }
 
+  // Si existe 'user' o 'usuario', incluirlo (para comentarios y replies)
+  let user = undefined;
+  if (item.user) {
+    user = item.user;
+  } else if (item.usuario) {
+    user = item.usuario;
+  }
+
   const normalized: Record<string, any> = {
     ...item,
+    user,
     tags: normalizeTags(item.tags),
     images: processedImages,
     attendees: normalizeArray(item.attendees),
