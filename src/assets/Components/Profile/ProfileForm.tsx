@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import AvatarPickerModal from "../Avatar/AvatarPickerModal";
 import styles from './ProfileForm.module.scss';
 
+
 interface ProfileFormProps {
   profile: IProfileDTO;
   onSelect?: (profile: IProfile) => void;
@@ -25,7 +26,8 @@ interface ProfileFormProps {
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, show, userId }) => {
   const { getRandomAvatar, getAvatarImageUrl } = useAvatars();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formState, setFormState] = useState<IProfileDTO>({
     id: 0,
     firstName: "",
@@ -265,23 +267,43 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
             onChange={handleChange}
           />
 
+
           <label htmlFor="password">Contraseña:</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            value={formState.password || ''}
-            onChange={handleChange}
-          />
+          <div className={styles.passwordInputWrapper}>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formState.password || ''}
+              onChange={handleChange}
+              className={styles.passwordInput}
+            />
+            <i
+              className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIcon}`}
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              tabIndex={0}
+            />
+          </div>
+
 
           <label htmlFor="confirmPassword">Confirmar contraseña:</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            name="confirmPassword"
-            value={formState.confirmPassword || ''}
-            onChange={handleChange}
-          />
+          <div className={styles.passwordInputWrapper}>
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              value={formState.confirmPassword || ''}
+              onChange={handleChange}
+              className={styles.passwordInput}
+            />
+            <i
+              className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIcon}`}
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              tabIndex={0}
+            />
+          </div>
 
           <Challenge onVerify={setChallengeOk} />
 

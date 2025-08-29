@@ -158,7 +158,7 @@ function RegisterForm() {
             <div className={styles.formRow} >
               <Form.Group className="mb-3" controlId="formPassword" style={{ flex: 1 }}>
                 <Form.Label className={styles.label}>Contraseña</Form.Label>
-                <div className={styles.passwordWrapper}>
+                <div className={styles.passwordInputWrapper}>
                   <Form.Control
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -169,7 +169,7 @@ function RegisterForm() {
                     className={styles.passwordInput}
                   />
                   <i
-                    className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIconOne}`}
+                    className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIcon}`}
                     onClick={() => setShowPassword(v => !v)}
                     tabIndex={-1}
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
@@ -178,7 +178,7 @@ function RegisterForm() {
               </Form.Group>
               <Form.Group className="mb-3" controlId="formConfirmPassword" style={{ flex: 1 }}>
                 <Form.Label className={styles.label}>Confirmar Contraseña</Form.Label>
-                <div className={styles.passwordWrapper}>
+                <div className={styles.passwordInputWrapper}>
                   <Form.Control
                     type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
@@ -189,7 +189,7 @@ function RegisterForm() {
                     className={styles.passwordInput}
                   />
                   <i
-                    className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIconTwo}`}
+                    className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} ${styles.showPasswordIcon}`}
                     onClick={() => setShowConfirmPassword(v => !v)}
                     tabIndex={-1}
                     aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Ver contraseña'}

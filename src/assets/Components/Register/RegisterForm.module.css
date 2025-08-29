@@ -50,23 +50,33 @@
   color: azure;
 }
 
-.card .showPasswordIconOne,
-.card .showPasswordIconTwo {
+.card .passwordInputWrapper {
+  position: relative;
+  width: 70%;
+  margin: auto;
+}
+
+.card .passwordInput {
+  width: 100%;
+  background-color: rgba(177, 161, 161, 0.8);
+  color: azure;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  padding-right: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card .showPasswordIcon {
   position: absolute;
-  width: 1.5rem;
+  top: 50%;
+  right: 1.2rem;
   transform: translateY(-50%);
   cursor: pointer;
   color: #ece8e8;
-}
-
-.card .showPasswordIconOne {
-  right: 14%;
-  top: 72%;
-}
-
-.card .showPasswordIconTwo {
-  right: 59%;
-  top: 72%;
+  z-index: 2;
+  font-size: 1.3rem;
+  pointer-events: auto;
 }
 
 .card .rulesNotice {

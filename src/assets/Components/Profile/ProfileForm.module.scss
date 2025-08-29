@@ -1,3 +1,26 @@
+// Icono de mostrar/ocultar contraseña
+
+.passwordInputWrapper {
+  position: relative;
+}
+
+.passwordInput {
+  width: 45rem;
+  background-color: rgba(133, 124, 124, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  margin: 1rem;
+  padding-right: 2.5rem;
+}
+
+.showPasswordIcon {
+  margin-left: -3rem;
+  cursor: pointer;
+  color: #888;
+  z-index: 2;
+  font-size: 1.3rem;
+}
 .modalCard {
  position: fixed;
  bottom: 15%;
