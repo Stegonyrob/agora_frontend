@@ -1,5 +1,5 @@
 import ButtonAttendee from '@/assets/Components/Blog/admin/button/attendee/ButtonAttendee';
-import LikeButton from '@/assets/Components/Blog/admin/button/favorite/ButtonFavoriteHeart';
+import LoveButton from '@/assets/Components/Blog/admin/button/love/ButtonLoveHeart';
 import { IEventImage } from '@/core/events/IEvent';
 import { IPostImage } from '@/core/posts/images/IPostImage';
 import { useImageLoader } from '@/hooks/useImageLoader';
@@ -20,7 +20,7 @@ interface CardItemProps {
     creationDate: string;
     eventDate?: string; // Fecha específica del evento
     eventTime?: string; // Hora específica del evento
-    favoritesCount: number;
+    lovesCount: number;
     commentsCount?: number;
     attendeesCount: number;
     location?: string;
@@ -42,7 +42,7 @@ const CardItem: React.FC<CardItemProps> = ({
     creationDate,
     eventDate,
     eventTime, // Added eventTime
-    favoritesCount,
+    lovesCount,
     commentsCount,
     attendeesCount = 0,
     location,
@@ -185,8 +185,8 @@ const CardItem: React.FC<CardItemProps> = ({
                             }}
                         />
                     )}
-                    <span className={styles.favoriteIcon}>
-                        <LikeButton
+                    <span className={styles.loveIcon}>
+                        <LoveButton
                             postId={id}
                             type={type} />
                     </span>

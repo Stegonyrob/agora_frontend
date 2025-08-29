@@ -65,7 +65,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                                 description={event.message}
                                 creationDate={event.creationDate}
                                 eventDate={event.eventDate}
-                                favoritesCount={event.favoritesCount}
+                                lovesCount={event.favoritesCount}
                                 images={event.images}
                                 tags={Array.isArray(event.tags) ? event.tags.map((tag, idx) => typeof tag === "string" ? { id: idx, name: tag } : tag) : []}
                                 user={event.user}

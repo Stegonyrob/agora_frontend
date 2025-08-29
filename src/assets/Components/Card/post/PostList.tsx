@@ -95,7 +95,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                                 title={post.title}
                                 description={post.message}
                                 creationDate={post.creationDate}
-                                favoritesCount={post.favoritesCount ?? 0}
+                                lovesCount={post.favoritesCount ?? 0}
                                 commentsCount={post.commentsCount ?? 0}
                                 images={post.images || post.image} // Usar images (nuevo) o image (legacy) para compatibilidad
                                 tags={mapTagsForCardItem(post.tags)} // <-- USANDO LA FUNCIÓN DE NORMALIZACIÓN AQUÍ

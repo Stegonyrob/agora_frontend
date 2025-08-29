@@ -13,7 +13,7 @@ const CardItemSkeleton: React.FC<CardItemSkeletonProps> = ({ type }) => {
                     {/* El cuadrado que simula el contenido de la imagen con object-fit: contain */}
                     <div className={styles.skeletonImageCenterPlaceholder}></div>
                 </div>
-                <span className={styles.favoriteIcon}>
+                <span className={styles.loveIcon}>
                     <div className={styles.skeletonCirclePlaceholder}></div> {/* Placeholder para el corazón */}
                 </span>
                 {type === 'event' && (

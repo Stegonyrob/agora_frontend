@@ -1,8 +1,9 @@
+// ...existing code up to first class definition...
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
 
 export class LoveRepository {
-  private uri: string;
+  protected uri: string;
 
   constructor(uri: string) {
     this.uri = uri;

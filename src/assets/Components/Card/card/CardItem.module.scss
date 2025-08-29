@@ -55,7 +55,7 @@ $hover-glow-color: #9c27b0;
           transform: translateY(-50%);
           background: rgba(255, 255, 255, 0.8);
           border: none;
-          border-radius: 50%;
+  // Icono de love (corazón)
           cursor: pointer;
           height: 2.25rem;
           width: 2.25rem;
@@ -128,7 +128,7 @@ $hover-glow-color: #9c27b0;
         box-shadow: 0 0.5rem 1.25rem rgba(74, 72, 72, 0.1);
       }
 
-      .favoriteIcon {
+  .loveIcon {
         position: absolute;
         right: 0.625rem;
         top: 0.625rem;
