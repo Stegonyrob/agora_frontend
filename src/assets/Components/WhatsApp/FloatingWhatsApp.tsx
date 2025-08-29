@@ -176,7 +176,7 @@ export function FloatingWhatsApp({
     }, [handleNotification, notificationDelay]);
 
     const handleOpen = useCallback(
-        (event: React.MouseEvent<HTMLDivElement>) => {
+        (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
 
             if (isOpen) return;
@@ -184,7 +184,7 @@ export function FloatingWhatsApp({
             clearInterval(notificationInterval.current);
             dispatch({ type: "open" });
             setTimeout(() => dispatch({ type: "delay" }), 2000);
-            if (onClick) onClick(event);
+            if (onClick) onClick(event as unknown as React.MouseEvent<HTMLDivElement>);
         },
         [isOpen, onClick]
     );
@@ -231,26 +231,30 @@ export function FloatingWhatsApp({
 
     return (
         <div
-            className={`${styles.floatingWhatsapp} ${darkMode ? `${styles.dark} ` : ""
-                } ${className}`}
+            className={`${styles.floatingWhatsapp} ${darkMode ? `${styles.dark} ` : ""}${className}`}
             style={style}
         >
-            <div
+            <button
                 className={`${styles.whatsappButton} ${buttonClassName}`}
                 onClick={handleOpen}
                 style={buttonStyle}
-                aria-hidden="true"
+                aria-label="Abrir chat de WhatsApp"
+                role="button"
+                tabIndex={0}
+                type="button"
             >
+                <span className="sr-only">Abrir chat de WhatsApp</span>
                 <WhatsappSVG />
                 {isNotification && (
                     <span
-                        className={`${styles.notificationIndicator} ${notificationClassName}`}
-                        style={notificationStyle}
+                        className={styles.notificationIndicator}
+                        aria-label="Tienes un mensaje nuevo en WhatsApp"
+                        role="status"
                     >
                         1
                     </span>
                 )}
-            </div>
+            </button>
 
             <div
                 className={`${styles.whatsappChatBox} ${isOpen ? styles.open : styles.close
