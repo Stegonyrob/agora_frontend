@@ -93,11 +93,32 @@ const CardItem: React.FC<CardItemProps> = ({
     const hardcodedEventDate = '2025-08-20';
     const hardcodedEventTime = '18:30';
 
-    // Fecha y lugar juntos para eventos
+
+    // Utilidad para formatear fecha a dd/mm/aaaa
+    function formatDateDMY(dateString?: string) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString; // fallback si no es válida
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Utilidad para formatear hora a hh:mm (sin segundos)
+    function formatHourHM(timeString?: string) {
+        if (!timeString) return '';
+        // Si viene en formato hh:mm:ss, solo toma hh:mm
+        const [hh, mm] = timeString.split(':');
+        if (hh && mm) return `${hh}:${mm}`;
+        return timeString;
+    }
+
+    // Fecha y lugar juntos para eventos, usando formato dd/mm/aaaa
     const displayDate = type === 'event' && eventDate ? eventDate : creationDate;
     const eventInfo = type === 'event' && location
-        ? `${location} · ${eventDate} ${eventTime}`
-        : `${eventDate} ${eventTime}`;
+        ? `${location} · ${formatDateDMY(eventDate)}${eventTime ? ' ' + formatHourHM(eventTime) : ''}`
+        : `${formatDateDMY(eventDate)}${eventTime ? ' ' + formatHourHM(eventTime) : ''}`;
 
     // Debug: Verificar datos recibidos
     console.log('🔍 [CardItem] Props recibidos:', {
@@ -197,11 +218,7 @@ const CardItem: React.FC<CardItemProps> = ({
                 <div className={styles.body}>
                     <h3 className={styles.title}>{title}</h3>
                     {type === 'post' && (
-                        <p className={styles.date}>{new Date(displayDate).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        })}</p>
+                        <p className={styles.date}>{formatDateDMY(displayDate)}</p>
                     )}
                     <p className={styles.description}>
                         {type === 'post' && description.length > 250
