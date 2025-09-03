@@ -23,6 +23,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   const [open, setOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // React Query hooks
   const { data: comments = [], isLoading } = useComments(postId);
@@ -36,13 +37,26 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   // Handler para crear comentario
   const handleAddComment = async () => {
     if (!newComment.trim() || sending) return;
+    setErrorMsg(null);
     setSending(true);
     const dto: CommentDTO = { postId, message: newComment };
     try {
       await createCommentMutation.mutateAsync(dto);
       setNewComment("");
-    } catch (e) {
-      alert("Error al crear el comentario. Intenta de nuevo.");
+    } catch (e: any) {
+      // Intenta extraer mensaje del backend y el código de error
+      let msg = "No se pudo crear el comentario. Intenta de nuevo.";
+      const status = e?.response?.status;
+      if (status === 423) {
+        msg = "No puedes crear comentarios porque tu usuario ha sido temporalmente bloqueado por comportamiento inapropiado. Si crees que es un error, contacta con el administrador.";
+      } else if (e?.response?.data?.message) {
+        msg = e.response.data.message;
+        // Si el backend rechaza por contenido inapropiado, personaliza el mensaje
+        if (msg.toLowerCase().includes("inapropiado") || msg.toLowerCase().includes("rechazado")) {
+          msg = "Tu comentario fue rechazado por contener palabras o expresiones inapropiadas según el análisis automático. Por favor, revisa el contenido y vuelve a intentarlo.";
+        }
+      }
+      setErrorMsg(msg);
     } finally {
       setSending(false);
     }
@@ -66,6 +80,12 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
       </button>
       {open && (
         <div className={styles.accordion}>
+          {errorMsg && (
+            <div className={styles.errorMsg} role="alert">
+              <i className="bi bi-exclamation-triangle-fill" style={{ color: '#ffc107', marginRight: 8 }}></i>
+              {errorMsg}
+            </div>
+          )}
           <div className={styles.addCommentRow}>
             <img
               src={avatars[0]?.imagePath || "/images/avatarGeneric.png"}

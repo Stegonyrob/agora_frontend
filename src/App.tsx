@@ -43,8 +43,10 @@ import ResetPasswordPage from "@/assets/Components/Login/ResetPasswordPage";
 import ProfileView from "@/assets/Views/ProfileView";
 import AdminEventView from "./assets/Views/AdminEventView";
 import AdminLegalTextView from "./assets/Views/AdminLegalTextView";
+import AdminTextView from "./assets/Views/AdminTextView";
 import AdminUsersView from "./assets/Views/AdminUsersView";
 import LegalTextView from "./assets/Views/LegalTextView";
+
 
 
 
@@ -205,6 +207,11 @@ const App: React.FC = () => {
           <Route path="/admin/users" element={
             <PrivateLayout>
               <ProtectedRoute element={<AdminUsersView />} />
+            </PrivateLayout>
+          } />
+          <Route path="/admin/texts" element={
+            <PrivateLayout>
+              <ProtectedRoute element={<AdminTextView userId={session.userId || 0} />} />
             </PrivateLayout>
           } />
 

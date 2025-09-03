@@ -1,9 +1,13 @@
+import { ITextImageDTO } from "./images/ITextImageDTO";
+
 export interface ITextItemDTO {
+  userId: any;
   title: string;
-  content: string;
-  author: string;
-  image?: string | null;
+  images: ITextImageDTO[];
   description?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  category?: string | null;
+  id?: number;
+  name_image: string;
 }

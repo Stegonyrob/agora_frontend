@@ -6,7 +6,7 @@ import styles from '../EditModalForm.module.scss';
 interface EditPostImageManagerProps {
     imagePreviews: ImagePreview[];
     onImagesSelected: (files: File[]) => void;
-    onRemoveImage: (index: number) => void;
+    onRemoveImage: (identifier: number | string) => void;
 }
 
 const EditPostImageManager: React.FC<EditPostImageManagerProps> = ({

@@ -1,3 +1,18 @@
+.errorMsg {
+  background: #fff3cd;
+  color: #856404;
+  border: 1.5px solid #ffeeba;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  margin-bottom: 0.7rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(255, 221, 64, 0.08);
+  font-weight: 500;
+}
+
 .skeleton {
   position: relative;
   overflow: hidden;

@@ -24,6 +24,7 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "eventos-admin", label: "Eventos", path: "/admin/events", background: "/images/bg-events.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "eventos-user", label: "Eventos", path: "/events", background: "/images/bg-events-user.jpg", viewAsUser: true },
     { key: "blog-admin", label: "Blog", path: "/admin/posts", background: "/images/bg-blog.jpg", role: "ROLE_ADMIN", viewAsUser: false },
+    { key: "texts-admin", label: "Textos", path: "/admin/texts", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "blog-user", label: "Blog", path: "/blog", background: "/images/bg-blog-user.jpg", viewAsUser: true },
     { key: "perfil-admin", label: "Perfil", path: "/profile", background: "/images/bg-profile.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "perfil-user", label: "Perfil", path: "/profile", background: "/images/bg-profile-user.jpg", viewAsUser: true },
@@ -36,6 +37,7 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "cookies-user", label: "Cookies", path: "/legal/cookies", background: "/images/bg-cookies-user.jpg", viewAsUser: true },
     { key: "reglas-blog-admin", label: "Reglas Blog", path: "/admin/legal/blog-rules", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "reglas-blog-preview", label: "Reglas Blog", path: "/blog-rules-preview", background: "/images/bg-blogrules-preview.jpg", viewAsUser: true },
+    { key: "admin-texts", label: "Textos", path: "/admin/texts", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false }
 ];
 
 

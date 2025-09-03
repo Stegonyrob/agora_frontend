@@ -25,14 +25,15 @@ interface ItemGenericProps<T> {
     onSubmit: (item: T) => void;
     userId: number;
     onCreate: (newItem: any) => Promise<void>;
-    type: 'post' | 'event';
+    type: 'post' | 'event' | 'text';
     images?: SupportedImages; // Homogeneizado - igual que CardItem
-    onArchive: (id: number) => Promise<boolean>;
-    onUnArchive: (id: number) => Promise<boolean>;
+    onArchive?: (id: number) => Promise<boolean>;
+    onUnArchive?: (id: number) => Promise<boolean>;
+    category?: string;
 }
 
 
-const ItemGeneric = <T extends IPost | IEvent>({
+const ItemGeneric = <T extends IPost | IEvent | any>({
     item,
     id: propId,
     title: propTitle,
@@ -46,10 +47,14 @@ const ItemGeneric = <T extends IPost | IEvent>({
     type,
     images,
     onArchive,
-    onUnArchive
+    onUnArchive,
+    category
 }: ItemGenericProps<T>) => {
     // Usar siempre los datos del objeto item como fuente principal
-    const data = item || {};
+    let data: any = item || {};
+    if (type === 'event' || type === 'post') {
+        data = item as IEvent | IPost;
+    }
     const id = data.id ?? propId;
     const title = data.title ?? propTitle;
     const message = data.message ?? propMessage;
@@ -64,7 +69,7 @@ const ItemGeneric = <T extends IPost | IEvent>({
         images: processedImages,
         loading: loadingImagesHook,
         error: imageError
-    } = useImageLoader(type, images, true); // isAdminContext = true
+    } = useImageLoader(type === 'text' ? 'post' : type, images, true); // treat 'text' as 'post' for images
 
     const [showFullText, setShowFullText] = useState(false);
     const [loadingImages, setLoadingImages] = useState(false); // Mantenido para compatibilidad
@@ -147,17 +152,26 @@ const ItemGeneric = <T extends IPost | IEvent>({
             <div className={styles.info}>
                 <div className={styles.separator}></div>
                 <div className={styles.row}>
-                    <span className={styles.id}>{type === 'post' ? 'Post' : 'Event'} ID: {id ?? 'No hay ID'}</span>
+                    <span className={styles.id}>
+                        {type === 'post' ? 'Post' : type === 'event' ? 'Event' : 'Text'} ID: {id ?? 'No hay ID'}
+                    </span>
                     <span className={styles.date}>
                         {creationDate ? new Date(creationDate).toLocaleString('es-ES') : '--/--/--'}
                     </span>
-                    <div className={styles.statusContainer}>
-                        <span className={archived ? styles.archivedStatus : styles.publishedStatus}>
-                            {archived ? 'Archivado' : 'Publicado'}
-                        </span>
-                    </div>
+                    {type !== 'text' && (
+                        <div className={styles.statusContainer}>
+                            <span className={archived ? styles.archivedStatus : styles.publishedStatus}>
+                                {archived ? 'Archivado' : 'Publicado'}
+                            </span>
+                        </div>
+                    )}
                 </div>
                 <h2 className={styles.title}>{title ?? 'No hay título'}</h2>
+                {type === 'text' && category && (
+                    <div className={styles.tagsRow}>
+                        <span className={styles.tagBadge}>{category}</span>
+                    </div>
+                )}
 
                 {getTagNames().length > 0 && (
                     <div className={styles.tagsRow}>
@@ -206,27 +220,28 @@ const ItemGeneric = <T extends IPost | IEvent>({
                     </p>
                     <div className={styles.actions}>
                         <ButtonEditGeneric
-                            type={type}
-                            item={item}
+                            type={type === 'text' ? 'post' : type}
+                            item={item as IPost | IEvent}
                             onSubmit={handleUpdate}
                         />
-
-                        <ButtonArchiveGeneric
-                            type={type}
-                            id={id}
-                            isArchived={archived}
-                            onArchive={async (id, type, archive) => {
-                                try {
-                                    if (archive) {
-                                        await onArchive(id);
-                                    } else {
-                                        await onUnArchive(id);
+                        {type !== 'text' && (
+                            <ButtonArchiveGeneric
+                                type={type as 'post' | 'event'}
+                                id={id}
+                                isArchived={archived}
+                                onArchive={async (id, type, archive) => {
+                                    try {
+                                        if (archive && onArchive) {
+                                            await onArchive(id);
+                                        } else if (onUnArchive) {
+                                            await onUnArchive(id);
+                                        }
+                                    } catch (error) {
+                                        alert('Error al archivar/desarchivar el ítem. Inténtalo de nuevo.');
                                     }
-                                } catch (error) {
-                                    alert('Error al archivar/desarchivar el ítem. Inténtalo de nuevo.');
-                                }
-                            }}
-                        />
+                                }}
+                            />
+                        )}
                         {type === 'event' && (
                             <ViewAttendeesButton
                                 eventId={id}
@@ -238,7 +253,7 @@ const ItemGeneric = <T extends IPost | IEvent>({
                 {type === 'event' && (
                     <span className={styles.date}>
                         <strong>Fecha del evento:</strong> {data.eventDate ? new Date(data.eventDate).toLocaleDateString('es-ES') : '--/--/--'}
-                        {data.eventTime && (
+                        {'eventTime' in data && data.eventTime && (
                             <>
                                 {' '}
                                 <strong>Hora:</strong> {data.eventTime}
