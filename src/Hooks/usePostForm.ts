@@ -95,9 +95,10 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
     []
   );
 
-  const handleRemoveImage = useCallback((idx: number) => {
+  const handleRemoveImage = useCallback((idx: number | string) => {
+    const index = typeof idx === "number" ? idx : Number(idx);
     setImagePreviews((prev) => {
-      const imageToRemove = prev[idx];
+      const imageToRemove = prev[index];
       if (
         imageToRemove?.url &&
         !imageToRemove.isExisting &&
@@ -105,7 +106,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
       ) {
         URL.revokeObjectURL(imageToRemove.url);
       }
-      return prev.filter((_, i) => i !== idx);
+      return prev.filter((_, i) => i !== index);
     });
   }, []);
 

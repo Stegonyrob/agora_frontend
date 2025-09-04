@@ -28,7 +28,7 @@ const EditTextForm: React.FC<EditTextFormProps> = ({ text, onSubmit, onClose, sh
         submitForm,
         isSubmitting,
         globalError
-    } = useEditTextForm({ show });
+    } = useEditTextForm({ post: text, show });
 
     const textImageService = new TextImageService();
 
@@ -72,8 +72,6 @@ const EditTextForm: React.FC<EditTextFormProps> = ({ text, onSubmit, onClose, sh
 
                             <ImageUploadButton
                                 onImagesSelected={handleImagesSelected}
-                            // Aquí solo pasamos onImagesSelected.
-                            // La subida real se hará cuando el usuario presione el botón de Guardar/Actualizar.
                             />
                             <small className={styles.helpText}>
                                 Las imágenes existentes se muestran con el badge "Existente". Puedes eliminar cualquier imagen antes de guardar.

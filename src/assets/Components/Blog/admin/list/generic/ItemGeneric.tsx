@@ -1,5 +1,9 @@
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
+import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
+import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
+import type { IPost } from '../../../../../../core/posts/IPost';
+import type { ITextItemDTO } from '../../../../../../core/texts/ITextItemDTO';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
@@ -7,14 +11,12 @@ import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import ImagePreviewGrid from '../../images/ImagePreviewGrid';
 import styles from './ItemGeneric.module.scss';
 
-import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
-import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
-import type { IPost } from '../../../../../../core/posts/IPost';
-
 // Tipo union para soportar tanto imágenes de eventos como de posts (igual que CardItem)
 type SupportedImages = string[] | IEventImage[] | IPostImage[];
 
-interface ItemGenericProps<T> {
+
+
+interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
     item: T;
     id: number;
     title: string;
@@ -33,7 +35,7 @@ interface ItemGenericProps<T> {
 }
 
 
-const ItemGeneric = <T extends IPost | IEvent | any>({
+const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     item,
     id: propId,
     title: propTitle,
@@ -220,8 +222,8 @@ const ItemGeneric = <T extends IPost | IEvent | any>({
                     </p>
                     <div className={styles.actions}>
                         <ButtonEditGeneric
-                            type={type === 'text' ? 'post' : type}
-                            item={item as IPost | IEvent}
+                            type={type}
+                            item={item}
                             onSubmit={handleUpdate}
                         />
                         {type !== 'text' && (

@@ -25,7 +25,7 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
         const sanitizeMap: Record<string, [string, string?]> = {
             post: ["title", "message"],
             event: ["title", "description"],
-            text: ["text"]
+            text: ["text", "description"]
         };
 
         const fields = sanitizeMap[type];

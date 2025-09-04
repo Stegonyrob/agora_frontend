@@ -6,7 +6,7 @@ import PostBasicFields from './components/PostBasicFields';
 import PostFormActions from './components/PostFormActions';
 import PostImageManager from './components/PostImageManager';
 import PostTagsField from './components/PostTagsField';
-import styles from './EventForm.module.scss'; // Usar los mismos estilos que eventos
+import styles from './ModalForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostFormProps {
   post?: IPost;
@@ -25,25 +25,16 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
     setMessage,
     imagePreviews,
     tags,
-    handleImagesSelected,
-    handleImageSelected,
-    handleRemoveImage,
     setTags,
+    handleImagesSelected,
+    handleRemoveImage,
     submitForm,
     isSubmitting,
     globalError
   } = usePostForm({ post, show });
 
-  // Wrapper to adapt PostPayload to IPost if possible
-  const handleSubmitWrapper = async (payload: any) => {
-    // If payload already matches IPost, just forward
-    // Otherwise, adapt as needed (add missing fields, etc.)
-    await onSubmit({ ...payload, ...post });
-  };
-
-  const handleButtonSubmit = async () => {
-    console.log("🚀 PostForm - Button submit triggered");
-    await submitForm(handleSubmitWrapper, onClose);
+  const handleSubmit = async () => {
+    await submitForm(onSubmit, onClose);
   };
 
   return (
@@ -52,7 +43,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
       centered
       show={show}
       onHide={onClose}
-      className={styles.eventForm} // Usar el mismo estilo que eventos
+      className={styles.modalForm}
       style={{ zIndex: 10000 }}
       backdropClassName="custom-backdrop"
     >
@@ -73,7 +64,7 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           <PostImageManager
             imagePreviews={imagePreviews}
             onImagesSelected={handleImagesSelected}
-            onImageSelected={handleImageSelected}
+            onImageSelected={() => { }}
             onRemoveImage={handleRemoveImage}
           />
 
@@ -83,8 +74,9 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           />
 
           <PostFormActions
-            onSubmit={handleButtonSubmit}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            onClose={onClose}
             isSubmitting={isSubmitting}
             globalError={globalError}
             isEditMode={!!post}

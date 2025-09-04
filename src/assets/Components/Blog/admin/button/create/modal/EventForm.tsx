@@ -7,7 +7,7 @@ import EventDateCapacityFields from "./components/EventDateCapacityFields";
 import EventFormActions from "./components/EventFormActions";
 import EventImageManager from "./components/EventImageManager";
 import EventTagsField from "./components/EventTagsField";
-import styles from "./EventForm.module.scss";
+import styles from "./ModalForm.module.scss";
 
 interface EventFormProps {
     event?: IEvent;
@@ -47,7 +47,7 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
     };
 
     return (
-        <Modal size="lg" show={show} onHide={onClose} className={styles.eventForm} centered style={{ zIndex: 1055 }}>
+        <Modal size="lg" show={show} onHide={onClose} className={styles.modalForm} centered style={{ zIndex: 1055 }}>
             <Modal.Header closeButton>
                 <Modal.Title>
                     {event ? "✏️ Editar Evento" : "🎉 Crear Nuevo Evento"}

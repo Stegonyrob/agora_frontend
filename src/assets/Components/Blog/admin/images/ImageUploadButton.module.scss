@@ -1,18 +1,23 @@
-/* ImageUploadButton.module.scss */
+
 .imageUploadButton {
     margin-bottom: 1rem;
-}
+    	$color-bg-input: #3a3a3a;
+
 
 .uploadButton {
+    display: flex;
     width: 100%;
-    max-width: 400px;
+    max-width: 30rem;
     padding: 1.5rem;
     border: 2px dashed #00bcd4;
-    background: linear-gradient(135deg, rgba(0, 188, 212, 0.05) 0%, rgba(38, 198, 218, 0.05) 100%);
+background-color: $color-bg-input;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
+    justify-content: space-around
+    ;
+    justify-self: center;
     
     &:hover {
         border-color: #00e5ff;
@@ -118,4 +123,5 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
 }

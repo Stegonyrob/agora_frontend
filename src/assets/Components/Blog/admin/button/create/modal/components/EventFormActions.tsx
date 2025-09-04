@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { IEvent } from '../../../../../../../../core/events/IEvent';
-import styles from '../EventForm.module.scss';
+import styles from '../ModalForm.module.scss';
 
 interface EventFormActionsProps {
     isSubmitting: boolean;

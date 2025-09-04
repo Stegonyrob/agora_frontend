@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import styles from './TextForm.module.scss';
+import styles from './ModalForm.module.scss';
+import TextBasicFields from './components/TextBasicFields';
+import TextFormActions from './components/TextFormActions';
+import TextImageManager from './components/TextImageManager';
 
 interface TextFormProps {
     onClose: () => void;
@@ -8,14 +11,6 @@ interface TextFormProps {
     show: boolean;
     userId: number;
 }
-
-const initialState = {
-    category: '',
-    title: '',
-    description: '',
-    image: '',
-    name_image: '',
-};
 
 const CATEGORIES = [
     { value: '', label: 'Selecciona una categoría' },
@@ -26,44 +21,46 @@ const CATEGORIES = [
     { value: 'comunicacion', label: 'Comunicación' },
 ];
 
-const TextForm: React.FC<TextFormProps> = ({ onClose, onSubmit, show, userId }) => {
-    const [form, setForm] = useState(initialState);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+type TextFormState = {
+    category: string;
+    title: string;
+    description: string;
+    image: string | File;
+};
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
+const initialState: TextFormState = {
+    category: '',
+    title: '',
+    description: '',
+    image: '',
+};
+
+const TextForm: React.FC<TextFormProps> = ({ onClose, onSubmit, show, userId }) => {
+    const [form, setForm] = useState<TextFormState>(initialState);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [globalError, setGlobalError] = useState<string | null>(null);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files[0]) {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setForm(prev => ({ ...prev, image: reader.result as string, name_image: file.name }));
-            };
-            reader.readAsDataURL(file);
+        const file = e.target.files?.[0];
+        if (file) {
+            setForm(prev => ({ ...prev, image: file }));
         }
     };
 
-    const handleRemoveImage = () => {
-        setForm(prev => ({ ...prev, image: '', name_image: '' }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setError(null);
+        setGlobalError(null);
         try {
             await onSubmit({ ...form, userId });
-            setForm(initialState);
             onClose();
         } catch (err: any) {
-            setError('No se pudo crear el texto.');
+            setGlobalError(err?.message || 'Error al enviar el formulario');
         } finally {
             setIsSubmitting(false);
         }
@@ -75,113 +72,35 @@ const TextForm: React.FC<TextFormProps> = ({ onClose, onSubmit, show, userId }) 
             centered
             show={show}
             onHide={onClose}
-            className={styles.textForm}
+            className={styles.modalForm} // Usar el mismo estilo que eventos
             style={{ zIndex: 10000 }}
             backdropClassName="custom-backdrop"
         >
             <Modal.Header className={styles.modalHeader} closeButton>
                 <Modal.Title className={styles.modalTitle}>
-                    Crear Nuevo Texto
+                    {Text ? 'Editar Texto' : 'Crear Nuevo Texto'}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className={styles.modalBody}>
-                <form onSubmit={handleSubmit} autoComplete="off">
-                    <div className={styles.formGroup}>
-                        <label className={styles.label} htmlFor="category">
-                            <span role="img" aria-label="category">📂</span> Categoría *
-                        </label>
-                        <select
-                            id="category"
-                            name="category"
-                            value={form.category}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                        >
-                            {CATEGORIES.map(opt => (
-                                <option key={opt.value} value={opt.value} disabled={opt.value === ''}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label className={styles.label} htmlFor="title">
-                            <span role="img" aria-label="title">📝</span> Título *
-                        </label>
-                        <input
-                            id="title"
-                            type="text"
-                            name="title"
-                            value={form.title}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                            placeholder="Ej: Importancia de los trastornos de la comunicación..."
-                            autoComplete="off"
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label className={styles.label} htmlFor="description">
-                            <span role="img" aria-label="description">📄</span> Texto *
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                            rows={7}
-                            placeholder="Escribe el contenido aquí..."
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label className={styles.label} htmlFor="image">
-                            <span role="img" aria-label="image">🖼️</span> Imagen
-                        </label>
-                        <div className={styles.imageUploadArea}>
-                            <input
-                                id="image"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className={styles.input}
-                            />
-                            {form.image && (
-                                <div className={styles.imagePreviewContainer}>
-                                    <img
-                                        src={form.image}
-                                        alt="preview"
-                                        className={styles.imagePreview}
-                                    />
-                                    <span className={styles.imageName}>{form.name_image}</span>
-                                    <button
-                                        type="button"
-                                        className={styles.removeImageButton}
-                                        onClick={handleRemoveImage}
-                                        title="Eliminar imagen"
-                                    >
-                                        <i className="bi bi-x-octagon"></i> Quitar
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {error && <div className={styles.error}>{error}</div>}
-
-                    <div className={styles.actions}>
-                        <button type="submit" className={styles.buttonCreate} disabled={isSubmitting}>
-                            {isSubmitting ? 'Creando...' : 'Crear Texto'}
-                        </button>
-                        <button type="button" className={styles.buttonCancel} onClick={onClose} disabled={isSubmitting}>
-                            Cancelar
-                        </button>
-                    </div>
+                <form>
+                    <TextBasicFields
+                        title={form.title}
+                        setTitle={(val: any) => setForm(prev => ({ ...prev, title: val }))}
+                        description={form.description}
+                        setDescription={(val: any) => setForm(prev => ({ ...prev, description: val }))}
+                    />
+                    <TextImageManager
+                        imagePreviews={[]}
+                        onImagesSelected={() => { }}
+                        onRemoveImage={() => { }}
+                    />
+                    <TextFormActions
+                        onSubmit={() => handleSubmit(new Event('submit') as any)}
+                        onCancel={onClose}
+                        isSubmitting={isSubmitting}
+                        globalError={globalError}
+                        isEditMode={false}
+                    />
                 </form>
             </Modal.Body>
         </Modal>

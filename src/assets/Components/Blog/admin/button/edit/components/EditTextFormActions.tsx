@@ -47,7 +47,7 @@ const EditPostFormActions: React.FC<EditPostFormActionsProps> = ({
                             Actualizando...
                         </>
                     ) : (
-                        'Actualizar Post'
+                        'Actualizar Texto'
                     )}
                 </Button>
             </div>

@@ -2,25 +2,23 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import ImagePreviewGrid, { ImagePreview as IImagePreview } from '../../../../images/ImagePreviewGrid';
 import ImageUploadButton from '../../../../images/ImageUploadButton';
-import styles from '../ModalForm.module.scss'; // Usar los mismos estilos que eventos
+import styles from '../ModalForm.module.scss';
 
-interface PostImageManagerProps {
+interface TextImageManagerProps {
     imagePreviews: IImagePreview[];
     onImagesSelected: (files: File[]) => void;
-    onImageSelected: (imageSrc: string, imageTitle: string) => void; // Legacy para ButtonAddImage
     onRemoveImage: (identifier: number | string) => void;
 }
 
-const PostImageManager: React.FC<PostImageManagerProps> = ({
+const TextImageManager: React.FC<TextImageManagerProps> = ({
     imagePreviews,
     onImagesSelected,
-    onImageSelected,
     onRemoveImage
 }) => {
     return (
         <div className={styles.imageSection}>
             <Form.Label className={styles.imageSectionTitle}>
-                <strong>🖼️ Imágenes del Post</strong>
+                <strong>🖼️ Imágenes del Texto</strong>
             </Form.Label>
             <ImagePreviewGrid
                 imagePreviews={imagePreviews}
@@ -32,9 +30,8 @@ const PostImageManager: React.FC<PostImageManagerProps> = ({
                     onImagesSelected={onImagesSelected}
                     multiple={true}
                 />
-
                 <Form.Text className={styles.helpText}>
-                    💡 Puedes subir múltiples imágenes para tu post
+                    💡 Puedes subir múltiples imágenes. Se mostrarán miniaturas de 80x80px
                 </Form.Text>
             </div>
 
@@ -42,4 +39,4 @@ const PostImageManager: React.FC<PostImageManagerProps> = ({
     );
 };
 
-export default PostImageManager;
+export default TextImageManager;
