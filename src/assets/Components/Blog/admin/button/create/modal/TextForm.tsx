@@ -95,7 +95,7 @@ const TextForm: React.FC<TextFormProps> = ({ onClose, onSubmit, show, userId }) 
                         onRemoveImage={() => { }}
                     />
                     <TextFormActions
-                        onSubmit={() => handleSubmit(new Event('submit') as any)}
+                        onSave={() => handleSubmit(new Event('submit') as any)}
                         onCancel={onClose}
                         isSubmitting={isSubmitting}
                         globalError={globalError}

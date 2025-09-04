@@ -27,9 +27,9 @@ const NavLinks: React.FC<NavLinksProps> = ({ closeMenu, isLoggedIn }) => {
             </li>
             <li className={navBarStyles.navItem}>
                 <NavDropdown title="Nosotros">
-                    <NavLink to="/agora" className={getDropdownLinkClassName} onClick={closeMenu}>Ágora</NavLink>
-                    <NavLink to="/services" className={getDropdownLinkClassName} onClick={closeMenu}>Nuestros Servicios</NavLink>
-                    <NavLink to="/aboutme" className={getDropdownLinkClassName} onClick={closeMenu}>Sobre Mí</NavLink>
+                    <NavLink to="/agora/nosotros" className={getDropdownLinkClassName} onClick={closeMenu}>Ágora</NavLink>
+                    <NavLink to="/agora/servicios" className={getDropdownLinkClassName} onClick={closeMenu}>Nuestros Servicios</NavLink>
+                    <NavLink to="/agora/equipo" className={getDropdownLinkClassName} onClick={closeMenu}>Equipo Profesional</NavLink>
                 </NavDropdown>
             </li>
             <li className={navBarStyles.navItem}>
@@ -39,12 +39,12 @@ const NavLinks: React.FC<NavLinksProps> = ({ closeMenu, isLoggedIn }) => {
             </li>
             <li className={navBarStyles.navItem}>
                 <NavDropdown title="Neurodiversidad">
-                    <NavLink to="/neurodiversity" className={getDropdownLinkClassName} onClick={closeMenu}>¿Qué es?</NavLink>
-                    <NavLink to="/cea" className={getDropdownLinkClassName} onClick={closeMenu}>Cea/Tea</NavLink>
-                    <NavLink to="/tda_tdh" className={getDropdownLinkClassName} onClick={closeMenu}>Tda_Tdh</NavLink>
-                    <NavLink to="/learningdifficulties" className={getDropdownLinkClassName} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
-                    <NavLink to="/developmentconditions" className={getDropdownLinkClassName} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
-                    <NavLink to="/communication" className={getDropdownLinkClassName} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
+                    <NavLink to="/agora/neurodiversidad" className={getDropdownLinkClassName} onClick={closeMenu}>¿Qué es?</NavLink>
+                    <NavLink to="/agora/cea" className={getDropdownLinkClassName} onClick={closeMenu}>Cea/Tea</NavLink>
+                    <NavLink to="/agora/atencion" className={getDropdownLinkClassName} onClick={closeMenu}>Tda_Tdh</NavLink>
+                    <NavLink to="/agora/aprendizaje" className={getDropdownLinkClassName} onClick={closeMenu}>Dificultades del Aprendizaje</NavLink>
+                    <NavLink to="/agora/desarrollo" className={getDropdownLinkClassName} onClick={closeMenu}>Condiciones del Desarrollo</NavLink>
+                    <NavLink to="/agora/comunicacion" className={getDropdownLinkClassName} onClick={closeMenu}>Trastornos de la Comunicación</NavLink>
                 </NavDropdown>
             </li>
             <li className={navBarStyles.navItem}>

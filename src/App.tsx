@@ -2,6 +2,7 @@ import Footer from "@/assets/Components/Footer/Footer";
 import { updateAvatarUrl } from "@/core/auth/sessionStore";
 import { fetchAvatarsForSelector } from "@/core/avatars/avatarStore";
 import { fetchProfileById } from "@/core/profiles/profileStore";
+import { fetchTexts } from "@/core/texts/textStore";
 import { RootState } from "@/redux/store";
 import PrivateLayout from "@/routes/PrivateLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
@@ -23,18 +24,16 @@ import { logger } from "./core/logging/LoggerService";
 import Error404View from "@/assets/Views/404View";
 import AboutMeView from "@/assets/Views/AboutMeView";
 import AgoraView from "@/assets/Views/AgoraView";
-import CeaView from "@/assets/Views/CeaView";
-import DevelopmentConditionsView from "@/assets/Views/DevelopmentConditionsView";
+
 import HomeView from "@/assets/Views/HomeView";
-import LearningDifficultiesView from "@/assets/Views/LearningDifficultiesView";
+
 import LoginView from "@/assets/Views/LoginView";
-import NeurodiversityView from "@/assets/Views/NeurodiversityView";
+
 import RegisterView from "@/assets/Views/RegisterView";
-import ServiceView from "@/assets/Views/ServiceView";
-import Tda_TdhView from "@/assets/Views/Tda_TdhView";
+
 import AdminPostView from "./assets/Views/AdminPostView";
 import EventsView from "./assets/Views/EventsView";
-import TrasComunicationView from './assets/Views/TrasCommunication';
+
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
 import BlogView from "@/assets/Views/BlogView";
@@ -104,6 +103,8 @@ const App: React.FC = () => {
       // Solo cargar avatares si el usuario está autenticado
       dispatch(fetchAvatarsForSelector() as any);
     }
+    // Cargar textos en el store redux al iniciar la app
+    dispatch(fetchTexts() as any);
     setIsHydrating(false); // Ya terminamos de hidratar
   }, [dispatch, location.pathname]);
 
@@ -151,17 +152,13 @@ const App: React.FC = () => {
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<HomeView />} />
             <Route path="aboutMe" element={<AboutMeView />} />
-            <Route path="neurodiversity" element={<NeurodiversityView />} />
-            <Route path="services" element={<ServiceView />} />
-            <Route path="agora" element={<AgoraView />} />
-            <Route path="cea" element={<CeaView />} />
-            <Route path="tda_Tdh" element={<Tda_TdhView />} />
-            <Route path="learningDifficulties" element={<LearningDifficultiesView />} />
-            <Route path="developmentConditions" element={<DevelopmentConditionsView />} />
+
+            <Route path="agora/:category" element={<AgoraView />} />
+
             <Route path="login" element={<LoginView />} />
             <Route path="register" element={<RegisterView />} />
             <Route path="*" element={<Error404View />} />
-            <Route path="communication" element={<TrasComunicationView />} />
+
             <Route path="events" element={
               <EventsView
                 userId={session.userId || 0}

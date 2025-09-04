@@ -28,7 +28,7 @@ const EditTextForm: React.FC<EditTextFormProps> = ({ text, onSubmit, onClose, sh
         submitForm,
         isSubmitting,
         globalError
-    } = useEditTextForm({ post: text, show });
+    } = useEditTextForm({ show });
 
     const textImageService = new TextImageService();
 
