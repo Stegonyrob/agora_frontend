@@ -11,8 +11,6 @@ import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import ImagePreviewGrid from '../../images/ImagePreviewGrid';
 import styles from './ItemGeneric.module.scss';
 
-// Tipo union para soportar tanto imágenes de eventos como de posts (igual que CardItem)
-type SupportedImages = string[] | IEventImage[] | IPostImage[];
 
 
 
@@ -28,7 +26,7 @@ interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
     userId: number;
     onCreate: (newItem: any) => Promise<void>;
     type: 'post' | 'event' | 'text';
-    images?: SupportedImages; // Homogeneizado - igual que CardItem
+    images?: (string | IPostImage | IEventImage)[];
     onArchive?: (id: number) => Promise<boolean>;
     onUnArchive?: (id: number) => Promise<boolean>;
     category?: string;
@@ -71,7 +69,17 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
         images: processedImages,
         loading: loadingImagesHook,
         error: imageError
-    } = useImageLoader(type === 'text' ? 'post' : type, images, true); // treat 'text' as 'post' for images
+    } = useImageLoader(
+        type === 'text' ? 'post' : type,
+        Array.isArray(images) && images.length > 0
+            ? (typeof images[0] === 'string'
+                ? images as string[]
+                : (type === 'event'
+                    ? images as IEventImage[]
+                    : images as IPostImage[]))
+            : undefined,
+        true
+    ); // treat 'text' as 'post' for images
 
     const [showFullText, setShowFullText] = useState(false);
     const [loadingImages, setLoadingImages] = useState(false); // Mantenido para compatibilidad

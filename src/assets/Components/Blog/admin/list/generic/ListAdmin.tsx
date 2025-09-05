@@ -159,8 +159,7 @@ const ListAdmin = (props: ListAdminProps) => {
                         onSelect={onSelect}
                         onSubmit={onSubmit}
                         userId={userId}
-                        onCreate={onCreate}
-                    />
+                        onCreate={onCreate} id={0} title={''} />
                 ))}
             </div>
         </div>

@@ -3,46 +3,49 @@ import React from 'react';
 import ItemGeneric from '../generic/ItemGeneric';
 
 interface ItemTextProps {
+    id: number;
+    title: string;
     text: ITextItem;
     onEdit: (text: ITextItem) => void;
     onDelete: (textId: number) => Promise<void>;
+
     onSelect: (text: ITextItem) => void;
     onSubmit: (text: ITextItem) => void;
     userId: number;
-    onCreate: (newText: Partial<ITextItem>) => Promise<void>;
+    onCreate: (newText: ITextItem) => Promise<void>;
 }
 
 const ItemText: React.FC<ItemTextProps> = ({
-    text, onEdit, onDelete, onSelect, onSubmit, userId, onCreate
+    text,
+    onEdit,
+    onDelete,
+    onCreate,
+    onSelect,
+    onSubmit,
+    userId,
+
 }) => {
     if (!text) return null;
 
-    // Unificar imágenes: puede venir como image o images
-    let textImages: string[] = [];
-    if (Array.isArray((text as any).image)) {
-        textImages = (text as any).image;
-    } else if (typeof (text as any).image === 'string' && (text as any).image) {
-        textImages = [(text as any).image];
-    }
+    // Si el objeto viene anidado bajo 'item', usar ese objeto
+    const data = (text && (text as any).item) ? (text as any).item : text;
 
     return (
-        <div>
-            <ItemGeneric
-                item={text}
-                id={text.id}
-                title={text.title}
-                message={text.description}
-                creationDate={text.createdAt}
-                type="text"
-                images={textImages}
-                category={text.category}
-                onSelect={onSelect}
-                onSubmit={onSubmit}
-                userId={userId}
-                onCreate={onCreate}
-            />
-        </div>
+        <ItemGeneric
+            item={data}
+            id={data.id}
+            title={data.title}
+            message={data.message}
+            type="text"
+            images={data.images}
+            onSelect={onSelect}
+            onSubmit={onSubmit}
+            userId={userId}
+            onCreate={onCreate}
+        />
     );
 };
+
+
 
 export default ItemText;
