@@ -1,7 +1,9 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { log } from "@/core/logging/LoggerService";
 import { ITextItem } from "@/core/texts/ITextItem";
-import { useCallback, useEffect, useState } from "react";
+import TextService from "@/core/texts/TextService";
+import TextImageService from "@/core/texts/images/TextImageService";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface UseTextFormProps {
   text?: ITextItem;
@@ -27,22 +29,25 @@ export const useTextForm = ({
   const userName = sessionStorage.getItem("userName") || "";
   const userRole = sessionStorage.getItem("role") || "";
 
+  // Servicios memoizados para evitar recreación en cada render
+  const textService = useMemo(() => new TextService(), []);
+  const textImageService = useMemo(() => new TextImageService(), []);
+
   // Cargar imágenes existentes del texto
   useEffect(() => {
     const loadTextImages = async () => {
-      if (text?.images && show) {
+      if (text?.id && show) {
         try {
-          const existingImages: IImagePreview[] = [];
-
-          if (Array.isArray(text.images)) {
-            text.images.forEach((img: any) => {
-              existingImages.push({
-                url: img.url || img,
-                isLoading: false,
-                isExisting: true,
-              });
-            });
-          }
+          // Fetch images from API using TextImageService
+          const textImages = await textImageService.getTextImages(text.id);
+          const existingImages: IImagePreview[] = textImages.map(
+            (img: any) => ({
+              url: img.imageData || `api/v1/text-images/${img.id}/data`,
+              isLoading: false,
+              isExisting: true,
+              id: img.id, // Use 'id' instead of 'imageId'
+            })
+          );
 
           setImagePreviews(existingImages);
         } catch (error) {
@@ -56,7 +61,7 @@ export const useTextForm = ({
 
     loadTextImages();
     setGlobalError(null);
-  }, [text?.images, show]);
+  }, [text?.id, show]);
 
   // Limpiar URLs de objetos
   useEffect(() => {
@@ -153,26 +158,49 @@ export const useTextForm = ({
         validateForm();
 
         const newImageFiles: File[] = [];
-        const existingImageUrls: string[] = [];
+        const existingImageIds: number[] = [];
 
         imagePreviews.forEach((preview) => {
           if (preview.file && !preview.isExisting) {
             newImageFiles.push(preview.file);
-          } else if (preview.isExisting) {
-            existingImageUrls.push(preview.url);
+          } else if (preview.isExisting && preview.id) {
+            existingImageIds.push(preview.id);
           }
         });
 
-        // Crear el objeto texto con los datos del formulario
+        // Step 1: Create or update the text
+        let savedText: ITextItem;
+        if (text?.id) {
+          // Update existing text
+          savedText = await textService.updateText(text.id, {
+            userId,
+            title: title.trim(),
+            message: message.trim(),
+            category: category.trim(),
+            images: [], // Images handled separately
+            name_image: text.name_image || "",
+          });
+        } else {
+          // Create new text
+          savedText = await textService.createText({
+            userId,
+            title: title.trim(),
+            message: message.trim(),
+            category: category.trim(),
+            images: [], // Images handled separately
+            name_image: "", // Will be updated with first image if any
+          });
+        }
+
+        // Step 2: Upload new images if any
+        if (newImageFiles.length > 0 && savedText.id) {
+          await textImageService.uploadTextImages(savedText.id, newImageFiles);
+        }
+
+        // Crear el objeto texto final
         const resultText: ITextItem = {
-          id: text?.id || 0,
-          title: title.trim(),
-          message: message.trim(),
-          category: category.trim(),
-          images: [], // TODO: Implementar manejo de imágenes para textos
-          name_image: text?.name_image || "",
-          createdAt: text?.createdAt || new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          ...savedText,
+          images: [], // Images are handled separately
         };
 
         console.log("✅ Texto procesado exitosamente:", resultText);
@@ -203,6 +231,8 @@ export const useTextForm = ({
       message,
       category,
       resetForm,
+      textService,
+      textImageService,
     ]
   );
 

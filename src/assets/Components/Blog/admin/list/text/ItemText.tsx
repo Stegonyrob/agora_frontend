@@ -1,5 +1,7 @@
 import type { ITextItem } from '@/core/texts/ITextItem';
-import React from 'react';
+import { ITextImage } from '@/core/texts/images/ITextImage';
+import TextImageService from '@/core/texts/images/TextImageService';
+import React, { useEffect, useMemo, useState } from 'react';
 import ItemGeneric from '../generic/ItemGeneric';
 
 interface ItemTextProps {
@@ -8,7 +10,6 @@ interface ItemTextProps {
     text: ITextItem;
     onEdit: (text: ITextItem) => void;
     onDelete: (textId: number) => Promise<void>;
-
     onSelect: (text: ITextItem) => void;
     onSubmit: (text: ITextItem) => void;
     userId: number;
@@ -23,12 +24,49 @@ const ItemText: React.FC<ItemTextProps> = ({
     onSelect,
     onSubmit,
     userId,
-
 }) => {
+    const [textImages, setTextImages] = useState<ITextImage[]>([]);
+    const [loadingImages, setLoadingImages] = useState(false);
+
+    // Memoizar el servicio
+    const textImageService = useMemo(() => new TextImageService(), []);
+
     if (!text) return null;
 
     // Si el objeto viene anidado bajo 'item', usar ese objeto
     const data = (text && (text as any).item) ? (text as any).item : text;
+
+    // Cargar imágenes del texto
+    useEffect(() => {
+        const loadTextImages = async () => {
+            if (!data.id) return;
+
+            try {
+                setLoadingImages(true);
+                const images = await textImageService.getTextImages(data.id);
+                setTextImages(images);
+            } catch (error) {
+                console.warn(`⚠️ Could not load images for text ${data.id}:`, error);
+                setTextImages([]);
+            } finally {
+                setLoadingImages(false);
+            }
+        };
+
+        loadTextImages();
+    }, [data.id, textImageService]);
+
+    // Convertir imágenes de texto a formato string para ItemGeneric
+    const processedImages = useMemo(() => {
+        return textImages.map(img => {
+            if (img.imageData) {
+                return img.imageData.startsWith('data:')
+                    ? img.imageData
+                    : `data:image/jpeg;base64,${img.imageData}`;
+            }
+            return `${import.meta.env.VITE_API_ENDPOINT_TEXT_IMAGES || '/api/v1/text-images'}/${img.id}/data`;
+        });
+    }, [textImages]);
 
     return (
         <ItemGeneric
@@ -37,7 +75,9 @@ const ItemText: React.FC<ItemTextProps> = ({
             title={data.title}
             message={data.message}
             type="text"
-            images={data.images}
+            images={processedImages}
+            textImages={textImages}
+            loadingImages={loadingImages}
             onSelect={onSelect}
             onSubmit={onSubmit}
             userId={userId}

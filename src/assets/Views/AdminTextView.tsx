@@ -47,12 +47,13 @@ const AdminTextView = ({ userId }: { userId: number }) => {
             const textService = new TextService();
             // Crear un DTO limpio del texto sin las tags (las tags se manejan separadamente)
             const textDTO: ITextItemDTO = {
-                id: text.id,
+                userId: userId || 0, // Usar el userId del componente
                 title: text.title,
-                description: text.description,
-                image: text.image,
+                message: text.message,
+                images: [], // Las imágenes se manejan separadamente
                 name_image: text.name_image,
                 category: text.category,
+                id: text.id,
             };
             await textService.updateText(text.id, textDTO);
         } catch (error) {
@@ -72,6 +73,14 @@ const AdminTextView = ({ userId }: { userId: number }) => {
     const handleCreate = async (newText: Partial<ITextItem>) => {
         try {
             console.log("📝 AdminTextView - Nuevo texto recibido:", newText);
+
+            // Manejar eliminación de imágenes de texto
+            if ((newText as any).type === 'textDelete' && (newText as any).imageId) {
+                const textImageService = new (await import('@/core/texts/images/TextImageService')).default();
+                await textImageService.deleteTextImage((newText as any).imageId);
+                console.log(`✅ Imagen de texto ${(newText as any).imageId} eliminada`);
+                return;
+            }
 
             // Verificar si el texto ya existe en la lista (prevenir duplicados)
             setFetchedTexts(prev => {

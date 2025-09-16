@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
 import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
+import type { ITextImage } from '../../../../../../core/texts/images/ITextImage';
 import type { ITextItemDTO } from '../../../../../../core/texts/ITextItemDTO';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
@@ -27,6 +28,9 @@ interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
     onCreate: (newItem: any) => Promise<void>;
     type: 'post' | 'event' | 'text';
     images?: (string | IPostImage | IEventImage)[];
+    // Props específicas para textos
+    textImages?: ITextImage[];
+    loadingImages?: boolean;
     onArchive?: (id: number) => Promise<boolean>;
     onUnArchive?: (id: number) => Promise<boolean>;
     category?: string;
@@ -46,6 +50,8 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     onCreate,
     type,
     images,
+    textImages,
+    loadingImages,
     onArchive,
     onUnArchive,
     category
@@ -64,36 +70,48 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     const tags: TagType[] = Array.isArray(data.tags) ? data.tags : [];
     const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);
 
-    // Usar el hook moderno useImageLoader con contexto de administración
+    // Usar el hook moderno useImageLoader con contexto de administración solo para posts y events
     const {
         images: processedImages,
         loading: loadingImagesHook,
         error: imageError
     } = useImageLoader(
         type === 'text' ? 'post' : type,
-        Array.isArray(images) && images.length > 0
+        type === 'text' ? undefined : (Array.isArray(images) && images.length > 0
             ? (typeof images[0] === 'string'
                 ? images as string[]
                 : (type === 'event'
                     ? images as IEventImage[]
                     : images as IPostImage[]))
-            : undefined,
+            : undefined),
         true
-    ); // treat 'text' as 'post' for images
+    ); // Para textos, no usar el hook useImageLoader
 
     const [showFullText, setShowFullText] = useState(false);
-    const [loadingImages, setLoadingImages] = useState(false); // Mantenido para compatibilidad
     const messagePreview = message?.slice(0, 200) ?? '';
 
     const toggleText = () => setShowFullText(prev => !prev);
 
     useEffect(() => {
-        // Log simplificado del estado de imágenes
-        // Quitado
+        // Log simplificado del estado de imágenes solo para posts y events
+        if (type !== 'text') {
+            // Log logic here if needed
+        }
     }, [type, id, loadingImagesHook, processedImages, imageError]);
 
     // Convertir processedImages a formato ImagePreview (limpio y simple)
     const convertToImagePreviews = (processedUrls: string[]): any[] => {
+        if (type === 'text') {
+            // Para textos, usar las textImages si están disponibles
+            return textImages?.map((textImg, index) => ({
+                url: processedUrls[index] || textImg.imageData || `/api/v1/text-images/${textImg.id}/data`,
+                isLoading: false,
+                isExisting: true,
+                id: textImg.id || index
+            })) || [];
+        }
+
+        // Para posts y events, usar la lógica original
         const originalImages = Array.isArray(images) ? images : [];
         const result = processedUrls.map((url, index) => {
             const originalImage = originalImages[index];
@@ -117,7 +135,14 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
             return;
         }
         try {
-            if (type === 'post') {
+            if (type === 'text') {
+                // Para textos, manejar eliminación específica
+                await onCreate({
+                    id,
+                    type: 'textDelete',
+                    imageId: identifier as number
+                });
+            } else if (type === 'post') {
                 await onCreate({
                     id,
                     type: 'delete',
@@ -192,30 +217,51 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
                 )}
 
                 {/* Renderizar imágenes con estado de carga (igual que CardItem) */}
-                {loadingImagesHook ? (
-                    <div className={styles.imageContainer}>
-                        <div className={styles.imagePlaceholder}>
-                            <div className={styles.loadingSpinner}></div>
-                            <span className={styles.loadingText}>Cargando imágenes...</span>
+                {type === 'text' ? (
+                    // Lógica específica para textos
+                    loadingImages ? (
+                        <div className={styles.imageContainer}>
+                            <div className={styles.imagePlaceholder}>
+                                <div className={styles.loadingSpinner}></div>
+                                <span className={styles.loadingText}>Cargando imágenes de texto...</span>
+                            </div>
                         </div>
-                    </div>
-                ) : processedImages && processedImages.length > 0 ? (
-                    <div className={styles.imageContainer}>
-                        <ImagePreviewGrid
-                            imagePreviews={convertToImagePreviews(processedImages)}
-                            onRemoveImage={handleRemoveImage}
-                            fallbackImageUrl="/images/blocks-8866100_1280.png"
-                        />
-                    </div>
-                ) : images && Array.isArray(images) && images.length > 0 ? (
-                    <div className={styles.imageContainer}>
-                        <div className={styles.imagePlaceholder}>
-                            <span className={styles.loadingText}>Procesando {images.length} imágenes...</span>
+                    ) : images && Array.isArray(images) && images.length > 0 ? (
+                        <div className={styles.imageContainer}>
+                            <ImagePreviewGrid
+                                imagePreviews={convertToImagePreviews(images as string[])}
+                                onRemoveImage={handleRemoveImage}
+                                fallbackImageUrl="/images/blocks-8866100_1280.png"
+                            />
                         </div>
-                    </div>
-                ) : null}
+                    ) : null
+                ) : (
+                    // Lógica original para posts y events
+                    loadingImagesHook ? (
+                        <div className={styles.imageContainer}>
+                            <div className={styles.imagePlaceholder}>
+                                <div className={styles.loadingSpinner}></div>
+                                <span className={styles.loadingText}>Cargando imágenes...</span>
+                            </div>
+                        </div>
+                    ) : processedImages && processedImages.length > 0 ? (
+                        <div className={styles.imageContainer}>
+                            <ImagePreviewGrid
+                                imagePreviews={convertToImagePreviews(processedImages)}
+                                onRemoveImage={handleRemoveImage}
+                                fallbackImageUrl="/images/blocks-8866100_1280.png"
+                            />
+                        </div>
+                    ) : images && Array.isArray(images) && images.length > 0 ? (
+                        <div className={styles.imageContainer}>
+                            <div className={styles.imagePlaceholder}>
+                                <span className={styles.loadingText}>Procesando {images.length} imágenes...</span>
+                            </div>
+                        </div>
+                    ) : null
+                )}
 
-                {imageError && (
+                {type !== 'text' && imageError && (
                     <div className={styles.imageError}>
                         <span>Error cargando imágenes: {imageError}</span>
                     </div>

@@ -22,7 +22,6 @@ import { logger } from "./core/logging/LoggerService";
 
 // Vistas públicas
 import Error404View from "@/assets/Views/404View";
-import AboutMeView from "@/assets/Views/AboutMeView";
 import AgoraView from "@/assets/Views/AgoraView";
 
 import HomeView from "@/assets/Views/HomeView";
@@ -32,7 +31,7 @@ import LoginView from "@/assets/Views/LoginView";
 import RegisterView from "@/assets/Views/RegisterView";
 
 import AdminPostView from "./assets/Views/AdminPostView";
-import EventsView from "./assets/Views/EventsView";
+// import EventsView from "./assets/Views/EventsView"; // Comentado temporalmente - archivo no encontrado
 
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
@@ -44,6 +43,7 @@ import AdminEventView from "./assets/Views/AdminEventView";
 import AdminLegalTextView from "./assets/Views/AdminLegalTextView";
 import AdminTextView from "./assets/Views/AdminTextView";
 import AdminUsersView from "./assets/Views/AdminUsersView";
+import EventsView from "./assets/Views/EventsView";
 import LegalTextView from "./assets/Views/LegalTextView";
 
 
@@ -151,13 +151,15 @@ const App: React.FC = () => {
           {/* Rutas públicas */}
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<HomeView />} />
-            <Route path="aboutMe" element={<AboutMeView />} />
+            {/* Redireccionar aboutMe a agora/nosotros para usar AgoraView dinámico */}
+            <Route path="aboutMe" element={<Navigate to="/agora/nosotros" replace />} />
 
             <Route path="agora/:category" element={<AgoraView />} />
 
             <Route path="login" element={<LoginView />} />
             <Route path="register" element={<RegisterView />} />
             <Route path="*" element={<Error404View />} />
+
 
             <Route path="events" element={
               <EventsView
@@ -166,6 +168,7 @@ const App: React.FC = () => {
                 onSelect={() => { }}
               />
             } />
+
             <Route path="legal/:type" element={<LegalTextView />} />
             <Route path="blog-rules-preview" element={<LegalTextView />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />

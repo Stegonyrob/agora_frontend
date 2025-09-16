@@ -96,6 +96,7 @@ interface ImportMetaEnv {
   // External services
   readonly VITE_GOOGLE_CLIENT_ID: string;
   readonly VITE_GOOGLE_CLIENT_SECRET: string;
+  readonly VITE_GOOGLE_MAPS_API_KEY: string;
   readonly VITE_RECAPTCHA_SITE_KEY: string;
 
   // Development
