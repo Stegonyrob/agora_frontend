@@ -2,8 +2,9 @@
 export interface IPostImage {
   id: number | null; // Permitir null para objetos mock temporales
   imageName: string;
-  imageData?: string; // Base64 encoded image data
+  imagePath: string; // Updated to use imagePath instead of imageData
   postId: number;
+  url?: string; // URL completa para acceder a la imagen
   isMock?: boolean; // Flag para objetos temporales creados desde strings del backend
 }
 

@@ -3,22 +3,19 @@ import { getAuthHeaders } from "../../auth/AuthHeaders";
 import { IEventImage } from "./IEventImage";
 
 export class EventImageRepository {
-  private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES;
-  private publicUri: string =
-    import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES_PUBLIC ||
-    `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/all/event-images`;
+  private baseUri: string = `${
+    import.meta.env.VITE_API_ENDPOINT_GENERAL
+  }/event-images`;
 
   /**
-   * Obtener todas las imágenes de un evento
+   * Obtener todas las imágenes de un evento (PÚBLICO)
    * Endpoint: GET /api/v1/event-images/event/{eventId}
    */
   async getEventImages(eventId: number): Promise<IEventImage[]> {
-    const headers = getAuthHeaders();
-
     try {
       const response: AxiosResponse<IEventImage[]> = await axios.get(
-        `${this.uri}/event/${eventId}`,
-        { headers }
+        `${this.baseUri}/event/${eventId}`,
+        { timeout: 10000 }
       );
       return response.data;
     } catch (error) {
@@ -27,18 +24,26 @@ export class EventImageRepository {
   }
 
   /**
-   * Obtener todas las imágenes públicas de un evento
-   * Endpoint: GET /api/v1/all/event-images/{eventId}
+   * Obtener una imagen específica por ID (PÚBLICO)
+   * Endpoint: GET /api/v1/event-images/{id}
    */
-  async getPublicEventImages(eventId: number): Promise<IEventImage[]> {
-    const response: AxiosResponse<IEventImage[]> = await axios.get(
-      `${this.publicUri}/${eventId}`
+  async getEventImageById(imageId: number): Promise<IEventImage> {
+    const response: AxiosResponse<IEventImage> = await axios.get(
+      `${this.baseUri}/${imageId}`,
+      { timeout: 10000 }
     );
     return response.data;
   }
 
   /**
-   * Subir imágenes a un evento
+   * Método legacy para compatibilidad - redirige a getEventImages
+   */
+  async getPublicEventImages(eventId: number): Promise<IEventImage[]> {
+    return this.getEventImages(eventId);
+  }
+
+  /**
+   * Subir imágenes a un evento (REQUIERE AUTENTICACIÓN)
    * Endpoint: POST /api/v1/event-images/upload
    */
   async uploadEventImages(
@@ -61,7 +66,7 @@ export class EventImageRepository {
     };
 
     const response: AxiosResponse<IEventImage[]> = await axios.post(
-      `${this.uri}/upload`,
+      `${this.baseUri}/upload`,
       formData,
       config
     );
@@ -69,92 +74,42 @@ export class EventImageRepository {
   }
 
   /**
-   * Eliminar una imagen de evento
+   * Eliminar una imagen de evento (REQUIERE AUTENTICACIÓN)
    * Endpoint: DELETE /api/v1/event-images/{id}
    */
   async deleteEventImage(imageId: number): Promise<void> {
-    await axios.delete(`${this.uri}/${imageId}`, {
+    await axios.delete(`${this.baseUri}/${imageId}`, {
       headers: getAuthHeaders(),
       timeout: 10000,
     });
   }
 
   /**
-   * Obtener datos de una imagen específica como JSON con base64
-   * Endpoint: GET /api/v1/all/event-images/{id}
+   * Construir URL para imagen física basada en imagePath
+   * Ejemplo: imagePath="/temp_images/cubos.jpg" -> "http://localhost:8080/temp_images/cubos.jpg"
    */
-  async getPublicImageJson(imageId: number): Promise<{
-    id: number;
-    imageName: string;
-    imageType: string;
-    imageData: string;
-  }> {
-    const response = await axios.get(`${this.publicUri}/${imageId}`, {
-      timeout: 10000,
-    });
-    return response.data;
-  }
+  buildImageUrl(imagePath: string): string {
+    if (!imagePath) return "";
 
-  /**
-   * Obtener datos de una imagen específica como blob usando endpoint privado (admin)
-   * Endpoint: GET /api/v1/any/event-images/{id}/data
-   */
-  async getImageAsBlob(imageId: number): Promise<string> {
-    try {
-      const response = await axios.get(`${this.uri}/${imageId}/data`, {
-        headers: getAuthHeaders(),
-        responseType: "blob",
-        timeout: 15000,
-      });
-
-      const blob = response.data;
-
-      if (blob.size < 1000) {
-        try {
-          const text = await blob.text();
-          throw new Error(
-            `Suspicious small blob for image ${imageId}: ${text.substring(
-              0,
-              200
-            )}`
-          );
-        } catch (readError) {
-          // no-op
-        }
-      }
-
-      return URL.createObjectURL(blob);
-    } catch (error) {
-      throw error;
+    // Si ya es una URL completa, devolverla tal como está
+    if (imagePath.startsWith("http")) {
+      return imagePath;
     }
-  }
 
-  /**
-   * Obtener datos de una imagen específica como blob usando endpoint público
-   * Endpoint: GET /api/v1/all/event-images/{id}/data
-   */
-  async getPublicImageAsBlob(imageId: number): Promise<string> {
-    const response: AxiosResponse<Blob> = await axios.get(
-      `${this.publicUri}/${imageId}/data`,
-      {
-        responseType: "blob",
-        timeout: 30000,
-      }
+    // Construir URL completa desde imagePath
+    const baseUrl = import.meta.env.VITE_API_ENDPOINT_GENERAL.replace(
+      "/api/v1",
+      ""
     );
-    return URL.createObjectURL(response.data);
+    return `${baseUrl}${imagePath}`;
   }
 
   /**
-   * Construir URL para obtener imagen
-   */
-  buildImageUrl(imageId: number): string {
-    return `${this.uri}/${imageId}/data`;
-  }
-
-  /**
-   * Construir URL para obtener imagen pública
+   * Método legacy para compatibilidad
    */
   buildPublicImageUrl(imageId: number): string {
-    return `${this.publicUri}/${imageId}/data`;
+    // Este método ahora es obsoleto ya que usamos imagePath
+    // Mantenerlo solo para compatibilidad temporal
+    return `${this.baseUri}/${imageId}/data`;
   }
 }

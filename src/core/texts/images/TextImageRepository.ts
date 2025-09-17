@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { imageService } from "../../../services/ImageService";
 import { getAuthHeaders } from "../../auth/AuthHeaders";
 import { ITextImage } from "./ITextImage";
 
@@ -7,30 +8,37 @@ export class TextImageRepository {
     import.meta.env.VITE_API_ENDPOINT_TEXT_IMAGES ||
     "http://localhost:8080/api/v1/text-images";
 
-  async getImagesByTextId(textId: number): Promise<ITextImage[]> {
-    const response = await axios.get(`${this.uri}/text/${textId}`, {
-      headers: getAuthHeaders(),
-      timeout: 15000,
-    });
+  /**
+   * Fetch all images associated with a specific text ID.
+   * Returns normalized response that can be either single object or array
+   */
+  async getImagesByTextId(textId: number): Promise<ITextImage | ITextImage[]> {
+    try {
+      const response = await axios.get(`${this.uri}/${textId}`, {
+        headers: getAuthHeaders(),
+        timeout: 15000,
+      });
 
-    const images: ITextImage[] = response.data;
-
-    const invalidImages = images.filter((img) => !img.id || !img.imageName);
-    if (invalidImages.length > 0) {
-      throw new Error(
-        `Found ${invalidImages.length} images with missing data: ${invalidImages}`
+      // Return the raw response data - let the service handle normalization
+      return response.data;
+    } catch (error: any) {
+      // If API fails, return empty array to allow fallback to static images
+      console.log(
+        `API request failed for text ${textId}, will use static images`
       );
+      return [];
     }
-
-    return images;
   }
 
+  /**
+   * Upload multiple images for a specific post.
+   */
   async uploadPostImages(
     postId: number,
     imageFiles: File[]
   ): Promise<ITextImage[]> {
     const formData = new FormData();
-    formData.append("postId", postId.toString());
+    formData.append("textId", postId.toString()); // Corrected to match backend's `textId` parameter
 
     imageFiles.forEach((file) => {
       formData.append("files", file);
@@ -52,6 +60,9 @@ export class TextImageRepository {
     return response.data;
   }
 
+  /**
+   * Fetch a specific text image by its ID.
+   */
   async getTextImageById(imageId: number): Promise<ITextImage> {
     const response: AxiosResponse<ITextImage> = await axios.get(
       `${this.uri}/${imageId}`,
@@ -63,6 +74,9 @@ export class TextImageRepository {
     return response.data;
   }
 
+  /**
+   * Create a new text image.
+   */
   async createTextImage(
     textImageData: Partial<ITextImage>
   ): Promise<ITextImage> {
@@ -77,6 +91,9 @@ export class TextImageRepository {
     return response.data;
   }
 
+  /**
+   * Update an existing text image.
+   */
   async updateTextImage(
     imageId: number,
     imageData: Partial<ITextImage>
@@ -92,6 +109,9 @@ export class TextImageRepository {
     return response.data;
   }
 
+  /**
+   * Delete a specific text image by its ID.
+   */
   async deleteTextImage(imageId: number): Promise<void> {
     await axios.delete(`${this.uri}/${imageId}`, {
       headers: getAuthHeaders(),
@@ -99,6 +119,9 @@ export class TextImageRepository {
     });
   }
 
+  /**
+   * Delete multiple text images by their IDs.
+   */
   async deleteMultipleTextImages(imageIds: number[]): Promise<void> {
     await axios.delete(`${this.uri}/delete-multiple`, {
       headers: getAuthHeaders(),
@@ -107,41 +130,21 @@ export class TextImageRepository {
     });
   }
 
-  buildImageUrl(imageId: number): string {
-    const baseUrl = `${this.uri}/${imageId}/data`;
-
-    const token = sessionStorage.getItem("accessToken");
-    if (token) {
-      return `${baseUrl}?token=${encodeURIComponent(token)}`;
-    }
-
-    return baseUrl;
+  /**
+   * Build the URL for accessing an image using the static image service
+   */
+  buildImageUrl(imagePath: string): string {
+    // Extract filename from imagePath (e.g., "/temp_images/fachada.jpg" -> "fachada.jpg")
+    const filename = imagePath.split("/").pop() || imagePath;
+    return imageService.getImageUrl(filename);
   }
 
-  async getImageAsBlob(imageId: number): Promise<string> {
-    const response = await axios.get(`${this.uri}/${imageId}/data`, {
-      headers: getAuthHeaders(),
-      responseType: "blob",
-      timeout: 15000,
-    });
-
-    const blob = response.data;
-
-    if (blob.size < 1000) {
-      try {
-        const text = await blob.text();
-        throw new Error(
-          `Suspicious small blob for image ${imageId}: ${text.substring(
-            0,
-            200
-          )}`
-        );
-      } catch (readError) {
-        // no-op
-      }
-    }
-
-    const blobUrl = URL.createObjectURL(blob);
-    return blobUrl;
+  /**
+   * Get image URL using the static image service
+   */
+  async getImageAsBlob(imagePath: string): Promise<string> {
+    // Extract filename from imagePath
+    const filename = imagePath.split("/").pop() || imagePath;
+    return imageService.getImageUrl(filename);
   }
 }

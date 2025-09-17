@@ -1,167 +1,233 @@
+import ImageService from "../../../services/ImageService";
+import { logger } from "../../logging/LoggerService";
 import { IPostImage } from "./IPostImage";
 import { PostImageRepository } from "./PostImageRepository";
 
 /**
- * Servicio para gestionar imágenes de posts
- * Patrón similar a EventImageService para mantener consistencia
+ * PostImageService - Gestiona las imágenes de posts con soporte para imagePath y fallbacks
+ *
+ * Este servicio maneja:
+ * 1. Carga de imágenes desde el repositorio de posts
+ * 2. Construcción de URLs usando imagePath cuando está disponible
+ * 3. Fallback a sistema blob cuando imagePath no existe
+ * 4. Integración con ImageService para imágenes estáticas
  */
 export class PostImageService {
-  private repository: PostImageRepository;
+  private postImageRepo: PostImageRepository;
+  private imageService: ImageService;
 
   constructor() {
-    this.repository = new PostImageRepository();
+    this.postImageRepo = new PostImageRepository();
+    this.imageService = new ImageService();
   }
 
-  async getPostImages(postId: number): Promise<IPostImage[]> {
-    if (!postId) {
-      throw new Error("Post ID is required");
-    }
-
+  /**
+   * Obtiene las imágenes de un post con URLs procesadas
+   */
+  async getPostImagesWithUrls(postId: number): Promise<IPostImage[]> {
     try {
-      const images = await this.repository.getImagesByPostId(postId);
-
-      if (images && images.length > 0) {
-        return images;
-      } else {
-        return [];
-      }
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        return [];
-      }
-
-      throw new Error(
-        `Error fetching post images: ${
-          error.response?.data?.message || error.message
-        }`
+      logger.debug(
+        "PostImageService: Obteniendo imágenes de post",
+        {
+          postId,
+        },
+        {
+          component: "PostImageService",
+        }
       );
+
+      // Obtener imágenes del repositorio
+      const images = await this.postImageRepo.getImagesByPostId(postId);
+
+      logger.debug(
+        "PostImageService: Imágenes obtenidas del repositorio",
+        {
+          postId,
+          imageCount: images.length,
+          images: images.map((img) => ({
+            id: img.id,
+            imageName: img.imageName,
+            hasImagePath: !!img.imagePath,
+          })),
+        },
+        {
+          component: "PostImageService",
+        }
+      );
+
+      // Procesar cada imagen para generar la URL correcta
+      const processedImages = await Promise.all(
+        images.map(async (image) => {
+          try {
+            // Priorizar imagePath si está disponible (sin verificar existencia para evitar CORS)
+            if (image.imagePath) {
+              const staticUrl = this.postImageRepo.buildImageUrl(
+                image.imagePath
+              );
+
+              logger.debug(
+                "PostImageService: Usando imagen estática (sin verificación CORS)",
+                {
+                  imageId: image.id,
+                  imagePath: image.imagePath,
+                  staticUrl,
+                },
+                {
+                  component: "PostImageService",
+                }
+              );
+
+              return {
+                ...image,
+                url: staticUrl,
+              };
+            }
+
+            // Fallback: usar sistema blob tradicional (legacy)
+            const blobUrl = this.postImageRepo.buildImageUrlLegacy(image.id!);
+
+            logger.debug(
+              "PostImageService: Usando sistema blob como fallback",
+              {
+                imageId: image.id,
+                blobUrl,
+              },
+              {
+                component: "PostImageService",
+              }
+            );
+
+            return {
+              ...image,
+              url: blobUrl,
+            };
+          } catch (error) {
+            logger.error(
+              "PostImageService: Error procesando imagen individual",
+              {
+                imageId: image.id,
+                imageName: image.imageName,
+                error: error instanceof Error ? error.message : String(error),
+              },
+              {
+                component: "PostImageService",
+              }
+            );
+
+            // En caso de error, devolver la imagen sin URL
+            return {
+              ...image,
+              url: undefined,
+            };
+          }
+        })
+      );
+
+      logger.info(
+        "PostImageService: Imágenes de post procesadas exitosamente",
+        {
+          postId,
+          totalImages: processedImages.length,
+          imagesWithUrls: processedImages.filter((img) => img.url).length,
+          imagesWithoutUrls: processedImages.filter((img) => !img.url).length,
+        },
+        {
+          component: "PostImageService",
+        }
+      );
+
+      return processedImages;
+    } catch (error) {
+      logger.error(
+        "PostImageService: Error obteniendo imágenes de post",
+        {
+          postId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        {
+          component: "PostImageService",
+        }
+      );
+
+      throw error;
     }
   }
 
+  /**
+   * Método legacy para compatibilidad - redirige a getPostImagesWithUrls
+   */
+  async getPostImages(postId: number): Promise<IPostImage[]> {
+    return this.getPostImagesWithUrls(postId);
+  }
+
+  /**
+   * Método de conveniencia para obtener solo las URLs de las imágenes
+   */
+  async getPostImageUrls(postId: number): Promise<string[]> {
+    try {
+      const images = await this.getPostImagesWithUrls(postId);
+      return images.filter((img) => img.url).map((img) => img.url!);
+    } catch (error) {
+      logger.error(
+        "PostImageService: Error obteniendo URLs de imágenes de post",
+        {
+          postId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        {
+          component: "PostImageService",
+        }
+      );
+
+      return [];
+    }
+  }
+
+  /**
+   * Proxy methods para operaciones del repositorio que no requieren procesamiento de URLs
+   */
   async uploadPostImages(
     postId: number,
     imageFiles: File[]
   ): Promise<IPostImage[]> {
-    if (!postId) {
-      throw new Error("Post ID is required for image upload");
-    }
-
-    if (!imageFiles || imageFiles.length === 0) {
-      return [];
-    }
-
-    try {
-      const uploadedImages = await this.repository.uploadPostImages(
-        postId,
-        imageFiles
-      );
-
-      return uploadedImages;
-    } catch (error: any) {
-      throw new Error(
-        `Error uploading post images: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.uploadPostImages(postId, imageFiles);
   }
 
   async getPostImageById(imageId: number): Promise<IPostImage> {
-    if (!imageId) {
-      throw new Error("Image ID is required");
-    }
-
-    try {
-      const image = await this.repository.getPostImageById(imageId);
-
-      return image;
-    } catch (error: any) {
-      throw new Error(
-        `Error fetching post image: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.getPostImageById(imageId);
   }
 
   async createPostImage(
     postImageData: Partial<IPostImage>
   ): Promise<IPostImage> {
-    try {
-      const createdImage = await this.repository.createPostImage(postImageData);
-
-      return createdImage;
-    } catch (error: any) {
-      throw new Error(
-        `Error creating post image: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.createPostImage(postImageData);
   }
 
   async updatePostImage(
     imageId: number,
     imageData: Partial<IPostImage>
   ): Promise<IPostImage> {
-    if (!imageId) {
-      throw new Error("Image ID is required");
-    }
-
-    try {
-      const updatedImage = await this.repository.updatePostImage(
-        imageId,
-        imageData
-      );
-
-      return updatedImage;
-    } catch (error: any) {
-      throw new Error(
-        `Error updating post image: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.updatePostImage(imageId, imageData);
   }
 
   async deletePostImage(imageId: number): Promise<void> {
-    if (!imageId) {
-      throw new Error("Image ID is required");
-    }
-
-    try {
-      await this.repository.deletePostImage(imageId);
-    } catch (error: any) {
-      throw new Error(
-        `Error deleting post image: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.deletePostImage(imageId);
   }
 
   async deleteMultiplePostImages(imageIds: number[]): Promise<void> {
-    if (!imageIds || imageIds.length === 0) {
-      throw new Error("Image IDs are required");
-    }
-
-    try {
-      await this.repository.deleteMultiplePostImages(imageIds);
-    } catch (error: any) {
-      throw new Error(
-        `Error deleting multiple post images: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    return this.postImageRepo.deleteMultiplePostImages(imageIds);
   }
 
+  /**
+   * Legacy methods para compatibilidad
+   * @deprecated Usar getPostImagesWithUrls en su lugar
+   */
   buildImageUrl(imageId: number): string {
-    return this.repository.buildImageUrl(imageId);
+    return this.postImageRepo.buildImageUrlLegacy(imageId);
   }
 
   buildPublicImageUrl(imageId: number): string {
-    return this.repository.buildImageUrl(imageId);
+    return this.postImageRepo.buildImageUrlLegacy(imageId);
   }
 }
 

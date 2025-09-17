@@ -1,5 +1,6 @@
 import { IEventImage } from '@/core/events/IEvent';
-import { EventImageRepository } from '@/core/events/images/EventImageRepository';
+import { EventImageService } from '@/core/events/images/EventImageService';
+import { logger } from '@/core/logging/LoggerService';
 import { IPostImage } from '@/core/posts/images/IPostImage';
 import { PostImageRepository } from '@/core/posts/images/PostImageRepository';
 import { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ interface UseImageLoaderResult {
 export const useImageLoader = (
     type: 'event' | 'post',
     imageData?: string[] | IEventImage[] | IPostImage[],
-    isAdminContext: boolean = false  // Nuevo parámetro para contexto de admin
+    isAdminContext: boolean = false
 ): UseImageLoaderResult => {
     const [images, setImages] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -76,32 +77,62 @@ export const useImageLoader = (
             setError(null);
 
             try {
-                const eventImageRepo = new EventImageRepository();
-                const postImageRepo = new PostImageRepository();
+                logger.debug('useImageLoader: Iniciando carga de imágenes', {
+                    type,
+                    imageCount: imageData.length,
+                    isAdminContext
+                }, {
+                    component: 'useImageLoader'
+                });
 
-                const imagePromises = imageData.map(async (img: any, index: number) => {
-                    if (type === 'event' && typeof img === 'object' && img.id !== undefined) {
-                        try {
-                            let blobUrl: string;
+                if (type === 'event') {
+                    // Usar EventImageService para eventos
+                    const eventImageService = new EventImageService();
 
-                            if (isAdminContext) {
-                                blobUrl = await eventImageRepo.getImageAsBlob(img.id);
-                            } else {
-                                blobUrl = await eventImageRepo.getPublicImageAsBlob(img.id);
-                            }
+                    // Si los elementos tienen ID, obtener desde el servicio
+                    const firstItem = imageData[0];
+                    if (typeof firstItem === 'object' && firstItem !== null && 'eventId' in firstItem) {
+                        const eventId = (firstItem as IEventImage).eventId;
+                        const imagesWithUrls = await eventImageService.getEventImagesWithUrls(eventId, isAdminContext);
+                        const urls = imagesWithUrls
+                            .filter(img => img.url)
+                            .map(img => img.url!);
 
-                            return blobUrl;
-                        } catch (error) {
-                        }
+                        logger.debug('useImageLoader: Imágenes de evento cargadas', {
+                            eventId,
+                            imageCount: urls.length
+                        }, {
+                            component: 'useImageLoader'
+                        });
+
+                        setImages(urls);
+                        return;
                     }
+                }
 
-                    if (type === 'post') {
+                if (type === 'post') {
+                    const postImageRepo = new PostImageRepository();
+
+                    const imagePromises = imageData.map(async (img: any, index: number) => {
                         if (typeof img === 'object' && img !== null && img.id && img.id !== null && !img.isMock) {
                             try {
+                                // Use new imagePath-based system for posts if available
+                                if (img.imagePath) {
+                                    const filename = img.imagePath.split('/').pop() || img.imagePath;
+                                    return `http://localhost:8080/temp_images/${filename}`;
+                                }
+
+                                // Fallback to old blob system
                                 const blobUrl = await postImageRepo.getImageAsBlob(img.id);
                                 return blobUrl;
-
                             } catch (error) {
+                                logger.error('useImageLoader: Error cargando imagen de post', {
+                                    imageId: img.id,
+                                    error: error instanceof Error ? error.message : String(error)
+                                }, {
+                                    component: 'useImageLoader'
+                                });
+                                return null;
                             }
                         }
 
@@ -111,16 +142,34 @@ export const useImageLoader = (
                         } else if (typeof img === 'string') {
                             return getPostImageFallback(img);
                         }
-                    }
 
+                        return processImageData(img);
+                    });
+
+                    const urls = await Promise.all(imagePromises);
+                    const validUrls = urls.filter((url): url is string => url !== null);
+                    setImages(validUrls);
+                    return;
+                }
+
+                // Fallback para otros tipos o casos legacy
+                const imagePromises = imageData.map(async (img: any) => {
                     return processImageData(img);
                 });
 
                 const urls = await Promise.all(imagePromises);
                 const validUrls = urls.filter((url): url is string => url !== null);
                 setImages(validUrls);
+
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : 'Error loading images';
+                logger.error('useImageLoader: Error general cargando imágenes', {
+                    type,
+                    isAdminContext,
+                    error: errorMessage
+                }, {
+                    component: 'useImageLoader'
+                });
                 setError(errorMessage);
                 setImages([]);
             } finally {
