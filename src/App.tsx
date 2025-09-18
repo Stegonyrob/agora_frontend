@@ -151,8 +151,8 @@ const App: React.FC = () => {
           {/* Rutas públicas */}
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<HomeView />} />
-            {/* Redireccionar aboutMe a agora/nosotros para usar AgoraView dinámico */}
-            <Route path="aboutMe" element={<Navigate to="/agora/nosotros" replace />} />
+            {/* Redireccionar team a agora/nosotros para usar AgoraView dinámico */}
+            <Route path="team" element={<Navigate to="/agora/team" replace />} />
 
             <Route path="agora/:category" element={<AgoraView />} />
 

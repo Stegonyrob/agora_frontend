@@ -11,13 +11,17 @@ const ColorPickerMenu = () => {
   };
 
   const menuItems = [
-    { name: "Nosotros", path: "/agora/nosotros" },
-    { name: "Servicios", path: "/agora/servicios" },
-    { name: "Neurodiversidad", path: "/agora/neurodiversidad" },
-    { name: "Desarrollo", path: "/agora/desarrollo" },
-    { name: "Comunicación", path: "/agora/comunicacion" },
+    { name: "Equipo", path: "/agora/team" },
+    { name: "Servicios", path: "/agora/services" },
     { name: "Blog", path: "/blog" },
     { name: "Eventos", path: "/events" },
+    { name: "Ágora", path: "/agora/agora" },
+    { name: "CEA/TEA", path: "/agora/cea" },
+    { name: "Tda/Tdh", path: "/agora/tda_tdh" },
+    { name: "Dif.Aprendizaje", path: "/agora/learning_difficulties" },
+    { name: "Cond.Desarrollo", path: "/agora/development_conditions" },
+    { name: "Trans.Comunicación", path: "/agora/communication" },
+
   ];
   const colors = [
     "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",      // Púrpura elegante

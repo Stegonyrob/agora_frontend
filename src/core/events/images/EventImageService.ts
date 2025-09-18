@@ -9,8 +9,7 @@ import { IEventImage } from "./IEventImage";
  * Este servicio maneja:
  * 1. Carga de imágenes desde el repositorio de eventos
  * 2. Construcción de URLs usando imagePath cuando está disponible
- * 3. Fallback a sistema blob cuando imagePath no existe
- * 4. Fallback a imágenes estáticas cuando todo falla
+ * 3. Fallback a imágenes estáticas cuando todo falla
  */
 export class EventImageService {
   private eventImageRepo: EventImageRepository;
@@ -123,46 +122,18 @@ export class EventImageService {
               };
             }
 
-            // Fallback: usar sistema blob tradicional (solo si no es mock)
-            if (!image.isMock && image.id) {
-              try {
-                const blobUrl = isAdminContext
-                  ? this.eventImageRepo.buildImageUrl(image.id)
-                  : this.eventImageRepo.buildPublicImageUrl(image.id);
-
-                logger.debug(
-                  "EventImageService: Usando sistema blob como fallback",
-                  {
-                    imageId: image.id,
-                    blobUrl,
-                  },
-                  {
-                    component: "EventImageService",
-                  }
-                );
-
-                return {
-                  ...image,
-                  url: blobUrl,
-                };
-              } catch (blobError) {
-                logger.error(
-                  "EventImageService: Error con sistema blob",
-                  {
-                    imageId: image.id,
-                    error:
-                      blobError instanceof Error
-                        ? blobError.message
-                        : String(blobError),
-                  },
-                  {
-                    component: "EventImageService",
-                  }
-                );
+            // Si no hay imagePath, usar imagen genérica directamente
+            logger.warn(
+              "EventImageService: No imagePath disponible, usando imagen genérica",
+              {
+                imageId: image.id,
+                imageName: image.imageName,
+              },
+              {
+                component: "EventImageService",
               }
-            }
+            );
 
-            // Último fallback: imagen genérica
             return {
               ...image,
               url: this.imageService.getImageUrl("fachada.jpg"),
@@ -311,7 +282,7 @@ export class EventImageService {
   }
 
   /**
-   * Build the URL for accessing an image from imagePath (legacy method).
+   * Build the URL for accessing an image from imagePath.
    */
   buildImageUrlFromPath(imagePath: string): string {
     const filename = imagePath.split("/").pop() || imagePath;
@@ -319,10 +290,10 @@ export class EventImageService {
   }
 
   /**
-   * Build the URL for accessing an image by ID (legacy method).
+   * Build the URL for accessing an image by filename (replaces buildImageUrl).
    */
-  buildImageUrl(imageId: number): string {
-    return this.eventImageRepo.buildImageUrl(imageId);
+  buildImageUrlFromFilename(filename: string): string {
+    return this.imageService.getImageUrl(filename);
   }
 }
 

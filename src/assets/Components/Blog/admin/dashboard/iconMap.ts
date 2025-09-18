@@ -31,6 +31,8 @@ export const iconMap: Record<string, any> = {
   "dificultades-user": BookOpenReaderIcon,
   "condiciones-admin": "bi-bar-chart", // sugerencia: gráfico de barras (crecimiento/desarrollo)
   "condiciones-user": "bi-bar-chart",
+  "comunicacion-admin": "bi-chat-dots",
+  "comunicacion-user": "bi-chat-dots",
   "eventos-admin": "bi-calendar-event",
   "eventos-user": "bi-calendar-event",
   "blog-admin": "bi-journal-richtext",
