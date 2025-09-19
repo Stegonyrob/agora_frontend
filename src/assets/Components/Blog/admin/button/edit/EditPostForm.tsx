@@ -39,9 +39,14 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onSubmit, onClose, sh
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const handleSubmit = (postPayload: any) => {
-      // You should replace this with the actual conversion logic
-      // For now, we assume post has all required fields
-      onSubmit({ ...post, ...postPayload });
+      // 🏷️ Asegurar que las tags actualizadas del hook se incluyan en el onSubmit
+      const updatedPost = {
+        ...post,
+        ...postPayload,
+        tags: tags  // Usar las tags del hook que están actualizadas
+      };
+      console.log("🔄 [EditPostForm] Enviando post actualizado a AdminPostView:", updatedPost);
+      onSubmit(updatedPost);
     };
     await submitForm(handleSubmit, onClose);
   };

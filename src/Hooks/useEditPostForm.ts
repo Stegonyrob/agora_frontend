@@ -16,7 +16,7 @@ export type PostPayload = {
   title: string;
   message: string;
   location: string;
-  tags: IEventTag[];
+  tags?: IEventTag[]; // ✅ OPCIONAL: Las tags se gestionan por separado
   images: IPostImageDTO[]; // Cambiar a IPostImageDTO[]
   isArchived: boolean;
   isPublished: boolean;
@@ -90,37 +90,25 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
       if (post.images && post.images.length > 0) {
         const loadImages = async () => {
           const repo = new PostImageRepository();
-          const previews: IImagePreview[] = await Promise.all(
-            post.images.map(async (img: IPostImageDTO, idx: number) => {
-              // Usar IPostImageDTO
-              const identifier =
-                img.id && typeof img.id === "number" ? img.id : img.imageName;
-              try {
-                if (typeof img.id === "number" && img.id > 0) {
-                  const blobUrl = await repo.getImageAsBlob(img.id);
-                  return {
-                    url: blobUrl,
-                    isLoading: false,
-                    isExisting: true,
-                    id: img.id,
-                  };
-                } else {
-                  return {
-                    url: `/images/posts/${img.imageName}`,
-                    isLoading: false,
-                    isExisting: true,
-                    tempId: uuidv4(), // Usar tempId para imágenes sin id numérico
-                  };
-                }
-              } catch (e) {
-                return {
-                  url: `/images/posts/${img.imageName}`,
-                  isLoading: false,
-                  isExisting: true,
-                  tempId: uuidv4(), // Usar tempId para imágenes con error
-                };
-              }
-            })
+          const previews: IImagePreview[] = post.images.map(
+            (img: IPostImageDTO, idx: number) => {
+              // Manejar ambos tipos de imagen (legacy IPostImageDTO y nuevo IPostImage)
+              const hasImagePath = "imagePath" in img && (img as any).imagePath;
+              const imageUrl = hasImagePath
+                ? repo.buildImageUrl((img as any).imagePath)
+                : img.imageName
+                ? `/images/posts/${img.imageName}`
+                : "";
+
+              return {
+                url: imageUrl,
+                isLoading: false,
+                isExisting: true,
+                id: img.id && typeof img.id === "number" ? img.id : undefined,
+                tempId:
+                  img.id && typeof img.id === "number" ? undefined : uuidv4(),
+              };
+            }
           );
           setImagePreviews(previews);
         };
@@ -255,7 +243,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           title: sanitizedTitle,
           message: sanitizedMessage,
           location: post.location || "",
-          tags: tags,
+          // ❌ REMOVIDO: tags: tags, - Las tags se gestionan por separado
           images: imagesPayload as any,
           isArchived: post.isArchived ?? false,
           isPublished: post.isPublished ?? true,
@@ -264,18 +252,39 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
         console.info("[useEditPostForm][PUT] Payload enviado:", updatedPost);
 
         // Primero subimos las tags usando el servicio optimizado
-        if (post.id && tags.length >= 0) {
-          // Permitir array vacío para limpiar tags
+        if (post.id) {
+          // NOTA: Permitir arrays vacíos SOLO si realmente queremos limpiar tags
+          // Pero necesitamos distinguir entre "no cambiar tags" vs "limpiar tags"
           try {
             console.log(
               "🏷️ [useEditPostForm] Actualizando tags del post ANTES de actualizar post:",
               {
                 postId: post.id,
                 tags: tags,
+                tagsDetailed: tags.map((t) => ({ id: t.id, name: t.name })),
+                originalTags: normalizedPostTags,
+                hasChanges:
+                  JSON.stringify(tags) !== JSON.stringify(normalizedPostTags),
               }
             );
-            await uploadTagsToPost(post.id, tags);
-            console.log("✅ [useEditPostForm] Tags actualizadas exitosamente");
+
+            // ⚠️ SOLO ACTUALIZAR TAGS SI HAY CAMBIOS REALES
+            const hasTagChanges =
+              JSON.stringify(tags) !== JSON.stringify(normalizedPostTags);
+
+            if (hasTagChanges) {
+              console.log(
+                "🔄 [useEditPostForm] Tags han cambiado, actualizando..."
+              );
+              await uploadTagsToPost(post.id, tags);
+              console.log(
+                "✅ [useEditPostForm] Tags actualizadas exitosamente"
+              );
+            } else {
+              console.log(
+                "⏭️ [useEditPostForm] No hay cambios en tags, saltando actualización"
+              );
+            }
           } catch (tagsError) {
             console.error(
               "❌ [useEditPostForm] Error actualizando tags:",

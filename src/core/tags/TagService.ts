@@ -213,7 +213,38 @@ class TagService {
     postId: number,
     tags: { id: number; name: string; archived: boolean }[]
   ): Promise<void> {
+    console.log(
+      `🚨🚨 [TagService] replaceTagsInPost POST ${postId} - TAGS ENVIADAS:`,
+      tags
+    );
+    if (tags.length === 0) {
+      console.error(
+        `❌❌ [TagService] ¡ARRAY VACÍO! Se está enviando array vacío para post ${postId}`
+      );
+      console.trace("Stack trace del array vacío:");
+    }
     return await this.tagRepository.replaceTagsInPost(postId, tags);
+  }
+
+  /**
+   * Reemplaza completamente las tags de un evento.
+   * Método más eficiente que eliminar una por una y luego agregar.
+   */
+  async replaceTagsInEvent(
+    eventId: number,
+    tags: { id: number; name: string; archived: boolean }[]
+  ): Promise<void> {
+    console.log(
+      `🚨🚨 [TagService] replaceTagsInEvent EVENT ${eventId} - TAGS ENVIADAS:`,
+      tags
+    );
+    if (tags.length === 0) {
+      console.error(
+        `❌❌ [TagService] ¡ARRAY VACÍO! Se está enviando array vacío para evento ${eventId}`
+      );
+      console.trace("Stack trace del array vacío:");
+    }
+    return await this.tagRepository.replaceTagsInEvent(eventId, tags);
   }
 }
 

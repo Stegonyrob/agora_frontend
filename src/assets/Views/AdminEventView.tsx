@@ -1,13 +1,18 @@
 import EventService from "@/core/events/EventService";
 import { IEvent } from "@/core/events/IEvent";
 import { IEventDTO } from "@/core/events/IEventDTO";
+import { ITag } from "@/core/tags/ITag";
+import TagService from "@/core/tags/TagService";
+import { fetchTagsByEvent, updateEventTags } from "@/core/tags/tagStore";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";
 import styles from "../Views/scss/Views.module.scss";
 
 const AdminEventView = ({ userId }: { userId: number }) => {
     const [fetchedEvents, setFetchedEvents] = useState<IEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
+    const dispatch = useDispatch();
 
     console.log("🔧 AdminEventView - Props y sesión:", {
         userId,
@@ -23,12 +28,20 @@ const AdminEventView = ({ userId }: { userId: number }) => {
                 const eventService = new EventService();
                 const events = await eventService.fetchEvents();
                 setFetchedEvents(events ?? []);
+
+                // 🏷️ CARGAR TAGS: Cargar las tags de todos los eventos en el store Redux
+                console.log("🏷️ [AdminEventView] Cargando tags para todos los eventos...");
+                for (const event of events ?? []) {
+                    if (event.id) {
+                        dispatch(fetchTagsByEvent(event.id) as any);
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
         };
         fetchEvents();
-    }, []);
+    }, [dispatch]);
 
     const handleSelect = (item: IEvent) => setSelectedEvent(item);
 
@@ -38,12 +51,59 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             return;
         }
         try {
+            console.log("🔄 AdminEventView - Iniciando actualización de evento:", event.id);
+
             const eventService = new EventService();
+            const tagService = new TagService();
+
+            // 1. Actualizar los datos básicos del evento (sin tags)
             const eventDTO = event as unknown as IEventDTO;
+            console.log("📝 Actualizando datos del evento...");
             await eventService.updateEvent(event.id, eventDTO);
+
+            // 2. Actualizar tags por separado si las hay
+            if (event.tags && Array.isArray(event.tags) && event.tags.length > 0) {
+                console.log("🏷️ Actualizando tags del evento:", event.tags);
+
+                // Convertir tags a formato ITag si son strings
+                const tagsAsITag: ITag[] = event.tags.map((tag: any) => {
+                    if (typeof tag === 'string') {
+                        // Si es string, necesitamos obtener/crear la tag
+                        return { id: 0, name: tag, archived: false };
+                    } else if (tag && typeof tag === 'object' && tag.name) {
+                        // Si es objeto con name
+                        return {
+                            id: tag.id || 0,
+                            name: tag.name,
+                            archived: tag.archived || false
+                        };
+                    }
+                    return { id: 0, name: String(tag), archived: false };
+                });
+
+                // Usar Redux action para actualizar tags
+                await (dispatch as any)(updateEventTags({
+                    eventId: event.id,
+                    tags: tagsAsITag
+                }));
+
+                console.log("✅ Tags actualizadas correctamente");
+            } else {
+                console.log("🗑️ Limpiando tags del evento (array vacío)");
+                // Si no hay tags, limpiar las existentes
+                await (dispatch as any)(updateEventTags({
+                    eventId: event.id,
+                    tags: []
+                }));
+            }
+
+            // 3. Actualizar estado local
             setFetchedEvents(prev => prev.map(e => (e.id === event.id ? { ...e, ...event } : e)));
+
+            console.log("✅ Evento y tags actualizados correctamente");
         } catch (error) {
-            console.error("Error updating event:", error);
+            console.error("❌ Error updating event:", error);
+            throw error; // Re-lanzar el error para que se maneje en la UI
         }
     };
 

@@ -1,6 +1,7 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
-import EventImageService from "@/core/events/EventImageService";
-import { EventImage, IEventDTO } from "@/core/events/IEventDTO";
+import { IEventDTO } from "@/core/events/IEventDTO";
+import { EventImageService } from "@/core/events/images/EventImageService";
+import { IEventImage } from "@/core/events/images/IEventImage";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -36,37 +37,28 @@ export const useEditEventForm = ({
   // Cargar datos del evento cuando se abre el modal
   useEffect(() => {
     const loadImages = async () => {
-      const previews: IImagePreview[] = await Promise.all(
-        event!.images.map(async (img: EventImage) => {
-          const identifier = img.id ? img.id : img.imageName;
-          try {
-            if (img.id) {
-              const blobUrl = await apiEventImage.getImageAsBlob(img.id);
-              return {
-                url: blobUrl,
-                isLoading: false,
-                isExisting: true,
-                id: img.id,
-              };
-            } else {
-              return {
-                url: `/images/events/${img.imageName}`,
-                isLoading: false,
-                isExisting: true,
-                tempId: uuidv4(),
-              };
-            }
-          } catch (e) {
-            return {
-              url: `/images/events/${img.imageName}`,
-              isLoading: false,
-              isExisting: true,
-              tempId: uuidv4(),
-            };
-          }
-        })
-      );
-      setImagePreviews(previews);
+      try {
+        // Usar el EventImageService para obtener las imágenes con URLs procesadas
+        const imagesWithUrls = await apiEventImage.getEventImagesWithUrls(
+          event!.id!,
+          true // contexto admin
+        );
+
+        const previews: IImagePreview[] = imagesWithUrls.map(
+          (img: IEventImage) => ({
+            url: img.url || "", // EventImageService ya procesa las URLs
+            isLoading: false,
+            isExisting: true,
+            id: img.id || undefined,
+            tempId: img.id ? undefined : uuidv4(),
+          })
+        );
+
+        setImagePreviews(previews);
+      } catch (error) {
+        console.error("Error cargando imágenes:", error);
+        setImagePreviews([]);
+      }
     };
 
     if (show && event) {
@@ -221,7 +213,7 @@ export const useEditEventForm = ({
           .filter((preview) => !preview.isExisting && preview.file)
           .map((preview) => preview.file!);
 
-        let uploadedNewImages: EventImage[] = [];
+        let uploadedNewImages: IEventImage[] = [];
         if (newImageFiles.length > 0) {
           console.log(`📤 Subiendo ${newImageFiles.length} nuevas imágenes...`);
           uploadedNewImages = await apiEventImage.uploadEventImages(
@@ -249,7 +241,7 @@ export const useEditEventForm = ({
           });
 
         const newImagesPayload = uploadedNewImages.map((img) => ({
-          id: img.id,
+          id: img.id || undefined,
           imageName: img.imageName,
           eventId: event.id,
         }));
@@ -268,7 +260,7 @@ export const useEditEventForm = ({
           link,
           capacity: Number(capacity),
           tags,
-          images: imagesPayload,
+          images: imagesPayload as any, // Use 'as any' like in posts
         };
 
         console.log("📝 Actualizando datos del evento...");

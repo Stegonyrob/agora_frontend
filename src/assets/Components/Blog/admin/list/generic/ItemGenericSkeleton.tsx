@@ -79,7 +79,7 @@ const ItemGenericSkeleton: React.FC<ItemGenericSkeletonProps> = ({ type }) => {
                 )}
 
                 <div className={itemGenericStyles.messageRow}>
-                    <p className={itemGenericStyles.message}>
+                    <div className={itemGenericStyles.message}>
                         <div className={`${skeletonStyles.skeletonLine} ${skeletonStyles.skeletonMessageLine}`}></div>
                         <div className={`${skeletonStyles.skeletonLine} ${skeletonStyles.skeletonMessageLine}`}></div>
                         <div className={`${skeletonStyles.skeletonLine} ${skeletonStyles.skeletonMessageLine} ${skeletonStyles.short}`}></div>
@@ -87,7 +87,7 @@ const ItemGenericSkeleton: React.FC<ItemGenericSkeletonProps> = ({ type }) => {
                         <button className={itemGenericStyles.toggleButton}>
                             <div className={skeletonStyles.skeletonCircle}></div>
                         </button>
-                    </p>
+                    </div>
                     <div className={itemGenericStyles.actions}>
                         <div className={`${skeletonStyles.skeletonRect} ${skeletonStyles.skeletonActionButton}`}></div>
                         <div className={`${skeletonStyles.skeletonRect} ${skeletonStyles.skeletonActionButton}`}></div>

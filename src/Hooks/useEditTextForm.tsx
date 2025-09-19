@@ -1,16 +1,17 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
 import { ITextImageDTO } from "@/core/texts/images/ITextImageDTO";
+import { TextImageRepository } from "@/core/texts/images/TextImageRepository";
 import TextImageService from "@/core/texts/images/TextImageService";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-// Tipo para el payload mínimo de edición de post
+// Tipo para el payload mínimo de edición de texto
 export type TextPayload = {
     userId: number;
     title: string;
-    description: string;
+    message: string; // Cambiar de description a message
     images: ITextImageDTO[];
 };
 
@@ -21,42 +22,39 @@ interface UseEditTextFormProps {
 
 export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
     const [title, setTitle] = useState(post?.title || "");
-    const [description, setDescription] = useState(post?.description || "");
+    const [description, setDescription] = useState(post?.message || "");
     const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [globalError, setGlobalError] = useState<string | null>(null);
     const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
 
     const textImageService = new TextImageService();
+    const textImageRepository = new TextImageRepository();
 
     useEffect(() => {
         if (show && post) {
             setTitle(post.title || "");
-            setDescription(post.description || "");
+            setDescription(post.message || "");
 
             setRemovedImageIds([]);
             if (post.images && post.images.length > 0) {
                 const loadImages = async () => {
-                    const previews: IImagePreview[] = await Promise.all(
-                        post.images.map(async (img: ITextImageDTO) => {
-                            try {
-                                const blobUrl = await textImageService.getImageAsBlob(img.id);
-                                return {
-                                    url: blobUrl,
-                                    isLoading: false,
-                                    isExisting: true,
-                                    id: img.id,
-                                };
-                            } catch (e) {
-                                return {
-                                    url: `/images/texts/${img.imageName}`,
-                                    isLoading: false,
-                                    isExisting: true,
-                                    tempId: uuidv4(),
-                                };
-                            }
-                        })
-                    );
+                    const previews: IImagePreview[] = post.images.map((img: ITextImageDTO) => {
+                        // Manejar ambos tipos de imagen (legacy ITextImageDTO y nuevo ITextImage)
+                        const hasImagePath = 'imagePath' in img && (img as any).imagePath;
+                        const imageUrl = hasImagePath
+                            ? textImageService.buildImageUrl((img as any).imagePath)
+                            : img.imageName
+                                ? `/images/texts/${img.imageName}`
+                                : '';
+
+                        return {
+                            url: imageUrl,
+                            isLoading: false,
+                            isExisting: true,
+                            id: img.id,
+                        };
+                    });
                     setImagePreviews(previews);
                 };
                 loadImages();
@@ -138,7 +136,7 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                 let uploadedNewImages: any[] = [];
                 if (filesToUpload.length > 0) {
                     try {
-                        uploadedNewImages = await textImageService.uploadTextImages(
+                        uploadedNewImages = await textImageService.uploadImagesByTextId(
                             post.id,
                             filesToUpload
                         );
@@ -176,7 +174,7 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                     id: post.id,
                     userId: post.userId,
                     title: sanitizedTitle,
-                    description: sanitizedDescription,
+                    message: sanitizedDescription,
                     images: imagesPayload as any,
                 };
 
@@ -186,7 +184,7 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                     try {
                         await Promise.all(
                             removedIds.map((id) =>
-                                textImageService.deleteTextImage(id)
+                                textImageRepository.deleteTextImage(id)
                             )
                         );
                     } catch (deleteError) {

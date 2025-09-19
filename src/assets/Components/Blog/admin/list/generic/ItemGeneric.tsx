@@ -1,11 +1,14 @@
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
 import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
+import { selectTagsByItem } from '../../../../../../core/tags/tagStore';
 import type { ITextImage } from '../../../../../../core/texts/images/ITextImage';
 import type { ITextItemDTO } from '../../../../../../core/texts/ITextItemDTO';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
+import type { RootState } from '../../../../../../redux/store';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
@@ -65,9 +68,24 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     const title = data.title ?? propTitle;
     const message = data.message ?? propMessage;
     const creationDate = data.creationDate ?? propCreationDate;
-    // Forzar tipado de tags para evitar error TS
+
+    // 🏷️ OBTENER TAGS DESDE REDUX STORE usando selector genérico memoizado
+    const tagsFromStore = useSelector((state: RootState) =>
+        (type === 'post' || type === 'event') && id
+            ? selectTagsByItem(state, id, type)
+            : []
+    );
+
+    // 🐛 DEBUG: Verificar que las tags se cargan desde el store
+    useEffect(() => {
+        if ((type === 'post' || type === 'event') && id) {
+            console.log(`🏷️ [ItemGeneric] ${type} ${id} - Tags desde store (genérico):`, tagsFromStore);
+        }
+    }, [type, id, tagsFromStore]);    // Forzar tipado de tags para evitar error TS
     type TagType = { id?: number; name?: string; archived?: boolean } | string;
-    const tags: TagType[] = Array.isArray(data.tags) ? data.tags : [];
+    const tags: TagType[] = (type === 'post' || type === 'event')
+        ? tagsFromStore
+        : (Array.isArray(data.tags) ? data.tags : []);
     const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);
 
     // Usar el hook moderno useImageLoader con contexto de administración solo para posts y events
@@ -104,7 +122,7 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
         if (type === 'text') {
             // Para textos, usar las textImages si están disponibles
             return textImages?.map((textImg, index) => ({
-                url: processedUrls[index] || textImg.imageData || `/api/v1/text-images/${textImg.id}/data`,
+                url: processedUrls[index] || `/api/v1/text-images/${textImg.id}/data`,
                 isLoading: false,
                 isExisting: true,
                 id: textImg.id || index

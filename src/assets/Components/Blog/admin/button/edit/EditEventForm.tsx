@@ -1,5 +1,5 @@
-import EventImageService from "@/core/events/EventImageService";
 import { IEventDTO } from "@/core/events/IEventDTO";
+import { EventImageService } from "@/core/events/images/EventImageService";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useEditEventForm } from "../../../../../../hooks/useEditEventForm";

@@ -1,23 +1,24 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { getAuthHeaders } from "../auth/AuthHeaders";
+import { EventImageRepository } from "./images/EventImageRepository";
+import { IEventImage } from "./images/IEventImage";
 
-export interface EventImageResponse {
-  id: number;
-  eventId: number;
-  imageName: string;
-  imageType: string;
-  imageData: string; // Base64 encoded image data
-  createdAt: string;
-}
-
+/**
+ * Servicio de alto nivel para gestión de imágenes de eventos
+ * Usa EventImageRepository para las operaciones de red
+ */
 export default class EventImageService {
-  private uri: string = import.meta.env.VITE_API_ENDPOINT_EVENT_IMAGES;
+  private repository: EventImageRepository;
 
-  // Upload images to event
+  constructor() {
+    this.repository = new EventImageRepository();
+  }
+
+  /**
+   * Subir imágenes a un evento
+   */
   async uploadEventImages(
     eventId: number,
     imageFiles: File[]
-  ): Promise<EventImageResponse[]> {
+  ): Promise<IEventImage[]> {
     if (!eventId) {
       throw new Error("Event ID is required for image upload");
     }
@@ -26,121 +27,76 @@ export default class EventImageService {
       return [];
     }
 
-    const formData = new FormData();
-    formData.append("eventId", eventId.toString());
-    imageFiles.forEach((file) => formData.append("files", file));
-
-    const config: AxiosRequestConfig = {
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "multipart/form-data",
-      },
-      timeout: 30000,
-    };
-
     try {
-      const response: AxiosResponse<EventImageResponse[]> = await axios.post(
-        `${this.uri}/upload`,
-        formData,
-        config
+      console.log(
+        `📤 EventImageService - Uploading ${imageFiles.length} images for event ${eventId}`
       );
-      return response.data;
+      const response = await this.repository.uploadEventImages(
+        eventId,
+        imageFiles
+      );
+      console.log(
+        `✅ EventImageService - Images uploaded successfully:`,
+        response
+      );
+      return response;
     } catch (error: any) {
-      console.error("Error uploading event images:", error.message);
-      throw new Error(`Error uploading event images: ${error.message}`);
+      console.error("❌ EventImageService - Error uploading images:", error);
+      throw error;
     }
   }
 
-  // Get all images for an event
-  async getEventImages(eventId: number): Promise<EventImageResponse[]> {
+  /**
+   * Obtener todas las imágenes de un evento
+   */
+  async getEventImages(eventId: number): Promise<IEventImage[]> {
     if (!eventId) {
       throw new Error("Event ID is required");
     }
 
     try {
-      const response: AxiosResponse<EventImageResponse[]> = await axios.get(
-        `${this.uri}/event/${eventId}`,
-        { headers: getAuthHeaders() }
-      );
-      return response.data;
+      return await this.repository.getEventImages(eventId);
     } catch (error: any) {
       if (error.response?.status === 404) {
         return []; // No images found
       }
-      console.error("Error fetching event images:", error.message);
-      throw new Error(`Error fetching event images: ${error.message}`);
+      console.error("❌ EventImageService - Error fetching images:", error);
+      throw error;
     }
   }
 
-  // Delete single image
+  /**
+   * Eliminar una imagen individual
+   */
   async deleteEventImage(imageId: number): Promise<void> {
     if (!imageId) {
       throw new Error("Image ID is required");
     }
 
     try {
-      await axios.delete(`${this.uri}/${imageId}`, {
-        headers: getAuthHeaders(),
-        timeout: 10000,
-      });
-    } catch (error: any) {
-      console.error("Error deleting event image:", error.message);
-      throw new Error(`Error deleting event image: ${error.message}`);
-    }
-  }
-
-  // Delete multiple images
-  async deleteMultipleEventImages(ids: number[]): Promise<void> {
-    const url = `${this.uri}/delete-multiple`;
-
-    if (!ids || ids.length === 0) {
-      return;
-    }
-
-    try {
+      console.log(`🗑️ EventImageService - Deleting image ${imageId}`);
+      await this.repository.deleteEventImage(imageId);
       console.log(
-        `🗑️ EventImageService - Attempting to delete images with IDs:`,
-        ids
-      );
-      // Axios requires the body for a DELETE request to be in the `data` property.
-      // The backend endpoint expects a JSON object like: { "imageIds": [1, 2, 3] }
-      await axios.delete(url, {
-        headers: getAuthHeaders(),
-        data: { imageIds: ids },
-      });
-      console.log(
-        `✅ EventImageService - Images with IDs ${ids.join(
-          ", "
-        )} deleted successfully.`
+        `✅ EventImageService - Image ${imageId} deleted successfully`
       );
     } catch (error: any) {
-      console.error("Error deleting multiple images:", error);
-      if (axios.isAxiosError(error)) {
-        const errorMessage = `Server error (${error.response?.status}): ${
-          error.response?.data?.message || error.message
-        }`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-      throw new Error("An unexpected error occurred while deleting images.");
+      console.error("❌ EventImageService - Error deleting image:", error);
+      throw error;
     }
   }
 
-  // Build image URL for direct access
-  buildImageUrl(imageId: number): string {
-    if (!imageId) return "";
-    return `${this.uri}/${imageId}/data`;
+  /**
+   * Construir URL para acceso directo a imagen usando imagePath
+   */
+  buildImageUrl(imagePath: string): string {
+    return this.repository.buildImageUrl(imagePath);
   }
 
-  // Get image as Blob
-  async getImageAsBlob(imageId: number): Promise<string> {
-    const response: AxiosResponse<Blob> = await axios.get(
-      `${this.uri}/${imageId}/data`,
-      {
-        responseType: "blob",
-        headers: getAuthHeaders(), // Include authorization headers
-      }
-    );
-    return URL.createObjectURL(response.data);
+  /**
+   * Método legacy para compatibilidad
+   * @deprecated Usar buildImageUrl(imagePath) en su lugar
+   */
+  buildImageUrlLegacy(imageId: number): string {
+    return this.repository.buildPublicImageUrl(imageId);
   }
 }

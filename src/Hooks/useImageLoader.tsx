@@ -98,6 +98,12 @@ export const useImageLoader = (
                             .filter(img => img.url)
                             .map(img => img.url!);
 
+                        console.log('📷 [useImageLoader] URLs finales de evento:', {
+                            eventId,
+                            imageCount: urls.length,
+                            urls
+                        });
+
                         logger.debug('useImageLoader: Imágenes de evento cargadas', {
                             eventId,
                             imageCount: urls.length
@@ -118,13 +124,22 @@ export const useImageLoader = (
                             try {
                                 // Use new imagePath-based system for posts if available
                                 if (img.imagePath) {
-                                    const filename = img.imagePath.split('/').pop() || img.imagePath;
-                                    return `http://localhost:8080/temp_images/${filename}`;
+                                    return postImageRepo.buildImageUrl(img.imagePath);
                                 }
 
-                                // Fallback to old blob system
-                                const blobUrl = await postImageRepo.getImageAsBlob(img.id);
-                                return blobUrl;
+                                // If no imagePath but has imageName, try static image
+                                if (img.imageName) {
+                                    return `http://localhost:8080/temp_images/${img.imageName}`;
+                                }
+
+                                // Last resort: try to construct URL from ID (but this may fail)
+                                logger.warn('useImageLoader: No imagePath or imageName available, skipping image', {
+                                    imageId: img.id,
+                                    imageObject: img
+                                }, {
+                                    component: 'useImageLoader'
+                                });
+                                return null;
                             } catch (error) {
                                 logger.error('useImageLoader: Error cargando imagen de post', {
                                     imageId: img.id,

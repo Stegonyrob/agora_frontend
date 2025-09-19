@@ -1,12 +1,15 @@
 import { IPost } from "@/core/posts/IPost";
 import { IPostDTO } from "@/core/posts/IPostDTO";
 import PostService from "@/core/posts/PostService";
+import { fetchTagsByPost } from "@/core/tags/tagStore";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";
 import styles from "../Views/scss/Views.module.scss";
 const AdminPostView = ({ userId }: { userId: number }) => {
     const [fetchedPosts, setFetchedPosts] = useState<IPost[]>([]);
     const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
+    const dispatch = useDispatch();
 
     // 🔄 HELPER: Función para ordenar posts (más nuevo primero)
     const sortPostsByDate = (posts: IPost[]): IPost[] => {
@@ -25,7 +28,16 @@ const AdminPostView = ({ userId }: { userId: number }) => {
                 const posts = page?.content ?? [];
 
                 // 🔄 ORDENAR POSTS: Más nuevo primero (descendente por fecha de creación)
-                setFetchedPosts(sortPostsByDate(posts));
+                const sortedPosts = sortPostsByDate(posts);
+                setFetchedPosts(sortedPosts);
+
+                // 🏷️ CARGAR TAGS: Cargar las tags de todos los posts en el store Redux
+                console.log("🏷️ [AdminPostView] Cargando tags para todos los posts...");
+                for (const post of sortedPosts) {
+                    if (post.id) {
+                        dispatch(fetchTagsByPost(post.id) as any);
+                    }
+                }
             } catch (error: any) {
                 console.error("❌ Error fetching posts:", error);
                 if (error.response) {
@@ -35,12 +47,14 @@ const AdminPostView = ({ userId }: { userId: number }) => {
             }
         };
         fetchPosts();
-    }, []);
+    }, [dispatch]);
 
     const handleSelect = (item: IPost) => setSelectedPost(item);
 
     const handleUpdate = async (post: IPost) => {
         try {
+            console.log("🔄 [AdminPostView] Recibiendo post actualizado:", post);
+            console.log("🏷️ [AdminPostView] Tags recibidas:", post.tags);
 
             // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente
             setFetchedPosts(prev => {
@@ -48,6 +62,12 @@ const AdminPostView = ({ userId }: { userId: number }) => {
                 // 🔄 MANTENER ORDEN: Reordenar después de actualizar para mantener consistencia
                 return sortPostsByDate(updated);
             });
+
+            // 🏷️ ACTUALIZAR STORE REDUX: Refrescar las tags en el store después de la actualización
+            if (post.id) {
+                console.log("🔄 [AdminPostView] Refrescando tags en Redux store para post:", post.id);
+                dispatch(fetchTagsByPost(post.id) as any);
+            }
 
             const postService = new PostService();
             // Crear un DTO limpio del post sin las tags (las tags se manejan separadamente)
@@ -67,7 +87,7 @@ const AdminPostView = ({ userId }: { userId: number }) => {
                 isPublished: post.isPublished ?? true,
                 createdAt: post.createdAt || new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                tags: [], // Las tags se manejan por separado en useEditPostForm
+                // ❌ REMOVIDO: tags: [], - Las tags se manejan por separado en useEditPostForm
                 alt_image: (post as any).alt_image || "",
                 source_image: (post as any).source_image || "",
                 alt_avatar: (post as any).alt_avatar || "",

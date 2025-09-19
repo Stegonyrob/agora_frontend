@@ -36,6 +36,17 @@ export function useTagsUploadPost() {
       newTags = [];
     }
 
+    // 🚨 LOG CRÍTICO: Detectar llamadas con arrays vacíos
+    if (newTags.length === 0) {
+      console.error(
+        "🚨 [useTagsUploadPost] ALERTA: uploadTagsToPost llamado con array vacío!"
+      );
+      console.error("   📍 PostId:", postId);
+      console.error("   📍 IsNewPost:", isNewPost);
+      console.error("   📍 Stack trace:", new Error().stack);
+      console.error("   📍 Tiempo:", new Date().toISOString());
+    }
+
     try {
       if (!postId || Number.isNaN(postId) || postId < 1) {
         throw new Error("El id del post debe ser un número mayor a 0");
@@ -69,10 +80,35 @@ export function useTagsUploadPost() {
         // Obtener tags actuales del post
         const currentTags = await apiTag.getTagsByPost(postId);
 
+        // 🔍 DEBUG DETALLADO
+        console.log("🔍 [useTagsUploadPost] DEBUGGING TAGS:");
+        console.log(
+          "   📦 Current tags:",
+          currentTags.map((t) => ({ id: t.id, name: t.name }))
+        );
+        console.log(
+          "   🆕 New tags:",
+          newTags.map((t) => ({ id: t.id, name: t.name }))
+        );
+
         // Calcular diferencias
         const { toAdd, toRemove, toKeep } = calculateTagDifferences(
           currentTags,
           newTags
+        );
+
+        // 🔍 DEBUG DIFERENCIAS
+        console.log(
+          "   ➕ To ADD:",
+          toAdd.map((t) => ({ id: t.id, name: t.name }))
+        );
+        console.log(
+          "   ➖ To REMOVE:",
+          toRemove.map((t) => ({ id: t.id, name: t.name }))
+        );
+        console.log(
+          "   ✅ To KEEP:",
+          toKeep.map((t) => ({ id: t.id, name: t.name }))
         );
 
         log.info("useTagsUploadPost - Análisis de cambios:", {

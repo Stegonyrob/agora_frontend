@@ -1,4 +1,3 @@
-import ImageService from "../../../services/ImageService";
 import { logger } from "../../logging/LoggerService";
 import { EventImageRepository } from "./EventImageRepository";
 import { IEventImage } from "./IEventImage";
@@ -13,7 +12,6 @@ import { IEventImage } from "./IEventImage";
  */
 export class EventImageService {
   private eventImageRepo: EventImageRepository;
-  private imageService: ImageService;
 
   // Mapeo de eventos a imágenes de fallback
   private eventImageFallbacks: Record<number, string[]> = {
@@ -25,7 +23,6 @@ export class EventImageService {
 
   constructor() {
     this.eventImageRepo = new EventImageRepository();
-    this.imageService = new ImageService();
   }
 
   /**
@@ -98,17 +95,23 @@ export class EventImageService {
               return image;
             }
 
-            // Priorizar imagePath si está disponible (sin verificar existencia para evitar CORS)
+            // Priorizar imagePath si está disponible (usando EventImageRepository)
             if (image.imagePath) {
-              const filename =
-                image.imagePath.split("/").pop() || image.imagePath;
-              const staticUrl = this.imageService.getImageUrl(filename);
+              const staticUrl = this.eventImageRepo.buildImageUrl(
+                image.imagePath
+              );
+
+              console.log("🖼️ [EventImageService] Generando URL de imagen:", {
+                imageId: image.id,
+                imagePath: image.imagePath,
+                generatedUrl: staticUrl,
+              });
 
               logger.debug(
-                "EventImageService: Usando imagen estática (sin verificación CORS)",
+                "EventImageService: Usando imagen desde EventImageRepository",
                 {
                   imageId: image.id,
-                  filename,
+                  imagePath: image.imagePath,
                   staticUrl,
                 },
                 {
@@ -136,7 +139,7 @@ export class EventImageService {
 
             return {
               ...image,
-              url: this.imageService.getImageUrl("fachada.jpg"),
+              url: this.eventImageRepo.buildImageUrl("fachada.jpg"),
             };
           } catch (error) {
             logger.error(
@@ -154,7 +157,7 @@ export class EventImageService {
             // En caso de error, usar imagen genérica
             return {
               ...image,
-              url: this.imageService.getImageUrl("fachada.jpg"),
+              url: this.eventImageRepo.buildImageUrl("fachada.jpg"),
             };
           }
         })
@@ -209,7 +212,7 @@ export class EventImageService {
       eventId,
       imageName: filename,
       imagePath: `/temp_images/${filename}`,
-      url: this.imageService.getImageUrl(filename),
+      url: this.eventImageRepo.buildImageUrl(filename),
       isMock: true,
       createdAt: new Date().toISOString(),
     });
@@ -263,7 +266,7 @@ export class EventImageService {
       );
 
       // En caso de error, devolver al menos una URL genérica
-      return [this.imageService.getImageUrl("fachada.jpg")];
+      return [this.eventImageRepo.buildImageUrl("fachada.jpg")];
     }
   }
 
@@ -285,15 +288,14 @@ export class EventImageService {
    * Build the URL for accessing an image from imagePath.
    */
   buildImageUrlFromPath(imagePath: string): string {
-    const filename = imagePath.split("/").pop() || imagePath;
-    return this.imageService.getImageUrl(filename);
+    return this.eventImageRepo.buildImageUrl(imagePath);
   }
 
   /**
    * Build the URL for accessing an image by filename (replaces buildImageUrl).
    */
   buildImageUrlFromFilename(filename: string): string {
-    return this.imageService.getImageUrl(filename);
+    return this.eventImageRepo.buildImageUrl(filename);
   }
 }
 

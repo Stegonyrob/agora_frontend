@@ -1,11 +1,11 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
-import EventImageService from "@/core/events/EventImageService";
 import EventService from "@/core/events/EventService";
 import { IEvent } from "@/core/events/IEvent";
 import {
   IEventCreateDTO,
   IEventUpdateDTO,
 } from "@/core/events/IEventBackendDTO";
+import { EventImageService } from "@/core/events/images/EventImageService";
 import { log } from "@/core/logging/LoggerService";
 import { useCallback, useEffect, useState } from "react";
 import { useTagsLoader } from "./useTagsLoader";
@@ -81,7 +81,7 @@ export const useEventForm = ({
           const eventImages = await apiEventImage.getEventImages(event.id);
 
           const existingImages: IImagePreview[] = eventImages.map((img) => ({
-            url: apiEventImage.buildImageUrl(img.id),
+            url: apiEventImage.buildImageUrlFromFilename(img.imageName || ""),
             isLoading: false,
             isExisting: true,
           }));

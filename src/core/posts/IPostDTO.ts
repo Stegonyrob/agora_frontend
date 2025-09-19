@@ -18,7 +18,7 @@ export interface IPostDTO {
   loves: number;
   comments: any[];
   isArchived: boolean;
-  tags: IPostTagDTO[];
+  tags?: IPostTagDTO[]; // ✅ OPCIONAL: Las tags se manejan por separado
   images: IPostImageDTO[];
   isPublished: boolean;
   alt_image: string;

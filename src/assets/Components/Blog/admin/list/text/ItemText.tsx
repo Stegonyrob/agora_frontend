@@ -43,7 +43,7 @@ const ItemText: React.FC<ItemTextProps> = ({
 
             try {
                 setLoadingImages(true);
-                const images = await textImageService.getTextImages(data.id);
+                const images = await textImageService.getImagesByTextId(data.id);
                 setTextImages(images);
             } catch (error) {
                 console.warn(`⚠️ Could not load images for text ${data.id}:`, error);
@@ -59,11 +59,17 @@ const ItemText: React.FC<ItemTextProps> = ({
     // Convertir imágenes de texto a formato string para ItemGeneric
     const processedImages = useMemo(() => {
         return textImages.map(img => {
-            if (img.imageData) {
-                return img.imageData.startsWith('data:')
-                    ? img.imageData
-                    : `data:image/jpeg;base64,${img.imageData}`;
+            // Si hay URL disponible, usarla directamente
+            if (img.url) {
+                return img.url;
             }
+            // Si no hay URL pero hay imagePath, construir la URL
+            if (img.imagePath) {
+                return img.imagePath.startsWith('http')
+                    ? img.imagePath
+                    : `http://localhost:8080${img.imagePath}`;
+            }
+            // Fallback al endpoint de la API
             return `${import.meta.env.VITE_API_ENDPOINT_TEXT_IMAGES || '/api/v1/text-images'}/${img.id}/data`;
         });
     }, [textImages]);

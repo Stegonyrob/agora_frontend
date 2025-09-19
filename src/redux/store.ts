@@ -12,6 +12,7 @@ import legalTextsReducer from "@/core/legals/legalTextStore";
 import postsReducer from "@/core/posts/postStore";
 import profileReducer from "@/core/profiles/profileStore";
 import repliesReducer from "@/core/replies/replyStore";
+import tagsReducer from "@/core/tags/tagStore";
 import textsReducer from "@/core/texts/textStore";
 // Agrega aquí los demás reducers de core que hayas creado
 // Hidrata el estado de sesión desde sessionStorage
@@ -38,6 +39,7 @@ const store = configureStore({
     images: imagesReducer,
     posts: postsReducer,
     profile: profileReducer,
+    tags: tagsReducer,
     texts: textsReducer,
     attendees: attendeesReducer,
     legalTexts: legalTextsReducer,
