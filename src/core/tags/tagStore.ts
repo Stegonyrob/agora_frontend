@@ -197,6 +197,9 @@ export const selectTagsByEvent = createSelector(
   }
 );
 
+// Array vacío constante para evitar re-renders cuando no hay tags
+const EMPTY_TAGS_ARRAY: any[] = [];
+
 // 🎯 SELECTOR GENÉRICO optimizado para evitar re-renders innecesarios
 export const selectTagsByItem = createSelector(
   [
@@ -206,8 +209,13 @@ export const selectTagsByItem = createSelector(
     (state: any, itemId: number, itemType: "post" | "event") => itemType,
   ],
   (postTags, eventTags, itemId, itemType) => {
-    const tags =
-      itemType === "post" ? postTags[itemId] || [] : eventTags[itemId] || [];
+    const tags = itemType === "post" ? postTags[itemId] : eventTags[itemId];
+
+    // Retornar array constante para evitar re-renders cuando está vacío
+    if (!tags || tags.length === 0) {
+      return EMPTY_TAGS_ARRAY;
+    }
+
     console.log(`🎯 [selectTagsByItem] ${itemType} ${itemId}:`, tags);
     return tags;
   }

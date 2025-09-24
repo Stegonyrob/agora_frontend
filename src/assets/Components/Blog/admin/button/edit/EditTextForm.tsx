@@ -1,4 +1,3 @@
-import TextImageService from "@/core/texts/images/TextImageService";
 import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
 import { useEditTextForm } from "@/hooks/useEditTextForm";
 import React from "react";
@@ -28,16 +27,13 @@ const EditTextForm: React.FC<EditTextFormProps> = ({ text, onSubmit, onClose, sh
         submitForm,
         isSubmitting,
         globalError
-    } = useEditTextForm({ show });
-
-    const textImageService = new TextImageService();
+    } = useEditTextForm({ post: text, show });
 
     // Adapter to convert TextPayload to ITextItemDTO before calling onSubmit
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const handleSubmit = (textPayload: any) => {
-            // You should replace this with the actual conversion logic
-            // For now, we assume text has all required fields
+        const handleSubmit = (textPayload: any, files: File[], removedIds: number[]) => {
+            // Seguir el patrón de posts y events
             onSubmit({ ...text, ...textPayload });
         };
         await submitForm(handleSubmit, onClose);
@@ -80,11 +76,10 @@ const EditTextForm: React.FC<EditTextFormProps> = ({ text, onSubmit, onClose, sh
                         <ImagePreviewGrid
                             imagePreviews={imagePreviews}
                             onRemoveImage={handleRemoveImage}
-
                         />
                     </div>
                     <EditTextFormActions
-                        onSubmit={() => { }}
+                        onSubmit={() => { }} // No usado ya que el form maneja el submit
                         onCancel={onClose}
                         isSubmitting={isSubmitting}
                         globalError={globalError}

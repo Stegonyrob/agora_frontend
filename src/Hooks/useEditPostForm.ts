@@ -193,24 +193,34 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           );
         }
 
-        const filesToUpload = imagePreviews
-          .filter((preview) => !preview.isExisting && preview.file)
-          .map((img) => img.file as File);
         const removedIds: number[] = removedImageIds;
 
-        let uploadedNewImages: any[] = [];
-        if (filesToUpload.length > 0) {
-          try {
-            uploadedNewImages = await postImageService.uploadPostImages(
-              post.id,
-              filesToUpload
-            );
-          } catch (uploadError) {
-            console.error("Error al subir imágenes nuevas:", uploadError);
-            throw new Error("Ocurrió un error al subir las imágenes.");
-          }
+        // 1. Eliminar imágenes marcadas para borrado PRIMERO (como en eventos)
+        if (removedIds.length > 0) {
+          console.log(`🗑️ Eliminando ${removedIds.length} imágenes...`);
+          const deletePromises = removedIds.map((imageId) =>
+            postImageService.deletePostImage(imageId)
+          );
+          await Promise.all(deletePromises);
+          console.log("✅ Imágenes eliminadas exitosamente");
         }
 
+        // 2. Subir nuevas imágenes si las hay DESPUÉS (como en eventos)
+        const newImageFiles = imagePreviews
+          .filter((preview) => !preview.isExisting && preview.file)
+          .map((preview) => preview.file!);
+
+        let uploadedNewImages: any[] = [];
+        if (newImageFiles.length > 0) {
+          console.log(`📤 Subiendo ${newImageFiles.length} nuevas imágenes...`);
+          uploadedNewImages = await postImageService.uploadPostImages(
+            post.id,
+            newImageFiles
+          );
+          console.log("✅ Nuevas imágenes subidas exitosamente");
+        }
+
+        // 3. Construir payload de imágenes (como en eventos)
         const finalImagesPayload = imagePreviews
           .filter(
             (img) =>
@@ -229,7 +239,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           });
 
         const newImagesPayload = uploadedNewImages.map((img) => ({
-          id: img.id,
+          id: img.id || undefined,
           imageName: img.imageName,
           postId: post.id,
           mainImage: false,
@@ -298,24 +308,10 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           }
         }
 
-        // Después actualizamos el post con toda la información (excepto tags que ya se subieron)
-        await onSubmit(updatedPost, filesToUpload, removedIds);
-
-        if (removedIds.length > 0) {
-          try {
-            console.info(
-              "[useEditPostForm] Borrando imágenes existentes:",
-              removedIds
-            );
-            // ¡CORRECCIÓN AQUÍ! Llama a la función correcta en un bucle
-            const deletePromises = removedIds.map((id) =>
-              postImageService.deletePostImage(id)
-            );
-            await Promise.all(deletePromises);
-          } catch (deleteError) {
-            console.error("Error al borrar imágenes existentes:", deleteError);
-          }
-        }
+        // 4. Actualizar el post
+        console.log("📝 Actualizando datos del post...");
+        await onSubmit(updatedPost, newImageFiles, removedIds);
+        console.log("✅ Post actualizado exitosamente");
 
         onClose();
       } catch (error) {

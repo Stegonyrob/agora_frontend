@@ -65,7 +65,7 @@ export class EventImageRepository {
       timeout: 30000,
     };
 
-    const response: AxiosResponse<IEventImage[]> = await axios.post(
+    const response: AxiosResponse<IEventImage[]> = await axios.put(
       `${this.baseUri}/upload`,
       formData,
       config

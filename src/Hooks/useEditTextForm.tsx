@@ -1,8 +1,7 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
-import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
 import { ITextImageDTO } from "@/core/texts/images/ITextImageDTO";
-import { TextImageRepository } from "@/core/texts/images/TextImageRepository";
 import TextImageService from "@/core/texts/images/TextImageService";
+import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -11,8 +10,10 @@ import { v4 as uuidv4 } from "uuid";
 export type TextPayload = {
     userId: number;
     title: string;
-    message: string; // Cambiar de description a message
+    message: string;
     images: ITextImageDTO[];
+    isArchived: boolean;
+    isPublished: boolean;
 };
 
 interface UseEditTextFormProps {
@@ -21,54 +22,87 @@ interface UseEditTextFormProps {
 }
 
 export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
-    const [title, setTitle] = useState(post?.title || "");
-    const [description, setDescription] = useState(post?.message || "");
+    const [title, setTitle] = useState("");
+    const [message, setMessage] = useState("");
     const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
+    const [date, setDate] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [globalError, setGlobalError] = useState<string | null>(null);
-    const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
 
     const textImageService = new TextImageService();
-    const textImageRepository = new TextImageRepository();
+    const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
 
     useEffect(() => {
+        console.log("🔄 [useEditTextForm] useEffect ejecutado", {
+            show,
+            post: !!post,
+            postId: post?.id,
+            postTitle: post?.title,
+            postMessage: post?.message
+        });
+
         if (show && post) {
+            console.log("📝 [useEditTextForm] Cargando datos del texto:", {
+                title: post.title,
+                message: post.message,
+                imagesCount: post.images?.length || 0
+            });
+
             setTitle(post.title || "");
-            setDescription(post.message || "");
+            setMessage(post.message || "");
+            setRemovedImageIds([]); if (post.createdAt) {
+                const dateObj = new Date(post.createdAt);
+                const day = dateObj.getDate().toString().padStart(2, "0");
+                const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+                const year = dateObj.getFullYear();
+                setDate(`${day}/${month}/${year}`);
+            } else {
+                setDate("");
+            }
 
-            setRemovedImageIds([]);
-            if (post.images && post.images.length > 0) {
+            // Cargar imágenes desde el servicio (no desde el post)
+            if (post.id && typeof post.id === 'number') {
+                console.log("🖼️ [useEditTextForm] Cargando imágenes desde el servicio para textId:", post.id);
                 const loadImages = async () => {
-                    const previews: IImagePreview[] = post.images.map((img: ITextImageDTO) => {
-                        // Manejar ambos tipos de imagen (legacy ITextImageDTO y nuevo ITextImage)
-                        const hasImagePath = 'imagePath' in img && (img as any).imagePath;
-                        const imageUrl = hasImagePath
-                            ? textImageService.buildImageUrl((img as any).imagePath)
-                            : img.imageName
-                                ? `/images/texts/${img.imageName}`
-                                : '';
+                    try {
+                        const images = await textImageService.getImagesByTextId(post.id!);
+                        console.log("🖼️ [useEditTextForm] Imágenes obtenidas del servicio:", images);
 
-                        return {
-                            url: imageUrl,
+                        const previews: IImagePreview[] = images.map((img) => ({
+                            url: img.url || textImageService.buildImageUrl(img.imagePath),
                             isLoading: false,
                             isExisting: true,
-                            id: img.id,
-                        };
-                    });
-                    setImagePreviews(previews);
+                            id: img.id || undefined,
+                        }));
+
+                        setImagePreviews(previews);
+                        console.log("✅ [useEditTextForm] Preview de imágenes cargado:", previews);
+                    } catch (error) {
+                        console.error("❌ [useEditTextForm] Error cargando imágenes:", error);
+                        setImagePreviews([]);
+                    }
                 };
                 loadImages();
             } else {
+                console.log("📋 [useEditTextForm] No hay imágenes existentes");
                 setImagePreviews([]);
             }
+            setGlobalError(null);
         } else if (!show) {
+            console.log("🧹 [useEditTextForm] Limpiando formulario (show=false)");
             setTitle("");
-            setDescription("");
+            setMessage("");
+            setDate("");
             setImagePreviews([]);
             setRemovedImageIds([]);
             setGlobalError(null);
         }
     }, [post, show]);
+
+    // Debug: Monitorear cambios en title y message
+    useEffect(() => {
+        console.log("📊 [useEditTextForm] Estados actualizados:", { title, description: message });
+    }, [title, message]);
 
     const handleImagesSelected = useCallback((files: File[]) => {
         const newImagePreviews: IImagePreview[] = files.map((file: File) => {
@@ -107,44 +141,62 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
     }, []);
 
     const validateForm = useCallback(() => {
-        if (!title.trim() || !description.trim()) {
+        if (!title.trim() || !message.trim()) {
             throw new Error("Título y mensaje son campos obligatorios.");
         }
         return true;
-    }, [title, description]);
+    }, [title, message]);
 
     const submitForm = useCallback(
-        async (onSubmit: (post: TextPayload) => void, onClose: () => void) => {
+        async (
+            onSubmit: (
+                text: TextPayload & { id: number },
+                files: File[],
+                removedIds: number[]
+            ) => void,
+            onClose: () => void
+        ) => {
             if (isSubmitting) return;
             setIsSubmitting(true);
             setGlobalError(null);
             try {
                 validateForm();
                 const sanitizedTitle = DOMPurify.sanitize(title);
-                const sanitizedDescription = DOMPurify.sanitize(description);
+                const sanitizedMessage = DOMPurify.sanitize(message);
                 if (!post || typeof post.id !== "number") {
                     throw new Error(
-                        "El post original debe tener un id válido para la edición."
+                        "El texto original debe tener un id válido para la edición."
                     );
                 }
 
-                const filesToUpload = imagePreviews
-                    .filter((preview) => !preview.isExisting && preview.file)
-                    .map((img) => img.file as File);
-                const removedIds = removedImageIds;
+                const removedIds: number[] = removedImageIds;
 
-                let uploadedNewImages: any[] = [];
-                if (filesToUpload.length > 0) {
-                    try {
-                        uploadedNewImages = await textImageService.uploadImagesByTextId(
-                            post.id,
-                            filesToUpload
-                        );
-                    } catch (uploadError) {
-                        throw new Error("Ocurrió un error al subir las imágenes.");
-                    }
+                // 1. Eliminar imágenes marcadas para borrado PRIMERO (como en eventos y posts)
+                if (removedIds.length > 0) {
+                    console.log(`🗑️ Eliminando ${removedIds.length} imágenes...`);
+                    const deletePromises = removedIds.map((imageId) =>
+                        textImageService.deleteTextImage(imageId)
+                    );
+                    await Promise.all(deletePromises);
+                    console.log("✅ Imágenes eliminadas exitosamente");
                 }
 
+                // 2. Subir nuevas imágenes si las hay DESPUÉS (como en eventos y posts)
+                const newImageFiles = imagePreviews
+                    .filter((preview) => !preview.isExisting && preview.file)
+                    .map((preview) => preview.file!);
+
+                let uploadedNewImages: any[] = [];
+                if (newImageFiles.length > 0) {
+                    console.log(`📤 Subiendo ${newImageFiles.length} nuevas imágenes...`);
+                    uploadedNewImages = await textImageService.uploadImagesByTextId(
+                        post.id,
+                        newImageFiles
+                    );
+                    console.log("✅ Nuevas imágenes subidas exitosamente");
+                }
+
+                // 3. Construir payload de imágenes (como en eventos y posts)
                 const finalImagesPayload = imagePreviews
                     .filter(
                         (img) =>
@@ -153,52 +205,59 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                             !removedIds.includes(img.id)
                     )
                     .map((img) => {
-                        const postImage = post.images.find((i: any) => i.id === img.id);
+                        const textImage = post.images.find((i: any) => i.id === img.id);
                         return {
                             id: img.id,
-                            imageName: postImage?.imageName || "",
+                            imageName: textImage?.imageName || "",
                             textId: post.id,
+                            category: textImage?.category || "main",
+                            imageType: textImage?.imageType || "jpg",
+                            imageData: textImage?.imageData || "",
                         };
                     });
 
                 const newImagesPayload = uploadedNewImages.map((img) => ({
-                    id: img.id,
+                    id: img.id || undefined,
                     imageName: img.imageName,
-                    postId: post.id,
-                    mainImage: false,
+                    textId: post.id,
+                    category: img.category || "main",
+                    imageType: img.imageType || "jpg",
+                    imageData: img.imageData || "",
                 }));
 
                 const imagesPayload = [...finalImagesPayload, ...newImagesPayload];
 
-                const updatedPost = {
+                const updatedText = {
                     id: post.id,
                     userId: post.userId,
                     title: sanitizedTitle,
-                    message: sanitizedDescription,
+                    message: sanitizedMessage,
                     images: imagesPayload as any,
+                    isArchived: false,
+                    isPublished: true,
                 };
 
-                await onSubmit(updatedPost);
+                console.info("[useEditTextForm][PUT] Payload enviado:", updatedText);
 
-                if (removedIds.length > 0) {
-                    try {
-                        await Promise.all(
-                            removedIds.map((id) =>
-                                textImageRepository.deleteTextImage(id)
-                            )
-                        );
-                    } catch (deleteError) {
-                        console.error("Error al borrar imágenes existentes:", deleteError);
-                    }
-                }
+                // 4. Actualizar el texto
+                console.log("📝 Actualizando datos del texto...");
+                await onSubmit(updatedText, newImageFiles, removedIds);
+                console.log("✅ Texto actualizado exitosamente");
+
+                // 5. Emitir evento personalizado para que otros componentes se actualicen
+                console.log("🔄 Emitiendo evento de actualización de texto...");
+                const updateEvent = new CustomEvent('textUpdated', {
+                    detail: { textId: post.id, action: 'edit' }
+                });
+                window.dispatchEvent(updateEvent);
 
                 onClose();
             } catch (error) {
-                const errorDescription =
+                const errorMessage =
                     error instanceof Error
                         ? error.message
-                        : "Error desconocido al actualizar el post.";
-                setGlobalError(errorDescription);
+                        : "Error desconocido al actualizar el texto.";
+                setGlobalError(errorMessage);
             } finally {
                 setIsSubmitting(false);
             }
@@ -207,20 +266,20 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
             isSubmitting,
             validateForm,
             title,
-            description,
+            message,
             imagePreviews,
+            post,
             removedImageIds,
-            textImageService,
         ]
     );
 
     return {
         title,
         setTitle,
-        description,
-        setDescription,
+        description: message,
+        setDescription: setMessage,
+        date,
         imagePreviews,
-        setImagePreviews,
         isSubmitting,
         globalError,
         handleImagesSelected,

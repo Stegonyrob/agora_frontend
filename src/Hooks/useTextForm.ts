@@ -39,13 +39,13 @@ export const useTextForm = ({
       if (text?.id && show) {
         try {
           // Fetch images from API using TextImageService
-          const textImages = await textImageService.getTextImages(text.id);
+          const textImages = await textImageService.getImagesByTextId(text.id);
           const existingImages: IImagePreview[] = textImages.map(
             (img: any) => ({
-              url: img.imageData || `api/v1/text-images/${img.id}/data`,
+              url: img.url || textImageService.buildImageUrl(img.imagePath),
               isLoading: false,
               isExisting: true,
-              id: img.id, // Use 'id' instead of 'imageId'
+              id: img.id,
             })
           );
 
@@ -194,7 +194,10 @@ export const useTextForm = ({
 
         // Step 2: Upload new images if any
         if (newImageFiles.length > 0 && savedText.id) {
-          await textImageService.uploadTextImages(savedText.id, newImageFiles);
+          await textImageService.uploadImagesByTextId(
+            savedText.id,
+            newImageFiles
+          );
         }
 
         // Crear el objeto texto final
@@ -205,6 +208,16 @@ export const useTextForm = ({
 
         console.log("✅ Texto procesado exitosamente:", resultText);
         await onSubmit(resultText);
+
+        // Emitir evento de actualización
+        console.log("🔄 Emitiendo evento de actualización de texto...");
+        const updateEvent = new CustomEvent("textUpdated", {
+          detail: {
+            textId: resultText.id,
+            action: text?.id ? "edit" : "create",
+          },
+        });
+        window.dispatchEvent(updateEvent);
 
         if (!text?.id) {
           resetForm();

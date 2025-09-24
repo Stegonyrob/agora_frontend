@@ -80,16 +80,16 @@ export default function Footer() {
               </div>
               <ul>
                 <li><a href="/">Inicio</a></li>
-                <li><a href="/Agora">Ágora</a></li>
-                <li><a href="/Services">Servicios</a></li>
-                <li><a href="/Events">Eventos</a></li>
-                <li><a href="/Cea">CEA/TEA</a></li>
-                <li><a href="/Tda_Tdh">Tda/Tdh</a></li>
-                <li><a href="/LearningDifficulties">Dificultades de Aprendizaje</a></li>
-                <li><a href="/Communication">Transtornos de la Comunicación</a></li>
-                <li><a href="/DevelopmentConditions">Condiciones del Desarrollo</a></li>
-                <li><a href="/AboutMe">Sobre mí</a></li>
-                <li><a href="/Blog">Blog</a></li>
+                <li><a href="/agora/agora">Ágora</a></li>
+                <li><a href="/agora/services">Servicios</a></li>
+                <li><a href="/events">Eventos</a></li>
+                <li><a href="/agora/cea">CEA/TEA</a></li>
+                <li><a href="/agora/tda_tdh">Tda/Tdh</a></li>
+                <li><a href="/agora/learning_difficulties">Dificultades de Aprendizaje</a></li>
+                <li><a href="/agora/communication">Transtornos de la Comunicación</a></li>
+                <li><a href="/agora/development_conditions">Condiciones del Desarrollo</a></li>
+                <li><a href="/agora/team">Equipo Profesional</a></li>
+                <li><a href="/blog">Blog</a></li>
 
 
               </ul>

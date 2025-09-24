@@ -1,28 +1,36 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { imageService } from "../../../services/ImageService";
 import { getAuthHeaders } from "../../auth/AuthHeaders";
 import { ITextImage } from "./ITextImage";
 
 export class TextImageRepository {
-  private uri: string =
-    import.meta.env.VITE_API_ENDPOINT_TEXT_IMAGES ||
-    "http://localhost:8080/api/v1/text-images";
+  private baseUri: string = `${
+    import.meta.env.VITE_API_ENDPOINT_GENERAL
+  }/text-images`;
 
   /**
-   * Fetch all images associated with a specific text ID.
-   * Returns normalized response that can be either single object or array
+   * Fetch images by textId using the specific endpoint
    */
-  async getImagesByTextId(textId: number): Promise<ITextImage | ITextImage[]> {
+  async getImagesByTextId(textId: number): Promise<ITextImage[]> {
+    console.log(`🔍 [TextImageRepository] === GET IMAGES ===`);
+    console.log(`🔍 [TextImageRepository] textId:`, textId);
+    console.log(`🔍 [TextImageRepository] URL:`, `${this.baseUri}/${textId}`);
+
     try {
-      const response = await axios.get(`${this.uri}/${textId}`, {
+      const response = await axios.get(`${this.baseUri}/${textId}`, {
         headers: getAuthHeaders(),
         timeout: 15000,
       });
 
-      // Return the raw response data - let the service handle normalization
-      return response.data;
+      console.log(`✅ [TextImageRepository] Respuesta GET:`, response.data);
+      console.log(`✅ [TextImageRepository] Status:`, response.status);
+
+      const result = Array.isArray(response.data) ? response.data : [];
+      console.log(`✅ [TextImageRepository] Resultado final:`, result);
+
+      return result;
     } catch (error: any) {
       // If API fails, return empty array to allow fallback to static images
+      console.error(`❌ [TextImageRepository] Error en GET:`, error);
       console.log(
         `API request failed for text ${textId}, will use static images`
       );
@@ -31,18 +39,47 @@ export class TextImageRepository {
   }
 
   /**
-   * Upload multiple images for a specific post.
+   * Upload multiple images for a specific text using the upload endpoint.
+   * Following the same pattern as PostImage and EventImage.
    */
-  async uploadPostImages(
-    postId: number,
+  async uploadTextImages(
+    textId: number,
     imageFiles: File[]
   ): Promise<ITextImage[]> {
-    const formData = new FormData();
-    formData.append("textId", postId.toString()); // Corrected to match backend's `textId` parameter
+    console.log(`🔍 [TextImageRepository] === UPLOAD DEBUG ===`);
+    console.log(
+      `🔍 [TextImageRepository] textId recibido:`,
+      textId,
+      typeof textId
+    );
+    console.log(
+      `🔍 [TextImageRepository] imageFiles:`,
+      imageFiles.length,
+      "archivos"
+    );
 
-    imageFiles.forEach((file) => {
+    const formData = new FormData();
+    formData.append("textId", textId.toString());
+
+    imageFiles.forEach((file, index) => {
+      console.log(`📎 [TextImageRepository] Archivo ${index + 1}:`, file.name);
       formData.append("files", file);
     });
+
+    // Log exhaustivo del FormData
+    console.log(
+      `📤 [TextImageRepository] FormData keys:`,
+      Array.from(formData.keys())
+    );
+    for (let [key, value] of formData.entries()) {
+      if (typeof value === "string") {
+        console.log(`📤 [TextImageRepository] FormData[${key}]: "${value}"`);
+      } else if (value instanceof File) {
+        console.log(
+          `📤 [TextImageRepository] FormData[${key}]: File(${value.name}, ${value.size} bytes)`
+        );
+      }
+    }
 
     const config: AxiosRequestConfig = {
       headers: {
@@ -52,11 +89,39 @@ export class TextImageRepository {
       timeout: 30000,
     };
 
+    console.log(
+      `📤 [TextImageRepository] URL de envío:`,
+      `${this.baseUri}/upload`
+    );
+    console.log(`📤 [TextImageRepository] Headers:`, config.headers);
+
     const response: AxiosResponse<ITextImage[]> = await axios.post(
-      `${this.uri}/upload`,
+      `${this.baseUri}/upload`,
       formData,
       config
     );
+
+    console.log(
+      `✅ [TextImageRepository] Respuesta del backend:`,
+      response.data
+    );
+    console.log(
+      `✅ [TextImageRepository] Respuesta completa:`,
+      JSON.stringify(response.data, null, 2)
+    );
+
+    // Verificar si la respuesta contiene textId
+    if (Array.isArray(response.data)) {
+      response.data.forEach((img, index) => {
+        console.log(`✅ [TextImageRepository] Imagen ${index + 1}:`, {
+          id: img.id,
+          textId: img.textId,
+          imageName: img.imageName,
+          imagePath: img.imagePath,
+        });
+      });
+    }
+
     return response.data;
   }
 
@@ -65,7 +130,7 @@ export class TextImageRepository {
    */
   async getTextImageById(imageId: number): Promise<ITextImage> {
     const response: AxiosResponse<ITextImage> = await axios.get(
-      `${this.uri}/${imageId}`,
+      `${this.baseUri}/image/${imageId}`,
       {
         headers: getAuthHeaders(),
         timeout: 10000,
@@ -81,26 +146,8 @@ export class TextImageRepository {
     textImageData: Partial<ITextImage>
   ): Promise<ITextImage> {
     const response: AxiosResponse<ITextImage> = await axios.post(
-      this.uri,
+      this.baseUri,
       textImageData,
-      {
-        headers: getAuthHeaders(),
-        timeout: 10000,
-      }
-    );
-    return response.data;
-  }
-
-  /**
-   * Update an existing text image.
-   */
-  async updateTextImage(
-    imageId: number,
-    imageData: Partial<ITextImage>
-  ): Promise<ITextImage> {
-    const response: AxiosResponse<ITextImage> = await axios.put(
-      `${this.uri}/${imageId}`,
-      imageData,
       {
         headers: getAuthHeaders(),
         timeout: 10000,
@@ -113,38 +160,59 @@ export class TextImageRepository {
    * Delete a specific text image by its ID.
    */
   async deleteTextImage(imageId: number): Promise<void> {
-    await axios.delete(`${this.uri}/${imageId}`, {
+    console.log(`🗑️ [TextImageRepository] === DELETE IMAGE ===`);
+    console.log(`🗑️ [TextImageRepository] imageId: ${imageId}`);
+    console.log(
+      `🗑️ [TextImageRepository] URL: ${this.baseUri}/image/${imageId}`
+    );
+
+    await axios.delete(`${this.baseUri}/image/${imageId}`, {
       headers: getAuthHeaders(),
       timeout: 10000,
     });
+
+    console.log(
+      `✅ [TextImageRepository] Imagen ${imageId} borrada exitosamente`
+    );
   }
 
   /**
    * Delete multiple text images by their IDs.
    */
   async deleteMultipleTextImages(imageIds: number[]): Promise<void> {
-    await axios.delete(`${this.uri}/delete-multiple`, {
+    await axios.delete(`${this.baseUri}/delete-multiple`, {
       headers: getAuthHeaders(),
-      data: { imageIds },
+      data: imageIds,
       timeout: 10000,
     });
   }
 
   /**
-   * Build the URL for accessing an image using the static image service
+   * Delete all images for a specific text ID.
    */
-  buildImageUrl(imagePath: string): string {
-    // Extract filename from imagePath (e.g., "/temp_images/fachada.jpg" -> "fachada.jpg")
-    const filename = imagePath.split("/").pop() || imagePath;
-    return imageService.getImageUrl(filename);
+  async deleteAllTextImages(textId: number): Promise<void> {
+    await axios.delete(`${this.baseUri}/${textId}`, {
+      headers: getAuthHeaders(),
+      timeout: 10000,
+    });
   }
 
   /**
-   * Get image URL using the static image service
+   * Build the URL for accessing an image
    */
-  async getImageAsBlob(imagePath: string): Promise<string> {
-    // Extract filename from imagePath
-    const filename = imagePath.split("/").pop() || imagePath;
-    return imageService.getImageUrl(filename);
+  buildImageUrl(imagePath: string): string {
+    if (!imagePath) return "";
+
+    // Si ya es una URL completa, devolverla tal como está
+    if (imagePath.startsWith("http")) {
+      return imagePath;
+    }
+
+    // Construir URL completa desde imagePath
+    const baseUrl = import.meta.env.VITE_API_ENDPOINT_GENERAL.replace(
+      "/api/v1",
+      ""
+    );
+    return `${baseUrl}${imagePath}`;
   }
 }

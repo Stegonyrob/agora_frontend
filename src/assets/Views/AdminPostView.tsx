@@ -56,9 +56,28 @@ const AdminPostView = ({ userId }: { userId: number }) => {
             console.log("🔄 [AdminPostView] Recibiendo post actualizado:", post);
             console.log("🏷️ [AdminPostView] Tags recibidas:", post.tags);
 
-            // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente
+            const postService = new PostService();
+
+            // 🔄 RECARGAR IMÁGENES: Obtener las imágenes actualizadas del backend después de la edición
+            let updatedPostWithImages = { ...post };
+            if (post.id) {
+                try {
+                    console.log("🖼️ [AdminPostView] Recargando imágenes del backend para post:", post.id);
+                    const postWithImages = await postService.getPostById(post.id);
+                    updatedPostWithImages = {
+                        ...post,
+                        images: postWithImages.images || []
+                    };
+                    console.log("✅ [AdminPostView] Imágenes recargadas:", updatedPostWithImages.images.length);
+                } catch (imageError) {
+                    console.warn("⚠️ [AdminPostView] Error recargando imágenes:", imageError);
+                    // Continuar sin imágenes si falla
+                }
+            }
+
+            // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente con las imágenes recargadas
             setFetchedPosts(prev => {
-                const updated = prev.map(p => (p.id === post.id ? { ...p, ...post } : p));
+                const updated = prev.map(p => (p.id === post.id ? { ...p, ...updatedPostWithImages } : p));
                 // 🔄 MANTENER ORDEN: Reordenar después de actualizar para mantener consistencia
                 return sortPostsByDate(updated);
             });
@@ -68,8 +87,6 @@ const AdminPostView = ({ userId }: { userId: number }) => {
                 console.log("🔄 [AdminPostView] Refrescando tags en Redux store para post:", post.id);
                 dispatch(fetchTagsByPost(post.id) as any);
             }
-
-            const postService = new PostService();
             // Crear un DTO limpio del post sin las tags (las tags se manejan separadamente)
             const postDTO: IPostDTO = {
                 id: post.id,

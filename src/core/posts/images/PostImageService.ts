@@ -203,13 +203,6 @@ export class PostImageService {
     return this.postImageRepo.createPostImage(postImageData);
   }
 
-  async updatePostImage(
-    imageId: number,
-    imageData: Partial<IPostImage>
-  ): Promise<IPostImage> {
-    return this.postImageRepo.updatePostImage(imageId, imageData);
-  }
-
   async deletePostImage(imageId: number): Promise<void> {
     return this.postImageRepo.deletePostImage(imageId);
   }

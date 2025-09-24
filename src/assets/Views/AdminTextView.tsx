@@ -36,15 +36,34 @@ const AdminTextView = ({ userId }: { userId: number }) => {
 
     const handleUpdate = async (text: ITextItem) => {
         try {
+            console.log("🔄 [AdminTextView] Recibiendo texto actualizado:", text);
 
-            // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente
+            const textService = new TextService();
+
+            // 🔄 RECARGAR IMÁGENES: Obtener las imágenes actualizadas del backend después de la edición
+            let updatedTextWithImages = { ...text };
+            if (text.id) {
+                try {
+                    console.log("🖼️ [AdminTextView] Recargando imágenes del backend para texto:", text.id);
+                    const textWithImages = await textService.getTextById(text.id);
+                    updatedTextWithImages = {
+                        ...text,
+                        images: textWithImages.images || []
+                    };
+                    console.log("✅ [AdminTextView] Imágenes recargadas:", updatedTextWithImages.images.length);
+                } catch (imageError) {
+                    console.warn("⚠️ [AdminTextView] Error recargando imágenes:", imageError);
+                    // Continuar sin imágenes si falla
+                }
+            }
+
+            // ✅ ACTUALIZACIÓN OPTIMISTA: Actualizar la UI inmediatamente con las imágenes recargadas
             setFetchedTexts(prev => {
-                const updated = prev.map(t => (t.id === text.id ? { ...t, ...text } : t));
+                const updated = prev.map(t => (t.id === text.id ? { ...t, ...updatedTextWithImages } : t));
                 // 🔄 MANTENER ORDEN: Reordenar después de actualizar para mantener consistencia
                 return sortTextsByDate(updated);
             });
 
-            const textService = new TextService();
             // Crear un DTO limpio del texto sin las tags (las tags se manejan separadamente)
             const textDTO: ITextItemDTO = {
                 userId: userId || 0, // Usar el userId del componente

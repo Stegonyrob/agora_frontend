@@ -1,3 +1,4 @@
+import TextImageService from "@/core/texts/images/TextImageService";
 import { useTextsWithImages } from "@/hooks/useTextsWithImages";
 import React, { useMemo } from "react";
 import Button from "react-bootstrap/Button";
@@ -16,6 +17,7 @@ function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>)
 
 const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
   const { texts, loading, error } = useTextsWithImages(category);
+  const textImageService = new TextImageService();
 
   const userConfig = useMemo(() => {
     const userRole = sessionStorage.getItem("role");
@@ -63,12 +65,12 @@ const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
           const firstImage = images[0];
           console.log(`🔍 [CardText] First image data:`, firstImage);
 
-          // Usar la URL si está disponible, sino construir desde imagePath
+          // Usar la URL si está disponible, sino construir usando el servicio
           if (firstImage.url) {
             primaryImage = firstImage.url;
           } else if (firstImage.imagePath) {
-            // Construir URL desde imagePath
-            primaryImage = `http://localhost:8080${firstImage.imagePath}`;
+            // Usar el servicio para construir la URL correctamente
+            primaryImage = textImageService.buildImageUrl(firstImage.imagePath);
           }
         }
 

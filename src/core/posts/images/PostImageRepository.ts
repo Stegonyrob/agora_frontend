@@ -67,7 +67,7 @@ export class PostImageRepository {
       timeout: 30000,
     };
 
-    const response: AxiosResponse<IPostImage[]> = await axios.post(
+    const response: AxiosResponse<IPostImage[]> = await axios.put(
       `${this.baseUri}/upload`,
       formData,
       config
@@ -94,25 +94,6 @@ export class PostImageRepository {
   }
 
   /**
-   * Actualizar una imagen de post (REQUIERE AUTENTICACIÓN)
-   * Endpoint: PUT /api/v1/post-images/{id}
-   */
-  async updatePostImage(
-    imageId: number,
-    imageData: Partial<IPostImage>
-  ): Promise<IPostImage> {
-    const response: AxiosResponse<IPostImage> = await axios.put(
-      `${this.baseUri}/${imageId}`,
-      imageData,
-      {
-        headers: getAuthHeaders(),
-        timeout: 10000,
-      }
-    );
-    return response.data;
-  }
-
-  /**
    * Eliminar una imagen de post (REQUIERE AUTENTICACIÓN)
    * Endpoint: DELETE /api/v1/post-images/{id}
    */
@@ -130,7 +111,7 @@ export class PostImageRepository {
   async deleteMultiplePostImages(imageIds: number[]): Promise<void> {
     await axios.delete(`${this.baseUri}/delete-multiple`, {
       headers: getAuthHeaders(),
-      data: { imageIds },
+      data: imageIds,
       timeout: 10000,
     });
   }

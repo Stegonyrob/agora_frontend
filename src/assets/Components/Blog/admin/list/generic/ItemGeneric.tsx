@@ -1,10 +1,10 @@
+import { createSelector } from '@reduxjs/toolkit';
 import DOMPurify from 'dompurify';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
 import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
-import { selectTagsByItem } from '../../../../../../core/tags/tagStore';
 import type { ITextImage } from '../../../../../../core/texts/images/ITextImage';
 import type { ITextItemDTO } from '../../../../../../core/texts/ITextItemDTO';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
@@ -14,6 +14,10 @@ import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import ImagePreviewGrid from '../../images/ImagePreviewGrid';
 import styles from './ItemGeneric.module.scss';
+
+// Constante para selector vacío - evita recreación en cada render
+const EMPTY_SELECTOR = () => [];
+const EMPTY_TAGS_ARRAY: any[] = [];
 
 
 
@@ -69,23 +73,51 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     const message = data.message ?? propMessage;
     const creationDate = data.creationDate ?? propCreationDate;
 
-    // 🏷️ OBTENER TAGS DESDE REDUX STORE usando selector genérico memoizado
-    const tagsFromStore = useSelector((state: RootState) =>
-        (type === 'post' || type === 'event') && id
-            ? selectTagsByItem(state, id, type)
-            : []
-    );
-
-    // 🐛 DEBUG: Verificar que las tags se cargan desde el store
-    useEffect(() => {
+    // 🏷️ OBTENER TAGS DESDE REDUX STORE usando selector optimizado
+    // Crear selector memoizado específico para esta instancia
+    const memoizedTagSelector = useMemo(() => {
         if ((type === 'post' || type === 'event') && id) {
-            console.log(`🏷️ [ItemGeneric] ${type} ${id} - Tags desde store (genérico):`, tagsFromStore);
+            // Crear un selector específico para este item
+            return createSelector(
+                [(state: RootState) => state.tags],
+                (tagsState) => {
+                    const tags = type === 'post'
+                        ? tagsState.postTags[id]
+                        : tagsState.eventTags[id];
+                    return tags || EMPTY_TAGS_ARRAY;
+                }
+            );
         }
-    }, [type, id, tagsFromStore]);    // Forzar tipado de tags para evitar error TS
+        // Para texto, retornar selector que siempre devuelve array vacío constante
+        return () => EMPTY_TAGS_ARRAY;
+    }, [type, id]);
+
+    const tagsFromStore = useSelector(memoizedTagSelector);
+
+    // Forzar tipado de tags para evitar error TS
     type TagType = { id?: number; name?: string; archived?: boolean } | string;
-    const tags: TagType[] = (type === 'post' || type === 'event')
-        ? tagsFromStore
-        : (Array.isArray(data.tags) ? data.tags : []);
+
+    // 🏷️ MANEJO DE TAGS SEGÚN EL TIPO DE ITEM
+    const tags: TagType[] = useMemo(() => {
+        switch (type) {
+            case 'post':
+            case 'event':
+                // Para posts y eventos, usar tags del Redux store
+                return tagsFromStore || [];
+            case 'text':
+                // Los textos NO tienen tags, siempre retorna array vacío
+                return [];
+            default:
+                return [];
+        }
+    }, [type, tagsFromStore]);
+
+    // 🐛 DEBUG: Verificar que las tags se cargan según el tipo
+    useEffect(() => {
+        if (type !== 'text') {
+            console.log(`🏷️ [ItemGeneric] ${type} ${id} - Tags desde Redux store:`, tags);
+        }
+    }, [type, id, tags]);
     const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);
 
     // Usar el hook moderno useImageLoader con contexto de administración solo para posts y events
