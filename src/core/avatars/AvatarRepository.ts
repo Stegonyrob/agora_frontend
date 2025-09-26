@@ -16,30 +16,21 @@ export const fetchAvatarsForSelector = async () => {
   try {
     const headers = getAuthHeaders();
     if (!headers.Authorization) {
-      console.warn(
-        "⚠️ No se encontró un token de autenticación. Abortando fetchAvatarsForSelector..."
-      );
-      return; // No ejecutar si no hay token
+      return;
     }
-
     const baseURL = import.meta.env.VITE_API_ENDPOINT_AVATARS;
     const response = await axios.get(`${baseURL}/selector`, {
       headers,
     });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      console.error("Unauthorized: Please log in.");
-    }
     throw error;
   }
 };
 
 // Escuchar el evento de login para disparar fetchAvatarsForSelector
 onLogin(() => {
-  fetchAvatarsForSelector()
-    .then((data) => console.log("Avatars fetched successfully:", data))
-    .catch((error) => console.error("Error fetching avatars:", error));
+  fetchAvatarsForSelector();
 });
 
 export class AvatarRepository {
@@ -50,27 +41,16 @@ export class AvatarRepository {
    */
   async getAvatarsForSelector(): Promise<IAvatar[]> {
     const headers = getAuthHeaders();
-    console.log("🔐 AvatarRepository - Headers de autenticación:", headers);
-
     const response = await axios.get(`${this.baseURL}/selector`, {
       headers,
     });
-
-    console.log(
-      "✅ AvatarRepository - Respuesta getAvatarsForSelector:",
-      response.data
-    );
-
-    // Convertir formato del backend al formato del frontend
     const avatars: IAvatar[] = response.data.map((avatar: any) => ({
       id: avatar.id,
       name: avatar.displayName,
-      imagePath: `/images/avatars/${avatar.imageName}`, // Convertir ruta del backend
-      isDefault: false, // Para el selector, ninguno es "default"
+      imagePath: `/images/avatars/${avatar.imageName}`,
+      isDefault: false,
       isCustom: false,
     }));
-
-    console.log("🔄 AvatarRepository - Avatares convertidos:", avatars);
     return avatars;
   }
 
@@ -79,21 +59,9 @@ export class AvatarRepository {
    */
   async getDefaultAvatar(): Promise<IAvatar> {
     const headers = getAuthHeaders();
-    console.log(
-      "🔐 AvatarRepository - Headers de autenticación (default):",
-      headers
-    );
-
     const response = await axios.get(`${this.baseURL}/default`, {
       headers,
     });
-
-    console.log(
-      "✅ AvatarRepository - Respuesta getDefaultAvatar:",
-      response.data
-    );
-
-    // Convertir al formato esperado por el frontend
     const convertedAvatar: IAvatar = {
       id: response.data.id,
       name: response.data.displayName,
@@ -101,11 +69,6 @@ export class AvatarRepository {
       isDefault: response.data.default,
       isCustom: false,
     };
-
-    console.log(
-      "✅ AvatarRepository - Avatar por defecto convertido:",
-      convertedAvatar
-    );
     return convertedAvatar;
   }
 
@@ -144,69 +107,16 @@ export class AvatarRepository {
    * Sube un avatar personalizado
    */
   async uploadCustomAvatar(formData: FormData): Promise<IAvatar> {
-    console.log("📤 AvatarRepository - uploadCustomAvatar iniciado");
-    console.log("📤 AvatarRepository - baseURL:", this.baseURL);
-    console.log("📤 AvatarRepository - FormData entries:");
-
-    // Log detallado del contenido del FormData
-    const entries: string[] = [];
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        entries.push(
-          `${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
-        );
-        console.log(
-          `  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
-        );
-      } else {
-        entries.push(`${key}: ${value}`);
-        console.log(`  ${key}: ${value}`);
-      }
-    }
-
-    console.log(
-      "📤 AvatarRepository - FormData keys:",
-      Array.from(formData.keys())
-    );
-    console.log(
-      "📤 AvatarRepository - FormData has 'file':",
-      formData.has("file")
-    );
-    console.log(
-      "📤 AvatarRepository - FormData get 'file':",
-      formData.get("file")
-    );
-
     const headers = getAuthHeaders();
-    console.log("📤 AvatarRepository - Headers (sin Content-Type):", headers);
-
-    // Verificar que no tengamos Content-Type en headers (debe ser automático para FormData)
     if ("Content-Type" in headers) {
-      console.warn(
-        "⚠️ AvatarRepository - Content-Type detectado en headers, removiendo..."
-      );
       delete headers["Content-Type"];
     }
-
     try {
       const response = await axios.post(`${this.baseURL}/upload`, formData, {
         headers,
       });
-
-      console.log("✅ AvatarRepository - Upload exitoso:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ AvatarRepository - Error en upload:", error);
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "❌ AvatarRepository - Error response:",
-          error.response?.data
-        );
-        console.error(
-          "❌ AvatarRepository - Error status:",
-          error.response?.status
-        );
-      }
       throw error;
     }
   }

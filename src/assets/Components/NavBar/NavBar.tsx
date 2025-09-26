@@ -41,8 +41,7 @@ function NavBar() {
     const userName = userProfile?.firstName
         ? `${userProfile.firstName} ${userProfile.lastName1 || ""}`.trim()
         : sessionUserName;
-    console.log('[NavBar] userName:', userName);
-    console.log('[NavBar] avatarUrl:', avatarUrl);
+
     const isAdmin = sessionStorage.getItem("isAdmin") === "true";
     const handleClick = () => setClick(!click);
     const closeMenu = () => setClick(false);

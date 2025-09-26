@@ -1,4 +1,4 @@
-import type { ITextItem } from '@/core/texts/ITextItem';
+import type { ITextItem } from '@/core/texts/IText';
 import { ITextImage } from '@/core/texts/images/ITextImage';
 import TextImageService from '@/core/texts/images/TextImageService';
 import React, { useEffect, useMemo, useState } from 'react';

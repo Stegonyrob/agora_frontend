@@ -93,9 +93,20 @@ export default class PostRepository {
 
   // Crear un post (solo admin)
   async create(post: IPostDTO): Promise<IPost> {
+    console.log(
+      "🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨\n🔥🔥🔥 [PostRepository][CREATE] MÉTODO EJECUTADO 🔥🔥🔥\n🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨"
+    );
+    console.log(
+      "[PostRepository][CREATE] Payload enviado:",
+      JSON.stringify(post, null, 2)
+    );
     const response = await axios.post(this.uri, post, {
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
     });
+    console.log("[PostRepository][CREATE] Respuesta recibida:", response);
     return response.data;
   }
 

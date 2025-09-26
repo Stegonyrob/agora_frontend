@@ -415,7 +415,37 @@ export default class PostService {
 
   // CRUD (solo admin, el backend valida el rol)
   async createPost(post: IPostDTO): Promise<IPost> {
-    return await this.repository.create(post);
+    console.log(
+      "🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨\n🔥🔥🔥 [PostService][CREATE] MÉTODO EJECUTADO 🔥🔥🔥\n🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨"
+    );
+    console.log("🟢 [PostService][CREATE] Iniciando creación de post...");
+    console.log(
+      "🟢 [PostService][CREATE] Payload recibido:",
+      JSON.stringify(post, null, 2)
+    );
+    if (post.tags) {
+      console.log(
+        "🏷️ [PostService][CREATE] Tags incluidas en payload:",
+        post.tags
+      );
+    } else {
+      console.log(
+        "🏷️ [PostService][CREATE] No se incluyeron tags en el payload"
+      );
+    }
+    if (post.images && post.images.length > 0) {
+      console.log(
+        "🖼️ [PostService][CREATE] Imágenes incluidas en payload:",
+        post.images
+      );
+    } else {
+      console.log(
+        "🖼️ [PostService][CREATE] No se incluyeron imágenes en el payload"
+      );
+    }
+    const result = await this.repository.create(post);
+    console.log("✅ [PostService][CREATE] Post creado exitosamente:", result);
+    return result;
   }
 
   async updatePost(postId: number, post: IPostDTO): Promise<IPost> {
@@ -500,7 +530,11 @@ export default class PostService {
     console.log(
       `📞 [PostService] This will trigger: PUT /api/v1/post-images/${imageId}`
     );
-    return await this.imageService.updatePostImage(imageId, imageData);
+    // Corregido: usar createPostImage, ya que updatePostImage no existe en PostImageService
+    return await this.imageService.createPostImage({
+      id: imageId,
+      ...imageData,
+    });
   }
 
   /**

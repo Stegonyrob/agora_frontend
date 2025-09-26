@@ -1,6 +1,6 @@
 
-import { ITextItem } from "@/core/texts/ITextItem";
-import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
+import { ITextItem } from "@/core/texts/IText";
+import { ITextItemDTO } from "@/core/texts/ITextDTO";
 import TextService from "@/core/texts/TextService";
 import { useEffect, useState } from "react";
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";

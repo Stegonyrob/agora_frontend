@@ -9,12 +9,12 @@ export class EventImageRepository {
 
   /**
    * Obtener todas las imágenes de un evento (PÚBLICO)
-   * Endpoint: GET /api/v1/event-images/event/{eventId}
+   * Endpoint: GET /api/v1/event-images/{eventId}
    */
   async getEventImages(eventId: number): Promise<IEventImage[]> {
     try {
       const response: AxiosResponse<IEventImage[]> = await axios.get(
-        `${this.baseUri}/event/${eventId}`,
+        `${this.baseUri}/${eventId}`,
         { timeout: 10000 }
       );
       return response.data;
@@ -65,7 +65,7 @@ export class EventImageRepository {
       timeout: 30000,
     };
 
-    const response: AxiosResponse<IEventImage[]> = await axios.put(
+    const response: AxiosResponse<IEventImage[]> = await axios.post(
       `${this.baseUri}/upload`,
       formData,
       config

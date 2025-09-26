@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
-import { ITextItem } from "./ITextItem";
-import { ITextItemDTO } from "./ITextItemDTO";
+import { ITextItem } from "./IText";
+import { ITextItemDTO } from "./ITextDTO";
 
 export class TextRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_TEXTS;

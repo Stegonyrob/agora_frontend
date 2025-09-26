@@ -1,59 +1,57 @@
-import React from 'react';
-import { Modal } from 'react-bootstrap';
-import { IPost } from '../../../../../../../core/posts/IPost';
-import { usePostForm } from '../../../../../../../hooks/usePostForm';
-import PostBasicFields from './components/PostBasicFields';
-import PostFormActions from './components/PostFormActions';
-import PostImageManager from './components/PostImageManager';
-import PostTagsField from './components/PostTagsField';
-import styles from './ModalForm.module.scss'; // Usar los mismos estilos que eventos
+import React from "react";
+import { Modal } from "react-bootstrap";
+import { IPost } from "../../../../../../../core/posts/IPost";
+import { usePostForm } from "../../../../../../../hooks/usePostForm";
+import PostBasicFields from "./components/PostBasicFields";
+
+import PostFormActions from "./components/PostFormActions";
+import PostImageManager from "./components/PostImageManager";
+import PostTagsField from "./components/PostTagsField";
+import styles from "./ModalForm.module.scss";
 
 interface PostFormProps {
   post?: IPost;
   onClose: () => void;
   onSubmit: (post: IPost) => Promise<void>;
   show: boolean;
-  userId: number;
-  userName: string;
+  userId?: number;
 }
 
-const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) => {
+const PostForm: React.FC<PostFormProps> = React.memo(({
+  post,
+  onClose,
+  onSubmit,
+  show,
+  userId
+}) => {
   const {
-    title,
-    setTitle,
-    message,
-    setMessage,
+    title, setTitle,
+    message, setMessage,
+    tags, setTags,
     imagePreviews,
-    tags,
-    setTags,
+    isSubmitting,
+    globalError,
     handleImagesSelected,
     handleRemoveImage,
-    submitForm,
-    isSubmitting,
-    globalError
-  } = usePostForm({ post, show });
+    submitForm
+  } = usePostForm({ post: post, show, userId });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     await submitForm(onSubmit, onClose);
   };
 
   return (
-    <Modal
-      size="lg"
-      centered
-      show={show}
-      onHide={onClose}
-      className={styles.modalForm}
-      style={{ zIndex: 10000 }}
-      backdropClassName="custom-backdrop"
-    >
-      <Modal.Header className={styles.modalHeader} closeButton>
-        <Modal.Title className={styles.modalTitle}>
-          {post ? 'Editar Post' : 'Crear Nuevo Post'}
+    <Modal size="lg" show={show} onHide={onClose} className={styles.modalForm} centered style={{ zIndex: 1055 }}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {post ? "✏️ Editar Post" : "🎉 Crear Nuevo Post"}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className={styles.modalBody}>
-        <form>
+      <Modal.Body>
+        <form onSubmit={handleSubmit}>
+          {globalError && <div className={styles.globalError}>{globalError}</div>}
+
           <PostBasicFields
             title={title}
             setTitle={setTitle}
@@ -61,11 +59,12 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
             setMessage={setMessage}
           />
 
+
           <PostImageManager
             imagePreviews={imagePreviews}
             onImagesSelected={handleImagesSelected}
-            onImageSelected={() => { }}
-            onRemoveImage={handleRemoveImage}
+            onImageSelected={() => { }} // Fix: required prop
+            onRemoveImage={(identifier) => handleRemoveImage(typeof identifier === 'number' ? identifier : Number(identifier))}
           />
 
           <PostTagsField
@@ -74,17 +73,14 @@ const PostForm: React.FC<PostFormProps> = ({ post, onClose, onSubmit, show }) =>
           />
 
           <PostFormActions
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-            onClose={onClose}
             isSubmitting={isSubmitting}
-            globalError={globalError}
-            isEditMode={!!post}
+            post={post}
+            onClose={onClose}
           />
         </form>
       </Modal.Body>
     </Modal>
   );
-};
+});
 
 export default PostForm;

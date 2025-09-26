@@ -9,10 +9,10 @@ export class PostImageRepository {
 
   /**
    * Obtener todas las imágenes de un post (REQUIERE AUTENTICACIÓN)
-   * Endpoint: GET /api/v1/post-images/post/{postId}
+   * Endpoint: GET /api/v1/post-images/{postId}
    */
   async getImagesByPostId(postId: number): Promise<IPostImage[]> {
-    const response = await axios.get(`${this.baseUri}/post/${postId}`, {
+    const response = await axios.get(`${this.baseUri}/${postId}`, {
       headers: getAuthHeaders(),
       timeout: 15000,
     });
@@ -67,7 +67,7 @@ export class PostImageRepository {
       timeout: 30000,
     };
 
-    const response: AxiosResponse<IPostImage[]> = await axios.put(
+    const response: AxiosResponse<IPostImage[]> = await axios.post(
       `${this.baseUri}/upload`,
       formData,
       config

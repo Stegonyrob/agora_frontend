@@ -1,7 +1,7 @@
 // src/components/Admin/ListAdmin/ListAdmin.tsx
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
-import type { ITextItem } from '@/core/texts/ITextItem';
+import type { ITextItem } from '@/core/texts/IText';
 import { useEffect, useState } from "react";
 
 import { normalizeItem } from '@/core/normalization/normalizeApiResponse';

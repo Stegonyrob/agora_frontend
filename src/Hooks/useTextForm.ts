@@ -1,6 +1,6 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { log } from "@/core/logging/LoggerService";
-import { ITextItem } from "@/core/texts/ITextItem";
+import { ITextItem } from "@/core/texts/IText";
 import TextService from "@/core/texts/TextService";
 import TextImageService from "@/core/texts/images/TextImageService";
 import { useCallback, useEffect, useMemo, useState } from "react";

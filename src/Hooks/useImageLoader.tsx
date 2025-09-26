@@ -2,7 +2,7 @@ import { IEventImage } from '@/core/events/IEvent';
 import { EventImageService } from '@/core/events/images/EventImageService';
 import { logger } from '@/core/logging/LoggerService';
 import { IPostImage } from '@/core/posts/images/IPostImage';
-import { PostImageRepository } from '@/core/posts/images/PostImageRepository';
+import { PostImageService } from '@/core/posts/images/PostImageService';
 import { useEffect, useState } from 'react';
 
 interface UseImageLoaderResult {
@@ -117,14 +117,14 @@ export const useImageLoader = (
                 }
 
                 if (type === 'post') {
-                    const postImageRepo = new PostImageRepository();
+                    const postImageService = new PostImageService();
 
                     const imagePromises = imageData.map(async (img: any, index: number) => {
                         if (typeof img === 'object' && img !== null && img.id && img.id !== null && !img.isMock) {
                             try {
                                 // Use new imagePath-based system for posts if available
                                 if (img.imagePath) {
-                                    return postImageRepo.buildImageUrl(img.imagePath);
+                                    return postImageService.buildImageUrl(img.imagePath);
                                 }
 
                                 // If no imagePath but has imageName, try static image

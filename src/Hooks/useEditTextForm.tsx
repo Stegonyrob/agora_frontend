@@ -1,7 +1,7 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { ITextImageDTO } from "@/core/texts/images/ITextImageDTO";
 import TextImageService from "@/core/texts/images/TextImageService";
-import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
+import { ITextItemDTO } from "@/core/texts/ITextDTO";
 import DOMPurify from "dompurify";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";

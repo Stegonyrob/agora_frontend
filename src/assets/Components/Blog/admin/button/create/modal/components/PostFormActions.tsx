@@ -1,22 +1,21 @@
+import { IPost } from '@/core/posts/IPost';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import styles from '../ModalForm.module.scss'; // Usar los mismos estilos que eventos
 
 interface PostFormActionsProps {
-    onSubmit: () => void;
-    onCancel: () => void;
+
     isSubmitting?: boolean;
     globalError?: string | null;
-    isEditMode?: boolean;
+    post?: IPost
     onClose: () => void;
 }
 
 const PostFormActions: React.FC<PostFormActionsProps> = ({
-    onSubmit,
-    onCancel,
+    post,
     isSubmitting = false,
     globalError = null,
-    isEditMode = false,
+
     onClose
 }) => {
     return (
@@ -37,10 +36,10 @@ const PostFormActions: React.FC<PostFormActionsProps> = ({
                 {isSubmitting ? (
                     <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {event ? "Actualizando..." : "Creando..."}
+                        {post ? "Actualizando..." : "Creando..."}
                     </>
                 ) : (
-                    event ? "💾 Actualizar Post" : "🎉 Crear Post"
+                    post ? "💾 Actualizar Post" : "🎉 Crear Post"
                 )}
             </Button>
         </div>

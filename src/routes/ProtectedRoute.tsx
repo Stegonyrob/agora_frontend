@@ -9,7 +9,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
     const { role: loggedUserRole, isLoggedIn } = useSelector(selectSession);
 
-    console.log("isLoggedIn:", isLoggedIn);
 
     // Si no está autenticado, redirige a /login
     return isLoggedIn ? element : <Navigate to="/login" replace />;

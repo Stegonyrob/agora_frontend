@@ -1,6 +1,6 @@
 import { ITextImage } from "./images/ITextImage";
 
-export interface ITextItem {
+export interface IText {
   id: number;
   title: string;
   category: string; // NUEVO: categoría fija

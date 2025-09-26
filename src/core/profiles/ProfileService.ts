@@ -15,7 +15,6 @@ export default class ProfileService {
    * Obtener perfil por ID - Público
    */
   async getProfileById(id: number): Promise<IProfile> {
-    console.log("[ProfileService] getProfileById:", id);
     return await this.repository.getById(id);
   }
 

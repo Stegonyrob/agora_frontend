@@ -1,4 +1,4 @@
-import { ITextItem } from "@/core/texts/ITextItem";
+import { ITextItem } from "@/core/texts/IText";
 import TextService from "@/core/texts/TextService";
 import { ITextImage } from "@/core/texts/images/ITextImage";
 import TextImageService from "@/core/texts/images/TextImageService";

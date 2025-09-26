@@ -1,12 +1,11 @@
-import { ITextItem } from '@/core/texts/ITextItem';
+import IText from '@/core/texts/IText';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import styles from '../ModalForm.module.scss';
-
 interface TextFormActionsProps {
 
     isSubmitting: boolean;
-    text?: ITextItem;
+    text?: IText;
     onClose: () => void;
 }
 
@@ -33,7 +32,7 @@ const TextFormActions: React.FC<TextFormActionsProps> = ({
                 {isSubmitting ? (
                     <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {event ? "Actualizando..." : "Creando..."}
+                        {text ? "Actualizando..." : "Creando..."}
                     </>
                 ) : (
                     text ? "💾 Actualizar Texto" : "🎉 Crear Texto"

@@ -25,6 +25,11 @@ const TagSelector: React.FC<TagSelectorProps> = ({
         }
     }, [selectedTags]);
 
+    // Cargar tags disponibles del backend SOLO una vez al montar
+    useEffect(() => {
+        loadAvailableTags();
+    }, []);
+
     // Normaliza las tags: si existe en availableTags, devuelve {id, name}, si es nueva solo {name}
     const normalizeTagsToObjects = (tags: any[]): IEventTag[] => {
         return tags.map(tag => {
@@ -41,11 +46,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
     const [filteredTags, setFilteredTags] = useState<ITag[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Cargar tags disponibles del backend
-    useEffect(() => {
-        loadAvailableTags();
-        console.log("📦 useEffect - Cargando tags disponibles", loadAvailableTags());
-    }, []);
+
 
     // Filtrar tags basado en el input del usuario
     useEffect(() => {

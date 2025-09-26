@@ -7,9 +7,7 @@ const service = new AvatarService();
 export const fetchAvatarsForSelector = createAsyncThunk(
   "avatars/fetchAvatarsForSelector",
   async () => {
-    console.log("🔄 Redux - fetchAvatarsForSelector iniciado");
     const result = await service.getAvatarsForSelector();
-    console.log("✅ Redux - fetchAvatarsForSelector completado:", result);
     return result;
   }
 );
@@ -17,9 +15,7 @@ export const fetchAvatarsForSelector = createAsyncThunk(
 export const fetchDefaultAvatar = createAsyncThunk(
   "avatars/fetchDefaultAvatar",
   async () => {
-    console.log("🔄 Redux - fetchDefaultAvatar iniciado");
     const result = await service.getDefaultAvatar();
-    console.log("✅ Redux - fetchDefaultAvatar completado:", result);
     return result;
   }
 );
@@ -76,26 +72,17 @@ const avatarsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAvatarsForSelector.fulfilled, (state, action) => {
-        console.log(
-          "✅ Redux - fetchAvatarsForSelector.fulfilled:",
-          action.payload
-        );
         state.avatars = action.payload;
         state.isLoaded = true;
       })
       .addCase(fetchAvatarsForSelector.rejected, (state, action) => {
-        console.log(
-          "❌ Redux - fetchAvatarsForSelector.rejected:",
-          action.error
-        );
         state.isLoaded = true;
       })
       .addCase(fetchDefaultAvatar.fulfilled, (state, action) => {
-        console.log("✅ Redux - fetchDefaultAvatar.fulfilled:", action.payload);
         state.defaultAvatar = action.payload;
       })
       .addCase(fetchDefaultAvatar.rejected, (state, action) => {
-        console.log("❌ Redux - fetchDefaultAvatar.rejected:", action.error);
+        // No log
       })
       .addCase(fetchAvatarById.fulfilled, (state, action) => {
         const existingIndex = state.avatars.findIndex(

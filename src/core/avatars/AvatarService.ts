@@ -12,7 +12,6 @@ export default class AvatarService {
    * Obtiene todos los avatares disponibles para el selector
    */
   async getAvatarsForSelector(): Promise<IAvatar[]> {
-    console.log("🔄 AvatarService - Obteniendo avatares del backend...");
     return await this.repository.getAvatarsForSelector();
   }
 

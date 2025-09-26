@@ -1,4 +1,4 @@
-import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
+import { ITextItemDTO } from "@/core/texts/ITextDTO";
 import { useEditTextForm } from "@/hooks/useEditTextForm";
 import React from "react";
 import { Modal } from "react-bootstrap";

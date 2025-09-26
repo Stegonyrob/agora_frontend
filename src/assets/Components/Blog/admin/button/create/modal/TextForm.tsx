@@ -1,4 +1,4 @@
-import { ITextItem } from "@/core/texts/ITextItem";
+import { ITextItem } from "@/core/texts/IText";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useTextForm } from "../../../../../../../hooks/useTextForm";

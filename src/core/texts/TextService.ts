@@ -1,5 +1,5 @@
-import { ITextItem } from "./ITextItem";
-import { ITextItemDTO } from "./ITextItemDTO";
+import { ITextItem } from "./IText";
+import { ITextItemDTO } from "./ITextDTO";
 import { TextRepository } from "./TextRepository";
 
 export default class TextService {
@@ -10,13 +10,7 @@ export default class TextService {
   }
 
   async getAllTexts(): Promise<ITextItem[]> {
-    console.log("TextService: getAllTexts");
-    console.log("TextService: getAllTexts: calling repository.getAll()");
     const texts = await this.repository.getAll();
-    console.log(
-      "TextService: getAllTexts: received texts from repository",
-      texts
-    );
     return texts;
   }
 

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ITextItem } from "./ITextItem";
-import { ITextItemDTO } from "./ITextItemDTO";
+import { ITextItem } from "./IText";
+import { ITextItemDTO } from "./ITextDTO";
 import TextService from "./TextService";
 
 const service = new TextService();

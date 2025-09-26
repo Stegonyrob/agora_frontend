@@ -110,6 +110,7 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
               };
             }
           );
+          console.log("[useEditPostForm] Previews generados:", previews);
           setImagePreviews(previews);
         };
         loadImages();
@@ -253,13 +254,17 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
           title: sanitizedTitle,
           message: sanitizedMessage,
           location: post.location || "",
-          // ❌ REMOVIDO: tags: tags, - Las tags se gestionan por separado
+
           images: imagesPayload as any,
           isArchived: post.isArchived ?? false,
           isPublished: post.isPublished ?? true,
         };
 
-        console.info("[useEditPostForm][PUT] Payload enviado:", updatedPost);
+        console.log(
+          "%c[useEditPostForm][PUT] PAYLOAD ENVIADO:",
+          "color: #22c55e; font-weight: bold; background: #e6ffe6; padding: 2px 6px; border-radius: 4px;",
+          updatedPost
+        );
 
         // Primero subimos las tags usando el servicio optimizado
         if (post.id) {
@@ -311,7 +316,19 @@ export const useEditPostForm = ({ post, show }: UseEditPostFormProps) => {
         // 4. Actualizar el post
         console.log("📝 Actualizando datos del post...");
         await onSubmit(updatedPost, newImageFiles, removedIds);
+        console.log("[useEditPostForm] onSubmit() llamado con:", {
+          updatedPost,
+          newImageFiles,
+          removedIds,
+        });
         console.log("✅ Post actualizado exitosamente");
+
+        // 5. Emitir evento personalizado para que otros componentes se actualicen
+        console.log("🔄 Emitiendo evento de actualización de post...");
+        const updateEvent = new CustomEvent("postUpdated", {
+          detail: { postId: post.id, action: "edit" },
+        });
+        window.dispatchEvent(updateEvent);
 
         onClose();
       } catch (error) {

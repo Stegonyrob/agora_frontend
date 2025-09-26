@@ -49,6 +49,46 @@ const AdminPostView = ({ userId }: { userId: number }) => {
         fetchPosts();
     }, [dispatch]);
 
+    // 🎧 ESCUCHAR EVENTOS: Escuchar eventos de actualización de posts
+    useEffect(() => {
+        const handlePostUpdate = (event: CustomEvent) => {
+            const { postId, action } = event.detail;
+            console.log(`🎧 [AdminPostView] Evento recibido: postUpdated para postId=${postId}, action=${action}`);
+
+            if (action === 'create') {
+                console.log(`🔄 [AdminPostView] Post creado, refrescando lista completa...`);
+                // Para posts nuevos, refrescar toda la lista para asegurar orden correcto
+                const fetchPosts = async () => {
+                    try {
+                        const postService = new PostService();
+                        const page = await postService.getAllPosts(0, 100);
+                        const posts = page?.content ?? [];
+                        const sortedPosts = sortPostsByDate(posts);
+                        setFetchedPosts(sortedPosts);
+
+                        // Cargar tags para posts nuevos
+                        for (const post of sortedPosts) {
+                            if (post.id) {
+                                dispatch(fetchTagsByPost(post.id) as any);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("❌ Error refrescando posts:", error);
+                    }
+                };
+                fetchPosts();
+            }
+        };
+
+        // Agregar listener para eventos de actualización
+        window.addEventListener('postUpdated', handlePostUpdate as EventListener);
+
+        // Cleanup
+        return () => {
+            window.removeEventListener('postUpdated', handlePostUpdate as EventListener);
+        };
+    }, [dispatch, sortPostsByDate]);
+
     const handleSelect = (item: IPost) => setSelectedPost(item);
 
     const handleUpdate = async (post: IPost) => {

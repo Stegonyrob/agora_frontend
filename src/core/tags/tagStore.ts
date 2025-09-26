@@ -26,12 +26,7 @@ export const fetchPopularTags = createAsyncThunk(
 export const fetchTagsByPost = createAsyncThunk(
   "tags/fetchTagsByPost",
   async (postId: number) => {
-    console.log(`🏷️ [tagStore] fetchTagsByPost llamado para post ${postId}`);
     const tags = await service.getTagsByPost(postId);
-    console.log(
-      `🏷️ [tagStore] fetchTagsByPost resultado para post ${postId}:`,
-      tags
-    );
     return tags;
   }
 );
@@ -39,12 +34,7 @@ export const fetchTagsByPost = createAsyncThunk(
 export const fetchTagsByEvent = createAsyncThunk(
   "tags/fetchTagsByEvent",
   async (eventId: number) => {
-    console.log(`🏷️ [tagStore] fetchTagsByEvent llamado para event ${eventId}`);
     const tags = await service.getTagsByEvent(eventId);
-    console.log(
-      `🏷️ [tagStore] fetchTagsByEvent resultado para event ${eventId}:`,
-      tags
-    );
     return tags;
   }
 );
@@ -52,16 +42,6 @@ export const fetchTagsByEvent = createAsyncThunk(
 export const updatePostTags = createAsyncThunk(
   "tags/updatePostTags",
   async ({ postId, tags }: { postId: number; tags: ITag[] }) => {
-    console.log(
-      `🚨🚨 [tagStore] updatePostTags LLAMADO - Post ${postId}:`,
-      tags
-    );
-    if (tags.length === 0) {
-      console.error(
-        `❌❌ [tagStore] ¡ARRAY VACÍO! updatePostTags llamado con array vacío para post ${postId}`
-      );
-      console.trace("Stack trace del updatePostTags con array vacío:");
-    }
     await service.replaceTagsInPost(postId, tags);
     return { postId, tags };
   }
@@ -70,16 +50,6 @@ export const updatePostTags = createAsyncThunk(
 export const updateEventTags = createAsyncThunk(
   "tags/updateEventTags",
   async ({ eventId, tags }: { eventId: number; tags: ITag[] }) => {
-    console.log(
-      `🚨🚨 [tagStore] updateEventTags LLAMADO - Event ${eventId}:`,
-      tags
-    );
-    if (tags.length === 0) {
-      console.error(
-        `❌❌ [tagStore] ¡ARRAY VACÍO! updateEventTags llamado con array vacío para evento ${eventId}`
-      );
-      console.trace("Stack trace del updateEventTags con array vacío:");
-    }
     await service.replaceTagsInEvent(eventId, tags);
     return { eventId, tags };
   }
@@ -142,34 +112,18 @@ const tagsSlice = createSlice({
       })
       .addCase(fetchTagsByPost.fulfilled, (state, action) => {
         const postId = action.meta.arg;
-        console.log(
-          `🏷️ [tagStore] fetchTagsByPost.fulfilled - Post ${postId}:`,
-          action.payload
-        );
         state.postTags[postId] = action.payload;
       })
       .addCase(fetchTagsByEvent.fulfilled, (state, action) => {
         const eventId = action.meta.arg;
-        console.log(
-          `🏷️ [tagStore] fetchTagsByEvent.fulfilled - Event ${eventId}:`,
-          action.payload
-        );
         state.eventTags[eventId] = action.payload;
       })
       .addCase(updatePostTags.fulfilled, (state, action) => {
         const { postId, tags } = action.payload;
-        console.log(
-          `🏷️ [tagStore] updatePostTags.fulfilled - Post ${postId}:`,
-          tags
-        );
         state.postTags[postId] = tags;
       })
       .addCase(updateEventTags.fulfilled, (state, action) => {
         const { eventId, tags } = action.payload;
-        console.log(
-          `🏷️ [tagStore] updateEventTags.fulfilled - Event ${eventId}:`,
-          tags
-        );
         state.eventTags[eventId] = tags;
       });
   },
@@ -180,7 +134,6 @@ export const selectTagsByPost = createSelector(
   [(state: any) => state.tags.postTags, (state: any, postId: number) => postId],
   (postTags, postId) => {
     const tags = postTags[postId] || [];
-    console.log(`🎯 [selectTagsByPost] Post ${postId}:`, tags);
     return tags;
   }
 );
@@ -192,7 +145,6 @@ export const selectTagsByEvent = createSelector(
   ],
   (eventTags, eventId) => {
     const tags = eventTags[eventId] || [];
-    console.log(`🎯 [selectTagsByEvent] Event ${eventId}:`, tags);
     return tags;
   }
 );
@@ -210,13 +162,9 @@ export const selectTagsByItem = createSelector(
   ],
   (postTags, eventTags, itemId, itemType) => {
     const tags = itemType === "post" ? postTags[itemId] : eventTags[itemId];
-
-    // Retornar array constante para evitar re-renders cuando está vacío
     if (!tags || tags.length === 0) {
       return EMPTY_TAGS_ARRAY;
     }
-
-    console.log(`🎯 [selectTagsByItem] ${itemType} ${itemId}:`, tags);
     return tags;
   }
 );

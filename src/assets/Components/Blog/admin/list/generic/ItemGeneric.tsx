@@ -6,7 +6,7 @@ import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
 import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
 import type { ITextImage } from '../../../../../../core/texts/images/ITextImage';
-import type { ITextItemDTO } from '../../../../../../core/texts/ITextItemDTO';
+import type { ITextItemDTO } from '../../../../../../core/texts/ITextDTO';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
 import type { RootState } from '../../../../../../redux/store';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
@@ -115,7 +115,6 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     // 🐛 DEBUG: Verificar que las tags se cargan según el tipo
     useEffect(() => {
         if (type !== 'text') {
-            console.log(`🏷️ [ItemGeneric] ${type} ${id} - Tags desde Redux store:`, tags);
         }
     }, [type, id, tags]);
     const archived = typeof data.archived === 'boolean' ? data.archived : (propIsArchived ?? false);

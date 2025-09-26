@@ -1,4 +1,4 @@
-import { ITextItem } from "@/core/texts/ITextItem";
+import { ITextItem } from "@/core/texts/IText";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 

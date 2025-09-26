@@ -15,6 +15,7 @@ import { PostImageRepository } from "./PostImageRepository";
 export class PostImageService {
   private postImageRepo: PostImageRepository;
   private imageService: ImageService;
+  static buildImageUrlFromFilename: any;
 
   constructor() {
     this.postImageRepo = new PostImageRepository();
@@ -212,10 +213,17 @@ export class PostImageService {
   }
 
   /**
-   * Legacy methods para compatibilidad
-   * @deprecated Usar getPostImagesWithUrls en su lugar
+   * Construir URL para imagen física basada en imagePath
    */
-  buildImageUrl(imageId: number): string {
+  buildImageUrl(imagePath: string): string {
+    return this.postImageRepo.buildImageUrl(imagePath);
+  }
+
+  /**
+   * Legacy methods para compatibilidad con IDs
+   * @deprecated Usar buildImageUrl(imagePath) en su lugar
+   */
+  buildImageUrlLegacy(imageId: number): string {
     return this.postImageRepo.buildImageUrlLegacy(imageId);
   }
 

@@ -1,5 +1,5 @@
 
-import { ITextItemDTO } from "@/core/texts/ITextItemDTO";
+import { ITextItemDTO } from "@/core/texts/ITextDTO";
 import DOMPurify from "dompurify";
 import React, { useState } from "react";
 import { IEvent } from "../../../../../../core/events/IEvent";

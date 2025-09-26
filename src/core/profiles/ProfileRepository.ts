@@ -29,7 +29,6 @@ export class ProfileRepository {
     const res = await axios.get(`${this.profileBaseUri}/${id}`, {
       headers: getAuthHeaders(),
     });
-    console.log("🔍 ProfileRepository.getById - Raw response:", res.data);
     return this.mapProfileResponse(res.data);
   }
 
@@ -147,7 +146,6 @@ export class ProfileRepository {
     if (profileData.avatarId && !profileData.avatar_id) {
       profileData.avatar_id = profileData.avatarId;
     }
-    console.log("🔍 ProfileRepository - Mapped profile:", profileData);
     return profileData;
   }
 

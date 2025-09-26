@@ -80,7 +80,8 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
                     <EventImageManager
                         imagePreviews={imagePreviews}
                         onImagesSelected={handleImagesSelected}
-                        onRemoveImage={handleRemoveImage}
+
+                        onRemoveImage={(identifier) => handleRemoveImage(typeof identifier === 'number' ? identifier : Number(identifier))}
                     />
 
                     <EventTagsField
