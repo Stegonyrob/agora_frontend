@@ -1,7 +1,7 @@
 // src/components/Admin/ListAdmin/ListAdmin.tsx
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
-import type { ITextItem } from '@/core/texts/IText';
+import type { IText } from '@/core/texts/IText';
 import { useEffect, useState } from "react";
 
 import { normalizeItem } from '@/core/normalization/normalizeApiResponse';
@@ -39,13 +39,13 @@ interface ListAdminPropsEvent {
 }
 
 interface ListAdminPropsText {
-    items: ITextItem[];
+    items: IText[];
     type: 'text';
-    onSelect: (item: ITextItem) => void;
+    onSelect: (item: IText) => void;
     onDelete: (id: number) => Promise<void>;
-    onEdit: (item: ITextItem) => void;
-    onSubmit: (item: ITextItem) => void;
-    onCreate: (newItem: Partial<ITextItem>) => Promise<void>;
+    onEdit: (item: IText) => void;
+    onSubmit: (item: IText) => void;
+    onCreate: (newItem: Partial<IText>) => Promise<void>;
     userId: number;
     filterCategory?: string;
 }
@@ -67,12 +67,12 @@ const ListAdmin = (props: ListAdminProps) => {
     } = props as ListAdminPropsPost & ListAdminPropsEvent & ListAdminPropsText;
 
     // Explicitly type items based on the type prop
-    const items: IPost[] | IEvent[] | ITextItem[] =
+    const items: IPost[] | IEvent[] | IText[] =
         type === 'post'
             ? (props.items as IPost[])
             : type === 'event'
                 ? (props.items as IEvent[])
-                : (props.items as ITextItem[]);
+                : (props.items as IText[]);
 
     // Estado local para manejar la carga. Asume que está cargando si no hay items.
     // En una aplicación real, probablemente pasarías un prop 'isLoading' desde el padre.
@@ -95,7 +95,7 @@ const ListAdmin = (props: ListAdminProps) => {
     const normalizedItems = items.map(item => normalizeItem(item));
     // Filtrado por categoría para textos
     const filteredItems = (type === 'text' && 'filterCategory' in props && props.filterCategory)
-        ? normalizedItems.filter(item => (item as ITextItem).category === props.filterCategory)
+        ? normalizedItems.filter(item => (item as IText).category === props.filterCategory)
         : normalizedItems;
 
     // Si está cargando, renderiza el esqueleto
@@ -150,7 +150,7 @@ const ListAdmin = (props: ListAdminProps) => {
                         title={item.title}
                     />
                 ))}
-                {type === 'text' && (filteredItems as ITextItem[]).map(text => (
+                {type === 'text' && (filteredItems as IText[]).map(text => (
                     <ItemText
                         key={text.id}
                         text={text}

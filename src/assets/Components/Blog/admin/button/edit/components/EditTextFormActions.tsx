@@ -2,14 +2,14 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import styles from '../EditModalForm.module.scss';
 
-interface EditPostFormActionsProps {
+interface EditTextFormActionsProps {
     onSubmit: () => void;
     onCancel: () => void;
     isSubmitting?: boolean;
     globalError?: string | null;
 }
 
-const EditPostFormActions: React.FC<EditPostFormActionsProps> = ({
+const EditTextFormActions: React.FC<EditTextFormActionsProps> = ({
     onSubmit,
     onCancel,
     isSubmitting = false,
@@ -55,4 +55,4 @@ const EditPostFormActions: React.FC<EditPostFormActionsProps> = ({
     );
 };
 
-export default EditPostFormActions;
+export default EditTextFormActions;

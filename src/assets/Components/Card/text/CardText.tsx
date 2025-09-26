@@ -1,6 +1,7 @@
+import EditTextForm from "@/assets/Components/Blog/admin/button/edit/EditTextForm";
 import TextImageService from "@/core/texts/images/TextImageService";
 import { useTextsWithImages } from "@/hooks/useTextsWithImages";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import styles from "./CardText.module.scss";
@@ -11,13 +12,16 @@ interface CardTextProps {
 
 function handleImgLoadingError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
   const failedSrc = e.currentTarget.src;
-  console.error('🔍 [CardText] Image loading failed:', failedSrc);
+  console.error('  [CardText] Image loading failed:', failedSrc);
   e.currentTarget.src = "/images/agoraLogo.png";
+  e.currentTarget.dataset.editable = "false";
 }
 
 const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
   const { texts, loading, error } = useTextsWithImages(category);
   const textImageService = new TextImageService();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editText, setEditText] = useState<any | null>(null);
 
   const userConfig = useMemo(() => {
     const userRole = sessionStorage.getItem("role");
@@ -98,17 +102,36 @@ const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
                     : text.message}
                 </Card.Text>
                 {userConfig.isAdmin && !userConfig.viewAsUser && (
-                  <Button
-                    variant="primary"
-                  >
-                    Editar
-                  </Button>
+                  <>
+
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => {
+                        window.location.href = '/admin/texts';
+                      }}
+                    >
+                      Ir a edición
+                    </Button>
+                  </>
                 )}
               </Card.Body>
             </div>
           </div>
         );
       })}
+      {showEditModal && (
+        <EditTextForm
+          text={editText}
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSubmit={(updatedText) => {
+            console.log("📝 [CardText] Texto actualizado:", updatedText);
+            setShowEditModal(false);
+
+
+          }}
+        />
+      )}
     </>
   );
 });

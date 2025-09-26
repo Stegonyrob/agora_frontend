@@ -1,4 +1,4 @@
-import type { ITextItem } from '@/core/texts/IText';
+import type { IText } from '@/core/texts/IText';
 import { ITextImage } from '@/core/texts/images/ITextImage';
 import TextImageService from '@/core/texts/images/TextImageService';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -7,13 +7,13 @@ import ItemGeneric from '../generic/ItemGeneric';
 interface ItemTextProps {
     id: number;
     title: string;
-    text: ITextItem;
-    onEdit: (text: ITextItem) => void;
+    text: IText;
+    onEdit: (text: IText) => void;
     onDelete: (textId: number) => Promise<void>;
-    onSelect: (text: ITextItem) => void;
-    onSubmit: (text: ITextItem) => void;
+    onSelect: (text: IText) => void;
+    onSubmit: (text: IText) => void;
     userId: number;
-    onCreate: (newText: ITextItem) => Promise<void>;
+    onCreate: (newText: IText) => Promise<void>;
 }
 
 const ItemText: React.FC<ItemTextProps> = ({
@@ -102,7 +102,7 @@ const ItemText: React.FC<ItemTextProps> = ({
     }, [data.id]);
 
     // Handler mejorado para onCreate que incluye recarga
-    const handleOnCreate = async (newText: ITextItem) => {
+    const handleOnCreate = async (newText: IText) => {
         try {
             await onCreate(newText);
             // Después de cualquier operación de creación/edición, refrescar imágenes
