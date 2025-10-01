@@ -46,7 +46,15 @@ import AdminUsersView from "./assets/Views/AdminUsersView";
 import EventsView from "./assets/Views/EventsView";
 import LegalTextView from "./assets/Views/LegalTextView";
 
+import { es } from 'date-fns/locale';
+import { registerLocale, setDefaultLocale } from 'react-datepicker';
+// date-fns
+// or for dayjs
+// or for luxon
+// or for moment
 
+registerLocale('es', es);
+setDefaultLocale('es');
 
 
 
@@ -229,6 +237,7 @@ const App: React.FC = () => {
       </SWRConfig>
     </ErrorBoundary>
   );
+
 };
 
 export default App;

@@ -84,10 +84,10 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                         <CardItemSkeleton key={index} type="post" />
                     ))
                 ) : (
-                    // Muestra los posts reales cuando cargan
-                    fetchedPosts.map((post) => {
-                        console.log('[PostList] Renderizando CardItem con post.images:', post.images || post.image);
-                        return (
+                    // Muestra solo los posts no archivados
+                    fetchedPosts
+                        .filter(post => !post.isArchived && !post.archived)
+                        .map((post) => (
                             <CardItem
                                 key={post.id}
                                 type="post"
@@ -97,17 +97,16 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                                 creationDate={post.creationDate}
                                 lovesCount={post.favoritesCount ?? 0}
                                 commentsCount={post.commentsCount ?? 0}
-                                images={post.images || post.image} // Usar images (nuevo) o image (legacy) para compatibilidad
-                                tags={mapTagsForCardItem(post.tags)} // <-- USANDO LA FUNCIÓN DE NORMALIZACIÓN AQUÍ
+                                images={post.images || post.image}
+                                tags={mapTagsForCardItem(post.tags)}
                                 user={post.user}
                                 userRole={post.userRole}
-                                attendeesCount={post.attendeesCount ?? 0} // Asumiendo que attendeesCount puede estar en post también
+                                attendeesCount={post.attendeesCount ?? 0}
                                 onSelect={handleSelect}
-                                eventDate={post.eventDate} // Added eventDate
-                                eventTime={post.eventTime} // Added eventTime
+                                eventDate={post.eventDate}
+                                eventTime={post.eventTime}
                             />
-                        );
-                    })
+                        ))
                 )}
             </div>
 

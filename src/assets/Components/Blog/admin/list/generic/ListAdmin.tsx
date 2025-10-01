@@ -2,9 +2,10 @@
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
 import type { IText } from '@/core/texts/IText';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { normalizeItem } from '@/core/normalization/normalizeApiResponse';
+import PostService from '@/core/posts/PostService';
 import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
 import ItemEvent from '../event/ItemEvent';
 import ItemPost from '../post/ItemPost';
@@ -66,10 +67,12 @@ const ListAdmin = (props: ListAdminProps) => {
         onUnArchive,
     } = props as ListAdminPropsPost & ListAdminPropsEvent & ListAdminPropsText;
 
-    // Explicitly type items based on the type prop
+
+    // Estado para los items (solo para post, para refrescar tras archivar)
+    const [postItems, setPostItems] = useState<IPost[]>(type === 'post' ? (props.items as IPost[]) : []);
     const items: IPost[] | IEvent[] | IText[] =
         type === 'post'
-            ? (props.items as IPost[])
+            ? postItems
             : type === 'event'
                 ? (props.items as IEvent[])
                 : (props.items as IText[]);
@@ -77,6 +80,14 @@ const ListAdmin = (props: ListAdminProps) => {
     // Estado local para manejar la carga. Asume que está cargando si no hay items.
     // En una aplicación real, probablemente pasarías un prop 'isLoading' desde el padre.
     const [localIsLoading, setLocalIsLoading] = useState(true);
+
+
+    // Sincroniza postItems con props.items cuando cambian desde el padre
+    useEffect(() => {
+        if (type === 'post') {
+            setPostItems(props.items as IPost[]);
+        }
+    }, [type, props.items]);
 
     useEffect(() => {
         // Establece isLoading a false una vez que los ítems se cargan.
@@ -90,7 +101,32 @@ const ListAdmin = (props: ListAdminProps) => {
             }, 500); // Muestra el skeleton por al menos 500ms
             return () => clearTimeout(timer);
         }
-    }, [items]); // Dependencia de items para reaccionar cuando cambien
+    }, [items]);
+    // Handlers de archivado/desarchivado para post (igual que event)
+    const postService = type === 'post' ? new PostService() : null;
+
+    const handleArchivePost = useCallback(async (id: number) => {
+        if (!postService) return false;
+        try {
+            await postService.archivePost(id, true);
+            // Refresca la lista localmente (opcional: podrías recargar desde backend)
+            setPostItems(prev => prev.map(p => p.id === id ? { ...p, isArchived: true } : p));
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }, [postService]);
+
+    const handleUnArchivePost = useCallback(async (id: number) => {
+        if (!postService) return false;
+        try {
+            await postService.archivePost(id, false);
+            setPostItems(prev => prev.map(p => p.id === id ? { ...p, isArchived: false } : p));
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }, [postService]);
 
     const normalizedItems = items.map(item => normalizeItem(item));
     // Filtrado por categoría para textos
@@ -121,8 +157,8 @@ const ListAdmin = (props: ListAdminProps) => {
                     <ItemPost
                         key={item.id}
                         post={item}
-                        onArchive={onArchive}
-                        onUnArchive={onUnArchive}
+                        onArchive={handleArchivePost}
+                        onUnArchive={handleUnArchivePost}
                         onSelect={onSelect}
                         onEdit={onEdit}
                         onDelete={onDelete}

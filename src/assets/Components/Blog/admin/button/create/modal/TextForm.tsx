@@ -1,4 +1,4 @@
-import { ITextItem } from "@/core/texts/IText";
+import { IText } from "@/core/texts/IText";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useTextForm } from "../../../../../../../hooks/useTextForm";
@@ -8,9 +8,9 @@ import TextImageManager from "./components/TextImageManager";
 import styles from "./ModalForm.module.scss";
 
 interface TextFormProps {
-    text?: ITextItem;
+    text?: IText;
     onClose: () => void;
-    onSubmit: (text: ITextItem) => Promise<void>;
+    onSubmit: (text: IText) => Promise<void>;
     show: boolean;
     userId?: number;
 }

@@ -177,7 +177,13 @@ export const useEventForm = ({
       );
     }
 
-    if (!title.trim() || !message.trim() || !eventDate || !location.trim()) {
+    if (
+      !title.trim() ||
+      !message.trim() ||
+      !eventDate ||
+      !location.trim() ||
+      !eventTime
+    ) {
       log.error(
         "useEventForm - Validación fallida: Campos obligatorios faltantes.",
         {
@@ -185,15 +191,16 @@ export const useEventForm = ({
           message,
           eventDate,
           location,
+          eventTime,
         }
       );
       throw new Error(
-        "Título, mensaje, fecha y ubicación son campos obligatorios."
+        "Título, mensaje, fecha, hora y ubicación son campos obligatorios."
       );
     }
 
     return true;
-  }, [title, message, eventDate, location, userRole, userId]);
+  }, [title, message, eventDate, location, eventTime, userRole, userId]);
 
   // Reset del formulario
   const resetForm = useCallback(() => {

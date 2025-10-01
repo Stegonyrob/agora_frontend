@@ -16,8 +16,8 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "neurodiversidad-user", label: "Neurodiversidad", path: "/agora/neurodiversity", background: "/images/bg-neuro-user.jpg", viewAsUser: true },
     { key: "cea-admin", label: "CEA/TEA", path: "/agora/cea", background: "/images/bg-tea.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "cea-user", label: "CEA/TEA", path: "/agora/cea", background: "/images/bg-tea-user.jpg", viewAsUser: true },
-    { key: "tda-admin", label: "TDA/TDH", path: "/agora/tda_Tdh", background: "/images/bg-tdath.jpg", role: "ROLE_ADMIN", viewAsUser: false },
-    { key: "tda-user", label: "TDA/TDH", path: "/agora/tda_Tdh", background: "/images/bg-tdath-user.jpg", viewAsUser: true },
+    { key: "tda-admin", label: "TDA/TDH", path: "/agora/tda_tdh", background: "/images/bg-tdath.jpg", role: "ROLE_ADMIN", viewAsUser: false },
+    { key: "tda-user", label: "TDA/TDH", path: "/agora/tda_tdh", background: "/images/bg-tdath-user.jpg", viewAsUser: true },
     { key: "dificultades-admin", label: "Dificultades Aprendizaje", path: "/agora/learning_difficulties", background: "/images/bg-learning.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "dificultades-user", label: "Dificultades Aprendizaje", path: "/agora/learning_difficulties", background: "/images/bg-learning-user.jpg", viewAsUser: true },
     { key: "condiciones-admin", label: "Condiciones Desarrollo", path: "/agora/development_conditions", background: "/images/bg-development.jpg", role: "ROLE_ADMIN", viewAsUser: false },
@@ -32,7 +32,7 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "perfil-admin", label: "Perfil", path: "/profile", background: "/images/bg-profile.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "perfil-user", label: "Perfil", path: "/profile", background: "/images/bg-profile-user.jpg", viewAsUser: true },
     { key: "usuarios-admin", label: "Listado de Usuarios", path: "/admin/users", background: "/images/bg-users.jpg", role: "ROLE_ADMIN", viewAsUser: false },
-    { key: "terminos-admin", label: "Términos", path: "/legal/terms", background: "/images/bg-terms.jpg", role: "ROLE_ADMIN", viewAsUser: false },
+    { key: "terminos-admin", label: "Términos", path: "/admin/legal/terms", background: "/images/bg-terms.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "terminos-user", label: "Términos", path: "/legal/terms", background: "/images/bg-terms-user.jpg", viewAsUser: true },
     { key: "privacidad-admin", label: "Privacidad", path: "/admin/legal/privacy", background: "/images/bg-privacy.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "privacidad-user", label: "Privacidad", path: "/legal/privacy", background: "/images/bg-privacy-user.jpg", viewAsUser: true },
@@ -40,7 +40,6 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "cookies-user", label: "Cookies", path: "/legal/cookies", background: "/images/bg-cookies-user.jpg", viewAsUser: true },
     { key: "reglas-blog-admin", label: "Reglas Blog", path: "/admin/legal/blog-rules", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "reglas-blog-preview", label: "Reglas Blog", path: "/blog-rules-preview", background: "/images/bg-blogrules-preview.jpg", viewAsUser: true },
-    { key: "admin-texts", label: "Textos", path: "/admin/texts", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false }
 ];
 
 

@@ -1,0 +1,42 @@
+.timepicker {
+  width: 100%;
+  background-color: transparent;
+  color: #e0f7fa;
+  border: 1px solid #00bcd4;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  padding: 0.9rem 1.2rem;
+  position: relative;
+  z-index: 10;
+  box-shadow: none;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.timepicker .MuiOutlinedInput-root {
+  background-color: transparent;
+  color: #e0f7fa;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  padding: 0.9rem 1.2rem;
+}
+
+.timepicker .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #00bcd4;
+}
+
+.timepicker .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #9c5ce8;
+}
+
+.timepicker .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #b670f4;
+  box-shadow: 0 0 0 0.3rem rgba(182, 112, 244, 0.35);
+}
+
+.timepicker .MuiInputAdornment-root {
+  color: #e0f7fa;
+}
+
+.timepicker .MuiSvgIcon-root {
+  color: #b670f4;
+}
