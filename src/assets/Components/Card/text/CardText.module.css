@@ -19,6 +19,21 @@
   border-radius: 1rem;
 }
 
+.cardContainer .cardText .mapContainer {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  margin: 1rem auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cardContainer .cardText .mapContainer iframe {
+  border: none;
+  border-radius: 1rem;
+}
+
 .cardContainer .cardText .cardTitle {
   font-size: 2rem;
   margin: 1rem;
@@ -26,6 +41,55 @@
 }
 
 .cardContainer .cardText .cardDescription {
+  text-align: justify;
+  margin-left: 2rem;
+  padding: 1rem;
+}
+
+.cardContainer .cardWithMap {
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 2.5rem;
+  color: white;
+  width: 200vh;
+  max-width: 95vw;
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  min-height: 300px;
+}
+
+.cardContainer .cardWithMap .textContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardContainer .cardWithMap .mapContent {
+  flex: 0 0 auto;
+  width: 400px;
+}
+
+.cardContainer .cardWithMap .mapContent .mapContainer {
+  margin: 0;
+  height: 280px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cardContainer .cardWithMap .mapContent .mapContainer iframe {
+  border: none;
+  border-radius: 1rem;
+}
+
+.cardContainer .cardWithMap .cardTitle {
+  font-size: 2rem;
+  margin: 1rem;
+  text-align: left;
+}
+
+.cardContainer .cardWithMap .cardDescription {
   text-align: justify;
   margin-left: 2rem;
   padding: 1rem;
@@ -42,10 +106,36 @@
     max-width: 10rem;
     width: 95vw;
   }
+  .cardContainer .cardText .mapContainer {
+    height: 250px;
+    max-width: 350px;
+    margin: 1rem auto;
+    width: 90%;
+  }
   .cardContainer .cardText .cardTitle {
     font-size: 1.5rem;
   }
   .cardContainer .cardText .cardDescription {
+    margin-left: 1rem;
+    padding: 0.5rem;
+  }
+  .cardContainer .cardWithMap {
+    padding: 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .cardContainer .cardWithMap .mapContent {
+    width: 100%;
+  }
+  .cardContainer .cardWithMap .mapContent .mapContainer {
+    max-width: 350px;
+    height: 250px;
+    margin: 0 auto;
+  }
+  .cardContainer .cardWithMap .cardTitle {
+    font-size: 1.5rem;
+  }
+  .cardContainer .cardWithMap .cardDescription {
     margin-left: 1rem;
     padding: 0.5rem;
   }
@@ -61,10 +151,32 @@
   .cardContainer .cardText .cardImage {
     max-width: 7rem;
   }
+  .cardContainer .cardText .mapContainer {
+    height: 220px;
+    max-width: 280px;
+    margin: 0.5rem auto;
+    width: 95%;
+  }
   .cardContainer .cardText .cardTitle {
     font-size: 1rem;
   }
   .cardContainer .cardText .cardDescription {
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+  }
+  .cardContainer .cardWithMap {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cardContainer .cardWithMap .mapContent .mapContainer {
+    max-width: 280px;
+    height: 220px;
+  }
+  .cardContainer .cardWithMap .cardTitle {
+    font-size: 1rem;
+  }
+  .cardContainer .cardWithMap .cardDescription {
     margin-left: 0.5rem;
     padding: 0.5rem;
   }
