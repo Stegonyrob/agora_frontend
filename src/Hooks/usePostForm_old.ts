@@ -143,7 +143,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
 
   // Validación del formulario
   const validateForm = useCallback(() => {
-    console.log("🔐 usePostForm - Validando campos");
+    // Validating form fields
 
     if (!title.trim() || !message.trim()) {
       throw new Error("Título y mensaje son campos obligatorios.");
@@ -188,7 +188,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
       setGlobalError(null);
 
       try {
-        console.log(`🔐 [${sessionId}] Validando formulario...`);
+        // Validating form
         validateForm();
 
         // Separar imágenes nuevas de las existentes
@@ -203,13 +203,10 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
           }
         });
 
-        console.log(`📷 [${sessionId}] Imágenes procesadas:`, {
-          newImageFiles: newImageFiles.length,
-          existingImageUrls: existingImageUrls.length,
-        });
+        // Images processed
 
         // Debug: Seguimiento de tags antes de crear el payload
-        console.log(`🐞 [${sessionId}] Estado de tags antes de payload:`, tags);
+        // Tags prepared for submission
         let resultPost: IPost;
 
         if (post?.id) {
@@ -280,7 +277,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
               );
             }
           }
-          console.log(`✅ [${sessionId}] Post creado con ID:`, resultPost.id);
+          // Post created successfully
         }
 
         // Subir imágenes si las hay
@@ -333,7 +330,7 @@ export const usePostForm = ({ post, show }: UsePostFormProps) => {
         );
         setGlobalError(errorMessage);
       } finally {
-        console.log(`🏁 [${sessionId}] Finalizando proceso de envío`);
+        // Process completed
         submissionRef.current = false;
         setIsSubmitting(false);
       }

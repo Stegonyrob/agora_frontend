@@ -1,5 +1,6 @@
 
-import { ITextItemDTO } from "@/core/texts/ITextDTO";
+import { IText } from "@/core/texts/IText";
+import { ITextDTO } from "@/core/texts/ITextDTO";
 import DOMPurify from "dompurify";
 import React, { useState } from "react";
 import { IEvent } from "../../../../../../core/events/IEvent";
@@ -7,13 +8,13 @@ import { IEventDTO } from "../../../../../../core/events/IEventDTO";
 import { IPost } from "../../../../../../core/posts/IPost";
 import { IPostDTO } from "../../../../../../core/posts/IPostDTO";
 import styles from "../ButtonIcons.module.scss";
-import EditEventForm from "./EditEventForm";
-import EditPostForm from "./EditPostForm";
-import EditTextForm from "./EditTextForm";
+import EventForm from "../create-edit/EventForm";
+import PostForm from "../create-edit/PostForm";
+import TextForm from "../create-edit/TextForm";
 interface ButtonEditGenericProps {
     type: "post" | "event" | "text";
-    item: IPost | IEvent | ITextItemDTO;
-    onSubmit: (data: IPostDTO | IEventDTO | ITextItemDTO) => void;
+    item: IPost | IEvent | IText;
+    onSubmit: (data: IPostDTO | IEventDTO | ITextDTO) => void;
 }
 
 const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSubmit }) => {
@@ -21,23 +22,25 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
-    const handleUpdate = async (updatedItem: IPostDTO | IEventDTO | ITextItemDTO) => {
-        const sanitizeMap: Record<string, [string, string?]> = {
-            post: ["title", "message"],
-            event: ["title", "description"],
-            text: ["text", "description"]
-        };
 
-        const fields = sanitizeMap[type];
-        if (fields) {
-            fields.forEach(field => {
-                if (field && field in updatedItem && typeof (updatedItem as any)[field] === "string") {
-                    (updatedItem as any)[field] = DOMPurify.sanitize((updatedItem as any)[field]);
-                }
-            });
-        }
+    // Funciones onSubmit específicas para cada tipo
+    const handlePostSubmit = async (post: IPost) => {
+        // Sanitiza campos si es necesario
+        if (post.title) post.title = DOMPurify.sanitize(post.title);
+        if (post.message) post.message = DOMPurify.sanitize(post.message);
+        await onSubmit(post as any);
+    };
 
-        onSubmit(updatedItem);
+    const handleEventSubmit = async (event: IEvent) => {
+        if (event.title) event.title = DOMPurify.sanitize(event.title);
+        if ((event as any).description) (event as any).description = DOMPurify.sanitize((event as any).description);
+        await onSubmit(event as any);
+    };
+
+    const handleTextSubmit = async (text: any) => {
+        if (text.text) text.text = DOMPurify.sanitize(text.text);
+        if (text.description) text.description = DOMPurify.sanitize(text.description);
+        await onSubmit(text as any);
     };
     return (
         <div>
@@ -46,7 +49,7 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                 <span className={styles.label}>Edición</span>
             </div>
             {type === "post" && show && (
-                <EditPostForm
+                <PostForm
                     post={{
                         ...(item as IPost),
                         images: (item as any).images ?? [],
@@ -58,13 +61,14 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                             )
                             : []
                     }}
-                    onSubmit={onSubmit}
+                    onSubmit={handlePostSubmit}
+                    mode="edit"
                     onClose={handleClose}
                     show={show}
                 />
             )}
             {type === "event" && show && (
-                <EditEventForm
+                <EventForm
                     event={{
                         ...(item as IEvent),
                         alt_avatar: (item as any).alt_avatar ?? "",
@@ -84,22 +88,28 @@ const ButtonEditGeneric: React.FC<ButtonEditGenericProps> = ({ type, item, onSub
                             ? (item as any).images.filter((img: any) => typeof img === "object" && img !== null)
                             : []
                     }}
-                    onSubmit={onSubmit}
+                    onSubmit={handleEventSubmit}
                     onClose={handleClose}
                     show={show}
+                    mode="edit"
                 />
             )}
             {type === "text" && show && (
-                <EditTextForm
+                <TextForm
                     text={{
-                        ...(item as ITextItemDTO),
+                        // Solo las propiedades válidas de IText
+                        id: typeof (item as any).id === "number" ? (item as any).id : 0,
+                        title: (item as any).title ?? "",
                         createdAt: (item as any).createdAt ?? new Date().toISOString(),
                         updatedAt: (item as any).updatedAt ?? new Date().toISOString(),
+                        name_image: (item as any).name_image ?? "",
+                        images: (item as any).images ?? [],
+                        message: (item as any).message ?? "",
+                        category: (item as any).category ?? ""
                     }}
-                    onSubmit={onSubmit}
+                    onSubmit={handleTextSubmit}
                     onClose={handleClose}
-                    show={show}
-                />
+                    show={show} mode={"edit"} />
             )}
         </div>
     );

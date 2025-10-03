@@ -41,26 +41,10 @@ export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
 
       let result;
       if (isLoggedIn) {
-        console.log(
-          `[useEvents] Fetching authenticated events - Page: ${page}, Size: ${size}`
-        );
         result = await eventService.fetchEventsPaginated(page, size);
       } else {
-        console.log(
-          `[useEvents] Fetching public events - Page: ${page}, Size: ${size}`
-        );
         result = await eventService.fetchPublicEventsPaginated(page, size);
       }
-
-      console.log(`[useEvents] Events fetched successfully:`, result);
-      console.log(
-        "[useEvents] Verificando contenido de events:",
-        result.content
-      );
-      console.log(
-        "eventTime:",
-        result.content.map((event) => event.eventTime)
-      );
 
       setEvents(result.content);
       setTotalPages(result.totalPages);

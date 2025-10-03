@@ -101,12 +101,6 @@ export class EventImageService {
                 image.imagePath
               );
 
-              console.log("🖼️ [EventImageService] Generando URL de imagen:", {
-                imageId: image.id,
-                imagePath: image.imagePath,
-                generatedUrl: staticUrl,
-              });
-
               logger.debug(
                 "EventImageService: Usando imagen desde EventImageRepository",
                 {

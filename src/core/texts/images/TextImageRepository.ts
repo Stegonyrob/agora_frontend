@@ -11,29 +11,19 @@ export class TextImageRepository {
    * Fetch images by textId using the specific endpoint
    */
   async getImagesByTextId(textId: number): Promise<ITextImage[]> {
-    console.log(`🔍 [TextImageRepository] === GET IMAGES ===`);
-    console.log(`🔍 [TextImageRepository] textId:`, textId);
-    console.log(`🔍 [TextImageRepository] URL:`, `${this.baseUri}/${textId}`);
-
     try {
       const response = await axios.get(`${this.baseUri}/${textId}`, {
         headers: getAuthHeaders(),
         timeout: 15000,
       });
 
-      console.log(`✅ [TextImageRepository] Respuesta GET:`, response.data);
-      console.log(`✅ [TextImageRepository] Status:`, response.status);
-
       const result = Array.isArray(response.data) ? response.data : [];
-      console.log(`✅ [TextImageRepository] Resultado final:`, result);
 
       return result;
     } catch (error: any) {
       // If API fails, return empty array to allow fallback to static images
-      console.error(`❌ [TextImageRepository] Error en GET:`, error);
-      console.log(
-        `API request failed for text ${textId}, will use static images`
-      );
+      // Error en GET
+
       return [];
     }
   }
@@ -46,7 +36,7 @@ export class TextImageRepository {
     textId: number,
     imageFiles: File[]
   ): Promise<ITextImage[]> {
-    console.log(`🔍 [TextImageRepository] === UPLOAD DEBUG ===`);
+    // Upload process initiated
     console.log(
       `🔍 [TextImageRepository] textId recibido:`,
       textId,
@@ -62,7 +52,7 @@ export class TextImageRepository {
     formData.append("textId", textId.toString());
 
     imageFiles.forEach((file, index) => {
-      console.log(`📎 [TextImageRepository] Archivo ${index + 1}:`, file.name);
+      // Processing file
       formData.append("files", file);
     });
 
@@ -73,7 +63,7 @@ export class TextImageRepository {
     );
     for (let [key, value] of formData.entries()) {
       if (typeof value === "string") {
-        console.log(`📤 [TextImageRepository] FormData[${key}]: "${value}"`);
+        // FormData entry processed
       } else if (value instanceof File) {
         console.log(
           `📤 [TextImageRepository] FormData[${key}]: File(${value.name}, ${value.size} bytes)`
@@ -93,7 +83,7 @@ export class TextImageRepository {
       `📤 [TextImageRepository] URL de envío:`,
       `${this.baseUri}/upload`
     );
-    console.log(`📤 [TextImageRepository] Headers:`, config.headers);
+    // Request headers configured
 
     const response: AxiosResponse<ITextImage[]> = await axios.post(
       `${this.baseUri}/upload`,
@@ -101,24 +91,12 @@ export class TextImageRepository {
       config
     );
 
-    console.log(
-      `✅ [TextImageRepository] Respuesta del backend:`,
-      response.data
-    );
-    console.log(
-      `✅ [TextImageRepository] Respuesta completa:`,
-      JSON.stringify(response.data, null, 2)
-    );
+    // Request completed successfully
 
     // Verificar si la respuesta contiene textId
     if (Array.isArray(response.data)) {
       response.data.forEach((img, index) => {
-        console.log(`✅ [TextImageRepository] Imagen ${index + 1}:`, {
-          id: img.id,
-          textId: img.textId,
-          imageName: img.imageName,
-          imagePath: img.imagePath,
-        });
+        // Image processed successfully
       });
     }
 
@@ -160,8 +138,8 @@ export class TextImageRepository {
    * Delete a specific text image by its ID.
    */
   async deleteTextImage(imageId: number): Promise<void> {
-    console.log(`🗑️ [TextImageRepository] === DELETE IMAGE ===`);
-    console.log(`🗑️ [TextImageRepository] imageId: ${imageId}`);
+    // Delete process initiated
+    // Processing image deletion
     console.log(
       `🗑️ [TextImageRepository] URL: ${this.baseUri}/image/${imageId}`
     );

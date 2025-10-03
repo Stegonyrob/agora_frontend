@@ -32,7 +32,8 @@ body {
 }
 
 .buttonArchiveBlock,
-.editButtonBlock {
+.editButtonBlock,
+.deleteButtonBlock {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,14 +50,16 @@ body {
 }
 
 .buttonArchiveBlock .bi,
-.editButtonBlock .bi {
+.editButtonBlock .bi,
+.deleteButtonBlock .bi {
   font-size: 1.5rem;
   margin-bottom: 0.2rem;
   transition: color 0.2s;
 }
 
 .buttonArchiveBlock .label,
-.editButtonBlock .label {
+.editButtonBlock .label,
+.deleteButtonBlock .label {
   font-size: 1.1rem;
   margin-left: 0;
   margin-top: 0.1rem;
@@ -65,7 +68,9 @@ body {
 
 .buttonArchiveBlock:hover, .buttonArchiveBlock:focus,
 .editButtonBlock:hover,
-.editButtonBlock:focus {
+.editButtonBlock:focus,
+.deleteButtonBlock:hover,
+.deleteButtonBlock:focus {
   box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
   background: rgba(255, 255, 255, 0.13);
 }
@@ -92,6 +97,23 @@ body {
 
 .editButtonBlock:hover, .editButtonBlock:focus {
   color: #ffb84d;
+}
+
+.deleteButtonBlock {
+  color: #e74c3c;
+}
+
+.deleteButtonBlock .bi {
+  color: #e74c3c;
+}
+
+.deleteButtonBlock:hover, .deleteButtonBlock:focus {
+  color: #c0392b;
+  box-shadow: 0 0.5em 0.5em -0.4em #e74c3c;
+}
+
+.deleteButtonBlock:hover .bi, .deleteButtonBlock:focus .bi {
+  color: #c0392b;
 }
 
 .heartButton {

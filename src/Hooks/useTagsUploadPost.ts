@@ -41,7 +41,7 @@ export function useTagsUploadPost() {
       console.error(
         "🚨 [useTagsUploadPost] ALERTA: uploadTagsToPost llamado con array vacío!"
       );
-      console.error("   📍 PostId:", postId);
+      // Post ID validation
       console.error("   📍 IsNewPost:", isNewPost);
       console.error("   📍 Stack trace:", new Error().stack);
       console.error("   📍 Tiempo:", new Date().toISOString());
@@ -81,7 +81,7 @@ export function useTagsUploadPost() {
         const currentTags = await apiTag.getTagsByPost(postId);
 
         // 🔍 DEBUG DETALLADO
-        console.log("🔍 [useTagsUploadPost] DEBUGGING TAGS:");
+        // Processing tags
         console.log(
           "   📦 Current tags:",
           currentTags.map((t) => ({ id: t.id, name: t.name }))

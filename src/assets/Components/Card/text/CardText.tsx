@@ -1,4 +1,4 @@
-import EditTextForm from "@/assets/Components/Blog/admin/button/edit/EditTextForm";
+
 import TextImageService from "@/core/texts/images/TextImageService";
 import { useTextsWithImages } from "@/hooks/useTextsWithImages";
 import React, { useMemo, useState } from "react";
@@ -60,14 +60,13 @@ const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
   return (
     <>
       {texts.map(({ text, images }, index: number) => {
-        // Debug: Ver qué contienen las imágenes
-        console.log(`🔍 [CardText] Text ${text.id} images:`, images);
+
 
         let primaryImage = getCategoryFallbackImage(text.category); // Default fallback
 
         if (images.length > 0) {
           const firstImage = images[0];
-          console.log(`🔍 [CardText] First image data:`, firstImage);
+
 
           // Usar la URL si está disponible, sino construir usando el servicio
           if (firstImage.url) {
@@ -77,8 +76,6 @@ const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
             primaryImage = textImageService.buildImageUrl(firstImage.imagePath);
           }
         }
-
-        console.log(`🔍 [CardText] Final image URL for text ${text.id}:`, primaryImage);
 
         return (
           <div key={`text-${text.id}`} className={styles.cardContainer}>
@@ -119,19 +116,7 @@ const CardText: React.FC<CardTextProps> = React.memo(({ category }) => {
           </div>
         );
       })}
-      {showEditModal && (
-        <EditTextForm
-          text={editText}
-          show={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          onSubmit={(updatedText) => {
-            console.log("📝 [CardText] Texto actualizado:", updatedText);
-            setShowEditModal(false);
 
-
-          }}
-        />
-      )}
     </>
   );
 });

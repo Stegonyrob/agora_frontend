@@ -1,15 +1,18 @@
-import { ITextItem } from "@/core/texts/IText";
+import { IText } from "@/core/texts/IText";
 import TextService from "@/core/texts/TextService";
 import { ITextImage } from "@/core/texts/images/ITextImage";
 import TextImageService from "@/core/texts/images/TextImageService";
 import { useEffect, useMemo, useState } from "react";
 
 interface TextWithImages {
-  text: ITextItem;
+  text: IText;
   images: ITextImage[];
 }
 
-export const useTextsWithImages = (category?: string) => {
+export const useTextsWithImages = (
+  category?: string,
+  includeArchived = false
+) => {
   const [texts, setTexts] = useState<TextWithImages[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,28 +27,28 @@ export const useTextsWithImages = (category?: string) => {
         setLoading(true);
         setError(null);
 
-        console.log("🔍 Fetching all texts...");
         const allTexts = await textService.getAllTexts();
-        console.log("✅ All texts fetched:", allTexts);
 
         // Filter by category if provided
         const filteredTexts = category
-          ? allTexts.filter((text: ITextItem) => text.category === category)
+          ? allTexts.filter((text: IText) => text.category === category)
           : allTexts;
 
-        console.log(`🔍 Filtering texts by category: ${category}`);
-        console.log("✅ Filtered texts:", filteredTexts);
+        // Filter out archived texts unless includeArchived is true
+        const nonArchivedTexts = includeArchived
+          ? filteredTexts
+          : filteredTexts.filter((text: IText) => !text.archived);
 
         // Fetch images for each text
         const textsWithImages = await Promise.all(
-          filteredTexts.map(async (text: ITextItem) => {
+          nonArchivedTexts.map(async (text: IText) => {
             try {
-              console.log(`🖼️ Fetching images for text ID: ${text.id}`);
+              // Fetching images for text
               const images = await textImageService.getImagesByTextId(
                 text.id,
                 text.category
               );
-              console.log(`✅ Images fetched for text ID ${text.id}:`, images);
+              // Images fetched successfully
 
               return { text, images };
             } catch (error) {
@@ -58,7 +61,6 @@ export const useTextsWithImages = (category?: string) => {
           })
         );
 
-        console.log("🎯 Final texts with images:", textsWithImages);
         setTexts(textsWithImages);
       } catch (error: any) {
         console.error("❌ Error fetching texts with images:", error);
@@ -69,7 +71,7 @@ export const useTextsWithImages = (category?: string) => {
     };
 
     fetchTextsWithImages();
-  }, [category, textService, textImageService]);
+  }, [category, includeArchived, textService, textImageService]);
 
   return {
     texts,

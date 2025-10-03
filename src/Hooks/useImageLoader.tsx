@@ -98,18 +98,7 @@ export const useImageLoader = (
                             .filter(img => img.url)
                             .map(img => img.url!);
 
-                        console.log('📷 [useImageLoader] URLs finales de evento:', {
-                            eventId,
-                            imageCount: urls.length,
-                            urls
-                        });
-
-                        logger.debug('useImageLoader: Imágenes de evento cargadas', {
-                            eventId,
-                            imageCount: urls.length
-                        }, {
-                            component: 'useImageLoader'
-                        });
+                        // Final event URLs processed
 
                         setImages(urls);
                         return;

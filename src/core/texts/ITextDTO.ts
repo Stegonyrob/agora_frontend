@@ -1,6 +1,6 @@
 import { ITextImageDTO } from "./images/ITextImageDTO";
 
-export interface ITextItemDTO {
+export interface ITextDTO {
   userId: any;
   title: string;
   images: ITextImageDTO[];

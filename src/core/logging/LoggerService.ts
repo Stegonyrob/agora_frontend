@@ -52,11 +52,11 @@ const getEnvironmentConfig = (): LoggerConfig => {
       maxLogSize: 1000,
     },
     production: {
-      level: LogLevel.WARN,
+      level: LogLevel.ERROR,
       enableConsole: false,
       enableRemoteLogging: true,
       maskSensitiveData: true,
-      maxLogSize: 200,
+      maxLogSize: 100,
     },
     testing: {
       level: LogLevel.ERROR,
@@ -101,6 +101,21 @@ const SENSITIVE_KEYS = [
   "address",
   "ssn",
   "cardNumber",
+  "userId",
+  "username",
+  "id",
+  "uuid",
+  "avatar",
+  "profileId",
+  "adminId",
+  "eventId",
+  "postId",
+  "textId",
+  "imageId",
+  "imagePath",
+  "url",
+  "path",
+  "filename",
 ];
 
 // Interface para el contexto del log
@@ -212,11 +227,15 @@ class LoggerService {
   private createLogContext(context?: Partial<LogContext>): LogContext {
     return {
       timestamp: Date.now(),
-      url: window.location.href,
+      url: this.config.maskSensitiveData
+        ? "[URL_MASKED]"
+        : window.location.pathname,
       userAgent: this.config.maskSensitiveData
-        ? "[MASKED]"
-        : navigator.userAgent,
-      sessionId: sessionStorage.getItem("sessionId") || "anonymous",
+        ? "[BROWSER_INFO_MASKED]"
+        : navigator.userAgent.substring(0, 50) + "...",
+      sessionId: this.config.maskSensitiveData
+        ? "[SESSION_MASKED]"
+        : sessionStorage.getItem("sessionId") || "anonymous",
       userId: this.config.maskSensitiveData
         ? "[MASKED]"
         : sessionStorage.getItem("userId") || undefined,
@@ -286,10 +305,7 @@ class LoggerService {
         });
       }
     } catch (error) {
-      // No usar el logger aquí para evitar loops infinitos
-      if (this.config.enableConsole) {
-        console.error("Failed to send logs to remote service:", error);
-      }
+      // Silently fail to avoid infinite loops in logging service
     }
   }
 
@@ -400,9 +416,15 @@ class LoggerService {
       error instanceof Error
         ? {
             name: error.name,
-            message: error.message,
-            stack: this.config.maskSensitiveData ? "[MASKED]" : error.stack,
+            message: this.config.maskSensitiveData
+              ? "[ERROR_MESSAGE_MASKED]"
+              : error.message,
+            stack: this.config.maskSensitiveData
+              ? "[STACK_MASKED]"
+              : "[STACK_REMOVED_FOR_SECURITY]",
           }
+        : this.config.maskSensitiveData
+        ? "[ERROR_DATA_MASKED]"
         : error;
 
     this.log(LogLevel.ERROR, message, errorData, context);
@@ -420,9 +442,15 @@ class LoggerService {
       error instanceof Error
         ? {
             name: error.name,
-            message: error.message,
-            stack: this.config.maskSensitiveData ? "[MASKED]" : error.stack,
+            message: this.config.maskSensitiveData
+              ? "[ERROR_MESSAGE_MASKED]"
+              : error.message,
+            stack: this.config.maskSensitiveData
+              ? "[STACK_MASKED]"
+              : "[STACK_REMOVED_FOR_SECURITY]",
           }
+        : this.config.maskSensitiveData
+        ? "[ERROR_DATA_MASKED]"
         : error;
 
     this.log(LogLevel.CRITICAL, message, errorData, context);
@@ -432,15 +460,30 @@ class LoggerService {
    * 🔄 Métodos para migración gradual desde console.*
    */
   public legacyLog(...args: any[]): void {
-    this.info("Legacy console.log", { args });
+    const maskedArgs = this.config.maskSensitiveData
+      ? ["[LEGACY_ARGS_MASKED]"]
+      : args.map((arg) =>
+          typeof arg === "object" ? this.maskSensitiveData(arg) : arg
+        );
+    this.info("Legacy console.log", { args: maskedArgs });
   }
 
   public legacyError(...args: any[]): void {
-    this.error("Legacy console.error", { args });
+    const maskedArgs = this.config.maskSensitiveData
+      ? ["[LEGACY_ARGS_MASKED]"]
+      : args.map((arg) =>
+          typeof arg === "object" ? this.maskSensitiveData(arg) : arg
+        );
+    this.error("Legacy console.error", { args: maskedArgs });
   }
 
   public legacyWarn(...args: any[]): void {
-    this.warn("Legacy console.warn", { args });
+    const maskedArgs = this.config.maskSensitiveData
+      ? ["[LEGACY_ARGS_MASKED]"]
+      : args.map((arg) =>
+          typeof arg === "object" ? this.maskSensitiveData(arg) : arg
+        );
+    this.warn("Legacy console.warn", { args: maskedArgs });
   }
 
   /**
@@ -463,12 +506,21 @@ class LoggerService {
   public getStats(): {
     bufferSize: number;
     environment: string;
-    config: LoggerConfig;
+    config: Partial<LoggerConfig>;
   } {
+    // En producción, no exponer toda la configuración
+    const safeConfig = this.config.maskSensitiveData
+      ? {
+          level: this.config.level,
+          maskSensitiveData: this.config.maskSensitiveData,
+          // Otras configuraciones están ocultas por seguridad
+        }
+      : { ...this.config };
+
     return {
       bufferSize: this.logBuffer.length,
       environment: this.environment,
-      config: { ...this.config },
+      config: safeConfig,
     };
   }
 }

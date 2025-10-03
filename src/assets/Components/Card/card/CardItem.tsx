@@ -64,19 +64,7 @@ const CardItem: React.FC<CardItemProps> = ({
     // Use custom hook for image loading
     const { images: processedImages, loading: loadingImages, error: imageError } = useImageLoader(type, images);
 
-    // Debug logs
-    console.log('🔍 [CardItem] Hook result:', {
-        processedImages,
-        loadingImages,
-        imageError,
-        inputImages: images,
-        type
-    });
-
-    // Log image loading errors
-    if (imageError) {
-        console.error('Image loading error:', imageError);
-    } const showPrev = (e: React.MouseEvent) => {
+    const showPrev = (e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImage((prev) => (prev === 0 ? (processedImages.length || 1) - 1 : prev - 1));
     };
@@ -85,9 +73,6 @@ const CardItem: React.FC<CardItemProps> = ({
         e.stopPropagation();
         setCurrentImage((prev) => (processedImages && prev === processedImages.length - 1 ? 0 : prev + 1));
     };
-
-    // Debug: Verificar si eventDate es null o vacío
-    console.log('🔍 [CardItem] Valor de eventDate:', eventDate);
 
     // Hardcodear fecha y hora del evento para pruebas
     const hardcodedEventDate = '2025-08-20';
@@ -120,24 +105,7 @@ const CardItem: React.FC<CardItemProps> = ({
         ? `${location} · ${formatDateDMY(eventDate)}${eventTime ? ' ' + formatHourHM(eventTime) : ''}`
         : `${formatDateDMY(eventDate)}${eventTime ? ' ' + formatHourHM(eventTime) : ''}`;
 
-    // Debug: Verificar datos recibidos
-    console.log('🔍 [CardItem] Props recibidos:', {
-        id,
-        title,
-        description,
-        creationDate,
-        eventDate,
-        eventTime, // Added eventTime
-        type,
-        location,
-        images,
-    });
-
-    // Debug: Verificar fecha calculada para mostrar
-    console.log('🔍 [CardItem] Fecha calculada (displayDate):', displayDate);
-
-    // Debug: Verificar si eventTime es null o vacío
-    console.log('🔍 [CardItem] Valor de eventTime:', eventTime);
+    // Component initialized
 
     return (
         <>
@@ -156,24 +124,12 @@ const CardItem: React.FC<CardItemProps> = ({
                                 src={processedImages[currentImage] || "/images/blocks-8866100_1280.png"}
                                 alt={`Imagen ${currentImage + 1} de ${title}`}
                                 onError={(e) => {
-                                    const failedUrl = processedImages[currentImage];
-                                    console.error('❌ [CardItem] Error cargando imagen carousel:', {
-                                        originalSrc: failedUrl,
-                                        imageIndex: currentImage,
-                                        totalImages: processedImages.length,
-                                        allImages: processedImages,
-                                        errorEvent: e,
-                                        isPostImage: failedUrl?.includes('/api/v1/post-images/'),
-                                        hasToken: failedUrl?.includes('token=')
-                                    });
-
                                     const localImages = {
                                         0: '/images/img/niñoFichas.jpg',
                                         1: '/images/img/adolescentesGrupal.jpg'
                                     };
 
                                     const smartFallback = localImages[currentImage as keyof typeof localImages] || "/images/blocks-8866100_1280.png";
-                                    console.log(`🔄 [CardItem] Using smart fallback: ${smartFallback}`);
                                     e.currentTarget.src = smartFallback;
                                 }}
                             />
@@ -194,14 +150,6 @@ const CardItem: React.FC<CardItemProps> = ({
                             src={processedImages && processedImages.length > 0 && processedImages[0] ? processedImages[0] : "/images/blocks-8866100_1280.png"}
                             alt="thumbnail"
                             onError={(e) => {
-                                console.error('❌ [CardItem] Error cargando imagen simple:', {
-                                    originalSrc: processedImages && processedImages.length > 0 ? processedImages[0] : 'sin imagen',
-                                    hasProcessedImages: !!processedImages,
-                                    processedImagesLength: processedImages ? processedImages.length : 0,
-                                    allImages: processedImages,
-                                    errorEvent: e,
-                                    fallbackUsed: "/images/blocks-8866100_1280.png"
-                                });
                                 e.currentTarget.src = "/images/blocks-8866100_1280.png";
                             }}
                         />

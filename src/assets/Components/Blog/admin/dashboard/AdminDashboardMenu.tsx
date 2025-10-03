@@ -30,7 +30,6 @@ const adminMenuItems: NavMenuItem[] = [
     { key: "texts-admin", label: "Textos", path: "/admin/texts", background: "/images/bg-blogrules.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "blog-user", label: "Blog", path: "/blog", background: "/images/bg-blog-user.jpg", viewAsUser: true },
     { key: "perfil-admin", label: "Perfil", path: "/profile", background: "/images/bg-profile.jpg", role: "ROLE_ADMIN", viewAsUser: false },
-    { key: "perfil-user", label: "Perfil", path: "/profile", background: "/images/bg-profile-user.jpg", viewAsUser: true },
     { key: "usuarios-admin", label: "Listado de Usuarios", path: "/admin/users", background: "/images/bg-users.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "terminos-admin", label: "Términos", path: "/admin/legal/terms", background: "/images/bg-terms.jpg", role: "ROLE_ADMIN", viewAsUser: false },
     { key: "terminos-user", label: "Términos", path: "/legal/terms", background: "/images/bg-terms-user.jpg", viewAsUser: true },

@@ -18,7 +18,7 @@ const LoveButton: React.FC<LoveButtonProps> = ({
     const [isLoved, setIsLoved] = useState(false);
 
     const userId = useSelector((state: RootState) => state.session.userId);
-    console.log("userId desde LoveButton:", userId);
+
 
     const loveService =
         type === 'event'
@@ -29,8 +29,6 @@ const LoveButton: React.FC<LoveButtonProps> = ({
         return typeof service.giveLoveRegistered === 'function' && typeof service.giveLoveAnonymous === 'function';
     }
     useEffect(() => {
-        console.log("userId recibido en LoveButton:", userId);
-        console.log(userId);
     }, [userId]);
     useEffect(() => {
         loveService.getLovesCount(postId)

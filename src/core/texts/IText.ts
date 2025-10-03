@@ -9,4 +9,5 @@ export interface IText {
   message: string;
   images: ITextImage[];
   name_image: string;
+  archived?: boolean; // Campo para manejo de archivado
 }

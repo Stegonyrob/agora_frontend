@@ -34,7 +34,8 @@ body {
   }
 }
 .buttonArchiveBlock,
-.editButtonBlock {
+.editButtonBlock,
+.deleteButtonBlock {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,6 +82,16 @@ body {
   color: #ffa260;
   &:hover, &:focus {
     color: #ffb84d;
+  }
+}
+.deleteButtonBlock {
+  color: #e74c3c; // Rojo claro para estado normal
+  .bi { color: #e74c3c; }
+  
+  &:hover, &:focus {
+    color: #c0392b; // Rojo más fuerte en hover
+    box-shadow: 0 0.5em 0.5em -0.4em #e74c3c; // Sombra roja
+    .bi { color: #c0392b; }
   }
 }
 .heartButton {

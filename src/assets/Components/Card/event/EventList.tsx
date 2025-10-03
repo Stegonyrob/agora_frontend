@@ -53,30 +53,31 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                         <CardItemSkeleton key={index} type="event" />
                     ))
                 ) : (
-                    // Muestra los eventos reales cuando cargan
-                    events.map((event) => {
-                        console.log('[EventList] Renderizando CardItem con event.images:', event.images);
-                        return (
-                            <CardItem
-                                key={event.id}
-                                type="event"
-                                id={event.id}
-                                title={event.title}
-                                description={event.message}
-                                creationDate={event.creationDate}
-                                eventDate={event.eventDate}
-                                lovesCount={event.favoritesCount}
-                                images={event.images}
-                                tags={Array.isArray(event.tags) ? event.tags.map((tag, idx) => typeof tag === "string" ? { id: idx, name: tag } : tag) : []}
-                                user={event.user}
-                                onSelect={handleSelect}
-                                location={event.location}
-                                maxCapacity={typeof event.capacity === "number" ? event.capacity : (typeof event.capacity === "string" ? Number(event.capacity) || undefined : undefined)}
-                                attendeesCount={typeof event.attendeesCount === "number" ? event.attendeesCount : 0}
-                                eventTime={event.eventTime} // Asegúrate de pasar eventTime aquí
-                            />
-                        );
-                    })
+                    // Muestra solo los eventos no archivados
+                    events
+                        .filter(event => !event.archived && !event.isArchived)
+                        .map((event) => {
+                            return (
+                                <CardItem
+                                    key={event.id}
+                                    type="event"
+                                    id={event.id}
+                                    title={event.title}
+                                    description={event.message}
+                                    creationDate={event.creationDate}
+                                    eventDate={event.eventDate}
+                                    lovesCount={event.favoritesCount}
+                                    images={event.images}
+                                    tags={Array.isArray(event.tags) ? event.tags.map((tag, idx) => typeof tag === "string" ? { id: idx, name: tag } : tag) : []}
+                                    user={event.user}
+                                    onSelect={handleSelect}
+                                    location={event.location}
+                                    maxCapacity={typeof event.capacity === "number" ? event.capacity : (typeof event.capacity === "string" ? Number(event.capacity) || undefined : undefined)}
+                                    attendeesCount={typeof event.attendeesCount === "number" ? event.attendeesCount : 0}
+                                    eventTime={event.eventTime} // Asegúrate de pasar eventTime aquí
+                                />
+                            );
+                        })
                 )}
             </div>
 

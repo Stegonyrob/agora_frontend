@@ -11,10 +11,10 @@ export class UserRepository {
   );
 
   async getAll(): Promise<IUser[]> {
-    console.log(`🔗 UserRepository.getAll - GET to: ${this.uri}`);
+    // GET request initiated
     try {
       const res = await axios.get(this.uri, { headers: getAuthHeaders() });
-      console.log(`✅ UserRepository.getAll - Respuesta recibida:`, res.data);
+      // Response received successfully
       console.log(
         `🔍 UserRepository.getAll - Tipo de datos:`,
         typeof res.data,
@@ -35,13 +35,13 @@ export class UserRepository {
   }
 
   async create(user: IUserDTO): Promise<IUser> {
-    console.log(`➕ UserRepository.create - POST to: ${this.adminUri}`);
-    console.log(`📤 UserRepository.create - Datos enviados:`, user);
+    // POST request initiated
+    // User data prepared for creation
     try {
       const res = await axios.post(this.adminUri, user, {
         headers: getAuthHeaders(),
       });
-      console.log(`✅ UserRepository.create - Respuesta recibida:`, res.data);
+      // User created successfully
       return res.data;
     } catch (error) {
       console.error(`❌ UserRepository.create - Error en POST:`, error);
@@ -60,13 +60,13 @@ export class UserRepository {
   }
 
   async update(id: number, user: IUserDTO): Promise<IUser> {
-    console.log(`🔄 UserRepository.update - PUT to: ${this.adminUri}/${id}`);
-    console.log(`📤 UserRepository.update - Datos enviados:`, user);
+    // PUT request initiated
+    // User data prepared for update
     try {
       const res = await axios.put(`${this.adminUri}/${id}`, user, {
         headers: getAuthHeaders(),
       });
-      console.log(`✅ UserRepository.update - Respuesta recibida:`, res.data);
+      // User updated successfully
       return res.data;
     } catch (error) {
       console.error(`❌ UserRepository.update - Error en PUT:`, error);
@@ -85,7 +85,7 @@ export class UserRepository {
   }
 
   async delete(id: number): Promise<void> {
-    console.log(`🗑️ UserRepository.delete - DELETE to: ${this.adminUri}/${id}`);
+    // DELETE request initiated
     console.log(
       `🔑 UserRepository.delete - Headers enviados:`,
       getAuthHeaders()
@@ -94,7 +94,7 @@ export class UserRepository {
       await axios.delete(`${this.adminUri}/${id}`, {
         headers: getAuthHeaders(),
       });
-      console.log(`✅ UserRepository.delete - Usuario eliminado exitosamente`);
+      // User deleted successfully
     } catch (error) {
       console.error(`❌ UserRepository.delete - Error en DELETE:`, error);
       if (axios.isAxiosError(error) && error.response) {

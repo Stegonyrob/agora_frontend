@@ -12,6 +12,9 @@ interface ItemTextProps {
     onDelete: (textId: number) => Promise<void>;
     onSelect: (text: IText) => void;
     onSubmit: (text: IText) => void;
+    onArchive?: (textId: number) => Promise<boolean>;
+    onUnArchive?: (textId: number) => Promise<boolean>;
+
     userId: number;
     onCreate: (newText: IText) => Promise<void>;
 }
@@ -20,6 +23,8 @@ const ItemText: React.FC<ItemTextProps> = ({
     text,
     onEdit,
     onDelete,
+    onArchive,
+    onUnArchive,
     onCreate,
     onSelect,
     onSubmit,
@@ -43,12 +48,10 @@ const ItemText: React.FC<ItemTextProps> = ({
 
             try {
                 setLoadingImages(true);
-                console.log(`🔄 [ItemText] Cargando imágenes para texto ${data.id} (refreshKey: ${refreshKey})`);
                 const images = await textImageService.getImagesByTextId(data.id);
-                console.log(`✅ [ItemText] Imágenes cargadas:`, images.length);
                 setTextImages(images);
             } catch (error) {
-                console.warn(`⚠️ Could not load images for text ${data.id}:`, error);
+
                 setTextImages([]);
             } finally {
                 setLoadingImages(false);
@@ -62,10 +65,8 @@ const ItemText: React.FC<ItemTextProps> = ({
     useEffect(() => {
         const handleTextUpdate = (event: CustomEvent) => {
             const { textId, action } = event.detail;
-            console.log(`🎧 [ItemText] Evento recibido: textUpdated para textId=${textId}, action=${action}`);
 
             if (textId === data.id) {
-                console.log(`🔄 [ItemText] Es nuestro texto, refrescando imágenes...`);
                 handleRefreshImages();
             }
         };
@@ -97,7 +98,6 @@ const ItemText: React.FC<ItemTextProps> = ({
 
     // Función para forzar recarga de imágenes
     const handleRefreshImages = React.useCallback(() => {
-        console.log(`🔄 [ItemText] Forzando recarga de imágenes para texto ${data.id}`);
         setRefreshKey(prev => prev + 1);
     }, [data.id]);
 
@@ -106,12 +106,11 @@ const ItemText: React.FC<ItemTextProps> = ({
         try {
             await onCreate(newText);
             // Después de cualquier operación de creación/edición, refrescar imágenes
-            console.log(`🔄 [ItemText] Operación completada, refrescando imágenes...`);
             setTimeout(() => {
                 handleRefreshImages();
             }, 500); // Pequeño delay para permitir que el backend procese
         } catch (error) {
-            console.error(`❌ [ItemText] Error en onCreate:`, error);
+            // Handle error appropriately"
             throw error; // Re-lanzar para que el componente padre maneje el error
         }
     };
@@ -128,6 +127,9 @@ const ItemText: React.FC<ItemTextProps> = ({
             loadingImages={loadingImages}
             onSelect={onSelect}
             onSubmit={onSubmit}
+            onDelete={onDelete}
+            onArchive={onArchive}
+            onUnArchive={onUnArchive}
             userId={userId}
             onCreate={handleOnCreate}
         />

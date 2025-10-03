@@ -37,19 +37,19 @@ export class ProfileRepository {
    * ✅ Lógica unificada: USER solo su perfil, ADMIN cualquier perfil
    */
   async update(id: number, profile: IProfileDTO): Promise<IProfile> {
-    console.log("[ProfileRepository.update] ---");
+    // Profile update initiated
     console.log(
       "[ProfileRepository.update] Endpoint:",
       `${this.profileBaseUri}/${id}`
     );
-    console.log("[ProfileRepository.update] ID:", id);
-    console.log("[ProfileRepository.update] Profile DTO:", profile);
+    // Processing profile update
+    // Profile data prepared
 
     try {
       const res = await axios.put(`${this.profileBaseUri}/${id}`, profile, {
         headers: getAuthHeaders(),
       });
-      console.log("[ProfileRepository.update] Raw response:", res.data);
+      // Update successful
       return this.mapProfileResponse(res.data);
     } catch (error) {
       console.error("[ProfileRepository.update] Error:", error);
@@ -77,12 +77,12 @@ export class ProfileRepository {
    * PUT /api/v1/any/user/profile/me - Actualizar mi propio perfil
    */
   async updateMyProfile(profile: IProfileDTO): Promise<IProfile> {
-    console.log("[ProfileRepository.updateMyProfile] Profile DTO:", profile);
+    // My profile data prepared
 
     const res = await axios.put(`${this.profileBaseUri}/me`, profile, {
       headers: getAuthHeaders(),
     });
-    console.log("[ProfileRepository.updateMyProfile] Raw response:", res.data);
+    // My profile update successful
     return this.mapProfileResponse(res.data);
   }
 

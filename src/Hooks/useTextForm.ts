@@ -1,12 +1,12 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { log } from "@/core/logging/LoggerService";
-import { ITextItem } from "@/core/texts/IText";
+import { IText } from "@/core/texts/IText";
 import TextService from "@/core/texts/TextService";
 import TextImageService from "@/core/texts/images/TextImageService";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface UseTextFormProps {
-  text?: ITextItem;
+  text?: IText;
   show: boolean;
   userId?: number;
 }
@@ -140,10 +140,7 @@ export const useTextForm = ({
 
   // Submit del formulario
   const submitForm = useCallback(
-    async (
-      onSubmit: (text: ITextItem) => Promise<void>,
-      onClose: () => void
-    ) => {
+    async (onSubmit: (text: IText) => Promise<void>, onClose: () => void) => {
       if (isSubmitting) {
         log.warn(
           "useTextForm - Proceso de envío ya en curso. Abortando nuevo envío."
@@ -168,18 +165,21 @@ export const useTextForm = ({
           }
         });
 
-        // Step 1: Create or update the text
-        let savedText: ITextItem;
+        // Preparar datos del texto (sin llamar al API en edición)
+        let savedText: IText;
         if (text?.id) {
-          // Update existing text
-          savedText = await textService.updateText(text.id, {
-            userId,
+          log.info("🔄 [useTextForm] Modo EDICIÓN detectado");
+
+          // EDICIÓN: Preparar datos del texto actualizado (SIN llamar al API)
+          // El API se llama desde el componente padre (AdminTextView)
+          savedText = {
+            ...text,
+            id: text.id,
             title: title.trim(),
             message: message.trim(),
             category: category.trim(),
             images: [], // Images handled separately
-            name_image: text.name_image || "",
-          });
+          };
         } else {
           // Create new text
           savedText = await textService.createText({
@@ -201,7 +201,7 @@ export const useTextForm = ({
         }
 
         // Crear el objeto texto final
-        const resultText: ITextItem = {
+        const resultText: IText = {
           ...savedText,
           images: [], // Images are handled separately
         };

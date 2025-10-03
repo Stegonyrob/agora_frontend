@@ -6,11 +6,12 @@ import type { IEvent, IEventImage } from '../../../../../../core/events/IEvent';
 import type { IPostImage } from '../../../../../../core/posts/images/IPostImage';
 import type { IPost } from '../../../../../../core/posts/IPost';
 import type { ITextImage } from '../../../../../../core/texts/images/ITextImage';
-import type { ITextItemDTO } from '../../../../../../core/texts/ITextDTO';
+import type { IText } from '../../../../../../core/texts/IText';
 import { useImageLoader } from '../../../../../../hooks/useImageLoader';
 import type { RootState } from '../../../../../../redux/store';
 import ViewAttendeesButton from '../../attendees/ViewAttendeesButton';
 import ButtonArchiveGeneric from '../../button/archive/ButtonArchiveGeneric';
+import ButtonDeleteGeneric from '../../button/delete/ButtonDeleteGeneric';
 import ButtonEditGeneric from '../../button/edit/ButtonEditGeneric';
 import ImagePreviewGrid from '../../images/ImagePreviewGrid';
 import styles from './ItemGeneric.module.scss';
@@ -22,7 +23,7 @@ const EMPTY_TAGS_ARRAY: any[] = [];
 
 
 
-interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
+interface ItemGenericProps<T extends IPost | IEvent | IText> {
     item: T;
     id: number;
     title: string;
@@ -31,6 +32,7 @@ interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
     isArchived?: boolean;
     onSelect: (item: T) => void;
     onSubmit: (item: T) => void;
+    onDelete?: (id: number) => Promise<void>;
     userId: number;
     onCreate: (newItem: any) => Promise<void>;
     type: 'post' | 'event' | 'text';
@@ -44,7 +46,7 @@ interface ItemGenericProps<T extends IPost | IEvent | ITextItemDTO> {
 }
 
 
-const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
+const ItemGeneric = <T extends IPost | IEvent | IText>({
     item,
     id: propId,
     title: propTitle,
@@ -53,6 +55,7 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
     isArchived: propIsArchived,
     onSelect,
     onSubmit,
+    onDelete,
     userId,
     onCreate,
     type,
@@ -329,9 +332,9 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
                             item={item}
                             onSubmit={handleUpdate}
                         />
-                        {type !== 'text' && (
+                        {(type === 'post' || type === 'event' || type === 'text') && (
                             <ButtonArchiveGeneric
-                                type={type as 'post' | 'event'}
+                                type={type as 'post' | 'event' | 'text'}
                                 id={id}
                                 isArchived={archived}
                                 onArchive={async (id, type, archive) => {
@@ -345,6 +348,14 @@ const ItemGeneric = <T extends IPost | IEvent | ITextItemDTO>({
                                         alert('Error al archivar/desarchivar el ítem. Inténtalo de nuevo.');
                                     }
                                 }}
+                            />
+                        )}
+                        {onDelete && (
+                            <ButtonDeleteGeneric
+                                type={type}
+                                id={id}
+                                title={title}
+                                onDelete={onDelete}
                             />
                         )}
                         {type === 'event' && (

@@ -22,7 +22,7 @@ export default class ProfileService {
    * Obtener perfil por DTO (legacy)
    */
   async getProfileByDTO(id: number, dto: any): Promise<IProfile> {
-    console.log("[ProfileService] getProfileByDTO:", id, dto);
+    // Getting profile by DTO
     return await this.repository.getByDTO(id, dto);
   }
 
@@ -30,7 +30,7 @@ export default class ProfileService {
    * Actualizar perfil - Lógica unificada (USER propio / ADMIN cualquiera)
    */
   async updateProfile(id: number, profile: IProfileDTO): Promise<IProfile> {
-    console.log("[ProfileService] updateProfile:", id, profile);
+    // Updating profile
 
     // Validar datos básicos
     this.validateProfileData(profile);
@@ -42,7 +42,7 @@ export default class ProfileService {
    * Eliminar perfil - Lógica unificada con protecciones automáticas
    */
   async deleteProfile(id: number): Promise<void> {
-    console.log("[ProfileService] deleteProfile:", id);
+    // Deleting profile
     return await this.repository.delete(id);
   }
 
@@ -52,7 +52,7 @@ export default class ProfileService {
    * Actualizar mi propio perfil
    */
   async updateMyProfile(profile: IProfileDTO): Promise<IProfile> {
-    console.log("[ProfileService] updateMyProfile:", profile);
+    // Updating my profile
 
     // Validar datos básicos
     this.validateProfileData(profile);
@@ -64,7 +64,7 @@ export default class ProfileService {
    * Eliminar mi cuenta (GDPR)
    */
   async deleteMyAccount(): Promise<void> {
-    console.log("[ProfileService] deleteMyAccount - GDPR self-deletion");
+    // GDPR self-deletion initiated
     return await this.repository.deleteMyProfile();
   }
 
@@ -74,7 +74,7 @@ export default class ProfileService {
    * Obtener favoritos del usuario
    */
   async getFavorites(userId: number): Promise<any[]> {
-    console.log("[ProfileService] getFavorites:", userId);
+    // Getting favorites
     return await this.repository.getFavorites(userId);
   }
 
@@ -82,7 +82,7 @@ export default class ProfileService {
    * Añadir/quitar favorito (toggle)
    */
   async toggleFavorite(userId: number, postId: number): Promise<any> {
-    console.log("[ProfileService] toggleFavorite:", userId, postId);
+    // Toggling favorite
     return await this.repository.toggleFavorite(userId, { postId });
   }
 
@@ -90,7 +90,7 @@ export default class ProfileService {
    * Obtener favorito específico
    */
   async getFavoriteSpecific(userId: number, postId: number): Promise<any> {
-    console.log("[ProfileService] getFavoriteSpecific:", userId, postId);
+    // Getting specific favorite
     return await this.repository.getFavoriteSpecific(userId, { postId });
   }
 
@@ -98,7 +98,7 @@ export default class ProfileService {
    * Eliminar favorito
    */
   async removeFavorite(userId: number): Promise<void> {
-    console.log("[ProfileService] removeFavorite:", userId);
+    // Removing favorite
     return await this.repository.removeFavorite(userId);
   }
 

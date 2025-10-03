@@ -30,12 +30,10 @@ const ItemEvent: React.FC<ItemEventProps> = ({
     // Mostrar fecha como string ISO (ya no array)
     // Si el objeto viene anidado bajo 'item', usar ese objeto
     const data = (event && (event as any).item) ? (event as any).item : event;
-    // Debug: mostrar valores reales de fechas
-    console.log('[ItemEvent] id:', data.id, 'creationDate:', data.creationDate, 'eventDate:', data.eventDate);
 
     // Priorizar eventDate sobre creationDate
     const displayDate = data.eventDate || data.creationDate;
-    console.log('[ItemEvent] Fecha mostrada:', displayDate);
+
 
     return (
         <ItemGeneric

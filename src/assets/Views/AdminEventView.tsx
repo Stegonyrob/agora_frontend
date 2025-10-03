@@ -14,23 +14,12 @@ const AdminEventView = ({ userId }: { userId: number }) => {
     const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
     const dispatch = useDispatch();
 
-    console.log("🔧 AdminEventView - Props y sesión:", {
-        userId,
-        userIdType: typeof userId,
-        sessionUserId: sessionStorage.getItem("userId"),
-        sessionUserRole: sessionStorage.getItem("role"),
-        sessionUserName: sessionStorage.getItem("userName")
-    });
-
     useEffect(() => {
         const fetchEvents = async () => {
             try {
                 const eventService = new EventService();
                 const events = await eventService.fetchEvents();
                 setFetchedEvents(events ?? []);
-
-                // 🏷️ CARGAR TAGS: Cargar las tags de todos los eventos en el store Redux
-                console.log("🏷️ [AdminEventView] Cargando tags para todos los eventos...");
                 for (const event of events ?? []) {
                     if (event.id) {
                         dispatch(fetchTagsByEvent(event.id) as any);

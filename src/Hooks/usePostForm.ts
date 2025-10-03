@@ -1,7 +1,7 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import { log } from "@/core/logging/LoggerService";
 import { IPost } from "@/core/posts/IPost";
-import { IPostCreateDTO, IPostUpdateDTO } from "@/core/posts/IPostBackendDTO";
+import { IPostCreateDTO } from "@/core/posts/IPostBackendDTO";
 import PostService from "@/core/posts/PostService";
 import { PostImageService } from "@/core/posts/images/PostImageService";
 import { useCallback, useEffect, useState } from "react";
@@ -79,13 +79,17 @@ export const usePostForm = ({
       if (post?.id && show) {
         try {
           const postImages = await apiPostImage.getPostImages(post.id);
-          const existingImages: IImagePreview[] = postImages.map((img) => ({
-            url: PostImageService.buildImageUrlFromFilename(
-              img.imageName || ""
-            ),
-            isLoading: false,
-            isExisting: true,
-          }));
+          const existingImages: IImagePreview[] = postImages.map((img) => {
+            const preview: IImagePreview = {
+              url: apiPostImage.buildImageUrl(img.imagePath || ""),
+              isLoading: false,
+              isExisting: true,
+            };
+            if (typeof img.id === "number") {
+              preview.id = img.id;
+            }
+            return preview;
+          });
 
           setImagePreviews(existingImages);
         } catch (error) {
@@ -216,7 +220,10 @@ export const usePostForm = ({
       setGlobalError(null);
 
       try {
-        validateForm();
+        // Validar formulario antes de procesar
+        if (!validateForm()) {
+          return;
+        }
 
         const newImageFiles: File[] = [];
         const existingImageUrls: string[] = [];
@@ -232,58 +239,17 @@ export const usePostForm = ({
         let resultPost: IPost;
 
         if (post?.id) {
-          // EDICIÓN: Actualizar Posto sin tags y luego asociar tags
-          const updateData: IPostUpdateDTO = {
-            title: title.trim(),
-            message: message.trim(),
+          log.info("🔄 [usePostForm] Modo EDICIÓN detectado");
 
-            archived: false,
-          };
-          console.log(
-            "%cPAYLOAD ENVIADO (UPDATE Post):",
-            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-            JSON.stringify(updateData, null, 2)
-          );
-          // Build full IPostDTO for update
-          const updateDTO = {
-            ...post,
-            title: title.trim(),
-            message: message.trim(),
-            tags: tags.map((tag) => ({
-              id: tag.id,
-              name: tag.name,
-              archived: tag.archived,
-            })),
-            images: Array.isArray(post.images)
-              ? (post.images.filter((img) => typeof img === "object") as any)
-              : [],
-            isArchived: false,
-          };
-          const updatedPostDTO = await apiPost.updatePost(post.id, updateDTO);
-          // Asociar tags después de actualizar
-          try {
-            console.log(
-              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (UPDATE Post):",
-              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
-            );
-            console.log({ tags });
-            await uploadTagsToPost(post.id, tags);
-            console.log(
-              "%cTAGS ASOCIADAS (UPDATE Post):",
-              "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-              JSON.stringify({ tags }, null, 2)
-            );
-          } catch (err) {
-            log.error("usePostForm - Error asociando tags al Posto:", err);
-          }
+          // EDICIÓN: Preparar datos del post actualizado (SIN llamar al API)
+          // El API se llama desde el componente padre (AdminPostView)
           resultPost = {
             ...post,
-            id: updatedPostDTO.id,
-            title: updatedPostDTO.title,
-            message: updatedPostDTO.message,
-            capacity: updatedPostDTO.capacity,
-            isArchived: updatedPostDTO.archived,
+            id: post.id,
+            title: title.trim(),
+            message: message.trim(),
             tags: tags.map((tag) => tag.name),
+            isArchived: false,
           };
         } else {
           // CREACIÓN: Crear Posto sin tags y luego asociar tags
@@ -292,12 +258,6 @@ export const usePostForm = ({
             message: message.trim(),
             archived: false,
           };
-          console.log(
-            "%cPAYLOAD ENVIADO (CREATE Post):",
-            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-            JSON.stringify(createData, null, 2)
-          );
-          // Build minimal IPostDTO for creation
           const createDTO = {
             ...createData,
             id: 0,
@@ -325,41 +285,40 @@ export const usePostForm = ({
             description: "",
           };
           resultPost = await apiPost.createPost(createDTO);
-          // Asociar tags después de crear
           if (resultPost.id) {
-            console.log(
-              "%cTAGS EN usePostForm ANTES DE SUBMIT (CREATE Post):",
-              "color: #ff9800; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px; font-size: 1.1em;",
-              JSON.stringify(tags, null, 2)
-            );
-            console.log(
-              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (CREATE Post):",
-              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
-            );
             try {
-              console.log({ tags });
               await uploadTagsToPost(resultPost.id, tags);
-              console.log(
-                "%cTAGS ASOCIADAS (CREATE Post):",
-                "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-                JSON.stringify({ tags }, null, 2)
-              );
             } catch (err) {
               log.error("usePostForm - Error asociando tags al Posto:", err);
             }
           }
         }
 
+        // Subir nuevas imágenes y recargar imágenes desde backend
         if (newImageFiles.length > 0 && resultPost.id) {
           try {
-            console.log("📤 Subiendo nuevas imágenes:", newImageFiles);
             await apiPostImage.uploadPostImages(resultPost.id, newImageFiles);
-            resultPost = await apiPost.getPostById(resultPost.id);
           } catch (imageError: any) {
             log.error("usePostForm - Error subiendo imágenes:", imageError);
             setGlobalError(
               `Posto guardado, pero error subiendo imágenes: ${imageError.message}`
             );
+          }
+        }
+        // Recargar imágenes desde backend tras crear/editar
+        if (resultPost.id) {
+          try {
+            const postImages = await apiPostImage.getPostImages(resultPost.id);
+            const refreshedImages: IImagePreview[] = postImages.map((img) => ({
+              url: PostImageService.buildImageUrlFromFilename(
+                img.imageName || ""
+              ),
+              isLoading: false,
+              isExisting: true,
+            }));
+            setImagePreviews(refreshedImages);
+          } catch (error) {
+            log.error("usePostForm - Error recargando imágenes:", error);
           }
         }
 

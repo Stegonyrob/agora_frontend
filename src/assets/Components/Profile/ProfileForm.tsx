@@ -72,33 +72,19 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ profile, onSubmit, onClose, s
 
   const updateAvatarInForm = async (avatar: IAvatar) => {
     try {
-      console.log('🖼️ ProfileForm - updateAvatarInForm - Entrada:', avatar);
-
       if (!avatar || !avatar.id) {
-        console.error('❌ ProfileForm - Avatar inválido:', avatar);
         return;
       }
-
-      console.log('🖼️ ProfileForm - updateAvatarInForm - avatar.id:', avatar.id, typeof avatar.id);
 
       const avatarUrl = await getAvatarImageUrl(avatar);
 
       setFormState(prev => {
-        console.log('🖼️ ProfileForm - FormState anterior:', prev);
-
         const newState = {
           ...prev,
           avatar: avatarUrl,
           avatar_id: avatar.id,
           avatarId: avatar.id  // También para el backend
         };
-
-        console.log('✅ ProfileForm - FormState actualizado:', {
-          avatar_id: newState.avatar_id,
-          avatar: newState.avatar,
-          avatar_id_type: typeof newState.avatar_id
-        });
-        console.log('✅ ProfileForm - FormState completo:', newState);
 
         return newState;
       });

@@ -49,17 +49,16 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
     const fetchProfileData = async (id: number, isAdmin: boolean) => {
         if (!id) {
-            console.error("Invalid user ID");
+            // Error: Invalid user ID
             return;
         }
 
         try {
-            const fetchedProfile = await profileService.getProfileById(id, isAdmin);
+            const fetchedProfile = await profileService.getProfileById(id);
             if (!fetchedProfile) {
                 console.error("Profile data not found");
                 return;
             }
-            console.log('🔍 ProfileView - Profile fetched:', fetchedProfile);
             setProfile(fetchedProfile);
 
             // También actualizar el avatar en la sesión si es necesario
@@ -74,20 +73,15 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
         try {
             if (profileData.avatar_id) {
-                console.log('🖼️ ProfileView - Actualizando avatar de sesión inicial, avatar_id:', profileData.avatar_id);
-
                 const targetAvatar = avatars.find(avatar => avatar.id === profileData.avatar_id);
 
                 if (targetAvatar) {
                     const avatarUrl = await getAvatarImageUrl(targetAvatar);
-                    console.log('🖼️ ProfileView - Actualizando sesión con URL:', avatarUrl);
                     dispatch(updateAvatarUrl(avatarUrl));
                 } else if (profileData.avatar && profileData.avatar.trim() !== '') {
-                    console.log('🖼️ ProfileView - Actualizando sesión con avatar personalizado:', profileData.avatar);
                     dispatch(updateAvatarUrl(profileData.avatar));
                 }
             } else if (profileData.avatar && profileData.avatar.trim() !== '') {
-                console.log('🖼️ ProfileView - Actualizando sesión con avatar directo:', profileData.avatar);
                 dispatch(updateAvatarUrl(profileData.avatar));
             }
         } catch (error) {
@@ -113,26 +107,26 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
             // Si se actualizó el avatar, también actualizar la sesión
             if (updatedData.avatar_id && isLoaded) {
-                console.log('🖼️ ProfileView - Actualizando avatar en sesión, avatar_id:', updatedData.avatar_id);
+                // Actualizando avatar en sesión
 
                 // Buscar el avatar específico por ID
                 const targetAvatar = avatars.find(avatar => avatar.id === updatedData.avatar_id);
 
                 if (targetAvatar) {
-                    console.log('🖼️ ProfileView - Avatar encontrado:', targetAvatar);
+                    // Avatar encontrado
                     try {
                         const avatarUrl = await getAvatarImageUrl(targetAvatar);
-                        console.log('🖼️ ProfileView - URL de avatar generada:', avatarUrl);
+                        // URL de avatar generada
                         dispatch(updateAvatarUrl(avatarUrl));
                     } catch (error) {
                         console.error('❌ ProfileView - Error generando URL de avatar:', error);
                     }
                 } else if (updatedData.avatar && updatedData.avatar.trim() !== '') {
                     // Si es un avatar personalizado (URL directa)
-                    console.log('🖼️ ProfileView - Usando avatar personalizado:', updatedData.avatar);
+                    // Usando avatar personalizado
                     dispatch(updateAvatarUrl(updatedData.avatar));
                 } else if (defaultAvatar) {
-                    console.log('🖼️ ProfileView - Usando avatar por defecto');
+                    // Usando avatar por defecto
                     try {
                         const avatarUrl = await getAvatarImageUrl(defaultAvatar);
                         dispatch(updateAvatarUrl(avatarUrl));
@@ -169,7 +163,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
                 onSelect={(profile: IProfile) => console.log("Profile selected:", profile)}
                 onClose={handleCloseProfileForm}
                 show={showProfileForm}
-                setUserId={(value: React.SetStateAction<number>) => console.log("User ID set:", value)}
+                setUserId={() => { }}
             />
 
             {/* AdminManager como función secundaria debajo del perfil */}

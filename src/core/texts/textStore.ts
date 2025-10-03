@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ITextItem } from "./IText";
-import { ITextItemDTO } from "./ITextDTO";
+import { IText } from "./IText";
+import { ITextDTO } from "./ITextDTO";
 import TextService from "./TextService";
 
 const service = new TextService();
@@ -12,12 +12,12 @@ export const fetchTexts = createAsyncThunk(
 
 export const createText = createAsyncThunk(
   "texts/createText",
-  async (text: ITextItemDTO) => await service.createText(text)
+  async (text: ITextDTO) => await service.createText(text)
 );
 
 export const updateText = createAsyncThunk(
   "texts/updateText",
-  async ({ id, text }: { id: number; text: ITextItemDTO }) =>
+  async ({ id, text }: { id: number; text: ITextDTO }) =>
     await service.updateText(id, text)
 );
 
@@ -30,7 +30,7 @@ export const deleteText = createAsyncThunk(
 );
 
 interface TextsState {
-  texts: ITextItem[];
+  texts: IText[];
   isLoaded: boolean;
 }
 

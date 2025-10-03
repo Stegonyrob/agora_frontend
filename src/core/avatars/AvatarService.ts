@@ -19,9 +19,6 @@ export default class AvatarService {
    * Obtiene el avatar por defecto del sistema
    */
   async getDefaultAvatar(): Promise<IAvatar> {
-    console.log(
-      "🔄 AvatarService - Obteniendo avatar por defecto del backend..."
-    );
     return await this.repository.getDefaultAvatar();
   }
 
@@ -66,10 +63,7 @@ export default class AvatarService {
    * Sube un nuevo avatar personalizado
    */
   async uploadCustomAvatar(file: File, userId: number): Promise<IAvatar> {
-    console.log("📤 AvatarService - uploadCustomAvatar iniciado:", {
-      file: file.name,
-      userId,
-    });
+    // Avatar upload initiated
 
     const formData = new FormData();
     formData.append("file", file); // Backend expects @RequestParam("file")
@@ -78,11 +72,8 @@ export default class AvatarService {
     const displayName = `Avatar personalizado - ${file.name}`;
     formData.append("displayName", displayName);
 
-    console.log(
-      "📤 AvatarService - FormData creado con campos:",
-      Array.from(formData.keys())
-    );
-    console.log("📤 AvatarService - Enviando file y displayName al backend");
+    // FormData prepared
+    // Sending file and displayName to backend
 
     return await this.repository.uploadCustomAvatar(formData);
   }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from '../ButtonIcons.module.scss';
 
-type ArchiveType = "post" | "event";
+type ArchiveType = "post" | "event" | "text";
 
 interface ButtonArchiveGenericProps {
     type: ArchiveType;

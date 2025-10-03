@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import PostForm from '../../assets/Components/Blog/admin/button/create/modal/PostForm';
+import PostForm from '../../assets/Components/Blog/admin/button/create-edit/PostForm';
 
 describe('Post CRUD (Admin)', () => {
     it('renders post creation form and submits', () => {

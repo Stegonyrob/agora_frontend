@@ -13,9 +13,7 @@ export default class AdminService {
    * Obtener todos los administradores
    */
   async getAllAdmins(): Promise<IAdmin[]> {
-    console.log("[AdminService] getAllAdmins: llamando a repository.getAll()");
     const result = await this.repository.getAll();
-    console.log("[AdminService] getAllAdmins: resultado", result);
     return result;
   }
 
@@ -23,8 +21,6 @@ export default class AdminService {
    * Crear un nuevo administrador
    */
   async createAdmin(admin: IAdminDTO): Promise<IAdmin> {
-    console.log("[AdminService] createAdmin: datos recibidos", admin);
-
     // Validar campos obligatorios
     this.validateAdminData(admin);
 

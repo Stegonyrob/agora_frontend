@@ -1,9 +1,9 @@
 import DOMPurify from "dompurify";
 import React, { useState } from "react";
+import EventForm from "../create-edit/EventForm";
+import PostForm from "../create-edit/PostForm";
+import TextForm from "../create-edit/TextForm";
 import styles from "./ButtonCreateGeneric.module.scss";
-import EventForm from "./modal/EventForm";
-import PostForm from "./modal/PostForm";
-import TextForm from "./modal/TextForm";
 
 interface ButtonCreateGenericProps {
     type: "post" | "event" | "text";
@@ -13,43 +13,20 @@ interface ButtonCreateGenericProps {
 
 
 
-const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmit, userId }) => {
-    const [show, setShow] = useState(false);
+const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmit: handleSubmit, userId }) => {
+    const [showForm, setShowForm] = useState(false);
 
-    console.log("🔧 ButtonCreateGeneric - Props recibidos:", {
-        type,
-        userId,
-        userIdType: typeof userId,
-        sessionUserId: sessionStorage.getItem("userId"),
-        sessionUserRole: sessionStorage.getItem("role")
-    });
+    const handleOpenForm = () => setShowForm(true);
+    const handleCloseForm = () => setShowForm(false);
 
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
-
-    // Handler para crear post, evento o texto
-    const handleCreate = async (newItem: any) => {
+    const handleCreateItem = async (newItem: any) => {
         if (!newItem) {
             alert("Faltan datos para crear.");
             return;
         }
 
-        // Sanitizes fields based on type
-        const sanitizeItemFields = (item: any, type: string): any => {
-            const sanitizedItem = { ...item };
-            if (item.title) {
-                sanitizedItem.title = DOMPurify.sanitize(item.title);
-            }
-            if (type === "post" && item.message) {
-                sanitizedItem.message = DOMPurify.sanitize(item.message);
-            }
-            if ((type === "event" || type === "text") && item.description) {
-                sanitizedItem.description = DOMPurify.sanitize(item.description);
-            }
-            return sanitizedItem;
-        };
+        const sanitizedItem = sanitizeItemFields(newItem, type);
 
-        const userName = sessionStorage.getItem("userName") || "";
         const userRole = sessionStorage.getItem("role") || "";
 
         if (userRole !== "ROLE_ADMIN") {
@@ -57,21 +34,33 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
             return;
         }
 
-        const item = {
-            ...sanitizeItemFields(newItem, type),
-            userId,
-            userName,
+        const itemWithUserId = {
+            ...sanitizedItem,
+            userId: userId,
+            userName: sessionStorage.getItem("userName") || "",
         };
 
         try {
-            await onSubmit(item);
-            handleClose();
+            await handleSubmit(itemWithUserId);
+            handleCloseForm();
         } catch (error) {
             alert("No se pudo crear, inténtelo de nuevo más tarde.");
         }
-    }; return (
+    };
+
+    const sanitizeItemFields = (item: any, type: string): any => {
+        const sanitizedItem = { ...item };
+        if (type === "post" && item.message) {
+            sanitizedItem.message = DOMPurify.sanitize(item.message);
+        } else if (type === "event" || type === "text") {
+            sanitizedItem.description = DOMPurify.sanitize(item.description);
+        }
+        return sanitizedItem;
+    };
+
+    return (
         <div className={styles.container}>
-            <button className={styles.buttonCreate} onClick={handleShow}>
+            <button className={styles.buttonCreate} onClick={handleOpenForm}>
                 {type === "post"
                     ? "Crear Nuevo Post"
                     : type === "event"
@@ -80,27 +69,29 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
             </button>
             {type === "post" && (
                 <PostForm
-                    onSubmit={handleCreate}
-                    onClose={handleClose}
-                    show={show}
+                    onSubmit={handleCreateItem}
+                    onClose={handleCloseForm}
+                    show={showForm}
                     userId={userId}
-                    userName={sessionStorage.getItem("userName") || ""}
+                    mode="create"
                 />
             )}
             {type === "event" && (
                 <EventForm
-                    onSubmit={handleCreate}
-                    onClose={handleClose}
-                    show={show}
+                    onSubmit={handleCreateItem}
+                    onClose={handleCloseForm}
+                    show={showForm}
                     userId={userId}
+                    mode="create"
                 />
             )}
             {type === "text" && (
                 <TextForm
-                    onSubmit={handleCreate}
-                    onClose={handleClose}
-                    show={show}
+                    onSubmit={handleCreateItem}
+                    onClose={handleCloseForm}
+                    show={showForm}
                     userId={userId}
+                    mode="create"
                 />
             )}
         </div>

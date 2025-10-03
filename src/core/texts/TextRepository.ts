@@ -1,36 +1,55 @@
 import axios from "axios";
 import { getAuthHeaders } from "../auth/AuthHeaders";
-import { ITextItem } from "./IText";
-import { ITextItemDTO } from "./ITextDTO";
+import { IText } from "./IText";
+import { ITextDTO } from "./ITextDTO";
 
 export class TextRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_TEXTS;
 
-  async getAll(): Promise<ITextItem[]> {
+  async getAll(): Promise<IText[]> {
     const res = await axios.get(this.uri, { headers: getAuthHeaders() });
     return res.data;
   }
 
-  async getById(id: number): Promise<ITextItem> {
+  async getById(id: number): Promise<IText> {
     const res = await axios.get(`${this.uri}/${id}`, {
       headers: getAuthHeaders(),
     });
     return res.data;
   }
 
-  async create(text: ITextItemDTO): Promise<ITextItem> {
-    const res = await axios.post(this.uri, text, { headers: getAuthHeaders() });
+  async create(text: ITextDTO): Promise<IText> {
+    // Usar el endpoint de admin para crear textos
+    const adminEndpoint = this.uri.replace("/all/texts", "/admin/texts");
+    const res = await axios.post(adminEndpoint, text, {
+      headers: getAuthHeaders(),
+    });
     return res.data;
   }
 
-  async update(id: number, text: ITextItemDTO): Promise<ITextItem> {
-    const res = await axios.put(`${this.uri}/${id}`, text, {
+  async update(id: number, text: ITextDTO): Promise<IText> {
+    // Usar el endpoint de admin para actualizar textos
+    const adminEndpoint = this.uri.replace("/all/texts", "/admin/texts");
+    const res = await axios.put(`${adminEndpoint}/${id}`, text, {
       headers: getAuthHeaders(),
     });
     return res.data;
   }
 
   async delete(id: number): Promise<void> {
-    await axios.delete(`${this.uri}/${id}`, { headers: getAuthHeaders() });
+    // Usar el endpoint de admin para eliminar textos
+    const adminEndpoint = this.uri.replace("/all/texts", "/admin/texts");
+    await axios.delete(`${adminEndpoint}/${id}`, { headers: getAuthHeaders() });
+  }
+
+  // Archivar/desarchivar un texto (solo admin)
+  async archive(textId: number, archive: boolean): Promise<void> {
+    // Usar el endpoint de admin para archivar textos
+    const adminEndpoint = this.uri.replace("/all/texts", "/admin/texts");
+    await axios.patch(
+      `${adminEndpoint}/${textId}/archive?archive=${archive}`,
+      null,
+      { headers: getAuthHeaders() }
+    );
   }
 }

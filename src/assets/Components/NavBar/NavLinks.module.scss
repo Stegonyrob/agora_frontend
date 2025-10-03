@@ -26,8 +26,7 @@
     &.active {
       color: $brand-yellow;
       border-bottom: 0.28rem solid $brand-yellow;
-      background: #181818;
-      box-shadow: 0 2px 8px 0 rgba(255, 221, 64, 0.08);
+
     }
   }
   @media (max-width: $breakpoint-tablet) {

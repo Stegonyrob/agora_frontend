@@ -35,7 +35,6 @@ const AdminManager: React.FC = () => {
     const adminService = new AdminService();
 
     useEffect(() => {
-        console.log("[AdminManager] useEffect: Cargando admins...");
         loadAdmins();
     }, []);
 
@@ -43,9 +42,7 @@ const AdminManager: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            console.log("[AdminManager] Llamando a adminService.getAllAdmins()...");
             const admins = await adminService.getAllAdmins();
-            console.log("[AdminManager] Respuesta de getAllAdmins:", admins);
             setAdmins(admins);
         } catch (err: any) {
             console.error("[AdminManager] Error al cargar administradores:", err);
@@ -77,10 +74,6 @@ const AdminManager: React.FC = () => {
                 avatarId: null,
             };
 
-            console.log(
-                "[AdminManager] handleCreate - Datos enviados al backend:",
-                payload
-            );
             await adminService.createAdmin(payload);
 
             // Limpiar formulario después de crear exitosamente
@@ -142,7 +135,7 @@ const AdminManager: React.FC = () => {
         }));
 
         // Solo log cuando hay cambios reales en los datos (evita spam en consola)
-        console.log("[AdminManager] adminList recalculado:", mappedList.length, "admins");
+
         return mappedList;
     }, [admins]); // Solo se recalcula cuando cambian los admins, no en cada keystroke
 

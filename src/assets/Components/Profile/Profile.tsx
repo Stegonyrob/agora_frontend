@@ -14,41 +14,25 @@ const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
 
     useEffect(() => {
         const loadAvatarUrl = async () => {
-            console.log("🔍 Profile - Datos del perfil:", profile);
-            console.log("🔍 Profile - profile?.avatar:", profile?.avatar);
-            console.log("🔍 Profile - profile?.avatar_id:", profile?.avatar_id);
-            console.log("🔍 Profile - isLoaded:", isLoaded);
-            console.log("🔍 Profile - avatars.length:", avatars.length);
-
             if (profile?.avatar) {
-                console.log("🖼️ Profile - Avatar URL desde profile:", profile.avatar);
                 setAvatarUrl(profile.avatar);
             } else if (profile?.avatar_id) {
                 try {
-                    console.log("🖼️ Profile - Obteniendo URL para avatar_id:", profile.avatar_id);
-
                     // Si los avatares no están cargados, esperar un poco y reintentar
                     if (!isLoaded || avatars.length === 0) {
-                        console.log("🔄 Profile - Avatares no cargados aún, esperando...");
                         return;
                     }
 
                     // Buscar el avatar específico por ID
                     const targetAvatar = avatars.find(avatar => avatar.id === profile.avatar_id);
-                    console.log("🔍 Profile - Avatar buscado con ID:", profile.avatar_id);
-                    console.log("🔍 Profile - Avatar encontrado:", targetAvatar);
 
                     if (targetAvatar) {
-                        console.log("🖼️ Profile - Avatar encontrado:", targetAvatar);
                         const url = await getAvatarImageUrl(targetAvatar);
-                        console.log("🖼️ Profile - URL generada:", url);
                         setAvatarUrl(url);
                     } else if (defaultAvatar) {
-                        console.log("🖼️ Profile - Avatar no encontrado, usando defaultAvatar");
                         const url = await getAvatarImageUrl(defaultAvatar);
                         setAvatarUrl(url);
                     } else {
-                        console.log("🖼️ Profile - No se encontró avatar, usando genérico");
                         setAvatarUrl("/images/avatarGeneric.png");
                     }
                 } catch (error) {

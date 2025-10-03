@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import EventForm from '../../assets/Components/Blog/admin/button/create/modal/EventForm';
+import EventForm from '../../assets/Components/Blog/admin/button/create-edit/EventForm';
 
 describe('Event CRUD (Admin)', () => {
     it('renders event creation form and submits', () => {

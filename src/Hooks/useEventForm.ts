@@ -1,10 +1,7 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
 import EventService from "@/core/events/EventService";
 import { IEvent } from "@/core/events/IEvent";
-import {
-  IEventCreateDTO,
-  IEventUpdateDTO,
-} from "@/core/events/IEventBackendDTO";
+import { IEventCreateDTO } from "@/core/events/IEventBackendDTO";
 import { EventImageService } from "@/core/events/images/EventImageService";
 import { log } from "@/core/logging/LoggerService";
 import { useCallback, useEffect, useState } from "react";
@@ -22,6 +19,19 @@ export const useEventForm = ({
   show,
   userId: propUserId,
 }: UseEventFormProps) => {
+  // DEBUG: Log para entender los props recibidos
+  useEffect(() => {
+    if (show) {
+      log.info("🔍 [useEventForm] Hook inicializado", {
+        hasEvent: !!event,
+        eventId: event?.id,
+        eventTitle: event?.title,
+        isCreateMode: !event?.id,
+        show,
+      });
+    }
+  }, [show, event]);
+
   // Estados del formulario
   const [title, setTitle] = useState(event?.title || "");
   const [message, setMessage] = useState(event?.message || "");
@@ -80,11 +90,17 @@ export const useEventForm = ({
         try {
           const eventImages = await apiEventImage.getEventImages(event.id);
 
-          const existingImages: IImagePreview[] = eventImages.map((img) => ({
-            url: apiEventImage.buildImageUrlFromFilename(img.imageName || ""),
-            isLoading: false,
-            isExisting: true,
-          }));
+          const existingImages: IImagePreview[] = eventImages.map((img) => {
+            const preview: IImagePreview = {
+              url: apiEventImage.buildImageUrlFromPath(img.imagePath || ""),
+              isLoading: false,
+              isExisting: true,
+            };
+            if (typeof img.id === "number") {
+              preview.id = img.id;
+            }
+            return preview;
+          });
 
           setImagePreviews(existingImages);
         } catch (error) {
@@ -229,7 +245,10 @@ export const useEventForm = ({
       setGlobalError(null);
 
       try {
-        validateForm();
+        // Validar formulario antes de procesar
+        if (!validateForm()) {
+          return;
+        }
 
         const newImageFiles: File[] = [];
         const existingImageUrls: string[] = [];
@@ -245,49 +264,24 @@ export const useEventForm = ({
         let resultEvent: IEvent;
 
         if (event?.id) {
-          // EDICIÓN: Actualizar evento sin tags y luego asociar tags
-          const updateData: IEventUpdateDTO = {
-            title: title.trim(),
-            message: message.trim(),
-            capacity: Number(capacity) || undefined,
-            archived: false,
-            eventTime: eventTime || undefined,
-          };
-          console.log(
-            "%cPAYLOAD ENVIADO (UPDATE EVENT):",
-            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-            JSON.stringify(updateData, null, 2)
-          );
-          const updatedEventDTO = await apiEvent.updateEvent(
-            event.id,
-            updateData
-          );
-          // Asociar tags después de actualizar
-          try {
-            console.log(
-              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (UPDATE EVENT):",
-              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
-            );
-            console.log({ tags });
-            await uploadTagsToEvent(event.id, tags);
-            console.log(
-              "%cTAGS ASOCIADAS (UPDATE EVENT):",
-              "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-              JSON.stringify({ tags }, null, 2)
-            );
-          } catch (err) {
-            log.error("useEventForm - Error asociando tags al evento:", err);
-          }
+          log.info("🔄 [useEventForm] Modo EDICIÓN detectado");
+
+          // EDICIÓN: Preparar datos del evento actualizado (SIN llamar al API)
+          // El API se llama desde el componente padre (AdminEventView)
           resultEvent = {
             ...event,
-            id: updatedEventDTO.id,
-            title: updatedEventDTO.title,
-            message: updatedEventDTO.message,
-            capacity: updatedEventDTO.capacity,
-            isArchived: updatedEventDTO.archived,
+            id: event.id,
+            title: title.trim(),
+            message: message.trim(),
+            location: location.trim(),
+            capacity: Number(capacity) || 0,
+            eventDate: eventDate,
+            eventTime: eventTime || undefined,
+            link: link.trim(),
             tags: tags,
           };
         } else {
+          log.info("🆕 [useEventForm] Modo CREACIÓN detectado");
           // CREACIÓN: Crear evento sin tags y luego asociar tags
           const createData: IEventCreateDTO = {
             title: title.trim(),
@@ -297,50 +291,44 @@ export const useEventForm = ({
             eventTime: eventTime || undefined,
             archived: false,
           };
-          console.log(
-            "%cPAYLOAD ENVIADO (CREATE EVENT):",
-            "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-            JSON.stringify(createData, null, 2)
-          );
           resultEvent = await apiEvent.createEvent(createData);
-          // Asociar tags después de crear
           if (resultEvent.id) {
-            console.log(
-              "%cTAGS EN useEventForm ANTES DE SUBMIT (CREATE EVENT):",
-              "color: #ff9800; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px; font-size: 1.1em;",
-              JSON.stringify(tags, null, 2)
-            );
-            console.log(
-              "%cPAYLOAD DE TAGS ENVIADO AL BACKEND (CREATE EVENT):",
-              "color: #00e676; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;"
-            );
             try {
-              console.log({ tags });
               await uploadTagsToEvent(resultEvent.id, tags);
-              console.log(
-                "%cTAGS ASOCIADAS (CREATE EVENT):",
-                "color: #00c853; font-weight: bold; background: #222; padding:2px 6px; border-radius:3px;",
-                JSON.stringify({ tags }, null, 2)
-              );
             } catch (err) {
               log.error("useEventForm - Error asociando tags al evento:", err);
             }
           }
         }
 
+        // Subir nuevas imágenes y recargar imágenes desde backend
         if (newImageFiles.length > 0 && resultEvent.id) {
           try {
-            console.log("📤 Subiendo nuevas imágenes:", newImageFiles);
             await apiEventImage.uploadEventImages(
               resultEvent.id,
               newImageFiles
             );
-            resultEvent = await apiEvent.fetchEventById(resultEvent.id);
           } catch (imageError: any) {
             log.error("useEventForm - Error subiendo imágenes:", imageError);
             setGlobalError(
               `Evento guardado, pero error subiendo imágenes: ${imageError.message}`
             );
+          }
+        }
+        // Recargar imágenes desde backend tras crear/editar
+        if (resultEvent.id) {
+          try {
+            const eventImages = await apiEventImage.getEventImages(
+              resultEvent.id
+            );
+            const refreshedImages: IImagePreview[] = eventImages.map((img) => ({
+              url: apiEventImage.buildImageUrlFromFilename(img.imageName || ""),
+              isLoading: false,
+              isExisting: true,
+            }));
+            setImagePreviews(refreshedImages);
+          } catch (error) {
+            log.error("useEventForm - Error recargando imágenes:", error);
           }
         }
 

@@ -1,17 +1,17 @@
 
-import { ITextItem } from "@/core/texts/IText";
-import { ITextItemDTO } from "@/core/texts/ITextDTO";
+import { IText } from "@/core/texts/IText";
+import { ITextDTO } from "@/core/texts/ITextDTO";
 import TextService from "@/core/texts/TextService";
 import { useEffect, useState } from "react";
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";
 import styles from "../Views/scss/Views.module.scss";
 const AdminTextView = ({ userId }: { userId: number }) => {
-    const [fetchedTexts, setFetchedTexts] = useState<ITextItem[]>([]);
-    const [selectedText, setSelectedText] = useState<ITextItem | null>(null);
+    const [fetchedTexts, setFetchedTexts] = useState<IText[]>([]);
+    const [selectedText, setSelectedText] = useState<IText | null>(null);
 
     // 🔄 HELPER: Función para ordenar textos (más nuevo primero)
     // Si quieres ordenar por id descendente (más reciente primero):
-    const sortTextsByDate = (texts: ITextItem[]): ITextItem[] => {
+    const sortTextsByDate = (texts: IText[]): IText[] => {
         return texts.sort((a, b) => b.id - a.id);
     };
 
@@ -32,11 +32,11 @@ const AdminTextView = ({ userId }: { userId: number }) => {
         fetchTexts();
     }, []);
 
-    const handleSelect = (item: ITextItem) => setSelectedText(item);
+    const handleSelect = (item: IText) => setSelectedText(item);
 
-    const handleUpdate = async (text: ITextItem) => {
+    const handleUpdate = async (text: IText) => {
         try {
-            console.log("🔄 [AdminTextView] Recibiendo texto actualizado:", text);
+            // Texto actualizado recibido
 
             const textService = new TextService();
 
@@ -44,15 +44,15 @@ const AdminTextView = ({ userId }: { userId: number }) => {
             let updatedTextWithImages = { ...text };
             if (text.id) {
                 try {
-                    console.log("🖼️ [AdminTextView] Recargando imágenes del backend para texto:", text.id);
+                    // Recargando imágenes del backend
                     const textWithImages = await textService.getTextById(text.id);
                     updatedTextWithImages = {
                         ...text,
                         images: textWithImages.images || []
                     };
-                    console.log("✅ [AdminTextView] Imágenes recargadas:", updatedTextWithImages.images.length);
+                    // Imágenes recargadas exitosamente
                 } catch (imageError) {
-                    console.warn("⚠️ [AdminTextView] Error recargando imágenes:", imageError);
+                    // Error recargando imágenes
                     // Continuar sin imágenes si falla
                 }
             }
@@ -65,7 +65,7 @@ const AdminTextView = ({ userId }: { userId: number }) => {
             });
 
             // Crear un DTO limpio del texto sin las tags (las tags se manejan separadamente)
-            const textDTO: ITextItemDTO = {
+            const textDTO: ITextDTO = {
                 userId: userId || 0, // Usar el userId del componente
                 title: text.title,
                 message: text.message,
@@ -89,15 +89,15 @@ const AdminTextView = ({ userId }: { userId: number }) => {
         }
     };
 
-    const handleCreate = async (newText: Partial<ITextItem>) => {
+    const handleCreate = async (newText: Partial<IText>) => {
         try {
-            console.log("📝 AdminTextView - Nuevo texto recibido:", newText);
+            // Nuevo texto recibido
 
             // Manejar eliminación de imágenes de texto
             if ((newText as any).type === 'textDelete' && (newText as any).imageId) {
                 const textImageService = new (await import('@/core/texts/images/TextImageService')).default();
                 await textImageService.deleteTextImage((newText as any).imageId);
-                console.log(`✅ Imagen de texto ${(newText as any).imageId} eliminada`);
+                // Imagen eliminada exitosamente
                 return;
             }
 
@@ -108,7 +108,7 @@ const AdminTextView = ({ userId }: { userId: number }) => {
                 if (exists) {
                     return prev.map(t => t.id === newText.id ? { ...t, ...newText } : t);
                 } else {
-                    return [{ ...(newText as ITextItem) }, ...prev];
+                    return [{ ...(newText as IText) }, ...prev];
                 }
             });
         } catch (error) {
@@ -126,6 +126,36 @@ const AdminTextView = ({ userId }: { userId: number }) => {
         }
     };
 
+    const handleArchive = async (textId: number): Promise<boolean> => {
+        try {
+            const textService = new TextService();
+            await textService.archiveText(textId, true);
+            // Actualizar el estado local del texto
+            setFetchedTexts(prev => prev.map(text =>
+                text.id === textId ? { ...text, archived: true } : text
+            ));
+            return true;
+        } catch (error) {
+            console.error("Error archiving text:", error);
+            return false;
+        }
+    };
+
+    const handleUnArchive = async (textId: number): Promise<boolean> => {
+        try {
+            const textService = new TextService();
+            await textService.unArchiveText(textId);
+            // Actualizar el estado local del texto
+            setFetchedTexts(prev => prev.map(text =>
+                text.id === textId ? { ...text, archived: false } : text
+            ));
+            return true;
+        } catch (error) {
+            console.error("Error unarchiving text:", error);
+            return false;
+        }
+    };
+
     return (
         <div>     <h1 className={styles.centeredTitle}>Admin TextView</h1>
 
@@ -134,6 +164,8 @@ const AdminTextView = ({ userId }: { userId: number }) => {
                 type="text"
                 onSelect={handleSelect}
                 onDelete={handleDelete}
+                onArchive={handleArchive}
+                onUnArchive={handleUnArchive}
                 onEdit={handleUpdate}
                 onSubmit={handleUpdate}
                 onCreate={handleCreate}

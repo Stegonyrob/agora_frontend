@@ -45,6 +45,8 @@ interface ListAdminPropsText {
     onSelect: (item: IText) => void;
     onDelete: (id: number) => Promise<void>;
     onEdit: (item: IText) => void;
+    onArchive?: (id: number) => Promise<boolean>;
+    onUnArchive?: (id: number) => Promise<boolean>;
     onSubmit: (item: IText) => void;
     onCreate: (newItem: Partial<IText>) => Promise<void>;
     userId: number;
@@ -195,7 +197,8 @@ const ListAdmin = (props: ListAdminProps) => {
                         onSelect={onSelect}
                         onSubmit={onSubmit}
                         userId={userId}
-                        onCreate={onCreate} id={0} title={''} />
+                        onCreate={onCreate} id={0} title={''}
+                        onArchive={onArchive} onUnArchive={onUnArchive} />
                 ))}
             </div>
         </div>
