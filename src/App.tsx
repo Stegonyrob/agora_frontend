@@ -16,7 +16,7 @@ import { SWRConfig } from "swr";
 import { useFontSize } from "./hooks/useFontSize";
 import swrConfig from "./swrConfig";
 // 🛡️ Error Boundary para capturar errores
-import ErrorBoundary from "./components/common/ErrorBoundary";
+import ErrorBoundary from "./assets/Components/Error/ErrorBoundary";
 // 📝 Logger para logging estructurado
 import { logger } from "./core/logging/LoggerService";
 

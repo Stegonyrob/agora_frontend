@@ -10,7 +10,7 @@
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, Button, Card, Container } from 'react-bootstrap';
-import { logger } from '../../core/logging/LoggerService';
+import { logger } from '../../../core/logging/LoggerService';
 
 interface Props {
     children: ReactNode;

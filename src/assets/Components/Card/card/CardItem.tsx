@@ -227,16 +227,16 @@ const CardItem: React.FC<CardItemProps> = ({
                             </button>
                             <ul className={`${styles.popup} ${shareOpen ? styles.active : ""}`}>
                                 <li>
-                                    <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} - ${window.location.origin}/eventos/${id}`)}`} target="_blank" rel="noopener noreferrer">
                                         <i className="bi bi-twitter-x"></i>
                                     </a>
-                                    <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`https://wa.me/?text=${encodeURIComponent(`¡Mira este evento! ${title} - ${window.location.origin}/eventos/${id}`)}`} target="_blank" rel="noopener noreferrer">
                                         <i className="bi bi-whatsapp"></i>
                                     </a>
-                                    <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/eventos/' + id)}`} target="_blank" rel="noopener noreferrer">
                                         <i className="bi bi-facebook"></i>
                                     </a>
-                                    <a href={`https://wa.me/?text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`https://www.instagram.com/?url=${encodeURIComponent(window.location.origin + '/eventos/' + id)}`} target="_blank" rel="noopener noreferrer">
                                         <i className="bi bi-instagram"></i>
                                     </a>
                                 </li>
