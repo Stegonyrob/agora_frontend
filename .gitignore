@@ -22,8 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# env
+# ===== ARCHIVOS DE ENTORNO (CRÍTICO PARA SEGURIDAD) =====
+# NUNCA subir archivos con configuración real a GitHub
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+.env.*
+!.env.example
 
 # Ignore validation utils file
 src/utils/validationUtils.ts
