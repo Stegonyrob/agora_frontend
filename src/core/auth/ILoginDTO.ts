@@ -1,6 +1,6 @@
 export interface ILoginDTO {
-  useremail: string;
+  username: string;
   password: string;
   rememberMe?: boolean;
-  username?: string;
+  useremail?: string;
 }

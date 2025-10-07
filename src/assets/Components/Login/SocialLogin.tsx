@@ -3,7 +3,7 @@ import styles from './SocialLogin.module.scss';
 
 interface SocialLoginProps {
     onGoogleLogin: (token: string) => Promise<void>;
-    onFacebookLogin: (token: string) => Promise<void>;
+    // onFacebookLogin: (token: string) => Promise<void>; // COMMENTED OUT FOR PRODUCTION
     isLoading?: boolean;
 }
 
@@ -17,31 +17,36 @@ declare global {
 
 const SocialLogin: React.FC<SocialLoginProps> = ({
     onGoogleLogin,
-    onFacebookLogin,
+    // onFacebookLogin, // COMMENTED OUT FOR PRODUCTION
     isLoading = false
 }) => {
 
     useEffect(() => {
-        // Configure Facebook SDK with environment variable
-        const configFacebook = () => {
-            if (window.FB) {
-                window.FB.init({
-                    appId: import.meta.env.VITE_FACEBOOK_APP_ID,
-                    cookie: true,
-                    xfbml: true,
-                    version: 'v18.0'
-                });
-            }
-        };
+        // Configure Google OAuth2 settings
+        // Google SDK should be loaded in index.html
 
-        if (window.FB) {
-            configFacebook();
-        } else {
-            // Wait for FB SDK to load
-            window.fbAsyncInit = configFacebook;
-        }
+        // FACEBOOK CONFIGURATION COMMENTED OUT FOR PRODUCTION
+        // Configure Facebook SDK with environment variable
+        // const configFacebook = () => {
+        //     if (window.FB) {
+        //         window.FB.init({
+        //             appId: import.meta.env.VITE_FACEBOOK_APP_ID,
+        //             cookie: true,
+        //             xfbml: true,
+        //             version: 'v18.0'
+        //         });
+        //     }
+        // };
+
+        // if (window.FB) {
+        //     configFacebook();
+        // } else {
+        //     // Wait for FB SDK to load
+        //     window.fbAsyncInit = configFacebook;
+        // }
     }, []);
 
+    // GOOGLE LOGIN HANDLER - READY FOR PRODUCTION
     const handleGoogleLogin = () => {
         if (!window.google) {
             alert('Google SDK no está cargado. Por favor, recarga la página.');
@@ -59,18 +64,19 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
         }).requestAccessToken();
     };
 
-    const handleFacebookLogin = () => {
-        if (!window.FB) {
-            alert('Facebook SDK no está cargado. Por favor, recarga la página.');
-            return;
-        }
+    // FACEBOOK LOGIN HANDLER - COMMENTED OUT FOR PRODUCTION
+    // const handleFacebookLogin = () => {
+    //     if (!window.FB) {
+    //         alert('Facebook SDK no está cargado. Por favor, recarga la página.');
+    //         return;
+    //     }
 
-        window.FB.login((response: any) => {
-            if (response.authResponse) {
-                onFacebookLogin(response.authResponse.accessToken);
-            }
-        }, { scope: 'email' });
-    };
+    //     window.FB.login((response: any) => {
+    //         if (response.authResponse) {
+    //             onFacebookLogin(response.authResponse.accessToken);
+    //         }
+    //     }, { scope: 'email' });
+    // };
 
     return (
         <div className={styles.socialLoginContainer}>
@@ -79,6 +85,7 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
             </div>
 
             <div className={styles.socialButtons}>
+                {/* GOOGLE LOGIN BUTTON - READY FOR PRODUCTION */}
                 <button
                     type="button"
                     onClick={handleGoogleLogin}
@@ -94,6 +101,8 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
                     {isLoading ? 'Conectando...' : 'Continuar con Google'}
                 </button>
 
+                {/* FACEBOOK LOGIN BUTTON - COMMENTED OUT FOR PRODUCTION */}
+                {/* 
                 <button
                     type="button"
                     onClick={handleFacebookLogin}
@@ -105,6 +114,7 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
                     </svg>
                     {isLoading ? 'Conectando...' : 'Continuar con Facebook'}
                 </button>
+                */}
             </div>
         </div>
     );

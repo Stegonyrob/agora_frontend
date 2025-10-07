@@ -1,6 +1,6 @@
 import { Button, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import BlogRules from '../Components/Legal/BlogRules';
+import RulesModal from '../Components/Legal/RulesModal';
 import styles from './scss/Views.module.scss';
 
 export default function CommunityRulesView() {
@@ -23,7 +23,12 @@ export default function CommunityRulesView() {
                     </Button>
                 </div>
 
-                <BlogRules />
+                <RulesModal
+                    show={true}
+                    onHide={() => { }}
+                    onAccept={() => { }}
+                    isAccepted={true}
+                />
 
                 <div className={styles.rulesPageFooter}>
                     <p className={styles.lastUpdated}>

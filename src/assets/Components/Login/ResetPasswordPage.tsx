@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { loginRepository } from "../../../core/auth/loginRepository";
+import { LoginRepository } from "../../../core/auth/LoginRepository";
 import ResetPasswordForm from "./ResetPasswordForm";
 
 const ResetPasswordPage: React.FC = () => {
@@ -9,7 +9,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const handleReset = async (token: string, newPassword: string) => {
         // Detectar si es admin por el token o por la URL si lo necesitas
-        await loginRepository.resetPassword(token, newPassword);
+        await LoginRepository.resetPassword(token, newPassword);
     };
 
     return <ResetPasswordForm token={token} onReset={handleReset} />;

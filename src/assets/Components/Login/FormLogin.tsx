@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -6,12 +6,23 @@ import LoginService from '../../../core/auth/LoginService';
 // Ajusta el import según la ubicación real
 import { login } from '@/core/auth/sessionStore';
 import { AuthService } from '../../../core/auth/AuthService';
-import { loginRepository } from '../../../core/auth/loginRepository';
+import { LoginRepository } from '../../../core/auth/LoginRepository';
 import { validateInput } from '../../../utils/validationUtils';
 import Logo from '../Logo/LogoSimply';
 import ForgotPasswordForm from './ForgotPasswordForm';
 import styles from './FormLogin.module.scss';
 import SocialLogin from './SocialLogin';
+
+
+
+interface FormLoginProps {
+  setLogin: Dispatch<SetStateAction<boolean>>;
+  setRegister: Dispatch<SetStateAction<boolean>>;
+  setUserId: Dispatch<SetStateAction<string>>;
+  setUserName: Dispatch<SetStateAction<string>>;
+  setRole: Dispatch<SetStateAction<string>>;
+}
+
 
 function parseJwt(token: string) {
   try {
@@ -29,7 +40,7 @@ function parseJwt(token: string) {
   }
 }
 
-const FormLogin: React.FC = () => {
+const FormLogin: React.FC<FormLoginProps> = ({ setLogin, setRegister, setUserId, setUserName, setRole }) => {
   const [useremail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -56,10 +67,7 @@ const FormLogin: React.FC = () => {
 
     try {
       const loginService = new LoginService();
-      const isEmail = useremail.includes('@');
-      const loginPayload = isEmail
-        ? { useremail, username: '', password }
-        : { useremail: '', username: useremail, password };
+      const loginPayload = { username: useremail, password };
       console.log('[LOGIN] Payload enviado al backend:', loginPayload);
       const response = await loginService.login(loginPayload);
       console.log('[LOGIN] Respuesta backend:', response);
@@ -142,37 +150,38 @@ const FormLogin: React.FC = () => {
     }
   };
 
-  const handleFacebookLogin = async (token: string) => {
-    try {
-      setIsLoading(true);
-      setErrorMessage('');
+  // Facebook login handler - COMMENTED OUT FOR PRODUCTION
+  // const handleFacebookLogin = async (token: string) => {
+  //   try {
+  //     setIsLoading(true);
+  //     setErrorMessage('');
 
-      const response = await authService.loginWithFacebook(token);
+  //     const response = await authService.loginWithFacebook(token);
 
-      // Store additional session data
-      sessionStorage.setItem('isLoggedIn', 'true');
-      sessionStorage.setItem('userId', String(response.userId));
-      sessionStorage.setItem('userEmail', response.user.email);
-      sessionStorage.setItem('role', 'ROLE_USER'); // Assuming social login users get standard role
+  //     // Store additional session data
+  //     sessionStorage.setItem('isLoggedIn', 'true');
+  //     sessionStorage.setItem('userId', String(response.userId));
+  //     sessionStorage.setItem('userEmail', response.user.email);
+  //     sessionStorage.setItem('role', 'ROLE_USER'); // Assuming social login users get standard role
 
-      dispatch(login({
-        userId: response.userId,
-        role: 'ROLE_USER',
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        userName: response.user.username,
-        useremail: response.user.email,
-        isLoggedIn: true,
-      }));
+  //     dispatch(login({
+  //       userId: response.userId,
+  //       role: 'ROLE_USER',
+  //       accessToken: response.accessToken,
+  //       refreshToken: response.refreshToken,
+  //       userName: response.user.username,
+  //       useremail: response.user.email,
+  //       isLoggedIn: true,
+  //     }));
 
-      navigate('/blog', { state: { userId: String(response.userId) } });
-    } catch (error: any) {
-      console.error('Facebook login error:', error);
-      setErrorMessage('Error al iniciar sesión con Facebook. Inténtalo de nuevo.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     navigate('/blog', { state: { userId: String(response.userId) } });
+  //   } catch (error: any) {
+  //     console.error('Facebook login error:', error);
+  //     setErrorMessage('Error al iniciar sesión con Facebook. Inténtalo de nuevo.');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const togglePass = () => {
     setShowPassword(!showPassword);
@@ -180,7 +189,7 @@ const FormLogin: React.FC = () => {
 
   const handleForgotRequest = async (email: string) => {
     // Detectar si es admin por el email si lo necesitas
-    await loginRepository.requestPasswordRecovery(email);
+    await LoginRepository.requestPasswordRecovery(email);
   };
 
   if (showForgot) {
@@ -261,9 +270,9 @@ const FormLogin: React.FC = () => {
           </button>
         </div>
 
+        {/* SOCIAL LOGIN COMPONENT - GOOGLE ONLY FOR PRODUCTION */}
         <SocialLogin
           onGoogleLogin={handleGoogleLogin}
-          onFacebookLogin={handleFacebookLogin}
           isLoading={isLoading}
         />
 

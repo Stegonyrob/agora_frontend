@@ -23,8 +23,17 @@ const AdminProfilePanel: React.FC = () => {
     const fetchProfileData = async (id: number, isAdmin: boolean) => {
         try {
             const fetchedProfile = await profileService.getProfileById(id, isAdmin);
-            setProfile(fetchedProfile);
+            if (fetchedProfile) {
+                setProfile(fetchedProfile);
+            } else {
+                setProfile(null);
+            }
         } catch (error) {
+            if (error instanceof Error) {
+                console.error('Error fetching profile data:', error.message);
+            } else {
+                console.error('Unknown error fetching profile data:', error);
+            }
             setProfile(null);
         }
     };

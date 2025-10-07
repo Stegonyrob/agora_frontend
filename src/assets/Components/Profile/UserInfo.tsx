@@ -30,7 +30,7 @@ const UserInfo = ({ loggedUserName, profile }: UserInfo) => {
         <div className={styles.userInfo}>
             {userName && (
                 <React.Fragment>
-                    <Avatar userName={userName} userId={userId} alt_avatar={""} source_avatar={""} url_avatar={""} source={""} />
+                    <Avatar userName={userName} avatarUrl={profile.avatarUrl} onProfile={() => { }} onSettings={() => { }} onLogout={() => { }} />
                     <a
                         href={`/profile/${userId}`}
                         className={styles.userName}

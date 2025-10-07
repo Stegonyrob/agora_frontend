@@ -26,7 +26,18 @@ export const eventStore = {
 
       const eventService = new EventService();
       try {
-        const newEvent = await eventService.createEvent(event);
+        // Transform IEventDTO to IEventCreateDTO
+        const createEventData = {
+          title: event.title,
+          message: event.message,
+          capacity: event.capacity,
+          tags: event.tags.map((tag) => ({ name: tag })), // Transform string[] to { name: string }[]
+          eventDate: event.eventDate,
+          eventTime: event.eventTime,
+          archived: event.isArchived,
+        };
+
+        const newEvent = await eventService.createEvent(createEventData);
         this.events.push(newEvent);
         this.isLoaded = true;
       } catch (error: any) {

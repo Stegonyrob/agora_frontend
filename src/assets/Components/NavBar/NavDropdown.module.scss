@@ -24,8 +24,7 @@
     &:hover {
       color: $brand-yellow;
       border-bottom-color: $brand-yellow; // Apply border-bottom on hover for consistency with navLinks
-      background-color: #181818; // Slight background change on hover
-      box-shadow: 0 2px 8px 0 rgba(255, 221, 64, 0.08); // Subtle shadow
+
       border-radius: 8px 8px 0 0; // Match border-radius of navLinks
     }
 

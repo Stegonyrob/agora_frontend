@@ -97,10 +97,18 @@ export default function Footer() {
             {/* Horario */}
             <div className={styles.colHorario}>
               <div className={styles.footerWidgetHeading}>
-                <h3>Horario</h3>
+                <h3>Horario de Septiembre a Junio</h3>
               </div>
               <div className={styles.footerText}>
                 <p>Lunes a Viernes: 15:00 a 21:00</p>
+                <p>Sábado: 10:00 a 14:00</p>
+                <p>Domingo: Cerrado</p>
+              </div>
+              <div className={styles.footerWidgetHeading}>
+                <h3>Horario de verano</h3>
+              </div>
+              <div className={styles.footerText}>
+                <p>Lunes a Viernes: 9:00 a 14:00</p>
                 <p>Sábado: 10:00 a 14:00</p>
                 <p>Domingo: Cerrado</p>
               </div>

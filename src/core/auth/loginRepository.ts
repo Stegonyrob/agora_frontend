@@ -1,7 +1,4 @@
-// loginRepository.ts
-// Encapsula las llamadas a la API de recuperación y reseteo de contraseña
-
-export const loginRepository = {
+export const LoginRepository = {
   async requestPasswordRecovery(email: string, isAdmin: boolean = false) {
     const url = isAdmin
       ? import.meta.env.VITE_API_ENDPOINT_ADMIN_PASSWORD_RECOVERY_REQUEST
