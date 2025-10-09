@@ -66,8 +66,19 @@ export function getAvatarUrlByUserId(
   profiles: any[],
   avatars: any[]
 ): string {
+  // Handle null/undefined profiles
+  if (!profiles || !Array.isArray(profiles)) {
+    return "/images/avatarGeneric.png";
+  }
+
+  // Handle null/undefined avatars
+  if (!avatars || !Array.isArray(avatars)) {
+    return "/images/avatarGeneric.png";
+  }
+
   const profile = profiles.find((p) => p.userId === userId);
   if (!profile) return "/images/avatarGeneric.png";
+
   const avatar = avatars.find((a) => a.id === profile.avatar_id);
   return avatar?.imagePath || "/images/avatarGeneric.png";
 }

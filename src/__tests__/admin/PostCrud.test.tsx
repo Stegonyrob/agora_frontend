@@ -1,13 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import PostForm from '../../assets/Components/Blog/admin/button/create-edit/PostForm';
+import { renderWithProviders, vi } from '../test-utils';
 
 describe('Post CRUD (Admin)', () => {
     it('renders post creation form and submits', () => {
-        render(
+        renderWithProviders(
             <PostForm
                 show={true}
-                onClose={jest.fn()}
-                onSubmit={jest.fn()} userId={0} userName={''} />
+                mode="create"
+                onClose={vi.fn()}
+                onSubmit={vi.fn()}
+                userId={1}
+            />
         );
         expect(screen.getByText(/Título del Post/i)).toBeInTheDocument();
         expect(screen.getByText(/Contenido del Post/i)).toBeInTheDocument();

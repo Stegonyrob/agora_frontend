@@ -1,13 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import EventForm from '../../assets/Components/Blog/admin/button/create-edit/EventForm';
+import { renderWithProviders, vi } from '../test-utils';
 
 describe('Event CRUD (Admin)', () => {
     it('renders event creation form and submits', () => {
-        render(
+        renderWithProviders(
             <EventForm
                 show={true}
-                onClose={jest.fn()}
-                onSubmit={jest.fn()}
+                mode="create"
+                onClose={vi.fn()}
+                onSubmit={vi.fn()}
             />
         );
         expect(screen.getByText(/Título del Evento/i)).toBeInTheDocument();
