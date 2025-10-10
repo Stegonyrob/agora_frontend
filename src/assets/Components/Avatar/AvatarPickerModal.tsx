@@ -27,14 +27,6 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
         handleClearError
     } = useAvatars();
 
-    console.log('🔍 AvatarPickerModal - Estado hook:', {
-        avatarsLength: avatars.length,
-        defaultAvatar,
-        isLoaded,
-        isUploading,
-        uploadError
-    });
-
     const [activeIndex, setActiveIndex] = useState(0);
     const [currentAvatarData, setCurrentAvatarData] = useState<IAvatar | null>(null);
     const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>("");
@@ -43,7 +35,6 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
 
     // Filtrar solo avatares del sistema (predefinidos)
     const systemAvatars = avatars.filter(avatar => !avatar.isCustom);
-    console.log('🔍 AvatarPickerModal - Avatares del sistema:', systemAvatars);
 
     // Inicializar avatar actual
     useEffect(() => {
@@ -63,7 +54,7 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
             setCurrentAvatarData(defaultAvatar);
             updateAvatarUrl(defaultAvatar);
         } else {
-            console.log('❌ AvatarPickerModal - No hay avatares disponibles');
+
         }
     }, [isLoaded, systemAvatars.length, defaultAvatar]);
 
@@ -81,15 +72,15 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
     };
 
     const showNext = () => {
-        console.log('➡️ AvatarPickerModal - showNext:', { activeIndex, systemAvatarsLength: systemAvatars.length });
+
         if (systemAvatars.length === 0) {
-            console.log('❌ AvatarPickerModal - showNext: No hay avatares del sistema');
+
             return;
         }
 
         const nextIndex = activeIndex + 1 >= systemAvatars.length ? 0 : activeIndex + 1;
         const nextAvatar = systemAvatars[nextIndex];
-        console.log('➡️ AvatarPickerModal - showNext:', { nextIndex, nextAvatar });
+
 
         setActiveIndex(nextIndex);
         setCurrentAvatarData(nextAvatar);
@@ -98,15 +89,15 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
     };
 
     const showPrevious = () => {
-        console.log('⬅️ AvatarPickerModal - showPrevious:', { activeIndex, systemAvatarsLength: systemAvatars.length });
+
         if (systemAvatars.length === 0) {
-            console.log('❌ AvatarPickerModal - showPrevious: No hay avatares del sistema');
+
             return;
         }
 
         const prevIndex = activeIndex - 1 < 0 ? systemAvatars.length - 1 : activeIndex - 1;
         const prevAvatar = systemAvatars[prevIndex];
-        console.log('⬅️ AvatarPickerModal - showPrevious:', { prevIndex, prevAvatar });
+
 
         setActiveIndex(prevIndex);
         setCurrentAvatarData(prevAvatar);
@@ -117,26 +108,26 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
     const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files || files.length === 0) {
-            console.log('❌ AvatarPickerModal - No files selected');
+
             return;
         }
 
         const file = files[0];
-        console.log('📤 AvatarPickerModal - handleFileUpload iniciado:', { fileName: file.name, fileSize: file.size, fileType: file.type });
+
 
         try {
             handleClearError();
-            console.log('📤 AvatarPickerModal - Llamando handleUploadAvatar...');
+
 
             const uploadedAvatar = await handleUploadAvatar(file, userId);
-            console.log('✅ AvatarPickerModal - Avatar subido exitosamente:', uploadedAvatar);
+
 
             if (uploadedAvatar) {
                 if (onUpload) {
-                    console.log('📤 AvatarPickerModal - Llamando onUpload...');
+
                     onUpload(uploadedAvatar);
                 }
-                console.log('📤 AvatarPickerModal - Llamando onSelect...');
+
                 onSelect(uploadedAvatar);
             } else {
                 console.error('❌ AvatarPickerModal - uploadedAvatar es undefined');
@@ -145,7 +136,7 @@ const AvatarPickerModal: React.FC<AvatarPickerModalProps> = ({
         } catch (error) {
             console.error('❌ AvatarPickerModal - Error uploading avatar:', error);
         } finally {
-            console.log('🔄 AvatarPickerModal - handleFileUpload finalizado');
+
         }
     };
 

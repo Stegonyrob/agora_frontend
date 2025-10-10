@@ -158,13 +158,8 @@ export class EventImageService {
       );
 
       logger.info(
-        "EventImageService: Imágenes de evento procesadas exitosamente",
-        {
-          eventId,
-          totalImages: processedImages.length,
-          imagesWithUrls: processedImages.filter((img) => img.url).length,
-          imagesWithoutUrls: processedImages.filter((img) => !img.url).length,
-        },
+        `EventImageService: Procesadas ${processedImages.length} imágenes para evento ${eventId}`,
+        {},
         {
           component: "EventImageService",
         }
@@ -212,12 +207,8 @@ export class EventImageService {
     });
 
     logger.info(
-      "EventImageService: Imágenes fallback creadas (sin verificación CORS)",
-      {
-        eventId,
-        fallbackCount: fallbackImages.length,
-        selectedImage: filename,
-      },
+      `EventImageService: Fallback creado para evento ${eventId}`,
+      {},
       {
         component: "EventImageService",
       }

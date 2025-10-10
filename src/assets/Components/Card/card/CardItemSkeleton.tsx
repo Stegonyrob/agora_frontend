@@ -27,11 +27,11 @@ const CardItemSkeleton: React.FC<CardItemSkeletonProps> = ({ type }) => {
                     <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonTitlePlaceholder}`}></div>
                 </h3>
                 {type === 'post' && (
-                    <p className={styles.date}>
+                    <div className={styles.date}>
                         <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonDatePlaceholder}`}></div>
-                    </p>
+                    </div>
                 )}
-                <p className={styles.description}>
+                <div className={styles.description}>
                     <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonDescriptionLine}`}></div>
                     <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonDescriptionLine} ${styles.short}`}></div>
                     <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonDescriptionLine} ${styles.shortest}`}></div>
@@ -40,7 +40,7 @@ const CardItemSkeleton: React.FC<CardItemSkeletonProps> = ({ type }) => {
                             <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonSeeMorePlaceholder}`}></div>
                         </button>
                     )}
-                </p>
+                </div>
                 <ul className={styles.tags}>
                     <li className={styles.tagItem}>
                         <div className={`${styles.skeletonLinePlaceholder} ${styles.skeletonTagPlaceholder}`}></div>

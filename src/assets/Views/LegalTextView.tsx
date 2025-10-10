@@ -13,17 +13,17 @@ const LegalTextView: React.FC = () => {
     const selectedType = location.pathname === '/blog-rules-preview'
         ? 'blog-rules'
         : validTypes.includes(type ?? "") ? type! : "terms";
-    console.log('[LegalTextView] selectedType:', selectedType);
+
     const [legalText, setLegalText] = useState<LegalTextDTO | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true);
         const legalTextService = new LegalTextService();
-        console.log('[LegalTextView] Fetching legal text for type:', selectedType);
+
         legalTextService.getLegalTextByType(selectedType)
             .then(data => {
-                console.log('[LegalTextView] Backend response:', data);
+
                 setLegalText(data);
             })
             .catch((err) => {
@@ -31,7 +31,7 @@ const LegalTextView: React.FC = () => {
                 setLegalText(null);
             })
             .finally(() => {
-                console.log('[LegalTextView] Loading finished');
+
                 setLoading(false);
             });
     }, [selectedType]);

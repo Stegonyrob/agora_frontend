@@ -47,7 +47,6 @@ const Avatar: React.FC<AvatarProps> = ({ userName, avatarUrl, onProfile, onSetti
                     <button
                         className={styles.dropdownItem}
                         onClick={() => {
-                            console.log("Click en Configuración (Avatar)"); // <-- Aquí el log
                             setOpen(false);
                             onSettings();
                         }}

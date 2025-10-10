@@ -125,13 +125,8 @@ export class PostImageService {
       );
 
       logger.info(
-        "PostImageService: Imágenes de post procesadas exitosamente",
-        {
-          postId,
-          totalImages: processedImages.length,
-          imagesWithUrls: processedImages.filter((img) => img.url).length,
-          imagesWithoutUrls: processedImages.filter((img) => !img.url).length,
-        },
+        `PostImageService: Procesadas ${processedImages.length} imágenes para post ${postId}`,
+        {},
         {
           component: "PostImageService",
         }

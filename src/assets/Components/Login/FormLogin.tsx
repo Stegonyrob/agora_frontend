@@ -57,7 +57,6 @@ const FormLogin: React.FC<FormLoginProps> = ({ setLogin, setRegister, setUserId,
     event.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
-    console.log('[LOGIN] Enviando login:', { useremail, password });
 
     if (!validateInput(useremail) || !validateInput(password)) {
       setErrorMessage('Por favor, ingrese un email y contraseña válidos.');
@@ -68,9 +67,7 @@ const FormLogin: React.FC<FormLoginProps> = ({ setLogin, setRegister, setUserId,
     try {
       const loginService = new LoginService();
       const loginPayload = { username: useremail, password };
-      console.log('[LOGIN] Payload enviado al backend:', loginPayload);
       const response = await loginService.login(loginPayload);
-      console.log('[LOGIN] Respuesta backend:', response);
       const jwtData = parseJwt(response.accessToken);
       if (jwtData.exp) {
         sessionStorage.setItem('sessionExpiresAt', jwtData.exp * 1000 + '');

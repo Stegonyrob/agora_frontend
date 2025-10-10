@@ -18,16 +18,16 @@ export class RegisterService {
       "📤 Enviando datos de registro:",
       JSON.stringify(registerData, null, 2)
     );
-    console.log("🔗 URL del endpoint:", this.uri);
+
 
     try {
-      console.log("🚀 Iniciando request...");
+
       const res = await axios.post(this.uri, registerData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log("✅ Registro exitoso:", res.data);
+
       console.log("📡 Response completo:", {
         status: res.status,
         statusText: res.statusText,

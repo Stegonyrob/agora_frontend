@@ -24,6 +24,13 @@
   width: 70%;
   margin: auto;
   color: azure;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .card .input, .card .passwordInput {
+    width: 100%;
+  }
 }
 
 .card .formRow {
@@ -31,6 +38,15 @@
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+@media (max-width: 1100px) {
+  .card .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 .card .button {
@@ -50,10 +66,23 @@
   color: azure;
 }
 
+.card .buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
 .card .passwordInputWrapper {
   position: relative;
   width: 70%;
   margin: auto;
+}
+
+@media (max-width: 1100px) {
+  .card .passwordInputWrapper {
+    width: 100%;
+  }
 }
 
 .card .passwordInput {
@@ -65,6 +94,14 @@
   padding: 0.8rem;
   padding-right: 2.5rem;
   margin-bottom: 0.5rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .card .passwordInput {
+    padding: 1rem;
+    font-size: 1rem;
+  }
 }
 
 .card .showPasswordIcon {
@@ -114,14 +151,62 @@
   font-weight: 500;
 }
 
+@media (max-width: 1100px) {
+  .card {
+    width: 85%;
+    margin-left: 7.5%;
+    padding: 1.8rem;
+    margin-top: 3rem;
+  }
+  .card .button {
+    margin-right: 2rem;
+    margin-left: 2rem;
+    width: auto;
+    min-width: 120px;
+  }
+  .card .buttonContainer {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+  .card .title {
+    font-size: 1.8rem;
+  }
+  .card .label {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+}
+
 @media (max-width: 768px) {
   .card {
     width: 90%;
     margin-left: 5%;
     padding: 1.5rem;
+    margin-top: 2rem;
   }
   .card .button {
     margin-right: 1rem;
     margin-left: 1rem;
+    width: auto;
+    min-width: 120px;
+  }
+  .card .buttonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+  .card .buttonContainer .button {
+    width: 80%;
+    margin: 0;
+  }
+  .card .title {
+    font-size: 1.5rem;
+  }
+  .card .label {
+    font-size: 1.2rem;
+    text-align: left;
   }
 }

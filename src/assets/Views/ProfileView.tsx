@@ -54,7 +54,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
         }
 
         try {
-            const fetchedProfile = await profileService.getProfileById(id);
+            const fetchedProfile = await profileService.getProfileById(id, isAdmin);
             if (!fetchedProfile) {
                 console.error("Profile data not found");
                 return;

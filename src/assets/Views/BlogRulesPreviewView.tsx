@@ -10,10 +10,10 @@ const BlogRulesPreviewView: React.FC = () => {
     useEffect(() => {
         setLoading(true);
         const legalTextService = new LegalTextService();
-        console.log('[BlogRulesPreviewView] Fetching blog rules');
+
         legalTextService.getLegalTextByType("blog-rules")
             .then(data => {
-                console.log('[BlogRulesPreviewView] Backend response:', data);
+
                 setLegalText(data);
             })
             .catch((err) => {
@@ -21,7 +21,7 @@ const BlogRulesPreviewView: React.FC = () => {
                 setLegalText(null);
             })
             .finally(() => {
-                console.log('[BlogRulesPreviewView] Loading finished');
+
                 setLoading(false);
             });
     }, []);
@@ -32,7 +32,6 @@ const BlogRulesPreviewView: React.FC = () => {
                 <p>Cargando reglas del blog...</p>
             ) : legalText ? (
                 <>
-                    {console.log('[BlogRulesPreviewView] Renderizando LegalTextGeneric:', legalText)}
                     <LegalTextGeneric
                         type="blog-rules"
                         mainTitle={legalText.title}
@@ -42,7 +41,6 @@ const BlogRulesPreviewView: React.FC = () => {
                 </>
             ) : (
                 <>
-                    {console.log('[BlogRulesPreviewView] No encontrado para blog-rules')}
                     <p>No se encontraron las reglas del blog</p>
                 </>
             )}
