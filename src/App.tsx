@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
+import { useDaltonicMode } from "./hooks/useDaltonicMode";
 import { useFontSize } from "./hooks/useFontSize";
 import swrConfig from "./swrConfig";
 // 🛡️ Error Boundary para capturar errores
@@ -75,6 +76,9 @@ const App: React.FC = () => {
   // Initialize font size hook
   const { fontSize } = useFontSize();
 
+  // Initialize daltonic mode hook
+  const { isDaltonicMode } = useDaltonicMode();
+
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     if (isLoggedIn) {
@@ -85,6 +89,7 @@ const App: React.FC = () => {
       const userName = sessionStorage.getItem('userName') || "";
       const useremail = sessionStorage.getItem('useremail') || "";
       const viewAsUser = sessionStorage.getItem('viewAsUser') === 'true';
+      const avatarUrl = sessionStorage.getItem('avatarUrl') || "";
 
       dispatch({
         type: "session/login",
@@ -100,11 +105,24 @@ const App: React.FC = () => {
         }
       });
 
+      // Si tenemos avatarUrl en sessionStorage, cargarlo inmediatamente
+      if (avatarUrl) {
+        console.log('[App] Loading avatar from sessionStorage:', avatarUrl);
+        dispatch(updateAvatarUrl(avatarUrl));
+      }
+
       // Cargar perfil y actualizar avatarUrl en sesión
       (dispatch as any)(fetchProfileById(userId)).then((result: any) => {
+        console.log('[App] fetchProfileById result:', result);
         const profile = result?.payload;
+        console.log('[App] Profile data:', profile);
         if (profile && profile.avatar) {
+          console.log('[App] Setting avatar URL to session:', profile.avatar);
           dispatch(updateAvatarUrl(profile.avatar));
+          // También almacenar en sessionStorage para persistencia
+          sessionStorage.setItem('avatarUrl', profile.avatar);
+        } else {
+          console.log('[App] No avatar found in profile or profile is null');
         }
       });
 
@@ -125,6 +143,10 @@ const App: React.FC = () => {
     sessionStorage.setItem("userName", session.userName || "");
     sessionStorage.setItem("useremail", session.useremail || "");
     sessionStorage.setItem("viewAsUser", String(session.viewAsUser));
+    // También guardar el avatarUrl cuando cambie en la sesión
+    if (session.avatarUrl) {
+      sessionStorage.setItem("avatarUrl", session.avatarUrl);
+    }
   }, [session]);
 
   const expiresAt = Number(sessionStorage.getItem('sessionExpiresAt'));

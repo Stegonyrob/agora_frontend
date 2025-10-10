@@ -1,7 +1,9 @@
 
 
 import { useDeleteComment, useUpdateComment } from "@/core/comments/useCommentsQuery";
+import { RootState } from "@/redux/store";
 import React from "react";
+import { useSelector } from "react-redux";
 import styles from "./CommentsList.module.scss";
 import Replies from "./Replies";
 
@@ -12,15 +14,33 @@ interface CommentsListProps {
 }
 
 
-// Helper para obtener el avatar (puedes adaptar a tu lógica real)
-function getAvatarUrlByUserId(userId: number): string {
-    return "/images/avatarGeneric.png";
+// Helper para obtener el avatar del usuario - MISMA LÓGICA QUE NAVBAR
+function getAvatarUrlByUserId(userId: number, userProfiles: any[], avatarsList: any[]): string {
+    // Buscar el perfil del usuario
+    const userProfile = userProfiles.find((p: any) => p.id === userId);
+
+    let avatarUrl = "/images/avatarGeneric.png";
+    if (userProfile) {
+        if (userProfile.avatar && userProfile.avatar !== "") {
+            avatarUrl = userProfile.avatar;
+        } else if (userProfile.avatar_id && avatarsList && avatarsList.length > 0) {
+            const foundAvatar = avatarsList.find((a: any) => a.id === userProfile.avatar_id);
+            if (foundAvatar && foundAvatar.imagePath) {
+                avatarUrl = foundAvatar.imagePath;
+            }
+        }
+    }
+    return avatarUrl;
 }
 
 const CommentsList: React.FC<CommentsListProps> = ({ postId, comments }) => {
     // Local state for edit
     const [editId, setEditId] = React.useState<number | null>(null);
     const [editText, setEditText] = React.useState("");
+
+    // Redux selectors - MISMA LÓGICA QUE NAVBAR CON TIPADO CORRECTO
+    const userProfiles = useSelector((state: RootState) => state.profile.profiles || []);
+    const avatarsList = useSelector((state: RootState) => state.avatars.avatars || []);
 
     // React Query mutations
     const updateCommentMutation = useUpdateComment(postId);
@@ -47,9 +67,23 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, comments }) => {
             )}
             {comments.map((c: IComment) => (
                 <div key={c.id} className={styles.comment}>
+                    {(() => {
+                        const avatarUrl = getAvatarUrlByUserId(
+                            c.userId || 0,
+                            userProfiles,
+                            avatarsList
+                        );
+                        return (
+                            <img
+                                src={avatarUrl}
+                                alt="avatar"
+                                className={styles.avatarSmall}
+                            />
+                        );
+                    })()}
                     <div className={styles.commentBody}>
                         <div className={styles.commentHeader}>
-                            <span className={styles.user}>{c.user?.username || c.user?.email || 'Usuario'}</span>
+                            <span className={styles.user}>Usuario</span>
                             <span className={styles.date}>{c.creationDate ? new Date(c.creationDate).toLocaleString('es-ES') : ""}</span>
                         </div>
                         {editId === c.id ? (

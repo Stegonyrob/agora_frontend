@@ -43,19 +43,22 @@
   }
 }
 
-.avatarSmall,
-.avatarSmall.skeleton,
-.comment .avatarSmall {
+.avatarSmall {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
   display: block;
+  border: 1.5px solid #eee;
+  flex-shrink: 0;
 }
 
-.reply .avatarSmall,
-.reply .avatarSmall.skeleton {
+.avatarSmall.skeleton {
+  background: #2c2f36;
+}
+
+.reply .avatarSmall {
   width: 28px;
   height: 28px;
 }
@@ -140,15 +143,6 @@
   margin-bottom: 0.7rem;
 }
 
-.commentsContainer .accordion .addCommentRow .avatarSmall {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid #eee;
-  margin-top: 2px;
-}
-
 .commentsContainer .accordion .addCommentRow .input {
   flex: 1;
   border: 1px solid #e0e0e0;
@@ -190,15 +184,6 @@
   align-items: flex-start;
   gap: 0.7rem;
   margin-bottom: 0.7rem;
-}
-
-.commentsContainer .accordion .commentsList .comment .avatarSmall {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid #eee;
-  margin-top: 2px;
 }
 
 .commentsContainer .accordion .commentsList .comment .commentBody {
@@ -333,15 +318,6 @@
   background: #23272f;
   border-radius: 8px;
   padding: 0.4rem 0.8rem;
-}
-
-.commentsContainer .accordion .commentsList .comment .commentBody .reply .avatarSmall {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid #eee;
-  margin-top: 2px;
 }
 
 .commentsContainer .accordion .commentsList .comment .commentBody .reply .user {

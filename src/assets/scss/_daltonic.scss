@@ -1,0 +1,201 @@
+// Daltonic Mode Styles
+// Provides better color accessibility for colorblind users
+
+.daltonic-mode {
+  // Primary colors adjustments
+  --primary-color: #4a90e2;
+  --secondary-color: #7b68ee;
+  --accent-color: #ff6b6b;
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --error-color: #e74c3c;
+  --info-color: #3498db;
+
+  // Background colors for better contrast
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #e9ecef;
+  --bg-dark: #343a40;
+  --bg-light: #ffffff;
+
+  // Text colors for better readability
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --text-light: #ffffff;
+
+  // Border colors
+  --border-color: #dee2e6;
+  --border-dark: #6c757d;
+
+  // Button specific adjustments
+  .btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-light) !important;
+    
+    &:hover {
+      background-color: darken(var(--primary-color), 10%) !important;
+      border-color: darken(var(--primary-color), 10%) !important;
+    }
+  }
+
+  .btn-secondary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: var(--text-light) !important;
+    
+    &:hover {
+      background-color: darken(var(--secondary-color), 10%) !important;
+      border-color: darken(var(--secondary-color), 10%) !important;
+    }
+  }
+
+  .btn-success {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+    color: var(--text-light) !important;
+    
+    &:hover {
+      background-color: darken(var(--success-color), 10%) !important;
+      border-color: darken(var(--success-color), 10%) !important;
+    }
+  }
+
+  .btn-warning {
+    background-color: var(--warning-color) !important;
+    border-color: var(--warning-color) !important;
+    color: var(--text-light) !important;
+    
+    &:hover {
+      background-color: darken(var(--warning-color), 10%) !important;
+      border-color: darken(var(--warning-color), 10%) !important;
+    }
+  }
+
+  .btn-danger {
+    background-color: var(--error-color) !important;
+    border-color: var(--error-color) !important;
+    color: var(--text-light) !important;
+    
+    &:hover {
+      background-color: darken(var(--error-color), 10%) !important;
+      border-color: darken(var(--error-color), 10%) !important;
+    }
+  }
+
+  // Form elements
+  .form-control {
+    border-color: var(--border-dark) !important;
+    
+    &:focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25) !important;
+    }
+  }
+
+  // Links
+  a {
+    color: var(--primary-color) !important;
+    
+    &:hover {
+      color: darken(var(--primary-color), 15%) !important;
+    }
+  }
+
+  // Cards and containers
+  .card {
+    border-color: var(--border-color) !important;
+    background-color: var(--bg-light) !important;
+  }
+
+  // Alerts
+  .alert-success {
+    background-color: lighten(var(--success-color), 45%) !important;
+    border-color: var(--success-color) !important;
+    color: darken(var(--success-color), 20%) !important;
+  }
+
+  .alert-warning {
+    background-color: lighten(var(--warning-color), 35%) !important;
+    border-color: var(--warning-color) !important;
+    color: darken(var(--warning-color), 20%) !important;
+  }
+
+  .alert-danger {
+    background-color: lighten(var(--error-color), 35%) !important;
+    border-color: var(--error-color) !important;
+    color: darken(var(--error-color), 20%) !important;
+  }
+
+  .alert-info {
+    background-color: lighten(var(--info-color), 40%) !important;
+    border-color: var(--info-color) !important;
+    color: darken(var(--info-color), 20%) !important;
+  }
+
+  // High contrast mode enhancements
+  .text-muted {
+    color: var(--text-secondary) !important;
+  }
+
+  // Specific component adjustments
+  .badge {
+    &.badge-primary {
+      background-color: var(--primary-color) !important;
+    }
+    
+    &.badge-success {
+      background-color: var(--success-color) !important;
+    }
+    
+    &.badge-warning {
+      background-color: var(--warning-color) !important;
+    }
+    
+    &.badge-danger {
+      background-color: var(--error-color) !important;
+    }
+  }
+
+  // Navigation and menu items
+  .nav-link {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      color: var(--primary-color) !important;
+    }
+    
+    &.active {
+      color: var(--primary-color) !important;
+    }
+  }
+
+  // Tables
+  .table {
+    border-color: var(--border-color) !important;
+    
+    td, th {
+      border-color: var(--border-color) !important;
+    }
+  }
+
+  // Progress bars
+  .progress-bar {
+    background-color: var(--primary-color) !important;
+  }
+
+  // Dropdowns
+  .dropdown-menu {
+    border-color: var(--border-color) !important;
+    background-color: var(--bg-light) !important;
+  }
+
+  .dropdown-item {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+      color: var(--primary-color) !important;
+    }
+  }
+}

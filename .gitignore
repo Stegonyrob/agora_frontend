@@ -33,5 +33,10 @@ dist-ssr
 .env.*
 !.env.example
 
+# ===== COVERAGE REPORTS =====
+# Evitar subir archivos de coverage pesados (HTML reports ~400MB)
+coverage/
+*.lcov
+
 # Ignore validation utils file
 src/utils/validationUtils.ts

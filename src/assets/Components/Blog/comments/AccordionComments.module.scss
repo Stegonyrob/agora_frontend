@@ -44,18 +44,24 @@
   }
 }
 
-.avatarSmall,
-.avatarSmall.skeleton,
-.comment .avatarSmall {
+// Avatar styles - definición única y clara
+.avatarSmall {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
   display: block;
+  border: 1.5px solid #eee;
+  flex-shrink: 0; // Evita que se deforme en flex containers
 }
-.reply .avatarSmall,
-.reply .avatarSmall.skeleton {
+
+// Variantes específicas
+.avatarSmall.skeleton {
+  background: #2c2f36;
+}
+
+.reply .avatarSmall {
   width: 28px;
   height: 28px;
 }
@@ -127,15 +133,6 @@
       gap: 0.5rem;
       margin-bottom: 0.7rem;
 
-      .avatarSmall {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1.5px solid #eee;
-        margin-top: 2px;
-      }
-
       .input {
         flex: 1;
         border: 1px solid #e0e0e0;
@@ -175,15 +172,6 @@
         align-items: flex-start;
         gap: 0.7rem;
         margin-bottom: 0.7rem;
-
-        .avatarSmall {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 1.5px solid #eee;
-          margin-top: 2px;
-        }
 
         .commentBody {
           flex: 1;
@@ -292,15 +280,6 @@
             background: #23272f;
             border-radius: 8px;
             padding: 0.4rem 0.8rem;
-
-            .avatarSmall {
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              object-fit: cover;
-              border: 1.5px solid #eee;
-              margin-top: 2px;
-            }
 
             .user {
               font-weight: 600;

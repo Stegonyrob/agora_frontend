@@ -1,6 +1,6 @@
-
 import { CommentDTO } from "@/core/comments/CommentDTO";
 import { useComments, useCreateComment } from "@/core/comments/useCommentsQuery";
+import { RootState } from "@/redux/store";
 import React, { useState } from "react";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -29,10 +29,26 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   const { data: comments = [], isLoading } = useComments(postId);
   const createCommentMutation = useCreateComment(postId);
 
-  // Obtener el usuario actual de la sesión desde Redux
-  const currentUserId = useSelector((state: any) => state.session?.userId || 1);
-  // Obtener avatares reales desde Redux
-  const avatars = useSelector((state: any) => Array.isArray(state.avatars?.avatars) ? state.avatars.avatars : []);
+  // *** USAR LA MISMA LÓGICA QUE NAVBAR ***
+  const userId = useSelector((state: RootState) => state.session.userId) || Number(sessionStorage.getItem("userId")) || 0;
+  // Get the user's profile from the profiles slice
+  const userProfile = useSelector((state: RootState) =>
+    state.profile.profiles.find((p) => p.id === userId)
+  );
+  const avatarsList = useSelector((state: RootState) => state.avatars.avatars);
+
+  // *** LÓGICA INLINE COMO EN NAVBAR ***
+  let avatarUrl = "/images/avatarGeneric.png";
+  if (userProfile) {
+    if (userProfile.avatar && userProfile.avatar !== "") {
+      avatarUrl = userProfile.avatar;
+    } else if (userProfile.avatar_id && avatarsList && avatarsList.length > 0) {
+      const foundAvatar = avatarsList.find(a => a.id === userProfile.avatar_id);
+      if (foundAvatar && foundAvatar.imagePath) {
+        avatarUrl = foundAvatar.imagePath;
+      }
+    }
+  }
 
   // Handler para crear comentario
   const handleAddComment = async () => {
@@ -88,7 +104,7 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
           )}
           <div className={styles.addCommentRow}>
             <img
-              src={avatars[0]?.imagePath || "/images/avatarGeneric.png"}
+              src={avatarUrl}
               alt="avatar"
               className={styles.avatarSmall}
             />

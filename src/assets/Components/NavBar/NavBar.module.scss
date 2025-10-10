@@ -59,7 +59,7 @@
       text-align: center;
       margin: 0;
       padding: 0;
-      gap: 0.5rem; // Space between main nav items
+      gap: 0.3rem; // Space between main nav items
 
 
      
@@ -124,7 +124,7 @@
     }
   }
 
-  // --- MEDIA QUERIES FOR NAVBAR STRUCTURE ---
+
   @media (max-width: $breakpoint-tablet) {
     .navContainer {
       padding: 0 1rem; // Adjust padding for smaller screens
@@ -159,7 +159,8 @@
       .rightControls {
         gap: 1rem;
         .avatarNav {
-          display: none; // Hide avatar in mobile menu
+          display: flex; // Mantener visible pero más pequeño
+          transform: scale(0.8); // Reducir tamaño en móvil
         }
       }
 
@@ -192,22 +193,37 @@
 @media (max-width: $breakpoint-small-mobile) {
   .navbar {
     height: 8rem;
-    .navLogo {
-      font-size: 1.5rem; /* Reduce el tamaño del logo un 20% */
-      .logoSmall {
-        height: 3.8rem; /* Reduce el tamaño del logo */
-        margin-bottom: 1.5rem; // Adjust margin for smaller screens
+    
+    .navContainer {
+      .logoAndToggle {
+        .navLogo {
+          font-size: 1.5rem; /* Reduce el tamaño del logo un 20% */
+          .logoSmall {
+            height: 3.8rem; /* Reduce el tamaño del logo */
+            margin-bottom: 1.5rem; // Adjust margin for smaller screens
+          }
+        }
+        .specialIcon {
+          /* Mueve el toggle a la línea de abajo y centra */
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-bottom: 1rem;
+        }
       }
-      }
-      .specialIcon {
-        /* Mueve el toggle a la línea de abajo y centra */
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-       
-        margin-bottom: 1rem;
+      
+      .rightControls {
+        .avatarNav {
+          transform: scale(0.7); // Aún más pequeño en pantallas muy pequeñas
+        }
+        
+        .navIcon {
+          font-size: 1.8rem; // Reducir el tamaño del ícono hamburguesa
+          width: 2rem;
+          height: 2rem;
+        }
       }
     }
-  
+  }
 }
