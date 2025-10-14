@@ -75,8 +75,25 @@ const AdminTextView = ({ userId }: { userId: number }) => {
                 id: text.id,
             };
             await textService.updateText(text.id, textDTO);
-        } catch (error) {
+        } catch (error: any) {
             console.error("❌ AdminTextView - Error updating text:", error);
+
+            // 🔍 MANEJO ESPECÍFICO DE ERROR 500: Texto no encontrado en el backend
+            if (error.response?.status === 500) {
+                console.warn(`⚠️  El texto con ID ${text.id} no existe en el backend`);
+                alert(`Error: El texto no se pudo actualizar porque no existe en el servidor.\n\nEsto puede suceder si el texto fue eliminado o no se creó correctamente.\n\nPor favor, recarga la página para ver los textos actuales.`);
+
+                // Recargar la lista de textos para sincronizar con el backend
+                try {
+                    const textService = new TextService();
+                    const texts = await textService.getAllTexts();
+                    setFetchedTexts(sortTextsByDate(texts));
+                } catch (reloadError) {
+                    console.error("❌ Error recargando textos:", reloadError);
+                }
+                return;
+            }
+
             // En caso de error, revertir la actualización optimista y mantener orden
             const originalText = fetchedTexts.find(t => t.id === text.id);
             if (originalText) {

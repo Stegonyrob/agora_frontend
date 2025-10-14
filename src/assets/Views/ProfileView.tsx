@@ -5,6 +5,7 @@ import IProfile from "@/core/profiles/IProfile";
 import IProfileDTO from "@/core/profiles/IProfileDTO";
 import ProfileService from "@/core/profiles/ProfileService";
 import { useAvatars } from "@/hooks/useAvatars";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import AdminManager from "../Components/Blog/admin/users/AdminManager";
@@ -18,6 +19,7 @@ interface ProfileProps {
 const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
     const dispatch = useDispatch();
     const { getAvatarImageUrl, avatars, defaultAvatar, isLoaded } = useAvatars();
+    const { userId } = useCurrentUser();
     const [login, setLogin] = React.useState<boolean>(false);
     const [register, setRegister] = React.useState<boolean>(false);
 
@@ -27,16 +29,13 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
 
     const profileService = new ProfileService();
 
-    // Obtener el userId desde sessionStorage
-    const userId = sessionStorage.getItem("userId");
-
     const [isAdmin, setIsAdmin] = useState(false);
     useEffect(() => {
         if (userId) {
             const role = sessionStorage.getItem('role');
             const admin = role === 'ROLE_ADMIN';
             setIsAdmin(admin);
-            fetchProfileData(parseInt(userId, 10), admin);
+            fetchProfileData(userId, admin);
         }
     }, [userId]);
 
@@ -137,8 +136,34 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
             }
 
             setShowProfileForm(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error updating profile:", error);
+
+            // Si es error 500, probablemente el perfil no existe en el backend
+            // Intentar crear el perfil desde cero
+            if (error.response?.status === 500) {
+                console.log('🔧 ProfileView - Error 500 detectado, el perfil no existe en backend');
+                console.log('💡 ProfileView - Esto indica que el backend no creó automáticamente el perfil al registrar');
+                console.log('⚠️ ProfileView - Se requiere intervención manual del desarrollador del backend');
+
+                // Aquí podrías implementar la creación del perfil si el backend lo soporta
+                // Por ahora, mostramos un mensaje explicativo al usuario
+                // Mostrar información técnica útil para debugging
+                const userInfo = `Usuario ID: ${userId}
+Perfil ID en memoria: ${profile?.id || 'null'}
+Endpoint fallido: PUT /api/v1/any/user/profile/${profile?.id}`;
+
+                console.log('🔍 Información del usuario:', userInfo);
+
+                alert(`Error: Tu perfil no pudo ser actualizado porque no existe en el servidor.
+
+Esto puede pasar cuando el sistema no creó automáticamente tu perfil al registrarte.
+
+Por favor, contacta al administrador del sistema para que cree tu perfil manualmente.
+
+Detalles técnicos:
+${userInfo}`);
+            }
         }
     };
 
@@ -154,7 +179,7 @@ const ProfileView: React.FC<ProfileProps> = ({ posts }) => {
             )}
 
             <ProfileForm
-                userId={parseInt(userId || "", 10)}
+                userId={userId || 0}
                 setLogin={setLogin}
                 setRegister={setRegister}
                 setUserName={setUserName}

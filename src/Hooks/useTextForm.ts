@@ -224,12 +224,38 @@ export const useTextForm = ({
         }
 
         onClose();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Error desconocido al guardar el texto.";
-        log.error("useTextForm - Error en el proceso de envío:", errorMessage);
+      } catch (error: any) {
+        let errorMessage = "Error desconocido al guardar el texto.";
+
+        // 🔍 MANEJO ESPECÍFICO DE ERRORES
+        if (error?.response?.status === 500) {
+          errorMessage = `El texto no se pudo actualizar porque no existe en el servidor. Esto puede suceder si el texto fue eliminado o no se creó correctamente.`;
+          log.error(
+            "useTextForm - Error 500: Texto no encontrado en backend:",
+            error
+          );
+        } else if (error?.response?.status === 400) {
+          errorMessage =
+            "Los datos del texto no son válidos. Por favor, revisa la información ingresada.";
+          log.error("useTextForm - Error 400: Datos inválidos:", error);
+        } else if (error?.response?.status === 401) {
+          errorMessage =
+            "No tienes permisos para realizar esta acción. Por favor, inicia sesión nuevamente.";
+          log.error("useTextForm - Error 401: No autorizado:", error);
+        } else if (error?.response?.status === 403) {
+          errorMessage =
+            "No tienes permisos suficientes para editar este texto.";
+          log.error("useTextForm - Error 403: Prohibido:", error);
+        } else if (error?.response?.status === 404) {
+          errorMessage = "El texto no fue encontrado en el servidor.";
+          log.error("useTextForm - Error 404: Texto no encontrado:", error);
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+          log.error("useTextForm - Error conocido:", error.message);
+        } else {
+          log.error("useTextForm - Error desconocido:", error);
+        }
+
         setGlobalError(errorMessage);
       } finally {
         setIsSubmitting(false);

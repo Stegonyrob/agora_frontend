@@ -37,6 +37,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, comments }) => {
     // Local state for edit
     const [editId, setEditId] = React.useState<number | null>(null);
     const [editText, setEditText] = React.useState("");
+    const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
     // Redux selectors - MISMA LÓGICA QUE NAVBAR CON TIPADO CORRECTO
     const userProfiles = useSelector((state: RootState) => state.profile.profiles || []);
@@ -50,11 +51,40 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, comments }) => {
     const handleEditComment = (comment: IComment) => {
         setEditId(comment.id);
         setEditText(comment.message);
+        setErrorMsg(null); // Limpiar errores al empezar a editar
     };
     const handleUpdateComment = async (comment: IComment) => {
-        await updateCommentMutation.mutateAsync({ id: comment.id, dto: { postId: comment.postId, message: editText } });
-        setEditId(null);
-        setEditText("");
+        setErrorMsg(null); // Limpiar errores previos
+        try {
+            await updateCommentMutation.mutateAsync({ id: comment.id, dto: { postId: comment.postId, message: editText } });
+            setEditId(null);
+            setEditText("");
+        } catch (error: any) {
+            console.error("❌ Error updating comment:", error);
+
+            // Intenta extraer mensaje del backend y el código de error
+            let msg = "No se pudo actualizar el comentario. Intenta de nuevo.";
+            const status = error?.response?.status;
+
+            // 🔒 MANEJO ESPECÍFICO ERROR 423: Usuario bloqueado por comportamiento inapropiado
+            if (status === 423) {
+                msg = "No puedes editar comentarios porque tu usuario ha sido temporalmente bloqueado por comportamiento inapropiado. Si crees que es un error, contacta con el administrador.";
+            } else if (error?.response?.data?.message) {
+                msg = error.response.data.message;
+                // Si el backend rechaza por contenido inapropiado, personaliza el mensaje
+                if (msg.toLowerCase().includes("inapropiado") || msg.toLowerCase().includes("rechazado")) {
+                    msg = "Tu comentario fue rechazado por contener palabras o expresiones inapropiadas según el análisis automático. Por favor, revisa el contenido y vuelve a intentarlo.";
+                }
+            } else if (status === 400) {
+                msg = "Los datos del comentario no son válidos. Por favor, revisa el contenido.";
+            } else if (status === 403) {
+                msg = "No tienes permisos para editar este comentario.";
+            } else if (status === 404) {
+                msg = "El comentario ya no existe o fue eliminado.";
+            }
+
+            setErrorMsg(msg);
+        }
     };
     const handleDeleteComment = async (id: number) => {
         await deleteCommentMutation.mutateAsync(id);
@@ -62,6 +92,12 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, comments }) => {
 
     return (
         <div className={styles.commentsList}>
+            {errorMsg && (
+                <div className={styles.errorMsg} role="alert">
+                    <i className="bi bi-exclamation-triangle-fill" style={{ color: '#ffc107', marginRight: 8 }}></i>
+                    {errorMsg}
+                </div>
+            )}
             {comments.length === 0 && (
                 <div className={styles.noComments}>Sin comentarios aún.</div>
             )}
