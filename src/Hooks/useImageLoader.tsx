@@ -92,7 +92,7 @@ export const useImageLoader = (
                     // Si los elementos tienen ID, obtener desde el servicio
                     const firstItem = imageData[0];
                     if (typeof firstItem === 'object' && firstItem !== null && 'eventId' in firstItem) {
-                        const eventId = (firstItem as IEventImage).eventId;
+                        const eventId = (firstItem).eventId;
                         const imagesWithUrls = await eventImageService.getEventImagesWithUrls(eventId, isAdminContext);
                         const urls = imagesWithUrls
                             .filter(img => img.url)
@@ -186,11 +186,11 @@ export const useImageLoader = (
 
     useEffect(() => {
         return () => {
-            images.forEach(url => {
+            for (const url of images) {
                 if (url.startsWith('blob:')) {
                     URL.revokeObjectURL(url);
                 }
-            });
+            }
         };
     }, [images]);
 

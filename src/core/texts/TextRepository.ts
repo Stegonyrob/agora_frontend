@@ -7,8 +7,21 @@ export class TextRepository {
   uri: string = import.meta.env.VITE_API_ENDPOINT_TEXTS;
 
   async getAll(): Promise<IText[]> {
-    const res = await axios.get(this.uri, { headers: getAuthHeaders() });
-    return res.data;
+    try {
+      console.log(`[TextRepository] Fetching texts from: ${this.uri}`);
+      const res = await axios.get(this.uri, { headers: getAuthHeaders() });
+      console.log(`[TextRepository] Received ${res.data?.length || 0} texts`);
+      return res.data || [];
+    } catch (error: any) {
+      console.error(`[TextRepository] Error fetching texts:`, {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        url: this.uri,
+      });
+      // Retornar array vacío en lugar de lanzar error para no romper la UI
+      return [];
+    }
   }
 
   async getById(id: number): Promise<IText> {

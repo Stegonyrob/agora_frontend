@@ -2,7 +2,7 @@ export interface ISettings {
   fontSize: number;
   highContrast: boolean;
   animations: boolean;
-  daltonic: boolean;
+  colorBlind: boolean;
   showPersonalInfo: boolean;
   twoFA: boolean;
   socialLinks: string[];

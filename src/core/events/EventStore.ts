@@ -1,114 +1,139 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import EventService from "./EventService";
 import { IEvent } from "./IEvent";
-import { IEventDTO } from "./IEventDTO";
+import { IEventCreateDTO, IEventUpdateDTO } from "./IEventBackendDTO";
 
-// Define el store de posts en Redux
-export const eventStore = {
-  state: () => ({
-    events: [] as IEvent[], // Arreglo de posts
-    isLoaded: false as boolean, // Indicador de si los posts han sido cargados
-  }),
+const service = new EventService();
 
-  actions: {
-    // Acción para obtener todos los posts
-    async getAllEvents(this: any): Promise<IEvent[]> {
-      const eventService = new EventService();
-      const events = await eventService.fetchEvents();
-      this.events = events;
-      this.isLoaded = true;
-      return this.events;
-    },
+// Async thunks
+export const fetchEvents = createAsyncThunk(
+  "events/fetchEvents",
+  async () => await service.fetchEvents()
+);
 
-    async saveEvent(this: any, event: IEventDTO): Promise<void> {
-      if (!event) {
-        throw new Error("Event is null or undefined");
-      }
+export const fetchEventsPaginated = createAsyncThunk(
+  "events/fetchEventsPaginated",
+  async ({ page = 0, size = 6 }: { page?: number; size?: number }) =>
+    await service.fetchEventsPaginated(page, size)
+);
 
-      const eventService = new EventService();
-      try {
-        // Transform IEventDTO to IEventCreateDTO
-        const createEventData = {
-          title: event.title,
-          message: event.message,
-          capacity: event.capacity,
-          tags: event.tags.map((tag) => ({ name: tag })), // Transform string[] to { name: string }[]
-          eventDate: event.eventDate,
-          eventTime: event.eventTime,
-          archived: event.isArchived,
-        };
+export const createEvent = createAsyncThunk(
+  "events/createEvent",
+  async (event: IEventCreateDTO) => await service.createEvent(event)
+);
 
-        const newEvent = await eventService.createEvent(createEventData);
-        this.events.push(newEvent);
-        this.isLoaded = true;
-      } catch (error: any) {
-        console.error("Error saving event:", error.message);
-        throw new Error(`Error saving event: ${error.message}`);
-      }
-    },
+export const updateEvent = createAsyncThunk(
+  "events/updateEvent",
+  async ({ id, event }: { id: number; event: IEventUpdateDTO }) =>
+    await service.updateEvent(id, event)
+);
 
-    // Action to update an existing event
-    async updateEvent(
-      this: any,
-      updatedEventData: IEventDTO,
-      eventId: number
-    ): Promise<void> {
-      if (!updatedEventData) {
-        throw new Error("Updated event data is null or undefined");
-      }
+export const deleteEvent = createAsyncThunk(
+  "events/deleteEvent",
+  async (id: number) => {
+    await service.deleteEvent(id);
+    return id;
+  }
+);
 
-      const eventService = new EventService();
-      try {
-        const updatedEvent = await eventService.updateEvent(
-          eventId,
-          updatedEventData
-        );
-        const index = this.events.findIndex(
-          (event: { id: number }) => event.id === eventId
-        );
+export const archiveEvent = createAsyncThunk(
+  "events/archiveEvent",
+  async (id: number) => {
+    await service.archiveEvent(id, true);
+    return id;
+  }
+);
 
-        if (index !== -1) {
-          this.events[index] = updatedEvent;
-        } else {
-          console.error(`Event with ID ${eventId} not found.`);
-        }
-      } catch (error: any) {
-        console.error(
-          `Error updating event with ID ${eventId}:`,
-          error.message
-        );
-        throw new Error(
-          `Error updating event with ID ${eventId}: ${error.message}`
-        );
-      }
-    },
+export const unarchiveEvent = createAsyncThunk(
+  "events/unarchiveEvent",
+  async (id: number) => {
+    await service.unarchiveEvent(id, false);
+    return id;
+  }
+);
 
-    // Action to delete a event
-    async deleteEvent(this: any, eventId: number): Promise<void> {
-      if (isNaN(eventId)) {
-        throw new Error("Event ID is not a number");
-      }
+// State interface
+interface EventsState {
+  events: IEvent[];
+  totalPages: number;
+  page: number;
+  isLoaded: boolean;
+}
 
-      const eventService = new EventService();
-      try {
-        await eventService.deleteEvent(eventId);
-        const index = this.events.findIndex(
-          (event: { id: number }) => event.id === eventId
-        );
-        if (index === -1) {
-          console.error(`Event with ID ${eventId} not found.`);
-        } else {
-          this.events.splice(index, 1);
-        }
-      } catch (error: any) {
-        console.error(
-          `Error deleting event with ID ${eventId}:`,
-          error.message
-        );
-        throw new Error(
-          `Error deleting event with ID ${eventId}: ${error.message}`
-        );
-      }
+// Initial state
+const initialState: EventsState = {
+  events: [],
+  totalPages: 0,
+  page: 0,
+  isLoaded: false,
+};
+
+// Slice
+const eventsSlice = createSlice({
+  name: "events",
+  initialState,
+  reducers: {
+    resetEvents(state) {
+      state.events = [];
+      state.totalPages = 0;
+      state.page = 0;
+      state.isLoaded = false;
     },
   },
-};
-export type EventStore = typeof eventStore;
+  extraReducers: (builder) => {
+    builder
+      // fetchEvents
+      .addCase(fetchEvents.fulfilled, (state, action) => {
+        state.events = action.payload;
+        state.isLoaded = true;
+      })
+      // fetchEventsPaginated
+      .addCase(fetchEventsPaginated.fulfilled, (state, action) => {
+        state.events = action.payload.content;
+        state.totalPages = action.payload.totalPages;
+        state.page =
+          "currentPage" in action.payload ? action.payload.currentPage : 0;
+        state.isLoaded = true;
+      })
+      // createEvent
+      .addCase(createEvent.fulfilled, (state, action) => {
+        state.events.push(action.payload);
+      })
+      // updateEvent
+      .addCase(updateEvent.fulfilled, (state, action) => {
+        const index = state.events.findIndex(
+          (e) => e.id === action.meta.arg.id
+        );
+        if (index !== -1) {
+          // Only update basic fields to avoid type conflicts
+          const updated = action.payload as any;
+          state.events[index].title = updated.title;
+          state.events[index].message = updated.message;
+          state.events[index].capacity = updated.capacity;
+          state.events[index].isArchived =
+            updated.archived ?? updated.isArchived;
+        }
+      })
+      // deleteEvent
+      .addCase(deleteEvent.fulfilled, (state, action) => {
+        state.events = state.events.filter((e) => e.id !== action.payload);
+      })
+      // archiveEvent
+      .addCase(archiveEvent.fulfilled, (state, action) => {
+        const index = state.events.findIndex((e) => e.id === action.payload);
+        if (index !== -1) {
+          state.events[index].isArchived = true;
+        }
+      })
+      // unarchiveEvent
+      .addCase(unarchiveEvent.fulfilled, (state, action) => {
+        const index = state.events.findIndex((e) => e.id === action.payload);
+        if (index !== -1) {
+          state.events[index].isArchived = false;
+        }
+      });
+  },
+});
+
+export const { resetEvents } = eventsSlice.actions;
+export default eventsSlice.reducer;

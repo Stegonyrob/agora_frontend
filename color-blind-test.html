@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Modo Daltónico - Ágora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .toggle-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .toggle-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+
+        .alerts {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border: 2px solid;
+            border-radius: 6px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .form-example {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-control {
+            padding: 0.5rem;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Color Blind Mode Styles */
+        body.color-blind-mode {
+            --primary-color: #4a90e2;
+            --secondary-color: #7b68ee;
+            --accent-color: #ff6b6b;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+            --info-color: #3498db;
+        }
+
+        body.color-blind-mode .btn-primary {
+            background-color: #4a90e2 !important;
+            border-color: #4a90e2 !important;
+        }
+
+        body.color-blind-mode .btn-secondary {
+            background-color: #7b68ee !important;
+            border-color: #7b68ee !important;
+        }
+
+        body.color-blind-mode .btn-success {
+            background-color: #2ecc71 !important;
+            border-color: #2ecc71 !important;
+        }
+
+        body.color-blind-mode .btn-warning {
+            background-color: #f39c12 !important;
+            border-color: #f39c12 !important;
+            color: white !important;
+        }
+
+        body.color-blind-mode .btn-danger {
+            background-color: #e74c3c !important;
+            border-color: #e74c3c !important;
+        }
+
+        body.color-blind-mode .btn-info {
+            background-color: #3498db !important;
+            border-color: #3498db !important;
+        }
+
+        body.color-blind-mode .alert-success {
+            background-color: #d5f4e6 !important;
+            border-color: #2ecc71 !important;
+            color: #0e5c2f !important;
+        }
+
+        body.color-blind-mode .alert-warning {
+            background-color: #fef5e7 !important;
+            border-color: #f39c12 !important;
+            color: #7d5d0a !important;
+        }
+
+        body.color-blind-mode .alert-danger {
+            background-color: #fadbd8 !important;
+            border-color: #e74c3c !important;
+            color: #78281f !important;
+        }
+
+        body.color-blind-mode .alert-info {
+            background-color: #d6eaf8 !important;
+            border-color: #3498db !important;
+            color: #1b4f72 !important;
+        }
+
+        body.color-blind-mode a {
+            color: #4a90e2 !important;
+        }
+
+        body.color-blind-mode .form-control {
+            border-color: #6c757d !important;
+        }
+
+        body.color-blind-mode .form-control:focus {
+            border-color: #4a90e2 !important;
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="status">
+        Modo Normal
+    </div>
+
+    <div class="container">
+        <h1>🎨 Prueba de Modo Daltónico - Ágora</h1>
+        
+        <div class="toggle-container">
+            <button class="toggle-btn" onclick="toggleColorBlindMode()">
+                🔄 Activar/Desactivar Modo Daltónico
+            </button>
+            <p style="margin-top: 1rem; color: #666;">
+                Haz clic en el botón para ver los cambios de color
+            </p>
+        </div>
+
+        <div class="comparison">
+            <!-- Botones -->
+            <div class="section">
+                <h2>Botones</h2>
+                <div class="buttons-grid">
+                    <button class="btn btn-primary">Primario</button>
+                    <button class="btn btn-secondary">Secundario</button>
+                    <button class="btn btn-success">Éxito</button>
+                    <button class="btn btn-warning">Alerta</button>
+                    <button class="btn btn-danger">Peligro</button>
+                    <button class="btn btn-info">Info</button>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div class="section">
+                <h2>Alertas</h2>
+                <div class="alerts">
+                    <div class="alert alert-success">
+                        <strong>✓ Éxito:</strong> La operación se completó correctamente.
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>⚠ Advertencia:</strong> Por favor revisa esta información.
+                    </div>
+                    <div class="alert alert-danger">
+                        <strong>✕ Error:</strong> Hubo un problema al procesar tu solicitud.
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>ℹ Información:</strong> Aquí hay algunos datos importantes.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enlaces -->
+            <div class="section">
+                <h2>Enlaces</h2>
+                <div class="links">
+                    <a href="#">Enlace de ejemplo 1</a>
+                    <a href="#">Enlace de ejemplo 2</a>
+                    <a href="#">Enlace de ejemplo 3</a>
+                </div>
+            </div>
+
+            <!-- Formularios -->
+            <div class="section">
+                <h2>Campos de Formulario</h2>
+                <div class="form-example">
+                    <input type="text" class="form-control" placeholder="Haz clic aquí para ver el borde focus">
+                    <input type="email" class="form-control" placeholder="email@ejemplo.com">
+                    <textarea class="form-control" rows="3" placeholder="Escribe algo..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Qué buscar:</h2>
+            <ul style="line-height: 2;">
+                <li><strong>Botones Primarios:</strong> Cambio de azul estándar a azul más brillante (#4a90e2)</li>
+                <li><strong>Botones Secundarios:</strong> Cambio de gris a púrpura (#7b68ee)</li>
+                <li><strong>Botones de Éxito:</strong> Verde más vibrante (#2ecc71)</li>
+                <li><strong>Botones de Alerta:</strong> De amarillo a naranja (#f39c12)</li>
+                <li><strong>Botones de Peligro:</strong> Rojo mejorado (#e74c3c)</li>
+                <li><strong>Enlaces:</strong> Azul más distinguible (#4a90e2)</li>
+                <li><strong>Bordes de formularios:</strong> Más oscuros y contrastados</li>
+                <li><strong>Fondos de alertas:</strong> Colores de fondo más contrastados</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Verificación Técnica:</h2>
+            <ol style="line-height: 2;">
+                <li>Abre las DevTools (F12)</li>
+                <li>Ve a la pestaña "Elements"</li>
+                <li>Busca la etiqueta <code>&lt;body&gt;</code></li>
+                <li>Cuando actives el modo, deberías ver: <code>&lt;body class="color-blind-mode"&gt;</code></li>
+                <li>Cuando desactives el modo, la clase desaparece</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let isColorBlindMode = false;
+        
+        function toggleColorBlindMode() {
+            isColorBlindMode = !isColorBlindMode;
+            const body = document.body;
+            const status = document.getElementById('status');
+            
+            if (isColorBlindMode) {
+                body.classList.add('color-blind-mode');
+                status.textContent = '✓ Modo Daltónico ACTIVADO';
+                status.style.backgroundColor = '#2ecc71';
+                status.style.color = 'white';
+            } else {
+                body.classList.remove('color-blind-mode');
+                status.textContent = 'Modo Normal';
+                status.style.backgroundColor = '#6c757d';
+                status.style.color = 'white';
+            }
+        }
+    </script>
+</body>
+</html>

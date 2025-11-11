@@ -3,20 +3,17 @@ import { SettingsService } from "@/core/settings/SettingsService";
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import AnimationSetting from "./AnimationSetting";
+import ColorBlindSetting from "./ColorBlindSetting";
 import ContrastSetting from "./ConstrastSetting";
-import DaltonicSetting from "./DaltonicSetting";
 import FontSizeSetting from "./FontSizeSetting";
-import PrivacySetting from "./PrivacySetting";
 import styles from "./Settings.module.scss";
-import SocialLinkSetting from "./SocialLinkSetting";
 import TextToSpeechSetting from "./TextToSpeechSetting";
-import TwoFASetting from "./TwoFASetting";
 
 interface UserSettings {
     fontSize: string;
     highContrast: boolean;
     animations: boolean;
-    daltonic: boolean;
+    colorBlind: boolean;
     showPersonalInfo: boolean;
     twoFA: boolean;
     socialLinks: string[];
@@ -50,7 +47,7 @@ const defaultSettings: UserSettings = {
     fontSize: "small",
     highContrast: false,
     animations: true,
-    daltonic: false,
+    colorBlind: false,
     showPersonalInfo: true,
     twoFA: false,
     socialLinks: [],
@@ -78,15 +75,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
                 await settingsService.saveSettings(userId, backendSettings);
                 // Also save to localStorage for immediate effect and trigger event
                 localStorage.setItem("settings", JSON.stringify(settings));
-                window.dispatchEvent(new Event('settingsUpdated'));
+                globalThis.dispatchEvent(new Event('settingsUpdated'));
             } else {
                 localStorage.setItem("settings", JSON.stringify(settings));
                 // Dispatch custom event to notify other components
-                window.dispatchEvent(new Event('settingsUpdated'));
+                globalThis.dispatchEvent(new Event('settingsUpdated'));
             }
             onClose();
         } catch (e) {
             // Maneja el error
+            console.error("Error saving settings:", e);
         }
         setSaving(false);
     };
@@ -131,9 +129,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
             localStorage.removeItem("settings");
             onClose();
         } catch (e) {
-            // Maneja el error
+            // Log the error so it's handled and visible during development/production
+            console.error("Error deleting settings:", e);
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
     };
 
     if (loading) return null; // O un spinner
@@ -156,38 +156,29 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ show, onClose, userId }) 
                     value={settings.animations}
                     onChange={v => handleUpdate({ animations: v })}
                 />
-                <DaltonicSetting
-                    value={settings.daltonic}
-                    onChange={v => handleUpdate({ daltonic: v })}
+                <ColorBlindSetting
+                    value={settings.colorBlind}
+                    onChange={v => handleUpdate({ colorBlind: v })}
                 />
                 <TextToSpeechSetting />
-                <PrivacySetting
-                    value={settings.showPersonalInfo}
-                    onChange={v => handleUpdate({ showPersonalInfo: v })}
-                />
-                <TwoFASetting
-                    value={settings.twoFA}
-                    onChange={v => handleUpdate({ twoFA: v })}
-                />
-                <SocialLinkSetting
-                    value={settings.socialLinks}
-                    onChange={v => handleUpdate({ socialLinks: v as string[] })}
-                />
-                <button
-                    className={styles.settingsButton}
-                    onClick={handleSave}
-                    disabled={saving}
-                >
-                    {saving ? "Guardando..." : "Guardar"}
-                </button>
-                <button
-                    className={styles.settingsButton}
-                    style={{ background: "#d9534f", marginLeft: "1rem" }}
-                    onClick={handleDelete}
-                    disabled={saving}
-                >
-                    {saving ? "Borrando..." : "Borrar configuración"}
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <button
+                        className={`${styles.settingsButton} ${styles.settingsButtonSuccess}`}
+                        onClick={handleSave}
+                        disabled={saving}
+                        style={{ flex: 1 }}
+                    >
+                        {saving ? "⏳ Guardando..." : "💾 Guardar"}
+                    </button>
+                    <button
+                        className={`${styles.settingsButton} ${styles.settingsButtonDanger}`}
+                        onClick={handleDelete}
+                        disabled={saving}
+                        style={{ flex: 1 }}
+                    >
+                        {saving ? "⏳ Borrando..." : "🗑️ Borrar"}
+                    </button>
+                </div>
             </Modal.Body>
         </Modal>
     );

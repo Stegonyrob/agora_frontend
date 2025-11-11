@@ -4,8 +4,17 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
-
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "lib": [],
-    "types": ["node", "jsdom"]
+    "types": [
+      "node",
+      "vitest/globals"
+    ]
   }
 }

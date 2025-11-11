@@ -9,7 +9,7 @@ const FontSizeSetting = ({ value, onChange }: FontSizeSettingProps) => (
 
     <div className={styles.settingsGroup}>
         <label className={styles.settingsLabel}>
-            Tamaño de fuente
+            Tamaño de fuente{' '}
             <select
                 className={styles.settingsSelect}
                 value={value}

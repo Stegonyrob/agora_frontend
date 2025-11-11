@@ -13,8 +13,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { SWRConfig } from "swr";
-import { useDaltonicMode } from "./hooks/useDaltonicMode";
+import { useColorBlindMode } from "./hooks/useColorBlindMode";
 import { useFontSize } from "./hooks/useFontSize";
+import { useHighContrast } from "./hooks/useHighContrast";
 import swrConfig from "./swrConfig";
 // 🛡️ Error Boundary para capturar errores
 import ErrorBoundary from "./assets/Components/Error/ErrorBoundary";
@@ -32,7 +33,6 @@ import LoginView from "@/assets/Views/LoginView";
 import RegisterView from "@/assets/Views/RegisterView";
 
 import AdminPostView from "./assets/Views/AdminPostView";
-// import EventsView from "./assets/Views/EventsView"; // Comentado temporalmente - archivo no encontrado
 
 // Vistas privadas
 import AdminView from "@/assets/Views/AdminView";
@@ -67,17 +67,13 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const session = useSelector((state: RootState) => state.session);
 
-  // DEBUG: Avatars global state
-  const avatars = useSelector((state: RootState) => state.avatars?.avatars || []);
-
   // Nuevo estado para controlar la hidratación
   const [isHydrating, setIsHydrating] = useState(true);
 
-  // Initialize font size hook
-  const { fontSize } = useFontSize();
-
-  // Initialize daltonic mode hook
-  const { isDaltonicMode } = useDaltonicMode();
+  // Initialize font size, color blind mode and high contrast hooks (only for side effects)
+  useFontSize();
+  useColorBlindMode();
+  useHighContrast();
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
@@ -113,7 +109,7 @@ const App: React.FC = () => {
       // Cargar perfil y actualizar avatarUrl en sesión
       (dispatch as any)(fetchProfileById(userId)).then((result: any) => {
         const profile = result?.payload;
-        if (profile && profile.avatar) {
+        if (profile?.avatar) {
           dispatch(updateAvatarUrl(profile.avatar));
           // También almacenar en sessionStorage para persistencia
           sessionStorage.setItem('avatarUrl', profile.avatar);

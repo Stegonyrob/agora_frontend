@@ -25,11 +25,10 @@ export default defineConfig({
     setupFiles: "./setupTests.js",
     coverage: {
       provider: "v8",
-      reporter: ["text", "json"], // Removido "html" para evitar archivos pesados
+      reporter: ["text", "json", "html"], // Agregado "html" para reporte visual
       include: ["src/**/*.{js,jsx,ts,tsx}"],
       exclude: [
         "node_modules/",
-        "src/__tests__/",
         "**/*.d.ts",
         "**/*.config.*",
         "**/vite-env.d.ts",

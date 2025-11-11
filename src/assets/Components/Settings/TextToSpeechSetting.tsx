@@ -20,13 +20,36 @@ const TextToSpeechSetting = () => {
 
     return (
         <div className={styles.settingsGroup}>
-            <label className={styles.settingsLabel}>Lectura de texto:</label>
+            <label className={styles.settingsLabel}>
+                <span>Lectura de texto</span>
+                <span
+                    style={{
+                        backgroundColor: speaking ? '#28a745' : '#6c757d',
+                        color: '#fff',
+                        padding: '0.25rem 0.75rem',
+                        borderRadius: '1rem',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        marginLeft: 'auto'
+                    }}
+                >
+                    {speaking ? "Activo" : "Inactivo"}
+                </span>
+            </label>
             <button
                 type="button"
-                className={styles.settingsButton}
+                className={styles.settingsButtonSmall}
                 onClick={handleSpeak}
+                style={{
+                    background: speaking
+                        ? 'linear-gradient(135deg, #dc3545 0%, #a71d2a 100%)'
+                        : 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                    boxShadow: speaking
+                        ? '0 2px 8px rgba(220, 53, 69, 0.3)'
+                        : '0 2px 8px rgba(0, 123, 255, 0.3)'
+                }}
             >
-                {speaking ? "Detener lectura" : "Leer toda la página"}
+                {speaking ? "🛑 Detener" : "🔊 Leer página"}
             </button>
         </div>
     );

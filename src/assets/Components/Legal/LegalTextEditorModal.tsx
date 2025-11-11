@@ -1,8 +1,9 @@
 import { LegalTextDTO } from '@/core/legals/LegalTextDTO';
 import { LegalTextService } from '@/core/legals/LegalTextService';
 import { getLegalTextTemplate, LEGAL_TEXT_TYPES, LegalTextType } from '@/core/legals/LegalTextTemplates';
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Form, Modal } from 'react-bootstrap';
+import styles from './LegalTextEditorModal.module.scss';
 
 interface LegalTextEditorModalProps {
     show: boolean;
@@ -24,6 +25,7 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [previewMode, setPreviewMode] = useState(false);
+    const editorRef = useRef<HTMLDivElement>(null);
 
     const displayName = LEGAL_TEXT_TYPES[type];
 
@@ -32,10 +34,16 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
             if (existingText) {
                 setTitle(existingText.title || '');
                 setContent(existingText.content || '');
+                if (editorRef.current && !previewMode) {
+                    editorRef.current.innerHTML = existingText.content || '';
+                }
             } else {
                 const template = getLegalTextTemplate(type);
                 setTitle(template.title);
                 setContent(template.content);
+                if (editorRef.current && !previewMode) {
+                    editorRef.current.innerHTML = template.content;
+                }
             }
             setError(null);
             setPreviewMode(false);
@@ -45,7 +53,14 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
     const handleSave = async () => {
         console.log(`🚀 LegalTextEditorModal.handleSave - Iniciando guardado para tipo: ${type}`);
 
-        if (!title.trim() || !content.trim()) {
+        // Obtener contenido del editor si no está en modo preview
+        if (!previewMode && editorRef.current) {
+            setContent(editorRef.current.innerHTML);
+        }
+
+        const contentToSave = previewMode ? content : (editorRef.current?.innerHTML || content);
+
+        if (!title.trim() || !contentToSave.trim()) {
             console.warn(`⚠️ LegalTextEditorModal.handleSave - Validación fallida: título o contenido vacío`);
             setError('El título y contenido son obligatorios');
             return;
@@ -60,7 +75,7 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
             const data: LegalTextDTO = {
                 type,
                 title: title.trim(),
-                content: content.trim()
+                content: contentToSave.trim()
             };
             console.log(`📝 LegalTextEditorModal.handleSave - Datos preparados:`, data);
 
@@ -117,8 +132,66 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
         }
     };
 
-    const addTemplate = (template: string) => {
-        setContent(prev => prev + template);
+    const applyFormat = (tag: string) => {
+        if (!editorRef.current) return;
+
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
+
+        if (!selectedText) return;
+
+        const element = document.createElement(tag);
+        element.textContent = selectedText;
+
+        range.deleteContents();
+        range.insertNode(element);
+
+        // Actualizar el estado de content
+        setContent(editorRef.current.innerHTML);
+    };
+
+    const applyBold = () => {
+        if (!editorRef.current) return;
+
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
+
+        if (!selectedText) return;
+
+        const strong = document.createElement('strong');
+        strong.textContent = selectedText;
+
+        range.deleteContents();
+        range.insertNode(strong);
+
+        setContent(editorRef.current.innerHTML);
+    };
+
+    const changeFontSize = (size: string) => {
+        if (!editorRef.current) return;
+
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
+
+        if (!selectedText) return;
+
+        const span = document.createElement('span');
+        span.style.fontSize = size;
+        span.textContent = selectedText;
+
+        range.deleteContents();
+        range.insertNode(span);
+
+        setContent(editorRef.current.innerHTML);
     };
 
     const useDefaultTemplate = () => {
@@ -126,10 +199,17 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
             const template = getLegalTextTemplate(type);
             setTitle(template.title);
             setContent(template.content);
+            if (editorRef.current) {
+                editorRef.current.innerHTML = template.content;
+            }
         }
     };
 
     const togglePreview = () => {
+        // Guardar el contenido del editor antes de cambiar a preview
+        if (!previewMode && editorRef.current) {
+            setContent(editorRef.current.innerHTML);
+        }
         setPreviewMode(!previewMode);
     };
 
@@ -138,7 +218,16 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
         setContent('');
         setError(null);
         setPreviewMode(false);
+        if (editorRef.current) {
+            editorRef.current.innerHTML = '';
+        }
         onHide();
+    };
+
+    const handleEditorInput = () => {
+        if (editorRef.current) {
+            setContent(editorRef.current.innerHTML);
+        }
     };
 
     return (
@@ -150,14 +239,14 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
             centered
             scrollable
         >
-            <Modal.Header closeButton>
-                <Modal.Title>
+            <Modal.Header closeButton className={styles.modalHeader}>
+                <Modal.Title className={styles.modalTitle}>
                     Editar {displayName}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className={styles.modalBody}>
                 {error && (
-                    <Alert variant="danger" dismissible onClose={() => setError(null)}>
+                    <Alert variant="danger" dismissible onClose={() => setError(null)} className={styles.errorAlert}>
                         {error}
                     </Alert>
                 )}
@@ -173,81 +262,139 @@ const LegalTextEditorModal: React.FC<LegalTextEditorModalProps> = ({
                         />
                     </Form.Group>
 
-                    {!previewMode ? (
-                        <Form.Group className="mb-3">
-                            <Form.Label>Contenido</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={10}
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                disabled={saving}
-                                placeholder="Escribe aquí el contenido del texto legal..."
-                            />
-                        </Form.Group>
-                    ) : (
-                        <div className="mb-3">
-                            <label className="form-label">Vista previa</label>
-                            <div
-                                className="border p-3 rounded bg-light"
-                                style={{ minHeight: '200px', whiteSpace: 'pre-wrap' }}
-                            >
-                                {content}
-                            </div>
-                        </div>
-                    )}
+                    <Form.Group className="mb-3">
+                        <Form.Label>Contenido</Form.Label>
 
-                    <div className="d-flex gap-2 mb-3">
-                        <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => addTemplate('\n\n**Cláusula adicional:**\n')}
-                            disabled={saving}
-                        >
-                            + Cláusula
-                        </Button>
-                        <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => addTemplate('\n\n**Nota importante:**\n')}
-                            disabled={saving}
-                        >
-                            + Nota
-                        </Button>
-                        <Button
-                            variant="outline-warning"
-                            size="sm"
+                        {previewMode ? (
+                            <div
+                                className={styles.previewArea}
+                                dangerouslySetInnerHTML={{ __html: content }}
+                            />
+                        ) : (
+                            <>
+                                {/* Barra de herramientas de formato */}
+                                <div className={styles.editorToolbar}>
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => applyFormat('h1')}
+                                        disabled={saving}
+                                        title="Título principal"
+                                    >
+                                        <i className="bi bi-type-h1"></i> Título
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => applyFormat('h2')}
+                                        disabled={saving}
+                                        title="Subtítulo"
+                                    >
+                                        <i className="bi bi-type-h2"></i> Subtítulo
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => applyFormat('p')}
+                                        disabled={saving}
+                                        title="Párrafo"
+                                    >
+                                        <i className="bi bi-text-paragraph"></i> Párrafo
+                                    </button>
+
+                                    <div className={styles.toolbarDivider} />
+
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={applyBold}
+                                        disabled={saving}
+                                        title="Negrita"
+                                    >
+                                        <i className="bi bi-type-bold"></i> Negrita
+                                    </button>
+
+                                    <div className={styles.toolbarDivider} />
+
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => changeFontSize('0.875rem')}
+                                        disabled={saving}
+                                        title="Texto pequeño"
+                                    >
+                                        <i className="bi bi-fonts"></i> Pequeño
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => changeFontSize('1rem')}
+                                        disabled={saving}
+                                        title="Texto normal"
+                                    >
+                                        <i className="bi bi-fonts"></i> Normal
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.toolbarButton}
+                                        onClick={() => changeFontSize('1.25rem')}
+                                        disabled={saving}
+                                        title="Texto grande"
+                                    >
+                                        <i className="bi bi-fonts"></i> Grande
+                                    </button>
+                                </div>
+
+                                {/* Área de edición */}
+                                <div
+                                    ref={editorRef}
+                                    className={styles.editorArea}
+                                    contentEditable={!saving}
+                                    onInput={handleEditorInput}
+                                    suppressContentEditableWarning={true}
+                                />
+                            </>
+                        )}
+                    </Form.Group>
+
+                    {/* Botones de utilidad */}
+                    <div className={styles.utilityButtons}>
+                        <button
+                            type="button"
+                            className={`${styles.utilityButton} ${styles.warning}`}
                             onClick={useDefaultTemplate}
                             disabled={saving}
                         >
-                            Usar plantilla por defecto
-                        </Button>
-                        <Button
-                            variant="outline-info"
-                            size="sm"
+                            📋 Usar plantilla por defecto
+                        </button>
+                        <button
+                            type="button"
+                            className={`${styles.utilityButton} ${styles.info}`}
                             onClick={togglePreview}
                             disabled={saving}
                         >
-                            {previewMode ? 'Editar' : 'Vista previa'}
-                        </Button>
+                            {previewMode ? '✏️ Editar' : '👁️ Vista previa'}
+                        </button>
                     </div>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
-                <Button
-                    variant="secondary"
+            <Modal.Footer className={styles.modalFooter}>
+                <button
+                    type="button"
+                    className={styles.cancelButton}
                     onClick={handleClose}
                     disabled={saving}
                 >
                     Cancelar
-                </Button>
-                <Button
-                    variant="primary"
+                </button>
+                <button
+                    type="button"
+                    className={styles.saveButton}
                     onClick={handleSave}
-                    disabled={saving || !title.trim() || !content.trim()}
+                    disabled={saving || !title.trim()}
                 >
-                    {saving ? 'Guardando...' : 'Guardar'}
-                </Button>
+                    {saving ? '⏳ Guardando...' : '💾 Guardar'}
+                </button>
             </Modal.Footer>
         </Modal>
     );

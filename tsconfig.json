@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "baseUrl": "src",
     "ignoreDeprecations": "6.0",
     "paths": {
@@ -29,12 +29,12 @@
   },
   "include": [
     "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "src/redux",
     "src/core/posts"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.test.ts"
+    "node_modules"
   ]
 }
