@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $primary-color: #25d366;
 $secondary-color: #075e54;
@@ -167,7 +169,7 @@ $shadow-color: rgba(0, 0, 0, 0.15);
 
       .statusSubtitle {
         font-size: 0.8rem;
-        color: lighten($white, 20%);
+        color: color.adjust($white, $lightness: 20%);
       }
     }
 
@@ -175,7 +177,7 @@ $shadow-color: rgba(0, 0, 0, 0.15);
       padding: 1rem;
       cursor: pointer;
           :hover {
-      background-color: darken($secondary-color, 5%);
+      background-color: color.adjust($secondary-color, $lightness: -5%);
       border-radius: 50%;
     }
 
@@ -249,7 +251,7 @@ $shadow-color: rgba(0, 0, 0, 0.15);
         border-radius: 20px;
         padding: 0 10px;
         border: none;
-        background-color: lighten($white, 5%);
+        background-color: color.adjust($white, $lightness: 5%);
         min-height: 45px;
         @include transition(box-shadow, 0.2s, ease-in-out);
 
@@ -308,7 +310,7 @@ $shadow-color: rgba(0, 0, 0, 0.15);
     }
 
     .chatFooter {
-      background-color: darken($light-gray, 20%);
+      background-color: color.adjust($light-gray, $lightness: -20%);
 
       form {
         .input {

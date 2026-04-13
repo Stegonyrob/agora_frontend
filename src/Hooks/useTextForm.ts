@@ -11,6 +11,28 @@ interface UseTextFormProps {
   userId?: number;
 }
 
+function getTextSubmitErrorMessage(error: any): string {
+  if (error?.response?.status === 500) {
+    return "El texto no se pudo actualizar porque no existe en el servidor. Esto puede suceder si el texto fue eliminado o no se creó correctamente.";
+  }
+  if (error?.response?.status === 400) {
+    return "Los datos del texto no son válidos. Por favor, revisa la información ingresada.";
+  }
+  if (error?.response?.status === 401) {
+    return "No tienes permisos para realizar esta acción. Por favor, inicia sesión nuevamente.";
+  }
+  if (error?.response?.status === 403) {
+    return "No tienes permisos suficientes para editar este texto.";
+  }
+  if (error?.response?.status === 404) {
+    return "El texto no fue encontrado en el servidor.";
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Error desconocido al guardar el texto.";
+}
+
 export const useTextForm = ({
   text,
   show,
@@ -46,7 +68,7 @@ export const useTextForm = ({
               isLoading: false,
               isExisting: true,
               id: img.id,
-            })
+            }),
           );
 
           setImagePreviews(existingImages);
@@ -90,7 +112,7 @@ export const useTextForm = ({
     const idx =
       typeof identifier === "number"
         ? identifier
-        : parseInt(identifier.toString(), 10);
+        : Number.parseInt(identifier.toString(), 10);
     setImagePreviews((prev) => {
       const imageToRemove = prev[idx];
       if (
@@ -108,7 +130,7 @@ export const useTextForm = ({
   const validateForm = useCallback(() => {
     if (userRole !== "ROLE_ADMIN") {
       log.error(
-        "useTextForm - Validación fallida: El usuario no es administrador."
+        "useTextForm - Validación fallida: El usuario no es administrador.",
       );
       throw new Error("Solo los administradores pueden crear/editar textos.");
     }
@@ -120,10 +142,10 @@ export const useTextForm = ({
           title,
           message,
           category,
-        }
+        },
       );
       throw new Error(
-        "Título, descripción y categoría son campos obligatorios."
+        "Título, descripción y categoría son campos obligatorios.",
       );
     }
 
@@ -143,7 +165,7 @@ export const useTextForm = ({
     async (onSubmit: (text: IText) => Promise<void>, onClose: () => void) => {
       if (isSubmitting) {
         log.warn(
-          "useTextForm - Proceso de envío ya en curso. Abortando nuevo envío."
+          "useTextForm - Proceso de envío ya en curso. Abortando nuevo envío.",
         );
         return;
       }
@@ -154,16 +176,9 @@ export const useTextForm = ({
       try {
         validateForm();
 
-        const newImageFiles: File[] = [];
-        const existingImageIds: number[] = [];
-
-        imagePreviews.forEach((preview) => {
-          if (preview.file && !preview.isExisting) {
-            newImageFiles.push(preview.file);
-          } else if (preview.isExisting && preview.id) {
-            existingImageIds.push(preview.id);
-          }
-        });
+        const newImageFiles = imagePreviews
+          .filter((preview) => !preview.isExisting && !!preview.file)
+          .map((preview) => preview.file as File);
 
         // Preparar datos del texto (sin llamar al API en edición)
         let savedText: IText;
@@ -196,7 +211,7 @@ export const useTextForm = ({
         if (newImageFiles.length > 0 && savedText.id) {
           await textImageService.uploadImagesByTextId(
             savedText.id,
-            newImageFiles
+            newImageFiles,
           );
         }
 
@@ -206,18 +221,19 @@ export const useTextForm = ({
           images: [], // Images are handled separately
         };
 
-        console.log("✅ Texto procesado exitosamente:", resultText);
+        log.info("useTextForm - Texto procesado exitosamente", {
+          id: resultText.id,
+        });
         await onSubmit(resultText);
 
         // Emitir evento de actualización
-        console.log("🔄 Emitiendo evento de actualización de texto...");
         const updateEvent = new CustomEvent("textUpdated", {
           detail: {
             textId: resultText.id,
             action: text?.id ? "edit" : "create",
           },
         });
-        window.dispatchEvent(updateEvent);
+        globalThis.dispatchEvent(updateEvent);
 
         if (!text?.id) {
           resetForm();
@@ -225,37 +241,8 @@ export const useTextForm = ({
 
         onClose();
       } catch (error: any) {
-        let errorMessage = "Error desconocido al guardar el texto.";
-
-        // 🔍 MANEJO ESPECÍFICO DE ERRORES
-        if (error?.response?.status === 500) {
-          errorMessage = `El texto no se pudo actualizar porque no existe en el servidor. Esto puede suceder si el texto fue eliminado o no se creó correctamente.`;
-          log.error(
-            "useTextForm - Error 500: Texto no encontrado en backend:",
-            error
-          );
-        } else if (error?.response?.status === 400) {
-          errorMessage =
-            "Los datos del texto no son válidos. Por favor, revisa la información ingresada.";
-          log.error("useTextForm - Error 400: Datos inválidos:", error);
-        } else if (error?.response?.status === 401) {
-          errorMessage =
-            "No tienes permisos para realizar esta acción. Por favor, inicia sesión nuevamente.";
-          log.error("useTextForm - Error 401: No autorizado:", error);
-        } else if (error?.response?.status === 403) {
-          errorMessage =
-            "No tienes permisos suficientes para editar este texto.";
-          log.error("useTextForm - Error 403: Prohibido:", error);
-        } else if (error?.response?.status === 404) {
-          errorMessage = "El texto no fue encontrado en el servidor.";
-          log.error("useTextForm - Error 404: Texto no encontrado:", error);
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
-          log.error("useTextForm - Error conocido:", error.message);
-        } else {
-          log.error("useTextForm - Error desconocido:", error);
-        }
-
+        const errorMessage = getTextSubmitErrorMessage(error);
+        log.error("useTextForm - Error al guardar el texto:", error);
         setGlobalError(errorMessage);
       } finally {
         setIsSubmitting(false);
@@ -272,7 +259,7 @@ export const useTextForm = ({
       resetForm,
       textService,
       textImageService,
-    ]
+    ],
   );
 
   return {

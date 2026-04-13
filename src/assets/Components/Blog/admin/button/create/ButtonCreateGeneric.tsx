@@ -1,9 +1,10 @@
 import DOMPurify from "dompurify";
-import React, { useState } from "react";
-import EventForm from "../create-edit/EventForm";
-import PostForm from "../create-edit/PostForm";
-import TextForm from "../create-edit/TextForm";
+import React, { Suspense, lazy, useState } from "react";
 import styles from "./ButtonCreateGeneric.module.scss";
+
+const EventForm = lazy(() => import("../create-edit/EventForm"));
+const PostForm = lazy(() => import("../create-edit/PostForm"));
+const TextForm = lazy(() => import("../create-edit/TextForm"));
 
 interface ButtonCreateGenericProps {
     type: "post" | "event" | "text";
@@ -18,6 +19,16 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
 
     const handleOpenForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
+
+    const getCreateLabel = () => {
+        if (type === "post") {
+            return "Crear Nuevo Post";
+        }
+        if (type === "event") {
+            return "Crear Nuevo Evento";
+        }
+        return "Crear Nuevo Texto";
+    };
 
     const handleCreateItem = async (newItem: any) => {
         if (!newItem) {
@@ -43,8 +54,9 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
         try {
             await handleSubmit(itemWithUserId);
             handleCloseForm();
-        } catch (error) {
-            alert("No se pudo crear, inténtelo de nuevo más tarde.");
+        } catch (error: any) {
+            const errorMessage = error?.message || "No se pudo crear, inténtelo de nuevo más tarde.";
+            alert(errorMessage);
         }
     };
 
@@ -61,38 +73,40 @@ const ButtonCreateGeneric: React.FC<ButtonCreateGenericProps> = ({ type, onSubmi
     return (
         <div className={styles.container}>
             <button className={styles.buttonCreate} onClick={handleOpenForm}>
-                {type === "post"
-                    ? "Crear Nuevo Post"
-                    : type === "event"
-                        ? "Crear Nuevo Evento"
-                        : "Crear Nuevo Texto"}
+                {getCreateLabel()}
             </button>
             {type === "post" && (
-                <PostForm
-                    onSubmit={handleCreateItem}
-                    onClose={handleCloseForm}
-                    show={showForm}
-                    userId={userId}
-                    mode="create"
-                />
+                <Suspense fallback={null}>
+                    <PostForm
+                        onSubmit={handleCreateItem}
+                        onClose={handleCloseForm}
+                        show={showForm}
+                        userId={userId}
+                        mode="create"
+                    />
+                </Suspense>
             )}
             {type === "event" && (
-                <EventForm
-                    onSubmit={handleCreateItem}
-                    onClose={handleCloseForm}
-                    show={showForm}
-                    userId={userId}
-                    mode="create"
-                />
+                <Suspense fallback={null}>
+                    <EventForm
+                        onSubmit={handleCreateItem}
+                        onClose={handleCloseForm}
+                        show={showForm}
+                        userId={userId}
+                        mode="create"
+                    />
+                </Suspense>
             )}
             {type === "text" && (
-                <TextForm
-                    onSubmit={handleCreateItem}
-                    onClose={handleCloseForm}
-                    show={showForm}
-                    userId={userId}
-                    mode="create"
-                />
+                <Suspense fallback={null}>
+                    <TextForm
+                        onSubmit={handleCreateItem}
+                        onClose={handleCloseForm}
+                        show={showForm}
+                        userId={userId}
+                        mode="create"
+                    />
+                </Suspense>
             )}
         </div>
     );

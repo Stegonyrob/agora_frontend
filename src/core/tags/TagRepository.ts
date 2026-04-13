@@ -20,23 +20,23 @@ export interface ITagRepository {
   // Métodos de reemplazo masivo para posts
   replaceTagsInPost(
     postId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void>;
   clearTagsFromPost(postId: number): Promise<void>;
   addTagsToPost(
     postId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void>;
 
   // Métodos de reemplazo masivo para eventos
   replaceTagsInEvent(
     eventId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void>;
   clearTagsFromEvent(eventId: number): Promise<void>;
   addTagsToEvent(
     eventId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void>;
 }
 
@@ -87,170 +87,114 @@ class TagRepository implements ITagRepository {
   }
 
   async getAllTags(): Promise<ITag[]> {
-    try {
-      const response = await axios.get(this.publicTagsUrl);
-      return response.data || [];
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const response = await axios.get(this.publicTagsUrl, { headers });
+    return response.data || [];
   }
 
   async getEventsByTag(tagName: string): Promise<any[]> {
-    try {
-      const headers = getAuthHeaders();
-      const response = await axios.get(
-        `${this.privateEventTagsUrl}/${encodeURIComponent(tagName)}`,
-        { headers }
-      );
-      return response.data || [];
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const response = await axios.get(
+      `${this.privateEventTagsUrl}/${encodeURIComponent(tagName)}`,
+      { headers },
+    );
+    return response.data || [];
   }
 
   async getTagsByEvent(eventId: number): Promise<ITag[]> {
-    try {
-      const headers = getAuthHeaders();
-      const response = await axios.get(this.getEventTagsUrl(eventId), {
-        headers,
-      });
-      return response.data || [];
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const response = await axios.get(this.getEventTagsUrl(eventId), {
+      headers,
+    });
+    return response.data || [];
   }
 
   async getTagsByPost(postId: number): Promise<ITag[]> {
-    try {
-      const headers = getAuthHeaders();
-      const url = this.getPostTagsUrl(postId);
-      const response = await axios.get(url, { headers });
-      return response.data || [];
-    } catch (error: any) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const url = this.getPostTagsUrl(postId);
+    const response = await axios.get(url, { headers });
+    return response.data || [];
   }
 
   async createTag(request: ICreateTagRequest): Promise<ICreateTagResponse> {
-    try {
-      const headers = getAuthHeaders();
-      const response = await axios.post(this.tagsUrl, request, { headers });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const response = await axios.post(this.tagsUrl, request, { headers });
+    return response.data;
   }
 
   async addTagsToEvent(
     eventId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      const response = await axios.post(
-        this.getEventTagsUrl(eventId),
-        { tags },
-        { headers }
-      );
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    await axios.post(this.getEventTagsUrl(eventId), tags, { headers });
   }
 
   async addTagsToPost(
     postId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      const url = this.getPostTagsUrl(postId);
-      const payload = { tags };
-      await axios.post(url, payload, { headers });
-    } catch (error: any) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const url = this.getPostTagsUrl(postId);
+    await axios.post(url, tags, { headers });
   }
 
   async removeTagFromEvent(eventId: number, tagName: string): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      await axios.delete(this.getEventTagRemoveUrl(eventId, tagName), {
-        headers,
-      });
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    await axios.delete(this.getEventTagRemoveUrl(eventId, tagName), {
+      headers,
+    });
   }
 
   async removeTagFromPost(postId: number, tagName: string): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      await axios.delete(this.getPostTagRemoveUrl(postId, tagName), {
-        headers,
-      });
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    await axios.delete(this.getPostTagRemoveUrl(postId, tagName), {
+      headers,
+    });
   }
 
   async clearTagsFromPost(postId: number): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      const url = this.getPostTagsUrl(postId);
-      await axios.delete(url, { headers });
-    } catch (error: any) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const url = this.getPostTagsUrl(postId);
+    await axios.delete(url, { headers });
   }
 
   async replaceTagsInPost(
     postId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void> {
-    try {
-      await this.clearTagsFromPost(postId);
-      await this.addTagsToPost(postId, tags);
-      await this.getTagsByPost(postId); // Si quieres mantener la verificación, pero sin logs
-    } catch (error: any) {
-      throw error;
-    }
+    await this.clearTagsFromPost(postId);
+    await this.addTagsToPost(postId, tags);
+    await this.getTagsByPost(postId);
   }
 
   async clearTagsFromEvent(eventId: number): Promise<void> {
-    try {
-      const headers = getAuthHeaders();
-      const url = this.getEventTagsUrl(eventId);
-      await axios.delete(url, { headers });
-    } catch (error: any) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const url = this.getEventTagsUrl(eventId);
+    await axios.delete(url, { headers });
   }
 
   async replaceTagsInEvent(
     eventId: number,
-    tags: { id: number; name: string; archived: boolean }[]
+    tags: { id: number; name: string; archived: boolean }[],
   ): Promise<void> {
     try {
       await this.clearTagsFromEvent(eventId);
-      await this.addTagsToEvent(eventId, tags);
-      await this.getTagsByEvent(eventId); // Si quieres mantener la verificación, pero sin logs
-    } catch (error: any) {
-      throw error;
+    } catch {
+      // Bulk DELETE endpoint may not be available on the backend;
+      // proceed so addTagsToEvent still runs.
     }
+    await this.addTagsToEvent(eventId, tags);
   }
 
   async archiveTag(tagId: number, archived: boolean): Promise<ITag> {
-    try {
-      const headers = getAuthHeaders();
-      const response = await axios.patch(
-        `${this.tagsUrl}/${tagId}/archive`,
-        { archived },
-        { headers }
-      );
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const headers = getAuthHeaders();
+    const response = await axios.patch(
+      `${this.tagsUrl}/${tagId}/archive`,
+      { archived },
+      { headers },
+    );
+    return response.data;
   }
 }
 

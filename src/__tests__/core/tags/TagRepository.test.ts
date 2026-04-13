@@ -23,11 +23,11 @@ describe("TagRepository", () => {
   beforeEach(() => {
     vi.stubEnv(
       "VITE_API_ENDPOINT_TAGS_BY_EVENT_PUBLIC",
-      "http://api.test/public/tags"
+      "http://api.test/public/tags",
     );
     vi.stubEnv(
       "VITE_API_ENDPOINT_TAGS_BY_EVENT_PRIVATE",
-      "http://api.test/private/tags"
+      "http://api.test/private/tags",
     );
     vi.stubEnv("VITE_API_ENDPOINT_POST_TAGS", "http://api.test/post-tags");
     vi.stubEnv("VITE_API_ENDPOINT_TAGS", "http://api.test/tags");
@@ -79,7 +79,7 @@ describe("TagRepository", () => {
       expect(result).toEqual(mockEvents);
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/private/tags/TestTag",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
 
@@ -90,7 +90,7 @@ describe("TagRepository", () => {
 
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/private/tags/Tag%20With%20Spaces",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -104,7 +104,7 @@ describe("TagRepository", () => {
       expect(result).toEqual(mockTags);
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/event-tags/events/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
 
@@ -117,7 +117,7 @@ describe("TagRepository", () => {
 
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/any/tags/events/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -131,7 +131,7 @@ describe("TagRepository", () => {
       expect(result).toEqual(mockTags);
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/post-tags/posts/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
 
@@ -144,7 +144,7 @@ describe("TagRepository", () => {
 
       expect(axios.get).toHaveBeenCalledWith(
         "http://api.test/any/tags/posts/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -172,7 +172,7 @@ describe("TagRepository", () => {
       (axios.post as any).mockRejectedValueOnce(error);
 
       await expect(repository.createTag({ name: "NewTag" })).rejects.toThrow(
-        "Creation failed"
+        "Creation failed",
       );
     });
   });
@@ -189,8 +189,8 @@ describe("TagRepository", () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         "http://api.test/event-tags/events/1/tags",
-        { tags },
-        { headers: mockHeaders }
+        tags,
+        { headers: mockHeaders },
       );
     });
   });
@@ -207,8 +207,8 @@ describe("TagRepository", () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         "http://api.test/post-tags/posts/1/tags",
-        { tags },
-        { headers: mockHeaders }
+        tags,
+        { headers: mockHeaders },
       );
     });
   });
@@ -221,7 +221,7 @@ describe("TagRepository", () => {
 
       expect(axios.delete).toHaveBeenCalledWith(
         "http://api.test/event-tags/events/1/tags/TagToRemove",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
 
@@ -232,7 +232,7 @@ describe("TagRepository", () => {
 
       expect(axios.delete).toHaveBeenCalledWith(
         "http://api.test/event-tags/events/1/tags/Tag%20With%20Spaces",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -245,7 +245,7 @@ describe("TagRepository", () => {
 
       expect(axios.delete).toHaveBeenCalledWith(
         "http://api.test/post-tags/posts/1/tags/TagToRemove",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -258,7 +258,7 @@ describe("TagRepository", () => {
 
       expect(axios.delete).toHaveBeenCalledWith(
         "http://api.test/post-tags/posts/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -271,7 +271,7 @@ describe("TagRepository", () => {
 
       expect(axios.delete).toHaveBeenCalledWith(
         "http://api.test/event-tags/events/1/tags",
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });
@@ -298,7 +298,7 @@ describe("TagRepository", () => {
       (axios.delete as any).mockRejectedValueOnce(error);
 
       await expect(repository.replaceTagsInPost(1, [])).rejects.toThrow(
-        "Clear failed"
+        "Clear failed",
       );
     });
   });
@@ -332,7 +332,7 @@ describe("TagRepository", () => {
       expect(axios.patch).toHaveBeenCalledWith(
         "http://api.test/tags/1/archive",
         { archived: true },
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
 
@@ -346,7 +346,7 @@ describe("TagRepository", () => {
       expect(axios.patch).toHaveBeenCalledWith(
         "http://api.test/tags/1/archive",
         { archived: false },
-        { headers: mockHeaders }
+        { headers: mockHeaders },
       );
     });
   });

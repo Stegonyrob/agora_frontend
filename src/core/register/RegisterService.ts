@@ -4,35 +4,20 @@ import IRegisterDTO from "./IRegisterDTO";
 
 // RegisterService.ts
 export class RegisterService {
-  private uri: string = import.meta.env.VITE_API_ENDPOINT_REGISTER;
+  private readonly uri: string = import.meta.env.VITE_API_ENDPOINT_REGISTER;
   async register(registerData: IRegisterDTO): Promise<IUser> {
     // Validación obligatoria: el usuario debe haber aceptado las reglas
     if (!registerData.rulesAccepted) {
       throw new Error(
-        "Debes aceptar las reglas de la comunidad para poder registrarte."
+        "Debes aceptar las reglas de la comunidad para poder registrarte.",
       );
     }
 
-    // Debug: Log de los datos que se van a enviar
-    console.log(
-      "📤 Enviando datos de registro:",
-      JSON.stringify(registerData, null, 2)
-    );
-
-
     try {
-
       const res = await axios.post(this.uri, registerData, {
         headers: {
           "Content-Type": "application/json",
         },
-      });
-
-      console.log("📡 Response completo:", {
-        status: res.status,
-        statusText: res.statusText,
-        headers: res.headers,
-        data: res.data,
       });
       return res.data;
     } catch (error) {

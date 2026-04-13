@@ -6,9 +6,9 @@ import CardItem from "../card/CardItem";
 import styles from "../card/CardItem.module.scss";
 import CardItemSkeleton from "../card/CardItemSkeleton"; // Importa el esqueleto
 
+const generateUniqueId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
 interface EventListProps {
-    userId: number | null; // Esta prop no se usa en el componente actual
-    events: IEvent[]; // Esta prop no se usa en el componente actual, los eventos se cargan internamente
     onSelect: (event: IEvent) => void;
 }
 
@@ -49,14 +49,24 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
             <div className={styles.cardContainer}>
                 {isLoading ? (
                     // Muestra 6 esqueletos de tipo 'event' mientras carga
-                    Array.from({ length: EVENTS_PER_PAGE }).map((_, index) => (
-                        <CardItemSkeleton key={index} type="event" />
+                    Array.from({ length: EVENTS_PER_PAGE }).map(() => (
+                        <CardItemSkeleton key={`skeleton-${generateUniqueId()}`} type="event" />
                     ))
                 ) : (
                     // Muestra solo los eventos no archivados
                     events
                         .filter(event => !event.archived && !event.isArchived)
                         .map((event) => {
+                            let maxCapacity: number | undefined;
+                            
+                            if (typeof event.capacity === "number") {
+                                maxCapacity = event.capacity;
+                            } else if (typeof event.capacity === "string") {
+                                maxCapacity = Number(event.capacity) || undefined;
+                            } else {
+                                maxCapacity = undefined;
+                            }
+
                             return (
                                 <CardItem
                                     key={event.id}
@@ -72,7 +82,7 @@ const EventList: React.FC<EventListProps> = ({ onSelect }) => {
                                     user={event.user}
                                     onSelect={handleSelect}
                                     location={event.location}
-                                    maxCapacity={typeof event.capacity === "number" ? event.capacity : (typeof event.capacity === "string" ? Number(event.capacity) || undefined : undefined)}
+                                    maxCapacity={maxCapacity}
                                     attendeesCount={typeof event.attendeesCount === "number" ? event.attendeesCount : 0}
                                     eventTime={event.eventTime} // Asegúrate de pasar eventTime aquí
                                 />

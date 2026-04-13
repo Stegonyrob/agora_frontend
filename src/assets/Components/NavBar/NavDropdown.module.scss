@@ -1,4 +1,5 @@
-@import "../../scss/variables"; // Import variables
+@use "sass:color";
+@use "../../scss/variables" as *; // Import variables
 
 .dropdownContainer {
   position: relative;
@@ -149,7 +150,7 @@
         text-align: center; // Centrar el texto de los ítems del dropdown
         
         &:hover {
-          background-color: lighten(#1a1a1a, 5%); // Lighter hover background for mobile
+          background-color: color.adjust(#1a1a1a, $lightness: 5%); // Lighter hover background for mobile
         }
       }
 

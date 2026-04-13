@@ -1,4 +1,5 @@
 import { ImagePreview as IImagePreview } from "@/assets/Components/Blog/admin/images/ImagePreviewGrid";
+import { log } from "@/core/logging/LoggerService";
 import { ITextImageDTO } from "@/core/texts/images/ITextImageDTO";
 import TextImageService from "@/core/texts/images/TextImageService";
 import { ITextItemDTO } from "@/core/texts/ITextDTO";
@@ -33,21 +34,7 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
     const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
 
     useEffect(() => {
-        console.log("🔄 [useEditTextForm] useEffect ejecutado", {
-            show,
-            post: !!post,
-            postId: post?.id,
-            postTitle: post?.title,
-            postMessage: post?.message
-        });
-
         if (show && post) {
-            console.log("📝 [useEditTextForm] Cargando datos del texto:", {
-                title: post.title,
-                message: post.message,
-                imagesCount: post.images?.length || 0
-            });
-
             setTitle(post.title || "");
             setMessage(post.message || "");
             setRemovedImageIds([]); if (post.createdAt) {
@@ -62,11 +49,9 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
 
             // Cargar imágenes desde el servicio (no desde el post)
             if (post.id && typeof post.id === 'number') {
-                console.log("🖼️ [useEditTextForm] Cargando imágenes desde el servicio para textId:", post.id);
                 const loadImages = async () => {
                     try {
-                        const images = await textImageService.getImagesByTextId(post.id!);
-                        console.log("🖼️ [useEditTextForm] Imágenes obtenidas del servicio:", images);
+                        const images = await textImageService.getImagesByTextId(post.id);
 
                         const previews: IImagePreview[] = images.map((img) => ({
                             url: img.url || textImageService.buildImageUrl(img.imagePath),
@@ -76,20 +61,17 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                         }));
 
                         setImagePreviews(previews);
-                        console.log("✅ [useEditTextForm] Preview de imágenes cargado:", previews);
                     } catch (error) {
-                        console.error("❌ [useEditTextForm] Error cargando imágenes:", error);
+                        log.error("[useEditTextForm] Error loading images:", error);
                         setImagePreviews([]);
                     }
                 };
                 loadImages();
             } else {
-                console.log("📋 [useEditTextForm] No hay imágenes existentes");
                 setImagePreviews([]);
             }
             setGlobalError(null);
         } else if (!show) {
-            console.log("🧹 [useEditTextForm] Limpiando formulario (show=false)");
             setTitle("");
             setMessage("");
             setDate("");
@@ -101,7 +83,6 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
 
     // Debug: Monitorear cambios en title y message
     useEffect(() => {
-        console.log("📊 [useEditTextForm] Estados actualizados:", { title, description: message });
     }, [title, message]);
 
     const handleImagesSelected = useCallback((files: File[]) => {
@@ -173,12 +154,10 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
 
                 // 1. Eliminar imágenes marcadas para borrado PRIMERO (como en eventos y posts)
                 if (removedIds.length > 0) {
-                    console.log(`🗑️ Eliminando ${removedIds.length} imágenes...`);
                     const deletePromises = removedIds.map((imageId) =>
                         textImageService.deleteTextImage(imageId)
                     );
                     await Promise.all(deletePromises);
-                    console.log("✅ Imágenes eliminadas exitosamente");
                 }
 
                 // 2. Subir nuevas imágenes si las hay DESPUÉS (como en eventos y posts)
@@ -188,12 +167,10 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
 
                 let uploadedNewImages: any[] = [];
                 if (newImageFiles.length > 0) {
-                    console.log(`📤 Subiendo ${newImageFiles.length} nuevas imágenes...`);
                     uploadedNewImages = await textImageService.uploadImagesByTextId(
                         post.id,
                         newImageFiles
                     );
-                    console.log("✅ Nuevas imágenes subidas exitosamente");
                 }
 
                 // 3. Construir payload de imágenes (como en eventos y posts)
@@ -225,31 +202,24 @@ export const useEditTextForm = ({ post, show }: UseEditTextFormProps) => {
                     imageData: img.imageData || "",
                 }));
 
-                const imagesPayload = [...finalImagesPayload, ...newImagesPayload];
-
                 const updatedText = {
                     id: post.id,
                     userId: post.userId,
                     title: sanitizedTitle,
                     message: sanitizedMessage,
-                    images: imagesPayload as any,
+                    images: [...finalImagesPayload, ...newImagesPayload],
                     isArchived: false,
                     isPublished: true,
                 };
 
-                console.info("[useEditTextForm][PUT] Payload enviado:", updatedText);
-
                 // 4. Actualizar el texto
-                console.log("📝 Actualizando datos del texto...");
-                await onSubmit(updatedText, newImageFiles, removedIds);
-                console.log("✅ Texto actualizado exitosamente");
+                onSubmit(updatedText, newImageFiles, removedIds);
 
                 // 5. Emitir evento personalizado para que otros componentes se actualicen
-                console.log("🔄 Emitiendo evento de actualización de texto...");
                 const updateEvent = new CustomEvent('textUpdated', {
                     detail: { textId: post.id, action: 'edit' }
                 });
-                window.dispatchEvent(updateEvent);
+                globalThis.dispatchEvent(updateEvent);
 
                 onClose();
             } catch (error) {

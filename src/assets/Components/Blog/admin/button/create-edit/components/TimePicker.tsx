@@ -31,7 +31,7 @@ const darkTheme = createTheme({
     },
 });
 
-export default function TimePicker({ value, setTime }: TimePickerProps) {
+export default function TimePicker({ value, setTime }: Readonly<TimePickerProps>) {
     // Si se pasa value, lo usamos; si no, usamos un valor local
     const [localValue, setLocalValue] = React.useState(dayjs('2022-04-17T15:30', 'YYYY-MM-DDTHH:mm'));
 
@@ -42,6 +42,15 @@ export default function TimePicker({ value, setTime }: TimePickerProps) {
     const pickerValue = value
         ? dayjs(value, TIME_FORMAT)
         : localValue;
+
+    // Al montarse sin value externo, sincroniza el valor visual con el hook padre
+    // para que la validación no falle si el usuario no toca el picker
+    React.useEffect(() => {
+        if (!value && setTime) {
+            setTime(localValue.format(TIME_FORMAT));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleChange = (newValue: any) => {
         setLocalValue(newValue);

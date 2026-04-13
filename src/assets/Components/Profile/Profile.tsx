@@ -83,7 +83,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
                     </div>
                 </div>
                 <button onClick={onEdit} className={styles.editButton}>
-                    <i className="fas fa-edit"></i>
+                    <i className="bi bi-pencil-square"></i>
+                    {' '}
                     Editar Perfil
                 </button>
             </div>
@@ -96,27 +97,27 @@ const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
                         <table className={styles.infoTable}>
                             <tbody>
                                 <tr>
-                                    <td className={styles.label}>Nombre</td>
+                                    <th scope="row" className={styles.label}>Nombre</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.firstName || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>Primer Apellido</td>
+                                    <th scope="row" className={styles.label}>Primer Apellido</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.lastName1 || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>Segundo Apellido</td>
+                                    <th scope="row" className={styles.label}>Segundo Apellido</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.lastName2 || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>Parentesco</td>
+                                    <th scope="row" className={styles.label}>Parentesco</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.relationship || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>Email</td>
+                                    <th scope="row" className={styles.label}>Email</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.email || 'No especificado'}</td>
                                 </tr>
@@ -134,17 +135,17 @@ const Profile: React.FC<ProfileProps> = ({ profile, onEdit }) => {
                         <table className={styles.infoTable}>
                             <tbody>
                                 <tr>
-                                    <td className={styles.label}>Ciudad</td>
+                                    <th scope="row" className={styles.label}>Ciudad</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.city || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>País</td>
+                                    <th scope="row" className={styles.label}>País</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.country || 'No especificado'}</td>
                                 </tr>
                                 <tr>
-                                    <td className={styles.label}>Teléfono</td>
+                                    <th scope="row" className={styles.label}>Teléfono</th>
                                     <td className={styles.separator}>:</td>
                                     <td className={styles.value}>{profile.phone || 'No especificado'}</td>
                                 </tr>

@@ -97,7 +97,7 @@ const LoveButton: React.FC<LoveButtonProps> = ({
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
         >
             <i
-                className={`fa${isLoved ? 's' : 'r'} fa-heart`}
+                className={`bi ${isLoved ? 'bi-heart-fill' : 'bi-heart'}`}
                 style={{ color: isLoved ? 'red' : 'white', fontSize: 35, position: 'relative' }}
             >
                 <span className={styles.heartCount}>{lovesCount}</span>

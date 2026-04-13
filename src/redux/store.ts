@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { thunk } from "redux-thunk";
 
 // Nuevos reducers homogéneos desde core
 import alertsReducer from "@/core/alerts/alertStore";
@@ -47,7 +46,8 @@ const store = configureStore({
     comments: commentsReducer,
     // ...agrega aquí otros reducers de core si los tienes
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  preloadedState,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

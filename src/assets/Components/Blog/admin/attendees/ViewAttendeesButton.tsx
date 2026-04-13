@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import AttendeesListModal from './AttendeesListModal';
 import styles from './ViewAttendeesButton.module.scss';
+
+const AttendeesListModal = lazy(() => import('./AttendeesListModal'));
 
 interface ViewAttendeesButtonProps {
     eventId: number;
@@ -26,15 +27,20 @@ const ViewAttendeesButton: React.FC<ViewAttendeesButtonProps> = ({
                 title="Ver inscritos al evento"
             >
                 <i className="bi bi-people-fill me-2"></i>
-                Ver Inscritos
+                {' '}
+                Ver inscritos
             </Button>
 
-            <AttendeesListModal
-                show={showModal}
-                onHide={handleHide}
-                eventId={eventId}
-                eventTitle={eventTitle}
-            />
+            {showModal && (
+                <Suspense fallback={null}>
+                    <AttendeesListModal
+                        show={showModal}
+                        onHide={handleHide}
+                        eventId={eventId}
+                        eventTitle={eventTitle}
+                    />
+                </Suspense>
+            )}
         </>
     );
 };

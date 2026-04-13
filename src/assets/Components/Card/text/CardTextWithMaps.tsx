@@ -40,18 +40,9 @@ const CardTextWithMaps: React.FC<CardTextWithMapsProps> = React.memo(({
         return <div className={styles.noDataMessage}>No hay datos disponibles.</div>;
     }
 
-    // === DOCUMENTACIÓN DEL RENDERIZADO FINAL ===
-    console.log(`🎨 === CARDTEXT RENDERIZANDO CATEGORÍA "${category}" ===`);
-    console.log(`📊 Total textos a renderizar: ${texts.length}`);
-    console.log(`🗺️ Mostrar mapas: ${showMaps}`);
-
     return (
         <>
             {texts.map(({ text, images }, index: number) => {
-                console.log(`🎨 === RENDERIZANDO TEXTO ${index + 1} ===`);
-                console.log(`   📌 ID: ${text.id}`);
-                console.log(`   📌 Título: "${text.title}"`);
-                console.log(`   📌 Categoría: "${text.category}"`);
 
                 // Construir URL de imagen correctamente
                 const getCategoryFallbackImage = (category: string): string => {
@@ -77,21 +68,16 @@ const CardTextWithMaps: React.FC<CardTextWithMapsProps> = React.memo(({
                     // Usar la nueva estructura de imágenes con imagePath y url
                     if (img.url) {
                         primaryImage = img.url;
-                        console.log(`✅ === USANDO URL PARA "${text.title}" ===`);
                     } else if (img.imagePath) {
                         // Construir URL desde imagePath
                         const baseUrl = import.meta.env.VITE_API_ENDPOINT_GENERAL.replace("/api/v1", "");
                         primaryImage = `${baseUrl}${img.imagePath}`;
-                        console.log(`🔗 === USANDO IMAGEPATH PARA "${text.title}" ===`);
-                        console.log(`   📌 Image URL: ${primaryImage}`);
                     } else if (img.id) {
                         // Fallback usando el endpoint de imagen específica
                         primaryImage = `${import.meta.env.VITE_API_ENDPOINT_GENERAL}/text-images/image/${img.id}`;
-                        console.log(`🔗 === USANDO ENDPOINT SPECIFIC PARA "${text.title}" ===`);
                     }
                 } else if (text.name_image) {
                     primaryImage = text.name_image;
-                    console.log(`🏷️ === USANDO LEGACY NAME_IMAGE PARA "${text.title}" ===`);
                 }
 
                 // Determinar si este texto debe mostrar el mapa
@@ -118,7 +104,7 @@ const CardTextWithMaps: React.FC<CardTextWithMapsProps> = React.memo(({
                                 <Card.Text className={styles.cardDescription}>
                                     {typeof text.message === "string"
                                         ? text.message.split('\n').map((line: string, i: number) => (
-                                            <span key={i}>{line}<br /></span>
+                                            <span key={`${text.id}-${i}`}>{line}<br /></span>
                                         ))
                                         : text.message}
                                 </Card.Text>

@@ -42,9 +42,9 @@ const AccordionComments: React.FC<AccordionCommentsProps> = ({ postId }) => {
   if (userProfile) {
     if (userProfile.avatar && userProfile.avatar !== "") {
       avatarUrl = userProfile.avatar;
-    } else if (userProfile.avatar_id && avatarsList && avatarsList.length > 0) {
+    } else if (userProfile.avatar_id && avatarsList?.length > 0) {
       const foundAvatar = avatarsList.find(a => a.id === userProfile.avatar_id);
-      if (foundAvatar && foundAvatar.imagePath) {
+      if (foundAvatar?.imagePath) {
         avatarUrl = foundAvatar.imagePath;
       }
     }

@@ -2,12 +2,12 @@
 import { IText } from "@/core/texts/IText";
 import { ITextDTO } from "@/core/texts/ITextDTO";
 import TextService from "@/core/texts/TextService";
+import TextImageService from "@/core/texts/images/TextImageService";
 import { useEffect, useState } from "react";
 import ListAdmin from "../Components/Blog/admin/list/generic/ListAdmin";
 import styles from "../Views/scss/Views.module.scss";
 const AdminTextView = ({ userId }: { userId: number }) => {
     const [fetchedTexts, setFetchedTexts] = useState<IText[]>([]);
-    const [selectedText, setSelectedText] = useState<IText | null>(null);
 
     // 🔄 HELPER: Función para ordenar textos (más nuevo primero)
     // Si quieres ordenar por id descendente (más reciente primero):
@@ -32,7 +32,7 @@ const AdminTextView = ({ userId }: { userId: number }) => {
         fetchTexts();
     }, []);
 
-    const handleSelect = (item: IText) => setSelectedText(item);
+    const handleSelect = (_item: IText) => undefined;
 
     const handleUpdate = async (text: IText) => {
         try {
@@ -52,8 +52,7 @@ const AdminTextView = ({ userId }: { userId: number }) => {
                     };
                     // Imágenes recargadas exitosamente
                 } catch (imageError) {
-                    // Error recargando imágenes
-                    // Continuar sin imágenes si falla
+                    console.warn("⚠️ Error recargando imágenes del texto:", imageError);
                 }
             }
 
@@ -112,7 +111,7 @@ const AdminTextView = ({ userId }: { userId: number }) => {
 
             // Manejar eliminación de imágenes de texto
             if ((newText as any).type === 'textDelete' && (newText as any).imageId) {
-                const textImageService = new (await import('@/core/texts/images/TextImageService')).default();
+                const textImageService = new TextImageService();
                 await textImageService.deleteTextImage((newText as any).imageId);
                 // Imagen eliminada exitosamente
                 return;

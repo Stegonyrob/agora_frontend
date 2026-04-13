@@ -1,8 +1,7 @@
 import EventService from "@/core/events/EventService";
 import { IEvent } from "@/core/events/IEvent";
-import { IEventDTO } from "@/core/events/IEventDTO";
+import { IEventUpdateDTO } from "@/core/events/IEventBackendDTO";
 import { ITag } from "@/core/tags/ITag";
-import TagService from "@/core/tags/TagService";
 import { fetchTagsByEvent, updateEventTags } from "@/core/tags/tagStore";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -11,7 +10,6 @@ import styles from "../Views/scss/Views.module.scss";
 
 const AdminEventView = ({ userId }: { userId: number }) => {
     const [fetchedEvents, setFetchedEvents] = useState<IEvent[]>([]);
-    const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -32,7 +30,7 @@ const AdminEventView = ({ userId }: { userId: number }) => {
         fetchEvents();
     }, [dispatch]);
 
-    const handleSelect = (item: IEvent) => setSelectedEvent(item);
+    const handleSelect = (_item: IEvent) => { };
 
     const handleUpdate = async (event: IEvent) => {
         if (!event) {
@@ -40,19 +38,23 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             return;
         }
         try {
-            console.log("🔄 AdminEventView - Iniciando actualización de evento:", event.id);
-
             const eventService = new EventService();
-            const tagService = new TagService();
 
             // 1. Actualizar los datos básicos del evento (sin tags)
-            const eventDTO = event as unknown as IEventDTO;
-            console.log("📝 Actualizando datos del evento...");
+            const eventDTO: IEventUpdateDTO = {
+                title: event.title,
+                message: event.message,
+                location: (event as any).location || undefined,
+                link: (event as any).link || undefined,
+                capacity: event.capacity,
+                eventDate: (event as any).eventDate || undefined,
+                eventTime: (event as any).eventTime || undefined,
+                archived: event.isArchived,
+            };
             await eventService.updateEvent(event.id, eventDTO);
 
             // 2. Actualizar tags por separado si las hay
             if (event.tags && Array.isArray(event.tags) && event.tags.length > 0) {
-                console.log("🏷️ Actualizando tags del evento:", event.tags);
 
                 // Convertir tags a formato ITag si son strings
                 const tagsAsITag: ITag[] = event.tags.map((tag: any) => {
@@ -76,9 +78,7 @@ const AdminEventView = ({ userId }: { userId: number }) => {
                     tags: tagsAsITag
                 }));
 
-                console.log("✅ Tags actualizadas correctamente");
             } else {
-                console.log("🗑️ Limpiando tags del evento (array vacío)");
                 // Si no hay tags, limpiar las existentes
                 await (dispatch as any)(updateEventTags({
                     eventId: event.id,
@@ -89,7 +89,6 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             // 3. Actualizar estado local
             setFetchedEvents(prev => prev.map(e => (e.id === event.id ? { ...e, ...event } : e)));
 
-            console.log("✅ Evento y tags actualizados correctamente");
         } catch (error) {
             console.error("❌ Error updating event:", error);
             throw error; // Re-lanzar el error para que se maneje en la UI
@@ -135,7 +134,10 @@ const AdminEventView = ({ userId }: { userId: number }) => {
             });
             setFetchedEvents(normalizedEvents);
 
-            console.log("✅ AdminEventView - Lista de eventos actualizada");
+            if (newEvent?.id) {
+                dispatch(fetchTagsByEvent(newEvent.id) as any);
+            }
+
         } catch (error) {
             console.error("Error updating events list:", error);
         }

@@ -27,7 +27,7 @@ $calendar-radius: 0.75rem; // 12px (Tu radio $radius)
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-  color: #aaaaaa;
+  color: #cccccc; // Aumentado de #aaaaaa para cumplir ratio de contraste mínimo 4.5:1 sobre #555555
 }
 
 /* ===================================== */
@@ -81,25 +81,79 @@ $calendar-radius: 0.75rem; // 12px (Tu radio $radius)
 .popup {
     /* Contenedor del calendario desplegable */
     position: absolute;
-    z-index: 1050; 
-    
-    background-color: #1b1a1a; 
+    z-index: 1050;
+
+    background-color: #1b1a1a;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     border-radius: 0.3rem;
     padding: 10px;
     margin-top: 5px;
     min-width: 280px;
     accent-color: #00bcd4;
-}
 
+    /* ===================================== */
+    /* 2. Contraste del calendario (.popup > .rdp-*) */
+    /* Especificidad ganada por el padre .popup, sin !important */
+    /* ===================================== */
 
-/* ===================================== */
-/* 2. Correcciones de Legibilidad (Mínimo) */
-/* ===================================== */
+    :global(.rdp) {
+        color: #ffffff;
+    }
 
-/* El selector principal de DayPicker (.rdp) */
-:global(.rdp) {
-    /* ¡CLAVE! Esto fuerza el texto del calendario (días, meses, etc.) a blanco, 
-       resolviendo el problema de legibilidad. */
-    color: #ffffff; 
+    /* Números de los días */
+    :global(.rdp-day_button),
+    :global(.rdp button) {
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    /* Cabecera: mes y año */
+    :global(.rdp-caption_label),
+    :global(.rdp-month_caption) {
+        color: #e0f7fa;
+        font-weight: 600;
+    }
+
+    /* Nombres de los días de la semana (Lun, Mar...) */
+    :global(.rdp-weekday) {
+        color: #b3e5fc;
+        font-weight: 600;
+        opacity: 1;
+    }
+
+    /* Día de hoy */
+    :global(.rdp-today):not(:global(.rdp-selected)) :global(.rdp-day_button) {
+        color: $color-primary;
+        font-weight: 700;
+        border: 1px solid $color-primary;
+        border-radius: 50%;
+    }
+
+    /* Día seleccionado */
+    :global(.rdp-selected) :global(.rdp-day_button) {
+        background-color: $color-primary;
+        color: #ffffff;
+        border-radius: 50%;
+    }
+
+    /* Botones de navegación (< >) */
+    :global(.rdp-nav) :global(button),
+    :global(.rdp-chevron) {
+        color: #e0f7fa;
+        fill: #e0f7fa;
+        opacity: 1;
+    }
+
+    /* Días fuera del mes actual */
+    :global(.rdp-outside) :global(.rdp-day_button) {
+        color: #6b6b6b;
+        opacity: 1;
+    }
+
+    /* Días deshabilitados */
+    :global(.rdp-disabled) :global(.rdp-day_button) {
+        color: #555555;
+        opacity: 1;
+        cursor: not-allowed;
+    }
 }

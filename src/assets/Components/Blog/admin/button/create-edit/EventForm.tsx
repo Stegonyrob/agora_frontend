@@ -43,7 +43,7 @@ const EventForm: React.FC<EventFormProps> = React.memo(({
         submitForm
     } = useEventForm({ event, show, userId });
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         await submitForm(onSubmit, onClose);
     };

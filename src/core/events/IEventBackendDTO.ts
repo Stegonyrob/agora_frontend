@@ -2,6 +2,8 @@
 export interface IEventCreateDTO {
   title: string; // max 100 chars, required
   message: string; // max 300 chars, required
+  location?: string; // optional - ubicación del evento
+  link?: string; // optional - enlace relacionado
   capacity?: number; // optional
   tags?: { id?: number; name: string }[]; // Updated to match backend's expected structure
   eventDate?: string; // optional - fecha del evento en formato ISO 8601
@@ -14,9 +16,12 @@ export interface IEventCreateDTO {
 export interface IEventUpdateDTO {
   title: string; // max 100 chars, required
   message: string; // max 300 chars, required
-  archived?: boolean; // optional
+  location?: string; // optional - ubicación del evento
+  link?: string; // optional - enlace relacionado
   capacity?: number; // optional
+  eventDate?: string; // optional - fecha del evento en formato ISO 8601
   eventTime?: string; // optional - hora del evento en formato HH:mm
+  archived?: boolean; // optional
 }
 
 // DTO que DEVUELVE el backend (respuesta optimizada)

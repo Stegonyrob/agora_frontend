@@ -41,12 +41,12 @@ class ErrorBoundary extends Component<Props, State> {
         return {
             hasError: true,
             error,
-            errorId: `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            errorId: `err_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
         };
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        const errorId = this.state.errorId || `err_${Date.now()}`;
+        const errorId = `err_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
         // Log del error usando nuestro sistema de logging
         logger.critical('React Error Boundary: Error no manejado capturado', {
@@ -59,7 +59,7 @@ class ErrorBoundary extends Component<Props, State> {
                 componentStack: errorInfo.componentStack
             },
             errorId,
-            url: window.location.href,
+            url: globalThis.location.href,
             userAgent: navigator.userAgent,
             timestamp: new Date().toISOString()
         }, {
@@ -93,7 +93,7 @@ class ErrorBoundary extends Component<Props, State> {
             component: 'ErrorBoundary'
         });
 
-        window.location.reload();
+        globalThis.location.reload();
     };
 
     handleGoHome = () => {
@@ -110,7 +110,7 @@ class ErrorBoundary extends Component<Props, State> {
             errorId: null
         });
 
-        window.location.href = '/';
+        globalThis.location.href = '/';
     };
 
     handleRetry = () => {

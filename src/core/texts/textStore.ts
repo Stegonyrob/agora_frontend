@@ -7,18 +7,24 @@ const service = new TextService();
 
 export const fetchTexts = createAsyncThunk(
   "texts/fetchTexts",
-  async () => await service.getAllTexts()
+  async () => await service.getAllTexts(),
+  {
+    condition: (_, { getState }) => {
+      const state = getState() as { texts?: TextsState };
+      return !state.texts?.isLoaded;
+    },
+  },
 );
 
 export const createText = createAsyncThunk(
   "texts/createText",
-  async (text: ITextDTO) => await service.createText(text)
+  async (text: ITextDTO) => await service.createText(text),
 );
 
 export const updateText = createAsyncThunk(
   "texts/updateText",
   async ({ id, text }: { id: number; text: ITextDTO }) =>
-    await service.updateText(id, text)
+    await service.updateText(id, text),
 );
 
 export const deleteText = createAsyncThunk(
@@ -26,7 +32,7 @@ export const deleteText = createAsyncThunk(
   async (id: number) => {
     await service.deleteText(id);
     return id;
-  }
+  },
 );
 
 interface TextsState {

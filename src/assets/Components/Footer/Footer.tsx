@@ -10,7 +10,7 @@ export default function Footer() {
           <div className={styles.row}>
             <div className={styles.col}>
               <div className={styles.singleCta}>
-                <i className="fas fa-map-marker-alt"></i>
+                <i className="bi bi-geo-alt-fill"></i>
                 <div className={styles.ctaText}>
                   <h4>Encuéntranos</h4>
                   <span>Calle Nicaragua 16, Gijón-Oeste, 33213, Gijón, Asturias, España</span>
@@ -19,7 +19,7 @@ export default function Footer() {
             </div>
             <div className={styles.col}>
               <div className={styles.singleCta}>
-                <i className="fas fa-phone"></i>
+                <i className="bi bi-telephone-fill"></i>
                 <div className={styles.ctaText}>
                   <h4>Llámanos</h4>
                   <span>+34 693 54 59 93</span>
@@ -28,7 +28,7 @@ export default function Footer() {
             </div>
             <div className={styles.col}>
               <div className={styles.singleCta}>
-                <i className="far fa-envelope-open"></i>
+                <i className="bi bi-envelope-open"></i>
                 <div className={styles.ctaText}>
                   <h4>Email</h4>
                   <span>

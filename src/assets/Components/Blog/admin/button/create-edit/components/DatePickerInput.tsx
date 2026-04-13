@@ -10,7 +10,7 @@ const dateToString = (date: Date): string => format(date, 'yyyy-MM-dd');
 const stringToDate = (dateString: string): Date | undefined => {
     if (!dateString) return undefined;
     const parsedDate = new Date(dateString + 'T00:00:00');
-    return isNaN(parsedDate.getTime()) ? undefined : parsedDate;
+    return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate;
 };
 
 
@@ -28,8 +28,8 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({ eventDate, setEventDa
     const handleDaySelect = (date: Date | undefined) => {
         if (date) {
             setEventDate(dateToString(date));
-            setIsPickerOpen(false); // Cierra el picker al seleccionar
         }
+        setIsPickerOpen(false); // Cierra siempre: también cuando se hace clic en el día ya seleccionado
     };
 
     // Lógica para cerrar al hacer clic fuera
@@ -47,7 +47,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({ eventDate, setEventDa
 
 
     return (
-        <div className={`${styles.formGroup} row`}>
+        <div ref={containerRef} className={`${styles.formGroup} row`}>
             <Form.Group className="col-md-6" controlId="formEventDate">
                 <Form.Label>
                     <strong>📅 Fecha del Evento *</strong>
@@ -63,13 +63,13 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({ eventDate, setEventDa
                         className={styles.formControl}
                         style={{ paddingRight: '2.5rem' }} // Espacio para el icono
                     />
-                    <span
+                    <button
+                        type="button"
                         className={styles.icon}
                         onClick={() => setIsPickerOpen(!isPickerOpen)}
-                        style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }}
-                    >
-
-                    </span>
+                        aria-label={isPickerOpen ? 'Cerrar calendario' : 'Abrir calendario'}
+                        style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                    />
                 </div>
                 {isPickerOpen && (
                     <div className={styles.popup}>

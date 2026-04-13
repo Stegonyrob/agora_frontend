@@ -2,16 +2,17 @@
 import type { IEvent } from '@/core/events/IEvent';
 import type { IPost } from '@/core/posts/IPost';
 import type { IText } from '@/core/texts/IText';
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 import { normalizeItem } from '@/core/normalization/normalizeApiResponse';
 import PostService from '@/core/posts/PostService';
-import ButtonCreateGeneric from '../../button/create/ButtonCreateGeneric';
-import ItemEvent from '../event/ItemEvent';
-import ItemPost from '../post/ItemPost';
-import ItemText from '../text/ItemText';
 import styles from './ListAdmin.module.scss';
 import ListAdminSkeleton from './ListAdminSkeleton'; // Importa el esqueleto
+
+const ButtonCreateGeneric = lazy(() => import('../../button/create/ButtonCreateGeneric'));
+const ItemEvent = lazy(() => import('../event/ItemEvent'));
+const ItemPost = lazy(() => import('../post/ItemPost'));
+const ItemText = lazy(() => import('../text/ItemText'));
 
 interface ListAdminPropsPost {
     items: IPost[];
@@ -55,6 +56,22 @@ interface ListAdminPropsText {
 
 type ListAdminProps = ListAdminPropsPost | ListAdminPropsEvent | ListAdminPropsText;
 
+const getSkeletonType = (type: ListAdminProps['type']): 'post' | 'event' => {
+    if (type === 'text') return 'post';
+    return type;
+};
+
+const getSkeletonItemCount = (type: ListAdminProps['type']): number => {
+    if (type === 'event') return 3;
+    return 5;
+};
+
+const getEmptyTypeLabel = (type: ListAdminProps['type']): string => {
+    if (type === 'post') return 'posts';
+    if (type === 'event') return 'eventos';
+    return 'textos';
+};
+
 const ListAdmin = (props: ListAdminProps) => {
     const {
         type,
@@ -69,15 +86,22 @@ const ListAdmin = (props: ListAdminProps) => {
         onUnArchive,
     } = props as ListAdminPropsPost & ListAdminPropsEvent & ListAdminPropsText;
 
+    const isPost = type === 'post';
+    const isEvent = type === 'event';
+    const isText = type === 'text';
+    const skeletonType = getSkeletonType(type);
+
 
     // Estado para los items (solo para post, para refrescar tras archivar)
-    const [postItems, setPostItems] = useState<IPost[]>(type === 'post' ? (props.items as IPost[]) : []);
-    const items: IPost[] | IEvent[] | IText[] =
-        type === 'post'
-            ? postItems
-            : type === 'event'
-                ? (props.items as IEvent[])
-                : (props.items as IText[]);
+    const [postItems, setPostItems] = useState<IPost[]>(() => {
+        if (isPost) return props.items as IPost[];
+        return [];
+    });
+    const items: IPost[] | IEvent[] | IText[] = useMemo(() => {
+        if (isPost) return postItems;
+        if (isEvent) return props.items as IEvent[];
+        return props.items as IText[];
+    }, [isPost, isEvent, postItems, props.items]);
 
     // Estado local para manejar la carga. Asume que está cargando si no hay items.
     // En una aplicación real, probablemente pasarías un prop 'isLoading' desde el padre.
@@ -86,15 +110,15 @@ const ListAdmin = (props: ListAdminProps) => {
 
     // Sincroniza postItems con props.items cuando cambian desde el padre
     useEffect(() => {
-        if (type === 'post') {
+        if (isPost) {
             setPostItems(props.items as IPost[]);
         }
-    }, [type, props.items]);
+    }, [isPost, props.items]);
 
     useEffect(() => {
         // Establece isLoading a false una vez que los ítems se cargan.
         // Se puede añadir un retraso mínimo si se quiere que el skeleton sea visible por un tiempo.
-        if (items && items.length > 0) {
+        if (items.length > 0) {
             setLocalIsLoading(false);
         } else {
             // Si no hay items, espera un momento para mostrar el skeleton antes de mostrar "no hay datos"
@@ -105,101 +129,115 @@ const ListAdmin = (props: ListAdminProps) => {
         }
     }, [items]);
     // Handlers de archivado/desarchivado para post (igual que event)
-    const postService = type === 'post' ? new PostService() : null;
+    const postService = useMemo(() => (isPost ? new PostService() : null), [isPost]);
+
+    const handleArchiveToggle = useCallback(async (id: number, archived: boolean) => {
+        if (!postService) return false;
+        try {
+            await postService.archivePost(id, archived);
+            setPostItems(prev => prev.map(p => p.id === id ? { ...p, isArchived: archived } : p));
+            return true;
+        } catch (e: unknown) {
+            console.warn('Error cambiando estado de archivado del post:', e);
+            return false;
+        }
+    }, [postService]);
 
     const handleArchivePost = useCallback(async (id: number) => {
-        if (!postService) return false;
-        try {
-            await postService.archivePost(id, true);
-            // Refresca la lista localmente (opcional: podrías recargar desde backend)
-            setPostItems(prev => prev.map(p => p.id === id ? { ...p, isArchived: true } : p));
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }, [postService]);
+        return handleArchiveToggle(id, true);
+    }, [handleArchiveToggle]);
 
     const handleUnArchivePost = useCallback(async (id: number) => {
-        if (!postService) return false;
-        try {
-            await postService.archivePost(id, false);
-            setPostItems(prev => prev.map(p => p.id === id ? { ...p, isArchived: false } : p));
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }, [postService]);
+        return handleArchiveToggle(id, false);
+    }, [handleArchiveToggle]);
 
     const normalizedItems = items.map(item => normalizeItem(item));
     // Filtrado por categoría para textos
-    const filteredItems = (type === 'text' && 'filterCategory' in props && props.filterCategory)
-        ? normalizedItems.filter(item => (item as IText).category === props.filterCategory)
-        : normalizedItems;
+    let filteredItems = normalizedItems;
+    if (isText && 'filterCategory' in props && props.filterCategory) {
+        filteredItems = normalizedItems.filter(item => (item as IText).category === props.filterCategory);
+    }
+
+    const emptyTypeLabel = getEmptyTypeLabel(type);
+    const skeletonItemCount = getSkeletonItemCount(type);
+
+    const renderPostItems = () => (filteredItems as IPost[]).map(item => (
+        <ItemPost
+            key={item.id}
+            post={item}
+            onArchive={handleArchivePost}
+            onUnArchive={handleUnArchivePost}
+            onSelect={onSelect}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onSubmit={onSubmit}
+            userId={userId}
+            onCreate={onCreate}
+            postId={item.id}
+            id={item.id}
+            title={item.title}
+        />
+    ));
+
+    const renderEventItems = () => (filteredItems as IEvent[]).map(item => (
+        <ItemEvent
+            key={item.id}
+            event={item}
+            onArchive={onArchive}
+            onUnArchive={onUnArchive}
+            onSelect={onSelect}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onSubmit={onSubmit}
+            userId={userId}
+            onCreate={onCreate}
+            id={item.id}
+            title={item.title}
+        />
+    ));
+
+    const renderTextItems = () => (filteredItems as IText[]).map(text => (
+        <ItemText
+            key={text.id}
+            text={text}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onSelect={onSelect}
+            onSubmit={onSubmit}
+            userId={userId}
+            onCreate={onCreate} id={0} title={''}
+            onArchive={onArchive} onUnArchive={onUnArchive} />
+    ));
+
+    const renderItemsByType = () => {
+        if (isPost) return renderPostItems();
+        if (isEvent) return renderEventItems();
+        return renderTextItems();
+    };
 
     // Si está cargando, renderiza el esqueleto
     if (localIsLoading) {
         // Puedes pasar un itemCount basado en la paginación o un número fijo
-        const skeletonItemCount = type === 'post' ? 5 : type === 'event' ? 3 : 5;
-        return <ListAdminSkeleton type={type === 'text' ? 'post' : type} itemCount={skeletonItemCount} />;
+        return <ListAdminSkeleton type={skeletonType} itemCount={skeletonItemCount} />;
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.panel}>
-                <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
+                <Suspense fallback={<ListAdminSkeleton type={skeletonType} itemCount={1} />}>
+                    <ButtonCreateGeneric type={type} onSubmit={onCreate} userId={userId} />
+                </Suspense>
 
-                {filteredItems && filteredItems.length === 0 && (
+                {filteredItems?.length === 0 && (
                     <div className={styles.noItemsMessage}>
-                        <p>No hay {type === 'post' ? 'posts' : type === 'event' ? 'eventos' : 'textos'} para mostrar.</p>
+                        <p>No hay {emptyTypeLabel} para mostrar.</p>
                         <p>Usa el botón de arriba para crear el primero.</p>
                     </div>
                 )}
 
-                {type === 'post' && (filteredItems as IPost[]).map(item => (
-                    <ItemPost
-                        key={item.id}
-                        post={item}
-                        onArchive={handleArchivePost}
-                        onUnArchive={handleUnArchivePost}
-                        onSelect={onSelect}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onSubmit={onSubmit}
-                        userId={userId}
-                        onCreate={onCreate}
-                        postId={item.id}
-                        id={item.id}
-                        title={item.title}
-                    />
-                ))}
-                {type === 'event' && (filteredItems as IEvent[]).map(item => (
-                    <ItemEvent
-                        key={item.id}
-                        event={item}
-                        onArchive={onArchive}
-                        onUnArchive={onUnArchive}
-                        onSelect={onSelect}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onSubmit={onSubmit}
-                        userId={userId}
-                        onCreate={onCreate}
-                        id={item.id}
-                        title={item.title}
-                    />
-                ))}
-                {type === 'text' && (filteredItems as IText[]).map(text => (
-                    <ItemText
-                        key={text.id}
-                        text={text}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onSelect={onSelect}
-                        onSubmit={onSubmit}
-                        userId={userId}
-                        onCreate={onCreate} id={0} title={''}
-                        onArchive={onArchive} onUnArchive={onUnArchive} />
-                ))}
+                <Suspense fallback={<ListAdminSkeleton type={skeletonType} itemCount={3} />}>
+                    {renderItemsByType()}
+                </Suspense>
             </div>
         </div>
     );

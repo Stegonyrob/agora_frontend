@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React from "react";
 import { validateInput } from '../../../utils/validationUtils';
 import ButtonEditProfile from "../Blog/admin/button/profile/ButtonEditProfile";
@@ -7,7 +6,6 @@ import Avatar from "../Avatar/Avatar";
 import styles from './UserInfo.module.scss';
 
 interface UserInfo {
-    userId: number;
     loggedUserName: string;
     profile: any;
 }
@@ -15,10 +13,7 @@ interface UserInfo {
 const UserInfo = ({ loggedUserName, profile }: UserInfo) => {
 
     const userName = sessionStorage.userName ?? "";
-    console.log(sessionStorage.userName);
     const userId = sessionStorage.userId ?? "";
-
-    console.log(userId);
 
     // Validar los inputs antes de usarlos
     if (!validateInput(userName) || !validateInput(userId)) {
@@ -44,10 +39,4 @@ const UserInfo = ({ loggedUserName, profile }: UserInfo) => {
 
     );
 };
-UserInfo.propTypes = {
-    userId: PropTypes.number.isRequired,
-    userName: PropTypes.string.isRequired,
-    time: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-}
 export default UserInfo;

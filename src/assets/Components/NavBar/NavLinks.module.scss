@@ -1,4 +1,4 @@
-@import "../../scss/variables"; // Import variables
+@use "../../scss/variables" as *; // Import variables
 .navItem {
   position: relative;
   text-decoration: none;

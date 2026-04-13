@@ -7,11 +7,11 @@ import '../src/core/auth/TokenRefresher';
 // 🛡️ Configurar interceptores CSRF
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import App from './App.jsx';
+import App from './App';
 
 import { log } from './core/logging/LoggerService';
 import './index.scss';
-import store from './redux/store.js';
+import store from './redux/store';
 
 
 
@@ -35,7 +35,7 @@ try {
         // <React.StrictMode>
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
+                <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <App />
                 </BrowserRouter>
             </QueryClientProvider>

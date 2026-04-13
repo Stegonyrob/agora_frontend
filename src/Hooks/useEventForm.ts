@@ -32,25 +32,9 @@ export const useEventForm = ({
     }
   }, [show, event]);
 
-  // Estados del formulario
+  // Estados del formulario — todos declarados antes del useEffect de sincronización
   const [title, setTitle] = useState(event?.title || "");
   const [message, setMessage] = useState(event?.message || "");
-  const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
-  const { tags, setTags } = useTagsLoader(event?.tags || []);
-
-  // Sincroniza el estado de tags cuando el modal se abre/cierra o cambia el evento
-  // - Si es creación (sin event), limpia tags al abrir
-  // - Si es edición (con event), sincroniza tags con event.tags
-  useEffect(() => {
-    if (show) {
-      if (event && Array.isArray(event.tags)) {
-        setTags(event.tags);
-      } else if (!event) {
-        setTags([]);
-      }
-    }
-  }, [show, event, setTags]);
-  const { uploadTagsToEvent } = useTagsUpload();
   const [location, setLocation] = useState(event?.location || "");
   const [capacity, setCapacity] = useState(event?.capacity || 0);
   const [eventDate, setEventDate] = useState(() => {
@@ -61,7 +45,7 @@ export const useEventForm = ({
   });
   const [eventTime, setEventTime] = useState(() => {
     if (event?.eventTime) {
-      return event.eventTime; // Use eventTime directly from backend
+      return event.eventTime;
     }
     if (event?.eventDate) {
       return (
@@ -71,8 +55,80 @@ export const useEventForm = ({
     return "";
   });
   const [link, setLink] = useState(event?.link || "");
+  const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const { tags, setTags } = useTagsLoader(event?.tags || []);
+  const { uploadTagsToEvent } = useTagsUpload();
+
+  // Sincroniza todos los campos del formulario cuando el modal se abre o cambia el evento
+  const syncEventDate = useCallback(
+    (eventDate: string, eventTime: string | undefined) => {
+      if (eventDate) {
+        setEventDate(new Date(eventDate).toISOString().split("T")[0]);
+        setEventTime(
+          eventTime ||
+            new Date(eventDate).toISOString().split("T")[1]?.slice(0, 5) ||
+            "",
+        );
+      } else {
+        setEventDate("");
+        setEventTime(eventTime || "");
+      }
+    },
+    [setEventDate, setEventTime],
+  );
+
+  const syncFields = useCallback(
+    (ev: IEvent) => {
+      setTitle(ev.title || "");
+      setMessage(ev.message || "");
+      setLocation(ev.location || "");
+      setCapacity(ev.capacity || 0);
+      setLink(ev.link || "");
+      syncEventDate(ev.eventDate, ev.eventTime);
+      if (Array.isArray(ev.tags)) setTags(ev.tags);
+    },
+    [
+      setTitle,
+      setMessage,
+      setLocation,
+      setCapacity,
+      setLink,
+      syncEventDate,
+      setTags,
+    ],
+  );
+
+  const resetFields = useCallback(() => {
+    setTitle("");
+    setMessage("");
+    setLocation("");
+    setCapacity(0);
+    setLink("");
+    setEventDate("");
+    setEventTime("");
+    setTags([]);
+  }, [
+    setTitle,
+    setMessage,
+    setLocation,
+    setCapacity,
+    setLink,
+    setEventDate,
+    setEventTime,
+    setTags,
+  ]);
+
+  useEffect(() => {
+    if (show) {
+      if (event) {
+        syncFields(event);
+      } else {
+        resetFields();
+      }
+    }
+  }, [show, event, syncFields, resetFields]);
 
   // Datos del usuario
   const userId = propUserId || Number(sessionStorage.getItem("userId")) || 0;
@@ -108,7 +164,7 @@ export const useEventForm = ({
           if (event.images && event.images.length > 0) {
             const fallbackImages: IImagePreview[] = event.images
               .filter(
-                (imageUrl): imageUrl is string => typeof imageUrl === "string"
+                (imageUrl): imageUrl is string => typeof imageUrl === "string",
               )
               .map((imageUrl) => ({
                 url: imageUrl,
@@ -121,7 +177,7 @@ export const useEventForm = ({
       } else if (event?.images && event.images.length > 0) {
         const existingImages: IImagePreview[] = event.images
           .filter(
-            (imageUrl): imageUrl is string => typeof imageUrl === "string"
+            (imageUrl): imageUrl is string => typeof imageUrl === "string",
           )
           .map((imageUrl) => ({
             url: imageUrl,
@@ -179,17 +235,17 @@ export const useEventForm = ({
   const validateForm = useCallback(() => {
     if (userRole !== "ROLE_ADMIN") {
       log.error(
-        "useEventForm - Validación fallida: El usuario no es administrador."
+        "useEventForm - Validación fallida: El usuario no es administrador.",
       );
       throw new Error("Solo los administradores pueden crear/editar eventos.");
     }
 
     if (userId !== 1) {
       log.error(
-        "useEventForm - Validación fallida: El usuario no es el administrador principal."
+        "useEventForm - Validación fallida: El usuario no es el administrador principal.",
       );
       throw new Error(
-        "Solo el usuario administrador (ID: 1) puede crear/editar eventos."
+        "Solo el usuario administrador (ID: 1) puede crear/editar eventos.",
       );
     }
 
@@ -208,10 +264,10 @@ export const useEventForm = ({
           eventDate,
           location,
           eventTime,
-        }
+        },
       );
       throw new Error(
-        "Título, mensaje, fecha, hora y ubicación son campos obligatorios."
+        "Título, mensaje, fecha, hora y ubicación son campos obligatorios.",
       );
     }
 
@@ -231,12 +287,39 @@ export const useEventForm = ({
     setLink("");
   }, []);
 
+  const processImages = useCallback(
+    async (eventId: number, newImageFiles: File[]) => {
+      if (newImageFiles.length > 0) {
+        try {
+          await apiEventImage.uploadEventImages(eventId, newImageFiles);
+        } catch (imageError: any) {
+          log.error("useEventForm - Error subiendo imágenes:", imageError);
+          setGlobalError(
+            `Evento guardado, pero error subiendo imágenes: ${imageError.message}`,
+          );
+        }
+      }
+      try {
+        const eventImages = await apiEventImage.getEventImages(eventId);
+        const refreshedImages: IImagePreview[] = eventImages.map((img) => ({
+          url: apiEventImage.buildImageUrlFromFilename(img.imageName || ""),
+          isLoading: false,
+          isExisting: true,
+        }));
+        setImagePreviews(refreshedImages);
+      } catch (error) {
+        log.error("useEventForm - Error recargando imágenes:", error);
+      }
+    },
+    [apiEventImage],
+  );
+
   // Submit del formulario
   const submitForm = useCallback(
     async (onSubmit: (event: IEvent) => Promise<void>, onClose: () => void) => {
       if (isSubmitting) {
         log.warn(
-          "useEventForm - Proceso de envío ya en curso. Abortando nuevo envío."
+          "useEventForm - Proceso de envío ya en curso. Abortando nuevo envío.",
         );
         return;
       }
@@ -251,13 +334,10 @@ export const useEventForm = ({
         }
 
         const newImageFiles: File[] = [];
-        const existingImageUrls: string[] = [];
 
         imagePreviews.forEach((preview) => {
           if (preview.file && !preview.isExisting) {
             newImageFiles.push(preview.file);
-          } else if (preview.isExisting) {
-            existingImageUrls.push(preview.url);
           }
         });
 
@@ -286,6 +366,8 @@ export const useEventForm = ({
           const createData: IEventCreateDTO = {
             title: title.trim(),
             message: message.trim(),
+            location: location.trim() || undefined,
+            link: link.trim() || undefined,
             capacity: Number(capacity) || undefined,
             eventDate: eventDate || undefined,
             eventTime: eventTime || undefined,
@@ -301,38 +383,13 @@ export const useEventForm = ({
           }
         }
 
-        // Subir nuevas imágenes y recargar imágenes desde backend
-        if (newImageFiles.length > 0 && resultEvent.id) {
-          try {
-            await apiEventImage.uploadEventImages(
-              resultEvent.id,
-              newImageFiles
-            );
-          } catch (imageError: any) {
-            log.error("useEventForm - Error subiendo imágenes:", imageError);
-            setGlobalError(
-              `Evento guardado, pero error subiendo imágenes: ${imageError.message}`
-            );
-          }
-        }
-        // Recargar imágenes desde backend tras crear/editar
         if (resultEvent.id) {
-          try {
-            const eventImages = await apiEventImage.getEventImages(
-              resultEvent.id
-            );
-            const refreshedImages: IImagePreview[] = eventImages.map((img) => ({
-              url: apiEventImage.buildImageUrlFromFilename(img.imageName || ""),
-              isLoading: false,
-              isExisting: true,
-            }));
-            setImagePreviews(refreshedImages);
-          } catch (error) {
-            log.error("useEventForm - Error recargando imágenes:", error);
-          }
+          await processImages(resultEvent.id, newImageFiles);
         }
 
-        console.log("✅ Evento procesado exitosamente:", resultEvent);
+        log.info("useEventForm - Evento procesado exitosamente", {
+          id: resultEvent.id,
+        });
         await onSubmit(resultEvent);
 
         if (!event?.id) {
@@ -366,9 +423,9 @@ export const useEventForm = ({
       link,
       uploadTagsToEvent,
       apiEvent,
-      apiEventImage,
+      processImages,
       resetForm,
-    ]
+    ],
   );
 
   return {

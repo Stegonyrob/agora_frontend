@@ -45,6 +45,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [skeletonId] = useState(() => Math.random().toString(36).slice(2, 11));
 
     const apiPost = new PostService();
     const POSTS_PER_PAGE = 10; // Define cuántos esqueletos mostrar
@@ -81,7 +82,7 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
                 {isLoading ? (
                     // Muestra 10 esqueletos de tipo 'post' mientras carga
                     Array.from({ length: POSTS_PER_PAGE }).map((_, index) => (
-                        <CardItemSkeleton key={index} type="post" />
+                        <CardItemSkeleton key={`skeleton-${skeletonId}-${index}`} type="post" />
                     ))
                 ) : (
                     // Muestra solo los posts no archivados

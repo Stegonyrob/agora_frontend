@@ -1,6 +1,6 @@
 // src/assets/Components/NavBar/NavBar.module.scss
 
-@import "../../scss/variables"; // Import variables
+@use "../../scss/variables" as *; // Import variables
 
 .navbar {
   background: $dark-background;

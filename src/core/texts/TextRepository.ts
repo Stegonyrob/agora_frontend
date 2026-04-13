@@ -8,9 +8,7 @@ export class TextRepository {
 
   async getAll(): Promise<IText[]> {
     try {
-      console.log(`[TextRepository] Fetching texts from: ${this.uri}`);
       const res = await axios.get(this.uri, { headers: getAuthHeaders() });
-      console.log(`[TextRepository] Received ${res.data?.length || 0} texts`);
       return res.data || [];
     } catch (error: any) {
       console.error(`[TextRepository] Error fetching texts:`, {
@@ -50,10 +48,10 @@ export class TextRepository {
       // Si es error 500, probablemente el texto no existe en el backend
       if (error.response?.status === 500) {
         console.error(
-          `❌ TextRepository.update - Texto ID ${id} no existe en backend`
+          `❌ TextRepository.update - Texto ID ${id} no existe en backend`,
         );
         throw new Error(
-          `El texto ID ${id} no existe en el servidor. Puede que haya sido eliminado.`
+          `El texto ID ${id} no existe en el servidor. Puede que haya sido eliminado.`,
         );
       }
       throw error;
@@ -71,7 +69,7 @@ export class TextRepository {
     await axios.patch(
       `${this.uri}/${textId}/archive?archive=${archive}`,
       null,
-      { headers: getAuthHeaders() }
+      { headers: getAuthHeaders() },
     );
   }
 }

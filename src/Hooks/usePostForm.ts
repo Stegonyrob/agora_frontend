@@ -4,7 +4,8 @@ import { IPost } from "@/core/posts/IPost";
 import { IPostCreateDTO } from "@/core/posts/IPostBackendDTO";
 import PostService from "@/core/posts/PostService";
 import { PostImageService } from "@/core/posts/images/PostImageService";
-import { useCallback, useEffect, useState } from "react";
+import TagService from "@/core/tags/TagService";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTagsLoader } from "./useTagsLoader";
 import { useTagsUpload } from "./useTagsUpload";
 
@@ -25,6 +26,7 @@ export const usePostForm = ({
   const [imagePreviews, setImagePreviews] = useState<IImagePreview[]>([]);
   // Load tags as ITag[] if available, otherwise empty
   const { tags, setTags } = useTagsLoader([]);
+  const tagService = useMemo(() => new TagService(), []);
 
   // Sincroniza el estado de tags cuando el modal se abre/cierra o cambia el post
   // - Si es creación (sin post), limpia tags al abrir
@@ -39,12 +41,13 @@ export const usePostForm = ({
             // Async fetch
             (async () => {
               try {
-                const tagRepo = new (
-                  await import("@/core/tags/TagRepository")
-                ).default();
-                const fullTags = await tagRepo.getTagsByPost(post.id);
+                const fullTags = await tagService.getTagsByPost(post.id);
                 setTags(fullTags);
               } catch (err) {
+                log.warn(
+                  "usePostForm - No se pudieron cargar tags del post",
+                  err,
+                );
                 setTags([]);
               }
             })();
@@ -58,7 +61,7 @@ export const usePostForm = ({
         setTags([]);
       }
     }
-  }, [show, post, setTags]);
+  }, [show, post, setTags, tagService]);
   const { uploadTagsToPost } = useTagsUpload();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,7 +100,7 @@ export const usePostForm = ({
           if (post.images && post.images.length > 0) {
             const fallbackImages: IImagePreview[] = post.images
               .filter(
-                (imageUrl): imageUrl is string => typeof imageUrl === "string"
+                (imageUrl): imageUrl is string => typeof imageUrl === "string",
               )
               .map((imageUrl) => ({
                 url: imageUrl,
@@ -110,7 +113,7 @@ export const usePostForm = ({
       } else if (post?.images && post.images.length > 0) {
         const existingImages: IImagePreview[] = post.images
           .filter(
-            (imageUrl): imageUrl is string => typeof imageUrl === "string"
+            (imageUrl): imageUrl is string => typeof imageUrl === "string",
           )
           .map((imageUrl) => ({
             url: imageUrl,
@@ -168,17 +171,17 @@ export const usePostForm = ({
   const validateForm = useCallback(() => {
     if (userRole !== "ROLE_ADMIN") {
       log.error(
-        "usePostForm - Validación fallida: El usuario no es administrador."
+        "usePostForm - Validación fallida: El usuario no es administrador.",
       );
       throw new Error("Solo los administradores pueden crear/editar Postos.");
     }
 
     if (userId !== 1) {
       log.error(
-        "usePostForm - Validación fallida: El usuario no es el administrador principal."
+        "usePostForm - Validación fallida: El usuario no es el administrador principal.",
       );
       throw new Error(
-        "Solo el usuario administrador (ID: 1) puede crear/editar Postos."
+        "Solo el usuario administrador (ID: 1) puede crear/editar Postos.",
       );
     }
 
@@ -188,10 +191,10 @@ export const usePostForm = ({
         {
           title,
           message,
-        }
+        },
       );
       throw new Error(
-        "Título, mensaje, fecha y ubicación son campos obligatorios."
+        "Título, mensaje, fecha y ubicación son campos obligatorios.",
       );
     }
 
@@ -206,12 +209,113 @@ export const usePostForm = ({
     setTags([]);
   }, []);
 
+  const getNewImageFiles = useCallback((): File[] => {
+    return imagePreviews
+      .filter((preview) => preview.file && !preview.isExisting)
+      .map((preview) => preview.file as File);
+  }, [imagePreviews]);
+
+  const buildCreateDTO = useCallback(() => {
+    const createData: IPostCreateDTO = {
+      title: title.trim(),
+      message: message.trim(),
+      archived: false,
+    };
+
+    return {
+      ...createData,
+      id: 0,
+      userId,
+      location: "",
+      loves: 0,
+      comments: [],
+      isArchived: false,
+      tags: tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+        archived: tag.archived,
+      })),
+      images: [],
+      isPublished: false,
+      alt_image: "",
+      source_image: "",
+      alt_avatar: "",
+      source_avatar: "",
+      userName,
+      role: userRole,
+      url_avatar: "",
+      updatedAt: "",
+      createdAt: "",
+      description: "",
+    };
+  }, [title, message, userId, tags, userName, userRole]);
+
+  const createOrPreparePost = useCallback(async (): Promise<IPost> => {
+    if (post?.id) {
+      log.info("🔄 [usePostForm] Modo EDICIÓN detectado");
+      return {
+        ...post,
+        id: post.id,
+        title: title.trim(),
+        message: message.trim(),
+        tags: tags.map((tag) => tag.name),
+        isArchived: false,
+      };
+    }
+
+    const createDTO = buildCreateDTO();
+    const resultPost = await apiPost.createPost(createDTO);
+
+    if (resultPost.id) {
+      try {
+        await uploadTagsToPost(resultPost.id, tags);
+      } catch (err) {
+        log.error("usePostForm - Error asociando tags al Posto:", err);
+      }
+    }
+
+    return resultPost;
+  }, [post, title, message, tags, buildCreateDTO, apiPost, uploadTagsToPost]);
+
+  const uploadPostImages = useCallback(
+    async (postId: number, files: File[]) => {
+      if (files.length === 0) return;
+
+      try {
+        await apiPostImage.uploadPostImages(postId, files);
+      } catch (imageError: any) {
+        log.error("usePostForm - Error subiendo imágenes:", imageError);
+        setGlobalError(
+          `Posto guardado, pero error subiendo imágenes: ${imageError.message}`,
+        );
+      }
+    },
+    [apiPostImage],
+  );
+
+  const refreshPostImages = useCallback(
+    async (postId: number) => {
+      try {
+        const postImages = await apiPostImage.getPostImages(postId);
+        const refreshedImages: IImagePreview[] = postImages.map((img) => ({
+          url: PostImageService.buildImageUrlFromFilename(img.imageName || ""),
+          isLoading: false,
+          isExisting: true,
+        }));
+        setImagePreviews(refreshedImages);
+      } catch (error) {
+        log.error("usePostForm - Error recargando imágenes:", error);
+      }
+    },
+    [apiPostImage],
+  );
+
   // Submit del formulario
   const submitForm = useCallback(
     async (onSubmit: (post: IPost) => Promise<void>, onClose: () => void) => {
       if (isSubmitting) {
         log.warn(
-          "usePostForm - Proceso de envío ya en curso. Abortando nuevo envío."
+          "usePostForm - Proceso de envío ya en curso. Abortando nuevo envío.",
         );
         return;
       }
@@ -220,109 +324,19 @@ export const usePostForm = ({
       setGlobalError(null);
 
       try {
-        // Validar formulario antes de procesar
-        if (!validateForm()) {
-          return;
-        }
+        validateForm();
 
-        const newImageFiles: File[] = [];
-        const existingImageUrls: string[] = [];
+        const resultPost = await createOrPreparePost();
+        const newImageFiles = getNewImageFiles();
 
-        imagePreviews.forEach((preview) => {
-          if (preview.file && !preview.isExisting) {
-            newImageFiles.push(preview.file);
-          } else if (preview.isExisting) {
-            existingImageUrls.push(preview.url);
-          }
-        });
-
-        let resultPost: IPost;
-
-        if (post?.id) {
-          log.info("🔄 [usePostForm] Modo EDICIÓN detectado");
-
-          // EDICIÓN: Preparar datos del post actualizado (SIN llamar al API)
-          // El API se llama desde el componente padre (AdminPostView)
-          resultPost = {
-            ...post,
-            id: post.id,
-            title: title.trim(),
-            message: message.trim(),
-            tags: tags.map((tag) => tag.name),
-            isArchived: false,
-          };
-        } else {
-          // CREACIÓN: Crear Posto sin tags y luego asociar tags
-          const createData: IPostCreateDTO = {
-            title: title.trim(),
-            message: message.trim(),
-            archived: false,
-          };
-          const createDTO = {
-            ...createData,
-            id: 0,
-            userId,
-            location: "",
-            loves: 0,
-            comments: [],
-            isArchived: false,
-            tags: tags.map((tag) => ({
-              id: tag.id,
-              name: tag.name,
-              archived: tag.archived,
-            })),
-            images: [],
-            isPublished: false,
-            alt_image: "",
-            source_image: "",
-            alt_avatar: "",
-            source_avatar: "",
-            userName,
-            role: userRole,
-            url_avatar: "",
-            updatedAt: "",
-            createdAt: "",
-            description: "",
-          };
-          resultPost = await apiPost.createPost(createDTO);
-          if (resultPost.id) {
-            try {
-              await uploadTagsToPost(resultPost.id, tags);
-            } catch (err) {
-              log.error("usePostForm - Error asociando tags al Posto:", err);
-            }
-          }
-        }
-
-        // Subir nuevas imágenes y recargar imágenes desde backend
-        if (newImageFiles.length > 0 && resultPost.id) {
-          try {
-            await apiPostImage.uploadPostImages(resultPost.id, newImageFiles);
-          } catch (imageError: any) {
-            log.error("usePostForm - Error subiendo imágenes:", imageError);
-            setGlobalError(
-              `Posto guardado, pero error subiendo imágenes: ${imageError.message}`
-            );
-          }
-        }
-        // Recargar imágenes desde backend tras crear/editar
         if (resultPost.id) {
-          try {
-            const postImages = await apiPostImage.getPostImages(resultPost.id);
-            const refreshedImages: IImagePreview[] = postImages.map((img) => ({
-              url: PostImageService.buildImageUrlFromFilename(
-                img.imageName || ""
-              ),
-              isLoading: false,
-              isExisting: true,
-            }));
-            setImagePreviews(refreshedImages);
-          } catch (error) {
-            log.error("usePostForm - Error recargando imágenes:", error);
-          }
+          await uploadPostImages(resultPost.id, newImageFiles);
+          await refreshPostImages(resultPost.id);
         }
 
-        console.log("✅ Posto procesado exitosamente:", resultPost);
+        log.info("usePostForm - Post procesado exitosamente", {
+          id: resultPost.id,
+        });
         await onSubmit(resultPost);
 
         if (!post?.id) {
@@ -344,17 +358,13 @@ export const usePostForm = ({
     [
       isSubmitting,
       validateForm,
-      imagePreviews,
+      createOrPreparePost,
+      getNewImageFiles,
+      uploadPostImages,
+      refreshPostImages,
       post,
-      title,
-      message,
-      tags,
-
-      uploadTagsToPost,
-      apiPost,
-      apiPostImage,
       resetForm,
-    ]
+    ],
   );
 
   return {

@@ -1,19 +1,10 @@
-@import "../src/assets/scss/reset.scss";
+@use "./assets/scss/reset.scss";
 /* global.css */
-@import url('https://fonts.googleapis.com/css2?family=Viaoda+Libre&display=swap'); //font-family: "Viadoda Libre", serif;me gusta
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");//font-family: "Nunito", serif;
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");//font-family: "Roboto", serif;
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");//font-family: "Open Sans", serif;
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");//font-family: "Monserrat", serif;
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap");//font-family: "Caveat", cursive;
-@import url('https://fonts.googleapis.com/css2?family=Aladin&family=Viaoda+Libre&display=swap');//font-family: "Aladin", cursive; me gusta 
-@import url("https://fonts.googleapis.com/css2?family=Aladin&display=swap");//font-family: "Aladin", cursive;
-
-@import url("https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Pompiere&display=swap");//font-family: "Overlock", serif; font-family: "Pompiere", cursive; me gusta overlock
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Overlock:wght@400;700&display=swap");
 body {
   background-image: url(/images/fondo.jpg);
   font-family: "Overlock", serif; 
+  font-size: var(--base-font-size);
   line-height: 1.5;
   background-size: cover;
   background-position: center;
@@ -45,10 +36,6 @@ body.font-size-large {
 }
 
 /* Apply base font size to body and common elements */
-body {
-  font-size: var(--base-font-size);
-}
-
 /* Scale headings proportionally - más ambiciosos */
 h1 { font-size: calc(2rem * var(--font-scale)); }
 h2 { font-size: calc(1.75rem * var(--font-scale)); }

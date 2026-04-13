@@ -2,7 +2,6 @@
 
 import { AttendeeService } from '@/core/attendees/AttendeeService';
 import { IAttendee } from '@/core/attendees/IAttendee';
-import { Workbook } from 'exceljs';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Spinner, Table } from 'react-bootstrap';
 import styles from './AttendeesListModal.module.scss';
@@ -45,11 +44,13 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
         }
     };
 
-    const exportToExcel = () => {
+    const exportToExcel = async () => {
         if (attendees.length === 0) {
             alert('No hay inscritos para exportar.');
             return;
         }
+
+        const { Workbook } = await import('exceljs');
 
         // Preparar los datos para el Excel en formato AOA (Array of Arrays)
         const headers = ['Nº', 'Nombre', 'Email', 'Teléfono', 'Fecha de Inscripción'];
@@ -60,7 +61,6 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
             (attendee as any).phone || 'No proporcionado',
             new Date(attendee.registeredAt).toLocaleString('es-ES')
         ]);
-        const aoa = [headers, ...dataForExcel];
 
         // Crear el libro de trabajo
         const workbook = new Workbook();
@@ -71,18 +71,17 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
         worksheet.addRows(dataForExcel);
 
         // Crear el nombre del archivo
-        const fileName = `Inscritos_${eventTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        const fileName = `Inscritos_${eventTitle.replaceAll(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
         // Descargar el archivo
-        workbook.xlsx.writeBuffer().then(buffer => {
-            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.click();
-            URL.revokeObjectURL(url);
-        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     const formatDate = (dateString: string) => {
@@ -124,6 +123,7 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
                         <div className={styles.statsBar}>
                             <span className={styles.totalCount}>
                                 <i className="bi bi-person-check-fill me-1"></i>
+                                {' '}
                                 Total de inscritos: <strong>{attendees.length}</strong>
                             </span>
                             <Button
@@ -133,6 +133,7 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
                                 className={styles.exportButton}
                             >
                                 <i className="bi bi-download me-2"></i>
+                                {' '}
                                 Exportar a Excel
                             </Button>
                         </div>
@@ -198,6 +199,7 @@ const AttendeesListModal: React.FC<AttendeesListModalProps> = ({
                     disabled={loading}
                 >
                     <i className="bi bi-arrow-clockwise me-2"></i>
+                    {' '}
                     Actualizar Lista
                 </Button>
             </Modal.Footer>

@@ -10,7 +10,7 @@ export function useTagsUploadPost() {
    */
   const calculateTagDifferences = (
     currentTags: ITag[],
-    newTags: ITag[]
+    newTags: ITag[],
   ): { toAdd: ITag[]; toRemove: ITag[]; toKeep: ITag[] } => {
     const currentIds = new Set(currentTags.map((tag) => tag.id));
     const newIds = new Set(newTags.map((tag) => tag.id));
@@ -30,22 +30,9 @@ export function useTagsUploadPost() {
   const uploadTagsToPost = async (
     postId: number,
     newTags: ITag[] | null | undefined,
-    isNewPost: boolean = false
+    isNewPost: boolean = false,
   ) => {
-    if (!newTags) {
-      newTags = [];
-    }
-
-    // 🚨 LOG CRÍTICO: Detectar llamadas con arrays vacíos
-    if (newTags.length === 0) {
-      console.error(
-        "🚨 [useTagsUploadPost] ALERTA: uploadTagsToPost llamado con array vacío!"
-      );
-      // Post ID validation
-      console.error("   📍 IsNewPost:", isNewPost);
-      console.error("   📍 Stack trace:", new Error().stack);
-      console.error("   📍 Tiempo:", new Date().toISOString());
-    }
+    newTags ??= [];
 
     try {
       if (!postId || Number.isNaN(postId) || postId < 1) {
@@ -53,7 +40,7 @@ export function useTagsUploadPost() {
       }
 
       if (!Array.isArray(newTags)) {
-        throw new Error("Las tags deben ser un array");
+        throw new TypeError("Las tags deben ser un array");
       }
 
       if (isNewPost) {
@@ -68,7 +55,7 @@ export function useTagsUploadPost() {
         }
 
         log.info(
-          "useTagsUploadPost - Tags agregadas exitosamente a post nuevo"
+          "useTagsUploadPost - Tags agregadas exitosamente a post nuevo",
         );
       } else {
         // Para posts existentes: aplicar cambios diferenciales
@@ -80,35 +67,10 @@ export function useTagsUploadPost() {
         // Obtener tags actuales del post
         const currentTags = await apiTag.getTagsByPost(postId);
 
-        // 🔍 DEBUG DETALLADO
-        // Processing tags
-        console.log(
-          "   📦 Current tags:",
-          currentTags.map((t) => ({ id: t.id, name: t.name }))
-        );
-        console.log(
-          "   🆕 New tags:",
-          newTags.map((t) => ({ id: t.id, name: t.name }))
-        );
-
         // Calcular diferencias
-        const { toAdd, toRemove, toKeep } = calculateTagDifferences(
+        const { toAdd, toRemove } = calculateTagDifferences(
           currentTags,
-          newTags
-        );
-
-        // 🔍 DEBUG DIFERENCIAS
-        console.log(
-          "   ➕ To ADD:",
-          toAdd.map((t) => ({ id: t.id, name: t.name }))
-        );
-        console.log(
-          "   ➖ To REMOVE:",
-          toRemove.map((t) => ({ id: t.id, name: t.name }))
-        );
-        console.log(
-          "   ✅ To KEEP:",
-          toKeep.map((t) => ({ id: t.id, name: t.name }))
+          newTags,
         );
 
         log.info("useTagsUploadPost - Análisis de cambios:", {
@@ -123,7 +85,7 @@ export function useTagsUploadPost() {
         if (toRemove.length > 0) {
           log.info(
             "useTagsUploadPost - Eliminando tags obsoletas:",
-            toRemove.map((t) => ({ id: t.id, name: t.name }))
+            toRemove.map((t) => ({ id: t.id, name: t.name })),
           );
           // Eliminar tags una por una usando el método disponible
           for (const tag of toRemove) {
@@ -134,23 +96,15 @@ export function useTagsUploadPost() {
         if (toAdd.length > 0) {
           log.info(
             "useTagsUploadPost - Agregando nuevas tags:",
-            toAdd.map((t) => ({ id: t.id, name: t.name }))
+            toAdd.map((t) => ({ id: t.id, name: t.name })),
           );
           await apiTag.addTagsToPost(postId, toAdd);
         }
-
-        if (toAdd.length === 0 && toRemove.length === 0) {
-          log.info("useTagsUploadPost - No hay cambios necesarios en las tags");
-        }
-
-        log.info(
-          "useTagsUploadPost - Actualización diferencial completada exitosamente"
-        );
       }
     } catch (error) {
       log.error(
         "useTagsUploadPost - Error al actualizar tags del post:",
-        error
+        error,
       );
       throw error;
     }
