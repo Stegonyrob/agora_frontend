@@ -1,0 +1,136 @@
+/* src/components/ItemGenericSkeleton/ItemGenericSkeleton.module.scss */
+@keyframes skeletonPulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.skeletonLine,
+.skeletonRect,
+.skeletonCircle {
+  background-color: #3a3a3a;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.skeletonLine {
+  border-radius: 0.25rem;
+}
+
+.skeletonRect {
+  border-radius: 0.25rem;
+}
+
+.skeletonCircle {
+  border-radius: 50%;
+}
+
+.isSkeleton {
+  background-color: #2a2a2a;
+  box-shadow: none;
+  cursor: default;
+}
+
+.isSkeleton:hover, .isSkeleton:focus, .isSkeleton:active {
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  border-color: transparent;
+  background: #2a2a2a;
+}
+
+.isSkeleton .id, .isSkeleton .date, .isSkeleton .title, .isSkeleton .message, .isSkeleton .loadingText {
+  color: rgba(240, 240, 240, 0.2);
+  text-shadow: none;
+}
+
+.skeletonIdPlaceholder {
+  width: 6rem;
+  height: 1rem;
+}
+
+.skeletonDatePlaceholder {
+  width: 9rem;
+  height: 1rem;
+}
+
+.skeletonStatusPlaceholder {
+  width: 4rem;
+  height: 1rem;
+}
+
+.skeletonTitlePlaceholder {
+  width: 80%;
+  height: 2rem;
+}
+
+.skeletonTagPlaceholder {
+  width: 4rem;
+  height: 0.95rem;
+}
+
+.previewImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background-color: #3a3a3a;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.removeButtonPlaceholder {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #3a3a3a;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+  z-index: 4;
+}
+
+.loadingSpinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  border-top: 2px solid #87ceeb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.skeletonLoadingTextPlaceholder {
+  width: 8rem;
+  height: 0.75rem;
+}
+
+.skeletonMessageLine {
+  width: 100%;
+  height: 1.2rem;
+  margin-bottom: 0.3rem;
+}
+
+.skeletonMessageLine.short {
+  width: 80%;
+}
+
+.skeletonMessageLine.shortest {
+  width: 60%;
+}
+
+.skeletonActionButton {
+  width: 2.5rem;
+  height: 2.5rem;
+}

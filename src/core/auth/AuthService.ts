@@ -1,24 +1,98 @@
-import AuthRepository from "./AuthRepository";
-import type { IAuthUser } from "./IAuthUser";
-import type { ILoggedInUser } from "./ILoggedInUser";
+import axios from "axios";
 
-export default class AuthService {
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-    repository: AuthRepository = new AuthRepository()
+export interface LoginResponse {
+  userId: number;
+  accessToken: string;
+  refreshToken: string;
+  user?: {
+    id: number;
+    username: string;
+    email: string;
+  };
+}
 
-    async login(data: IAuthUser): Promise<ILoggedInUser> {
+export interface SocialLoginResponse {
+  userId: number;
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    provider: "google" | "facebook";
+  };
+}
 
-       
-        const json = await this.repository.authenticateFetch(data)
-        
-        const user: ILoggedInUser = {
-            email: json.email,
-            roles: json.roles,
-            isAuthenticated: true
-        }
+export class AuthService {
+  private baseUrl = import.meta.env.VITE_API_ENDPOINT_LOGIN || "/api/v1/auth";
 
-        return user
-        
+  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    const response = await axios.post(this.baseUrl, {
+      useremail: credentials.email,
+      password: credentials.password,
+    });
+    const data = response.data;
+
+    // Almacenar tokens en sessionStorage
+    this.storeTokens(data);
+
+    return data;
+  }
+
+  async loginWithGoogle(googleToken: string): Promise<SocialLoginResponse> {
+    const response = await axios.post(`${this.baseUrl}/google`, {
+      token: googleToken,
+    });
+    const data = response.data;
+
+    // Almacenar tokens en sessionStorage
+    this.storeTokens(data);
+
+    return data;
+  }
+
+  async loginWithFacebook(facebookToken: string): Promise<SocialLoginResponse> {
+    const response = await axios.post(`${this.baseUrl}/facebook`, {
+      token: facebookToken,
+    });
+    const data = response.data;
+
+    // Almacenar tokens en sessionStorage
+    this.storeTokens(data);
+
+    return data;
+  }
+
+  private storeTokens(data: LoginResponse | SocialLoginResponse) {
+    sessionStorage.setItem("userId", String(data.userId));
+    sessionStorage.setItem("accessToken", data.accessToken);
+    sessionStorage.setItem("refreshToken", data.refreshToken);
+
+    if (data.user) {
+      sessionStorage.setItem("user", JSON.stringify(data.user));
     }
+  }
 
+  logout() {
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("rulesAccepted");
+    sessionStorage.removeItem("rulesAcceptedDate");
+  }
+
+  isAuthenticated(): boolean {
+    return !!sessionStorage.getItem("accessToken");
+  }
+
+  getCurrentUser() {
+    const userStr = sessionStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+  }
 }

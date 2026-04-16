@@ -1,0 +1,190 @@
+.userSkeleton {
+  width: 80px;
+  height: 16px;
+}
+
+.dateSkeleton {
+  width: 100px;
+  height: 12px;
+}
+
+.commentTextSkeleton {
+  width: 90%;
+  height: 18px;
+}
+
+.replyBtnSkeleton {
+  width: 32px;
+  height: 32px;
+}
+
+.inputSkeleton {
+  width: 50%;
+}
+
+.userReplySkeleton {
+  width: 60px;
+  height: 14px;
+}
+
+.dateReplySkeleton {
+  width: 80px;
+  height: 10px;
+}
+
+.textReplySkeleton {
+  width: 90px;
+  height: 12px;
+}
+
+.commentsContainer {
+  width: 100%;
+}
+
+.commentsContainer {
+  width: 100%;
+}
+
+.commentsContainer .addCommentRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.commentsContainer .addCommentRow .avatarSmall {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.commentsContainer .addCommentRow .input {
+  flex: 1;
+  height: 32px;
+  border-radius: 8px;
+  background: #e0e0e0;
+  width: 60%;
+}
+
+.commentsContainer .addCommentRow .sendBtn {
+  width: 40px;
+  height: 32px;
+  border-radius: 8px;
+  background: #e0e0e0;
+}
+
+.avatarSmall .commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.avatarSmall .commentsList .comment {
+  display: flex;
+  gap: 1rem;
+}
+
+.avatarSmall .commentsList .comment .avatarSmall {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.avatarSmall .commentsList .comment .commentBody {
+  flex: 1;
+}
+
+.avatarSmall .commentsList .comment .commentBody .commentHeader {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatarSmall .commentsList .comment .commentBody .commentHeader .user, .avatarSmall .commentsList .comment .commentBody .commentHeader .date {
+  border-radius: 4px;
+  min-height: 10px;
+}
+
+.avatarSmall .commentsList .comment .commentBody .commentText {
+  margin: 0.5rem 0;
+  min-height: 18px;
+  width: 90%;
+  height: 18px;
+}
+
+.avatarSmall .commentsList .comment .commentBody .actionsRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.avatarSmall .commentsList .comment .commentBody .actionsRow .replyBtn {
+  width: 32px;
+  height: 32px;
+}
+
+.avatarSmall .commentsList .comment .commentBody .replyInputRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.avatarSmall .commentsList .comment .commentBody .replyInputRow .input {
+  width: 50%;
+}
+
+.avatarSmall .commentsList .comment .commentBody .reply {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.avatarSmall .commentsList .comment .commentBody .reply .avatarSmall {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.avatarSmall .commentsList .comment .commentBody .reply > div .user {
+  width: 60px;
+  height: 14px;
+}
+
+.avatarSmall .commentsList .comment .commentBody .reply > div .date {
+  width: 80px;
+  height: 10px;
+}
+
+.avatarSmall .commentsList .comment .commentBody .reply > div .text {
+  width: 90px;
+  height: 12px;
+}
+
+.avatarSmall .commentText {
+  margin: 0.5rem 0;
+  min-height: 18px;
+}
+
+.avatarSmall .actionsRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.avatarSmall .replyInputRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.avatarSmall .reply {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.avatarSmall .user, .avatarSmall .date, .avatarSmall .text {
+  border-radius: 4px;
+  min-height: 10px;
+}

@@ -1,0 +1,30 @@
+export interface EventImage {
+  id?: number;
+  imageName: string;
+}
+
+export interface IEventDTO {
+  id: number;
+  title: string;
+  message: string;
+
+  userId: number;
+  loves: number;
+  isArchived: boolean;
+  tags: string[];
+  alt_image: string;
+  source_image: string;
+  alt_avatar: string;
+  source_avatar: string;
+  url_avatar: string;
+  images: EventImage[]; // Ensure this type is correct
+  isPublished: boolean;
+  location: string;
+  createdAt: string;
+  updatedAt: string;
+  place?: string;
+  eventDate: string; // Fecha del evento en formato ISO
+  eventTime?: string; // Hora del evento en formato HH:mm:ss
+  link: string;
+  capacity: number; // Campo de aforo
+}

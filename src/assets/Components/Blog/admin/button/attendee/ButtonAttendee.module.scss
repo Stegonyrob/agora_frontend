@@ -1,0 +1,114 @@
+
+$card-background-color: #212121;
+.attendButton {
+  background: linear-gradient(90deg, #ec4022 0%, #23a0da 100%);
+  color: #fff;
+  border: none;
+  border-radius: .5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(67, 233, 123, 0.15);
+  transition: background 0.2s, transform 0.1s;
+
+  &:hover {
+      background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+      transform: translateY(-2px) scale(1.04);
+  }
+}
+
+.attendeeBlock {
+  width: 100%;
+}
+
+.counters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.attendees {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.available {
+  font-size: 0.9rem;
+  color: #28a745;
+  font-weight: 600;
+}
+
+.full {
+  font-size: 0.9rem;
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.alreadyRegistered {
+  color: orange;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: green;
+  margin-bottom: 10px;
+}
+.modalCard {
+  position: fixed;
+  bottom: 15%;
+ 
+ 
+ .modalHeader {
+   background-color: rgba(0, 0, 0, 0.8);
+   padding: 1rem;
+   color: azure;
+   font-size: 1.5rem;
+
+   }
+ 
+ .modalBody {
+   background-color: rgba(0, 0, 0, 0.8);
+
+   color: azure;
+
+  
+ 
+ input,
+ textarea {
+ 
+   background-color: rgba(133, 124, 124, 0.8);
+   border: 1px solid #ccc;
+   border-radius: 0.5rem;
+ 
+
+ }
+ textarea {
+   text-align: justify;
+ 
+   color: #f8f4f4;
+ }
+ label{
+   margin-left: 0.2rem;
+ }
+ 
+ button {
+   padding: 0.5rem 1rem;
+   font-size: 1rem;
+   margin: 1rem auto;
+   display: block;
+ 
+   cursor: pointer;
+ 
+   &:hover {
+     background-color: #0056b3;
+   }
+ }
+ }   
+ }

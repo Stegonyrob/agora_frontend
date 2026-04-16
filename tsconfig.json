@@ -1,29 +1,40 @@
 {
   "compilerOptions": {
-     "target": "ES6",
-     "lib": [
-       "dom",
-       "dom.iterable",
-       "esnext"
-     ],
-     "allowJs": true,
-     "skipLibCheck": true,
-     "esModuleInterop": true,
-     "allowSyntheticDefaultImports": true,
-     "strict": true,
-     "forceConsistentCasingInFileNames": true,
-     "noFallthroughCasesInSwitch": true,
-     "module": "esnext",
-     "moduleResolution": "node",
-     "baseUrl": ".",
-     "paths": {
-       "*": ["node_modules/*", "src/types/*"]
-     },
-     "resolveJsonModule": true,
-     "isolatedModules": true,
-     "noEmit": true,
-     "jsx": "react-jsx"
+    "target": "ES6",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "baseUrl": "src",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
- }
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/redux",
+    "src/core/posts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

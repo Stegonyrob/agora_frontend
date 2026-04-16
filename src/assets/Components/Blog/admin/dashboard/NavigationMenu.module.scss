@@ -1,0 +1,116 @@
+// NavigationMenu.module.scss
+
+.dashboardWrap {
+  padding: 2rem 0;
+}
+
+.sectionBlock {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  text-align: left;
+  margin: 1rem 0 1.5rem 2rem;
+  font-size: 1.6rem;
+  color: #2d3a4a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.menuGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.2rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0 2rem 0 2rem;
+}
+.menuItem {
+  width: 7.8rem;
+  height: 8rem;
+  border-radius: 0.7rem;
+  background: linear-gradient(135deg, #e0ffe8 0%, #a8e2c7 100%) ;
+  border: 2.5px solid #2ecc40;
+  box-shadow:
+    0 6px 0 0 #82c28a,
+    0 2px 12px 0 rgba(46,204,64,0.13);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.18s cubic-bezier(.4,2,.6,1), background 0.2s, filter 0.2s, transform 0.13s;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  user-select: none;
+      background-color: #c2d2bb;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    box-shadow:
+      0 2px 0 0 #2ecc40,
+      0 8px 24px 0 rgba(46,204,64,0.18);
+    filter: brightness(1.04);
+    transform: translateY(-2px) scale(1.03);
+    border-color: #91ccaa;
+  }
+  &:active {
+    box-shadow:
+      0 0px 0 0 #2ecc40,
+      0 2px 6px 0 rgba(46,204,64,0.13);
+    filter: brightness(0.98);
+    transform: translateY(2px) scale(0.98);
+    border-color: #27ae60;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.7rem;
+    /* Sin degradados internos, solo para mantener volumen limpio */
+    pointer-events: none;
+    z-index: 0;
+    transition: box-shadow 0.18s cubic-bezier(.4,2,.6,1);
+  }
+
+
+.menuIcon {
+  font-size: 1.7rem;
+  color: #222;
+  margin-bottom: 0.2rem;
+  filter: drop-shadow(0 1px 2px #0002);
+  z-index: 2;
+}
+
+.label {
+  color: #222;
+  font-size: 0.98rem;
+  font-weight: 500;
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.1rem;
+}
+
+// Badges más pequeñas y arriba a la izquierda para no tapar el icono
+.adminBadge, .userBadge {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  background: #fff;
+  color: #333;
+  font-size: 0.68rem;
+  padding: 0.13rem 0.5rem;
+  border-radius: 0.7rem;
+  font-weight: bold;
+  box-shadow: 0 1px 4px rgba(46,204,64,0.15);
+  z-index: 4;
+  letter-spacing: 0.03em;
+}
+.adminBadge { background: #f7d358; color: #7a5c00; }
+.userBadge { background: #b2e0ff; color: #005c7a; }}

@@ -1,0 +1,57 @@
+.admin-manager-custom {
+  margin-top: 2rem;
+}
+
+.bg-profile-form {
+  background: #23272b !important;
+  color: #f8f9fa !important;
+  border-radius: 16px;
+}
+.userManager {
+  background: #23272b !important;
+  border-radius: 16px;
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+
+  .avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #444;
+  }
+
+    .table {
+      background: #23272b;
+      color: #f8f9fa;
+      th {
+        background-color: #343a40;
+        color: #f8f9fa;
+        font-weight: 600;
+        border-bottom: 2px solid #444;
+        text-align: center;
+      }
+      td {
+        vertical-align: middle;
+        background: #23272b;
+        color: #f8f9fa;
+        text-align: center;
+      }
+      .actionsCell {
+        min-width: 8rem;
+        max-width: 15rem;
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+      }
+    }
+
+    .actionButtons {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+  .btn {
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+  }
+}

@@ -1,0 +1,334 @@
+$card-background-color: #212121;
+$hover-glow-color: #9c27b0;
+
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  justify-content: center;
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    background-color: $card-background-color;
+    border-radius: 0.9rem;
+    box-shadow: 0 0.19em 0.75em 0 rgba(0, 0, 0, 0.36);
+    overflow: hidden;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 35rem;
+    position: relative;
+    transition: box-shadow 0.2s, transform 0.15s;
+    color: azure;
+    cursor: pointer;
+    min-width: 22rem;
+
+    &:hover {
+      box-shadow: 0 0.38em 1.25em 0 $hover-glow-color, 0 0 1.25em 0.31em $hover-glow-color;
+      transform: translateY(-0.38em) scale(1.01);
+    }
+
+    .header {
+      position: relative;
+      height: 17.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+
+      .carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        .arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(255, 255, 255, 0.8);
+          border: none;
+  // Icono de love (corazón)
+          cursor: pointer;
+          height: 2.25rem;
+          width: 2.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.3s;
+          z-index: 10;
+
+          &:first-of-type { left: 0.3125rem; }
+          &:last-of-type { right: 0.3125rem; }
+
+          &:hover {
+            background: rgba(255, 255, 255, 1);
+          }
+        }
+
+        .dots {
+          position: absolute;
+          bottom: 0.625rem;
+          display: flex;
+          gap: 0.3125rem;
+          z-index: 10;
+
+          .dot, &.active {
+            width: 0.625rem;
+            height: 0.625rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &.active {
+              background-color: rgba(255, 255, 255, 1);
+            }
+
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.8);
+            }
+          }
+        }
+      }
+
+      .thumbnail {
+        width: 100%;
+        height: 100%;
+        border-radius: 0.375rem;
+        border: 2px solid rgba(125, 125, 137, 0.5);
+        object-fit: contain; /* CAMBIADO A 'CONTAIN' */
+        display: block;
+        background: #181c2f;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+      }
+
+      & > .thumbnail {
+          width: 100%;
+          height: 100%;
+          object-fit: contain; /* CAMBIADO A 'CONTAIN' */
+      }
+
+
+      .eventDate {
+        position: absolute;
+        right: 0.25rem;
+        bottom: 0.25rem;
+        color: rgb(240, 248, 255);
+        background-color: rgba(17, 16, 45, 0.6);
+        padding: 0.25rem 0.375rem;
+        border-radius: 0.1875rem;
+        box-shadow: 0 0.5rem 1.25rem rgba(74, 72, 72, 0.1);
+      }
+
+  .loveIcon {
+        position: absolute;
+        right: 0.625rem;
+        top: 0.625rem;
+        color: rgb(240, 248, 255);
+        background-color: transparent;
+        padding: 0.25rem;
+        border-radius: 50%;
+        box-shadow: 0 0.5rem 1.25rem rgba(74, 72, 72, 0.1);
+        cursor: pointer;
+
+        &.bounceIn {
+          animation: pulse 0.8s 1 ease-in-out alternate;
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+      }
+    }
+
+    &.event {
+      min-width: unset;
+      .header {
+        height: 17.5rem;
+        .thumbnail {
+            border: 3px solid #ffe082;
+        }
+      }
+
+      .body h3 {
+        font-size: 1.7em;
+        color: #ffe082;
+        text-shadow: 0 2px 8px #0007;
+      }
+    }
+
+    .body {
+      padding: 0.75rem 0.5rem 0.5rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      flex-grow: 1;
+
+      h3 {
+        font-size: 1.5em;
+        font-weight: 600;
+        color: rgb(240, 248, 255);
+        margin-bottom: 0.25rem;
+        text-shadow: 0 2px 8px #0007;
+      }
+
+      p {
+        font-size: 0.9em;
+        color: rgb(200, 200, 200);
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+      }
+
+      .seeMore {
+        background: none;
+        border: none;
+        color: rgb(90, 139, 231);
+        cursor: pointer;
+        font-size: 0.9em;
+        padding: 0;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      .tags {
+        list-style: none;
+        padding: 0;
+        margin-top: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3125rem;
+
+        .tagItem {
+          background-color: rgba(51, 108, 215, 0.2);
+          color: rgb(240, 248, 255);
+          padding: 0.1875rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.8em;
+        }
+      }
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.25rem 0.5rem 0.25rem;
+
+      .stats {
+        display: flex;
+        gap: 0.625rem;
+     
+        width: 100%;
+       justify-content: space-around;
+        .capacityInfo{
+        width: 50%;
+      
+        margin-left: 2rem;
+        }
+      }
+
+      .share {
+        display: flex;
+        align-items: center;
+        position: relative;
+        gap: 0.3125rem;
+        top: 0.8rem;
+
+        button {
+          background-color: rgb(51, 108, 215);
+          color: rgb(240, 248, 255);
+          padding: 0.3125rem 0.625rem;
+          outline: 0;
+          border: 2px solid rgb(51, 108, 215);
+          border-radius: 0.25rem;
+          font-weight: 500;
+          margin-left: 0.1875rem;
+          transition: all 0.4s ease-in-out;
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgb(90, 139, 231);
+            border: 2px solid rgb(151, 177, 226);
+          }
+        }
+
+        .popup {
+          position: absolute;
+          bottom: 100%;
+          right: 0;
+          background-color: $card-background-color;
+          border-radius: 0.5rem;
+          box-shadow: 0 0.19em 0.75em 0 rgba(0,0,0,0.36);
+          list-style: none;
+          padding: 0.5rem 0.75rem;
+          margin: 0;
+          display: flex;
+          gap: 0.625rem;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(0.625rem);
+          transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+          z-index: 20;
+
+          &.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+          }
+
+          li a {
+            color: azure;
+            font-size: 1.5em;
+            &:hover {
+              color: $hover-glow-color;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .cardContainer {
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    padding: 1rem;
+  }
+  .card {
+    min-width: 18rem;
+    &.event {
+      min-width: unset;
+      .header {
+        height: 12.5rem;
+      }
+    }
+    .header {
+      height: 12.5rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .cardContainer {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+  .card {
+    min-width: unset;
+    &.event {
+      .header {
+        height: 9rem;
+      }
+    }
+    .header {
+      height: 9rem;
+    }
+  }
+}

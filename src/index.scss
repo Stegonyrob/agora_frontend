@@ -1,42 +1,50 @@
+@use "./assets/scss/reset.scss";
 /* global.css */
-@import url('https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Overlock:wght@400;700&display=swap");
+body {
+  background-image: url(/images/fondo.jpg);
+  font-family: "Overlock", serif; 
+  font-size: var(--base-font-size);
+  line-height: 1.5;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
 
-body{
-   // background-image: url(../src/assets/img/sinapsisneuronal.jpg);
-   // background-image: url(../src/assets/img/coloresneuronas.jpg);
-   // background-image: url(../src/assets/img/cellsynapsis.jpg);
-   background-image: url(../src/assets/img/sinapsisneuronalmulticolor.jpg);
-   font-family: 'Overlock', sans-serif;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100%;
-        // Personalización del tamaño de la fuente para los elementos h1 a h6
-h1 {
-    font-size: 3em; 
-   }
-   
-   h2 {
-    font-size: 2.75em; 
-   }
-   
-   h3 {
-    font-size: 2.5em; 
-   }
-   
-   h4 {
-    font-size: 2.25em; 
-   }
-   
-   h5 {
-    font-size: 2em; 
-   }
-   
-   h6 {
-    font-size: 1.75em; 
-   }
-   
-   p {
-    font-size: 1.5em; 
-   }
+}
+
+/* Font size system using CSS custom properties */
+:root {
+  --base-font-size: 1.25rem;
+  --font-scale: 1;
+}
+
+/* Font size classes for accessibility */
+body.font-size-small {
+  --base-font-size: 1.25rem;
+  --font-scale: 1.25;
+}
+
+body.font-size-medium {
+  --base-font-size: 1.5rem;
+  --font-scale: 1.5;
+}
+
+body.font-size-large {
+  --base-font-size: 1.75rem;
+  --font-scale: 1.75;
+}
+
+/* Apply base font size to body and common elements */
+/* Scale headings proportionally - más ambiciosos */
+h1 { font-size: calc(2rem * var(--font-scale)); }
+h2 { font-size: calc(1.75rem * var(--font-scale)); }
+h3 { font-size: calc(1.5rem * var(--font-scale)); }
+h4 { font-size: calc(1.25rem * var(--font-scale)); }
+h5 { font-size: calc(1.125rem * var(--font-scale)); }
+h6 { font-size: calc(1rem * var(--font-scale)); }
+
+/* Common text elements */
+p, span, div, li, a, button, input, textarea, label {
+  font-size: var(--base-font-size);
 }

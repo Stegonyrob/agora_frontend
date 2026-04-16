@@ -1,0 +1,44 @@
+@use "../../scss/variables" as *; // Import variables
+.navItem {
+  position: relative;
+  text-decoration: none;
+
+  .navLinks {
+    color: $light-text;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.7rem 1.4rem;
+    height: 100%;
+    transition: color 0.18s, border-bottom 0.18s, background 0.18s;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    margin: 0 0.1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+
+    &:hover,
+    &.active {
+      color: $brand-yellow;
+      border-bottom: 0.28rem solid $brand-yellow;
+
+    }
+  }
+
+
+  @media (max-width: $breakpoint-tablet) {
+  .navItem {
+    .navLinks {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      display: block;
+    }
+  }
+}
+}

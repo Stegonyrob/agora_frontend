@@ -1,0 +1,216 @@
+.card {
+  width: 50%;
+  margin-left: 25%;
+  background-color: rgba(0, 0, 0, 0.8) ;
+  padding: 2rem;
+ color: azure;
+  margin-top: 5rem;
+  margin-bottom: 8rem;
+  text-align: center;
+.title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.label {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.input, .passwordInput {
+    background-color: rgba(177, 161, 161, 0.8);
+    width: 70%;
+    margin: auto;
+    color: azure;
+    box-sizing: border-box;
+
+    // En pantallas intermedias y pequeñas, usar todo el ancho disponible
+    @media (max-width: 1100px) {
+      width: 100%;
+    }
+  }
+.formRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  // En pantallas pequeñas y resoluciones intermedias como 1024x600, apilar verticalmente
+  @media (max-width: 1100px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+.button {
+  margin-right: 4rem;
+  margin-left: 4rem;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .input {
+      background-color: rgba(177, 161, 161, 0.8);
+      width: 70%;
+      margin: auto;
+      color: azure;
+    }
+  }
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+
+// Password input wrapper for relative positioning
+.passwordInputWrapper {
+  position: relative;
+  width: 70%;
+  margin: auto;
+
+  // En pantallas intermedias y pequeñas, usar todo el ancho disponible
+  @media (max-width: 1100px) {
+    width: 100%;
+  }
+}
+
+// Password input styled to match ProfileForm
+.passwordInput {
+  width: 100%;
+  background-color: rgba(177, 161, 161, 0.8);
+  color: azure;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  padding-right: 2.5rem;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+
+  // Asegurar consistencia en pantallas pequeñas
+  @media (max-width: 768px) {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+// Show/hide password icon overlays inside input
+.showPasswordIcon {
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ece8e8;
+  z-index: 2;
+  font-size: 1.3rem;
+  pointer-events: auto;
+}
+
+  .rulesNotice {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+
+    p {
+      color: #ffc107;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .showRulesButton {
+      border-color: #ffc107;
+      color: #ffc107;
+
+      &:hover {
+        background-color: #ffc107;
+        color: #000;
+      }
+    }
+  }
+
+  .errorMessage {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    color: #dc3545;
+    font-weight: 500;
+  }
+}
+
+// Responsive design
+@media (max-width: 1100px) {
+  .card {
+    width: 85%;
+    margin-left: 7.5%;
+    padding: 1.8rem;
+    margin-top: 3rem;
+
+    .button {
+      margin-right: 2rem;
+      margin-left: 2rem;
+      width: auto;
+      min-width: 120px;
+    }
+
+    .buttonContainer {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title {
+      font-size: 1.8rem;
+    }
+
+    .label {
+      font-size: 1.3rem;
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 90%;
+    margin-left: 5%;
+    padding: 1.5rem;
+    margin-top: 2rem;
+
+    .button {
+      margin-right: 1rem;
+      margin-left: 1rem;
+      width: auto;
+      min-width: 120px;
+    }
+
+    .buttonContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+
+      .button {
+        width: 80%;
+        margin: 0;
+      }
+    }
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .label {
+      font-size: 1.2rem;
+      text-align: left;
+    }
+  }
+}

@@ -1,0 +1,159 @@
+
+
+  
+
+
+
+// Variables de Color 🎨 (Adaptadas a tu ejemplo de CodePen)
+$color-primary: #b670f4;             // Morado principal (Tu color $primary)
+$color-primary-hover: #9c5ce8;       // Morado más oscuro para hover/focus
+$color-text-primary: #e0f7fa;        // Cian muy claro (Texto general)
+$color-secondary-bg: #2c2c2c;        // Fondo oscuro principal
+$color-border: #4a4a4a;              // Borde oscuro tenue
+$color-label: #b3e5fc;               // Azul claro para etiquetas
+$color-placeholder: #9e9e9e;         // Gris para placeholder
+$color-error: #ff6e6e;               // Rojo para errores
+$color-remove-btn: #ff4757;          // Rojo para botón de eliminar imagen
+
+// Variables de Espaciado y Sombra
+$spacing-unit: 0.5rem;
+$shadow-sm: 0 0 0 0.3rem rgba($color-primary, 0.35); // Sombra con el nuevo color primario
+$shadow-error-sm: 0 0 0 0.25rem rgba(255, 110, 110, 0.3); 
+$calendar-radius: 0.75rem; // 12px (Tu radio $radius)
+
+// Mixin para estilos de botón deshabilitado
+@mixin disabled-button {
+  background-color: #555555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  color: #cccccc; // Aumentado de #aaaaaa para cumplir ratio de contraste mínimo 4.5:1 sobre #555555
+}
+
+/* ===================================== */
+/* 1. Componentes del Input */
+/* ===================================== */
+ .form-control {
+      border: 1px solid $color-primary; // Borde con color primario
+      margin: 0;
+      position: relative;
+      z-index: 10;
+      transform: translateZ(0); 
+      background-color: transparent; 
+      color: $color-text-primary; 
+
+      &::placeholder { color: $color-placeholder; }
+
+      &:focus {
+        outline: none; border-color: $color-primary-hover;
+        box-shadow: $shadow-sm; background-color: $color-border;
+        z-index: 20;
+      }
+
+      &.is-invalid {
+        border-color: $color-error;
+        box-shadow: $shadow-error-sm;
+      }
+      
+      &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus {
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    }
+    .inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+
+.addon {
+ background: none;
+    border: none;
+    color: #0a0a0a;
+    cursor: pointer;
+    // Asegura que el SVG herede el color del texto del addon
+    svg {
+        fill: currentColor; 
+        display: block;
+        top: 70%;
+    }
+}
+
+.popup {
+    /* Contenedor del calendario desplegable */
+    position: absolute;
+    z-index: 1050;
+
+    background-color: #1b1a1a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border-radius: 0.3rem;
+    padding: 10px;
+    margin-top: 5px;
+    min-width: 280px;
+    accent-color: #00bcd4;
+
+    /* ===================================== */
+    /* 2. Contraste del calendario (.popup > .rdp-*) */
+    /* Especificidad ganada por el padre .popup, sin !important */
+    /* ===================================== */
+
+    :global(.rdp) {
+        color: #ffffff;
+    }
+
+    /* Números de los días */
+    :global(.rdp-day_button),
+    :global(.rdp button) {
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    /* Cabecera: mes y año */
+    :global(.rdp-caption_label),
+    :global(.rdp-month_caption) {
+        color: #e0f7fa;
+        font-weight: 600;
+    }
+
+    /* Nombres de los días de la semana (Lun, Mar...) */
+    :global(.rdp-weekday) {
+        color: #b3e5fc;
+        font-weight: 600;
+        opacity: 1;
+    }
+
+    /* Día de hoy */
+    :global(.rdp-today):not(:global(.rdp-selected)) :global(.rdp-day_button) {
+        color: $color-primary;
+        font-weight: 700;
+        border: 1px solid $color-primary;
+        border-radius: 50%;
+    }
+
+    /* Día seleccionado */
+    :global(.rdp-selected) :global(.rdp-day_button) {
+        background-color: $color-primary;
+        color: #ffffff;
+        border-radius: 50%;
+    }
+
+    /* Botones de navegación (< >) */
+    :global(.rdp-nav) :global(button),
+    :global(.rdp-chevron) {
+        color: #e0f7fa;
+        fill: #e0f7fa;
+        opacity: 1;
+    }
+
+    /* Días fuera del mes actual */
+    :global(.rdp-outside) :global(.rdp-day_button) {
+        color: #6b6b6b;
+        opacity: 1;
+    }
+
+    /* Días deshabilitados */
+    :global(.rdp-disabled) :global(.rdp-day_button) {
+        color: #555555;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+}

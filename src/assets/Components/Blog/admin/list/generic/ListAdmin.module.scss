@@ -1,0 +1,28 @@
+
+
+.container {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.05), 0 0 0 10px rgba(0, 0, 0, 0.05);
+  margin: auto;
+  padding: 1rem;
+  margin-bottom: 10rem;
+  width: 90%;
+
+  .panel {
+    background-color: transparent;
+    border-radius: 10px;
+    border: none;
+    
+  }
+
+  .title {
+    color: #fff;
+    font-size: 2rem;
+    text-transform: capitalize;
+    margin: 0;
+    text-align: center;
+  }
+ 
+}

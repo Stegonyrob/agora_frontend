@@ -1,39 +1,134 @@
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import LogoSimply from '../Logo/LogoSimply';
-import './NavBar.scss';
+import { logout } from "@/core/auth/sessionStore";
+import { RootState } from "@/redux/store";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import Avatar from "../Avatar/Avatar";
+import LogoNavBar from "../Logo/LogoNavBar";
+import SettingsModal from "../Settings/SetttingsModal";
+import { HamburgetMenuClose, HamburgetMenuOpen } from "./Icons";
+import styles from "./NavBar.module.scss";
+import NavLinks from "./NavLinks";
+import ToggleGrayScaleButton from "./ToggleGrayScaleButton";
+
 function NavBar() {
-  return (
-    <Navbar expand="lg" className="navbar  border-bottom border-body" data-bs-theme="dark" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
-      <Container>
-        <Navbar.Brand href="#home"><LogoSimply/>
-         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-        <Nav variant="underline" defaultActiveKey="/home" className="ms-auto">
-          
-            <Nav.Link  href="/">Inicio</Nav.Link>
-            <Nav.Link href="/Agora">Agora</Nav.Link>
-            <Nav.Link href="/Services">Servicios</Nav.Link>
-            <NavDropdown title="Neurodiversidad" id="basic-nav-dropdown">
-            <NavDropdown.Item href="/Neurodiversity">¿Qué es?</NavDropdown.Item>
-              <NavDropdown.Item href="/Tea">Tea</NavDropdown.Item>
-              <NavDropdown.Item href="/Tda_Tdh">Tda_Tdh</NavDropdown.Item>
-              <NavDropdown.Item href="/Aprendizaje">Transtornos del Aprendizaje</NavDropdown.Item>
-              <NavDropdown.Item href="/Madurativo">Transtornos Madurativos</NavDropdown.Item>
-            </NavDropdown>
-            <Nav.Link href="/AboutMe">Sobre Mi</Nav.Link>
-            <NavDropdown title="Foro" id="basic-nav-dropdown">
-           
-            <NavDropdown.Item href="/Login">Login</NavDropdown.Item>
-            <NavDropdown.Item href="/Register">Registro</NavDropdown.Item>
-            <NavDropdown.Item href="/Foro">Foro</NavDropdown.Item>
-             </NavDropdown>
-       
-             </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-  );
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [click, setClick] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [grayScale, setGrayScale] = useState(false);
+
+    const userId = useSelector((state: RootState) => state.session.userId) || Number(sessionStorage.getItem("userId")) || 0;
+    const isLoggedIn = userId > 0;
+    // Get the user's profile from the profiles slice
+    const userProfile = useSelector((state: RootState) =>
+        state.profile.profiles.find((p) => p.id === userId)
+    );
+    const avatarsList = useSelector((state: RootState) => state.avatars.avatars);
+
+    let avatarUrl = "/images/avatarGeneric.png";
+    if (userProfile) {
+        if (userProfile.avatar && userProfile.avatar !== "") {
+            avatarUrl = userProfile.avatar;
+        } else if (userProfile.avatar_id && avatarsList && avatarsList.length > 0) {
+            const foundAvatar = avatarsList.find(a => a.id === userProfile.avatar_id);
+            if (foundAvatar && foundAvatar.imagePath) {
+                avatarUrl = foundAvatar.imagePath;
+            }
+        }
+    }
+    const sessionUserName = useSelector((state: RootState) => state.session.userName) || sessionStorage.getItem("userName") || "Usuario";
+    const userName = userProfile?.firstName
+        ? `${userProfile.firstName} ${userProfile.lastName1 || ""}`.trim()
+        : sessionUserName;
+
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
+    const handleClick = () => setClick(!click);
+    const closeMenu = () => setClick(false);
+
+    const handleLogout = () => {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        dispatch(logout());
+        navigate("/login");
+    };
+
+    // Grayscale effect
+    useEffect(() => {
+        document.body.style.filter = grayScale ? "grayscale(100%)" : "none";
+        return () => {
+            document.body.style.filter = "none";
+        };
+    }, [grayScale]);
+
+    return (
+        <nav className={styles.navbar}>
+            <div className={styles.navContainer}>
+                <div className={styles.logoAndToggle}>
+                    <NavLink to="/" className={styles.navLogo} onClick={closeMenu}>
+                        <LogoNavBar className={styles.logoSmall} />
+                    </NavLink>
+                    <span className={styles.specialIcon}>
+                        <ToggleGrayScaleButton checked={grayScale} onChange={() => setGrayScale((prev) => !prev)} />
+                    </span>
+                </div>
+
+                {/* El menú de navegación ahora está separado de los controles */}
+                <ul className={click ? `${styles.navMenu} ${styles.active}` : styles.navMenu}>
+                    <NavLinks closeMenu={closeMenu} isLoggedIn={isLoggedIn} />
+                    {isAdmin && (
+                        <li className={styles.navDashboard}>
+                            <NavLink
+                                to="/admin"
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? `${styles.navLinks} ${styles.active}`
+                                        : styles.navLinks
+                                }
+                                onClick={closeMenu}
+                            >
+                                Dashboard
+                            </NavLink>
+                        </li>
+                    )}
+                </ul>
+
+                {/* --- Contenedor para todos los controles de la derecha --- */}
+                <div className={styles.rightControls}>
+                    {isLoggedIn ? (
+                        <div className={styles.avatarNav}>
+                            <Avatar
+                                userName={userName}
+                                avatarUrl={avatarUrl}
+                                onProfile={() => navigate("/profile")}
+                                onSettings={() => setShowSettingsModal(true)}
+                                onLogout={handleLogout}
+                            />
+                        </div>
+                    ) : (
+                        <span className={styles.settingsIcon} title="Configuración" onClick={() => setShowSettingsModal(true)}>
+                            <i className="bi bi-gear"></i>
+                        </span>
+                    )}
+                    <button className={styles.navIcon} onClick={handleClick} aria-label="Toggle menu">
+                        {click ? <HamburgetMenuClose /> : <HamburgetMenuOpen />}
+                    </button>
+                </div>
+            </div>
+
+            {/* Modal de settings, visible para ambos casos */}
+            {showSettingsModal && (
+                <SettingsModal
+                    show={showSettingsModal}
+                    onClose={() => setShowSettingsModal(false)}
+                    userId={Number(isLoggedIn ? userId : 0)}
+                />
+            )}
+        </nav>
+    );
 }
 
 export default NavBar;

@@ -1,0 +1,158 @@
+.commentsContainer {
+  margin-top: 2rem;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.09);
+  padding: 1.2rem 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #1877f2;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1.08rem;
+  margin-bottom: 1.2rem;
+  transition: color 0.2s;
+}
+
+.toggleBtn:hover {
+  color: #0056b3;
+}
+
+.accordion {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.open {
+  max-height: 1000px;
+  transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.commentsList {
+  max-height: 350px;
+  overflow-y: auto;
+  margin-bottom: 1.2rem;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+  margin-top: 2px;
+}
+
+.commentBody {
+  flex: 1;
+}
+
+.user {
+  font-weight: 600;
+  margin-right: 0.7rem;
+  color: #222;
+}
+
+.date {
+  color: #888;
+  font-size: 0.93rem;
+}
+
+.text {
+  margin: 0.25rem 0 0.2rem 0;
+  font-size: 1.07rem;
+  color: #222;
+}
+
+.actionsRow {
+  margin-top: 0.2rem;
+}
+
+.replyBtn {
+  background: none;
+  border: none;
+  color: #1877f2;
+  font-size: 0.97rem;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 0.7rem;
+}
+
+.replyBtn:hover {
+  text-decoration: underline;
+}
+
+.replyInputRow {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.5rem 0;
+}
+
+.input {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input:focus {
+  border: 1.5px solid #1877f2;
+}
+
+.sendBtn {
+  background: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.sendBtn:hover {
+  background: #0056b3;
+}
+
+.reply {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-left: 2.5rem;
+  margin-top: 0.5rem;
+  background: #f5f6fa;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+}
+
+.avatarSmall {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #eee;
+  margin-top: 2px;
+}
+
+.addCommentRow {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}

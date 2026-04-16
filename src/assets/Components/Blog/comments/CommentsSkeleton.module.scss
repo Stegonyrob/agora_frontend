@@ -1,0 +1,163 @@
+// Skeleton size modifiers para eliminar estilos inline del TSX
+.userSkeleton {
+  width: 80px;
+  height: 16px;
+}
+.dateSkeleton {
+  width: 100px;
+  height: 12px;
+}
+.commentTextSkeleton {
+  width: 90%;
+  height: 18px;
+}
+.replyBtnSkeleton {
+  width: 32px;
+  height: 32px;
+}
+.inputSkeleton {
+  width: 50%;
+}
+.userReplySkeleton {
+  width: 60px;
+  height: 14px;
+}
+.dateReplySkeleton {
+  width: 80px;
+  height: 10px;
+}
+.textReplySkeleton {
+  width: 90px;
+  height: 12px;
+}
+.commentsContainer {
+  width: 100%;
+}
+// Skeleton principal
+.commentsContainer {
+  width: 100%;
+  .addCommentRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    .avatarSmall {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+    .input {
+      flex: 1;
+      height: 32px;
+      border-radius: 8px;
+      background: #e0e0e0;
+      width: 60%;
+    }
+    .sendBtn {
+      width: 40px;
+      height: 32px;
+      border-radius: 8px;
+      background: #e0e0e0;
+    }
+  }
+}
+.avatarSmall {
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  .comment {
+    display: flex;
+    gap: 1rem;
+    .avatarSmall {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+    .commentBody {
+      flex: 1;
+      .commentHeader {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        .user, .date {
+          border-radius: 4px;
+          min-height: 10px;
+        }
+      }
+      .commentText {
+        margin: 0.5rem 0;
+        min-height: 18px;
+        width: 90%;
+        height: 18px;
+      }
+      .actionsRow {
+        display: flex;
+        gap: 0.5rem;
+        .replyBtn {
+          width: 32px;
+          height: 32px;
+        }
+      }
+      .replyInputRow {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        .input {
+          width: 50%;
+        }
+        // .sendBtn eliminado (no ruleset vacío)
+      }
+      .reply {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        .avatarSmall {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: #ccc;
+        }
+        > div {
+          .user {
+            width: 60px;
+            height: 14px;
+          }
+          .date {
+            width: 80px;
+            height: 10px;
+          }
+          .text {
+            width: 90px;
+            height: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+.commentText {
+  margin: 0.5rem 0;
+  min-height: 18px;
+}
+.actionsRow {
+  display: flex;
+  gap: 0.5rem;
+}
+.replyInputRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.reply {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.user, .date, .text {
+  border-radius: 4px;
+  min-height: 10px;
+}
+}

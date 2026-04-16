@@ -1,0 +1,57 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { ISession } from "./ISession";
+import type { ITokenDTO } from "./ITokenDTO";
+
+const initialState: ISession = {
+  userId: 0,
+  role: "",
+  userName: "",
+  isLoggedIn: false,
+  useremail: "",
+  accessToken: "",
+  refreshToken: "",
+  viewAsUser: false,
+};
+
+const sessionSlice = createSlice({
+  name: "session",
+  initialState,
+  reducers: {
+    login(state, action: PayloadAction<ITokenDTO>) {
+      state.userId = action.payload.userId;
+      state.role = action.payload.role;
+      state.userName = action.payload.userName;
+      state.useremail = action.payload.useremail;
+      state.isLoggedIn = true;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+    },
+    setViewAsUser(state, action: PayloadAction<boolean>) {
+      state.viewAsUser = action.payload;
+    },
+    logout(state) {
+      state.userId = 0;
+      state.role = "";
+      state.userName = "";
+      state.useremail = "";
+      state.isLoggedIn = false;
+      sessionStorage.clear();
+      // Limpia cookies si las usas
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+    },
+    setSession(state, action: PayloadAction<ISession>) {
+      Object.assign(state, action.payload);
+    },
+    updateAvatarUrl(state, action: PayloadAction<string>) {
+      state.avatarUrl = action.payload;
+    },
+  },
+});
+
+export const { login, logout, setSession, updateAvatarUrl } =
+  sessionSlice.actions;
+export default sessionSlice.reducer;

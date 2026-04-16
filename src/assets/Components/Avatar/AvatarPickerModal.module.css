@@ -1,0 +1,305 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.avatarSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.navArrow,
+.avatarNavButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0.25rem 0.75rem rgba(102, 126, 234, 0.25);
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.navArrow::before,
+.avatarNavButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navArrow:hover,
+.avatarNavButton:hover {
+  transform: translateY(-0.125rem) scale(1.05);
+  box-shadow: 0 0.5rem 1.25rem rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navArrow:hover::before,
+.avatarNavButton:hover::before {
+  opacity: 1;
+}
+
+.navArrow:active,
+.avatarNavButton:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 0.125rem 0.5rem rgba(102, 126, 234, 0.3);
+}
+
+.navArrow svg,
+.avatarNavButton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.navArrow:hover svg,
+.avatarNavButton:hover svg {
+  transform: scale(1.1);
+}
+
+.avatarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.avatarContainer--error {
+  animation: shakeError 0.4s ease-in-out;
+}
+
+.avatar {
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 0.25rem solid #e2e8f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.avatar:hover {
+  transform: scale(1.02);
+  border-color: #667eea;
+  box-shadow: 0 0.75rem 1.5rem rgba(102, 126, 234, 0.2);
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.avatarImg--loading {
+  opacity: 0.5;
+}
+
+.loadingSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2rem;
+  height: 2rem;
+  border: 0.125rem solid #e2e8f0;
+  border-top: 0.125rem solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.avatarName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  text-align: center;
+  padding: 0.25rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.avatarName:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.uploadButton,
+.avatarUploadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0.25rem 0.75rem rgba(79, 70, 229, 0.25);
+  position: relative;
+  overflow: hidden;
+  min-width: 12rem;
+  margin: 0;
+}
+
+.uploadButton::before,
+.avatarUploadButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.uploadButton:hover,
+.avatarUploadButton:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.25rem rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #5b52f7 0%, #8b5cf6 100%);
+}
+
+.uploadButton:hover::before,
+.avatarUploadButton:hover::before {
+  left: 100%;
+}
+
+.uploadButton:active,
+.avatarUploadButton:active {
+  transform: translateY(0);
+  box-shadow: 0 0.125rem 0.5rem rgba(79, 70, 229, 0.3);
+}
+
+.uploadButton span,
+.avatarUploadButton span {
+  white-space: nowrap;
+}
+
+.uploadIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.9;
+}
+
+.hiddenInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@keyframes shakeError {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-0.25rem);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(0.25rem);
+  }
+}
+
+.errorMessage {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 0.25rem 0.75rem rgba(255, 107, 107, 0.25);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+    gap: 1.25rem;
+  }
+  .avatarSelector {
+    gap: 1.5rem;
+  }
+  .navArrow {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .navArrow svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .avatar {
+    width: 7rem;
+    height: 7rem;
+  }
+  .uploadButton {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    min-width: 10rem;
+  }
+}

@@ -1,0 +1,127 @@
+
+.imageUploadButton {
+    margin-bottom: 1rem;
+    	$color-bg-input: #3a3a3a;
+
+
+.uploadButton {
+    display: flex;
+    width: 100%;
+    max-width: 30rem;
+    padding: 1.5rem;
+    border: 2px dashed #00bcd4;
+background-color: $color-bg-input;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    justify-content: space-around
+    ;
+    justify-self: center;
+    
+    &:hover {
+        border-color: #00e5ff;
+        background: linear-gradient(135deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 198, 218, 0.1) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 188, 212, 0.2);
+    }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
+    }
+}
+
+.buttonContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    filter: hue-rotate(180deg) saturate(1.2);
+}
+
+.text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #00bcd4;
+    margin-bottom: 0.25rem;
+}
+
+.subtext {
+    font-size: 0.85rem;
+    color: #b3e5fc;
+    font-weight: 400;
+}
+
+/* Estados del botón */
+.uploadButton {
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+        
+        &:hover {
+            border-color: #00bcd4;
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.05) 0%, rgba(38, 198, 218, 0.05) 100%);
+            transform: none;
+            box-shadow: none;
+        }
+    }
+    
+    &--error {
+        border-color: #ff5252;
+        background: linear-gradient(135deg, rgba(255, 82, 82, 0.05) 0%, rgba(244, 67, 54, 0.05) 100%);
+        
+        &:hover {
+            border-color: #ff1744;
+            background: linear-gradient(135deg, rgba(255, 82, 82, 0.1) 0%, rgba(244, 67, 54, 0.1) 100%);
+        }
+    }
+}
+
+/* Spinner de carga */
+.loadingSpinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #00bcd4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mensaje de error */
+.errorMessage {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 0.25rem 0.75rem rgba(255, 107, 107, 0.25);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+}

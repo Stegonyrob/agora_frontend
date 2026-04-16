@@ -1,0 +1,345 @@
+/* src/components/CardItemSkeleton/CardItemSkeleton.module.scss */
+@keyframes skeletonPulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.skeletonPulse, .skeletonRectPlaceholder, .skeletonLinePlaceholder, .skeletonCirclePlaceholder, .card .header .thumbnailPlaceholder .skeletonImageCenterPlaceholder, .card .header .carousel .arrow, .card .header .carousel .dots .dot, .card .footer .share .shareBtn {
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.skeletonRectPlaceholder {
+  background-color: #e0e0e0;
+  border-radius: 0.25rem;
+}
+
+.skeletonLinePlaceholder {
+  background-color: #e0e0e0;
+  border-radius: 0.25rem;
+}
+
+.skeletonCirclePlaceholder {
+  background-color: #e0e0e0;
+  border-radius: 50%;
+}
+
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  background-color: #212121;
+  border-radius: 0.9rem;
+  box-shadow: 0 0.19em 0.75em 0 rgba(0, 0, 0, 0.36);
+  overflow: hidden;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 35rem;
+  position: relative;
+  cursor: default;
+  min-width: 22rem;
+}
+
+.card .header {
+  position: relative;
+  height: 17.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.card .header .thumbnailPlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.375rem;
+  border: 2px solid rgba(125, 125, 137, 0.5);
+  background-color: #181c2f;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card .header .thumbnailPlaceholder .skeletonImageCenterPlaceholder {
+  width: 80%;
+  height: 80%;
+  background-color: #e0e0e0;
+  border-radius: 0.25rem;
+}
+
+.card .header .carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card .header .carousel .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  height: 2.25rem;
+  width: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.card .header .carousel .arrow:first-of-type {
+  left: 0.3125rem;
+}
+
+.card .header .carousel .arrow:last-of-type {
+  right: 0.3125rem;
+}
+
+.card .header .carousel .dots {
+  position: absolute;
+  bottom: 0.625rem;
+  display: flex;
+  gap: 0.3125rem;
+  z-index: 10;
+}
+
+.card .header .carousel .dots .dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.card .header .favoriteIcon {
+  position: absolute;
+  right: 0.625rem;
+  top: 0.625rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  box-shadow: 0 0.5rem 1.25rem rgba(74, 72, 72, 0.1);
+  z-index: 2;
+}
+
+.card .header .eventDate {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  padding: 0.25rem 0.375rem;
+  border-radius: 0.1875rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(74, 72, 72, 0.1);
+}
+
+.card .header .eventDate .skeletonEventDatePlaceholder {
+  width: 6rem;
+  height: 1rem;
+}
+
+.card.event {
+  min-width: unset;
+}
+
+.card.event .header {
+  height: 17.5rem;
+}
+
+.card.event .header .thumbnailPlaceholder {
+  border: 3px solid #ffe082;
+}
+
+.card.event .body .title .skeletonTitlePlaceholder {
+  font-size: 1.7em;
+  height: 1.7em;
+}
+
+.card .body {
+  padding: 0.75rem 0.5rem 0.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex-grow: 1;
+}
+
+.card .body .title {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.card .body .title .skeletonTitlePlaceholder {
+  width: 100%;
+  height: 1.5em;
+}
+
+.card .body .date .skeletonDatePlaceholder {
+  width: 5rem;
+  height: 0.9em;
+}
+
+.card .body .description {
+  font-size: 0.9em;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.card .body .description .skeletonDescriptionLine {
+  width: 100%;
+  height: 0.9em;
+  margin-bottom: 0.25rem;
+}
+
+.card .body .description .skeletonDescriptionLine:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.card .body .description .skeletonDescriptionLine.short {
+  width: 80%;
+}
+
+.card .body .description .skeletonDescriptionLine.shortest {
+  width: 60%;
+}
+
+.card .body .description .seeMore {
+  background: none;
+  border: none;
+  cursor: default;
+  padding: 0;
+  margin-top: 0.25rem;
+}
+
+.card .body .description .seeMore .skeletonSeeMorePlaceholder {
+  width: 4rem;
+  height: 0.9em;
+}
+
+.card .body .tags {
+  list-style: none;
+  padding: 0;
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3125rem;
+}
+
+.card .body .tags .tagItem {
+  padding: 0.1875rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8em;
+}
+
+.card .body .tags .tagItem .skeletonTagPlaceholder {
+  width: 3rem;
+  height: 0.8em;
+}
+
+.card .footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem 0.5rem 0.25rem;
+}
+
+.card .footer .stats {
+  display: flex;
+  gap: 0.625rem;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.card .footer .stats .capacityInfo {
+  width: 50%;
+  margin-left: 2rem;
+}
+
+.card .footer .stats .capacityInfo .skeletonCapacityPlaceholder {
+  width: 8rem;
+  height: 1.2rem;
+}
+
+.card .footer .stats .accordionCommentsPlaceholder {
+  margin-top: 1rem;
+}
+
+.card .footer .stats .accordionCommentsPlaceholder .skeletonCommentsPlaceholder {
+  width: 12rem;
+  height: 2rem;
+}
+
+.card .footer .stats .buttonAttendeePlaceholder .skeletonRectPlaceholder {
+  width: 6rem;
+  height: 2rem;
+}
+
+.card .footer .share {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.3125rem;
+  top: 0.8rem;
+}
+
+.card .footer .share .shareBtn {
+  background-color: rgba(51, 108, 215, 0.4);
+  color: transparent;
+  padding: 0.3125rem 0.625rem;
+  border: 2px solid rgba(51, 108, 215, 0.4);
+  border-radius: 0.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-left: 0.1875rem;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .cardContainer {
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    padding: 1rem;
+  }
+  .card {
+    min-width: 18rem;
+  }
+  .card.event {
+    min-width: unset;
+  }
+  .card.event .header {
+    height: 12.5rem;
+  }
+  .card .header {
+    height: 12.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardContainer {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+  .card {
+    min-width: unset;
+  }
+  .card.event .header {
+    height: 9rem;
+  }
+  .card .header {
+    height: 9rem;
+  }
+}

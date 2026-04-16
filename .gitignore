@@ -22,3 +22,21 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# ===== ARCHIVOS DE ENTORNO (CRÍTICO PARA SEGURIDAD) =====
+# NUNCA subir archivos con configuración real a GitHub
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+.env.*
+!.env.example
+
+# ===== COVERAGE REPORTS =====
+# Evitar subir archivos de coverage pesados (HTML reports ~400MB)
+coverage/
+*.lcov
+
+# Ignore validation utils file
+src/utils/validationUtils.ts

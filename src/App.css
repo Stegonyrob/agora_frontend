@@ -1,0 +1,14 @@
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+html body {
+  overflow: auto;
+  margin: 0;
+}
+
+html body footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+}

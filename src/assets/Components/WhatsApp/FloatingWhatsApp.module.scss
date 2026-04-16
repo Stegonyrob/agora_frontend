@@ -1,0 +1,369 @@
+@use "sass:color";
+
+// Variables
+$primary-color: #25d366;
+$secondary-color: #075e54;
+$light-gray: #f0f0f0;
+$dark-gray: #0d1418;
+$white: #fff;
+$black: #111111;
+$shadow-color: rgba(0, 0, 0, 0.15);
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin box-shadow($opacity) {
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, $opacity);
+}
+
+@mixin transition($property, $duration, $ease) {
+  transition: $property $duration $ease;
+}
+
+// Base styles
+.floatingWhatsapp {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  .whatsappButton {
+    width: 4rem;
+    height: 4rem;
+    @include flex-center;
+    position: fixed;
+    bottom: 6rem;
+    right: 2rem;
+    cursor: pointer;
+    background-color: $primary-color;
+    border-radius: 50%;
+    user-select: none;
+    @include box-shadow(0.15);
+    z-index: 9998;
+    border: none;
+    outline: none;
+    transition: box-shadow 0.2s;
+    &:focus {
+      outline: 3px solid #222;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba($primary-color, 0.3);
+    }
+    &:after {
+      content: "";
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: absolute;
+      animation: _pulse 1.2s infinite;
+    }
+    svg {
+      fill: $white;
+      padding: 0.5rem;
+      width: 55px;
+      height: 55px;
+    }
+  }
+
+  .notificationIndicator {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: $primary-color;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    border: 2px solid #e0e0e0;
+    z-index: 10000;
+    transition: background 0.2s, color 0.2s;
+    pointer-events: none;
+  }
+
+  .whatsappChatBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 5%;
+    overflow: hidden;
+    background-color: $white;
+    position: fixed;
+    bottom: 7rem;
+    right: 4rem;
+    width: 375px;
+    opacity: 0;
+    @include transition(height, 0.2s, ease-out);
+    @include box-shadow(0.2);
+    z-index: 9999;
+
+    &.open {
+      animation: _bounceIn 0.4s both;
+    }
+
+    &.close {
+      animation: _bounceOut 0.4s both;
+    }
+
+    @media (max-width: 575px) {
+      right: 0;
+      left: 0;
+      max-width: 90%;
+      margin: auto;
+    }
+  }
+
+  .chatHeader {
+    background-color: $secondary-color;
+    display: grid;
+    align-items: center;
+    padding: 0.25rem;
+    grid-template-columns: 20% 60% 1fr;
+    gap: 1%;
+
+
+
+    .avatar {
+      padding: 0.25rem;
+      position: relative;
+
+      img {
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+        border: 1px solid rgba($white, 0.473);
+      }
+
+      &:after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: #4fbe86;
+        border: 1px solid $white;
+        position: absolute;
+        border-radius: 50%;
+        bottom: 5px;
+        right: 8px;
+      }
+    }
+
+    .status {
+      color: $white;
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem;
+
+      .statusTitle {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .statusSubtitle {
+        font-size: 0.8rem;
+        color: color.adjust($white, $lightness: 20%);
+      }
+    }
+
+    .close {
+      padding: 1rem;
+      cursor: pointer;
+          :hover {
+      background-color: color.adjust($secondary-color, $lightness: -5%);
+      border-radius: 50%;
+    }
+
+      svg {
+        fill: $white;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .chatBody {
+    padding: 20px;
+    background-color: #eae6df;
+    height: 100%;
+    opacity: 0.9;
+
+    .message {
+      padding: 7px 14px 6px;
+      background-color: $white;
+      border-radius: 0px 8px 8px;
+      position: relative;
+      max-width: calc(100% - 120px);
+      z-index: 2;
+      @include box-shadow(0.13);
+
+      .accountName {
+        font-size: 13px;
+        font-weight: 700;
+        color: rgba($black, 0.5);
+      }
+
+      .messageBody {
+        font-size: 14px;
+        line-height: 19px;
+        margin-top: 4px;
+        color: $black;
+        white-space: pre-wrap;
+      }
+
+      .triangle {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 20px 20px 0;
+        border-color: transparent $white transparent transparent;
+        position: absolute;
+        left: -10px;
+        top: 0;
+      }
+    }
+
+    .messageTime {
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba($black, 0.5);
+      justify-content: flex-end;
+    }
+  }
+
+  .chatFooter {
+    padding: 0.25rem;
+    background-color: $light-gray;
+
+    form {
+      display: grid;
+      grid-template-columns: 85% 15%;
+      padding: 0.25rem;
+
+      .input {
+        border-radius: 20px;
+        padding: 0 10px;
+        border: none;
+        background-color: color.adjust($white, $lightness: 5%);
+        min-height: 45px;
+        @include transition(box-shadow, 0.2s, ease-in-out);
+
+        &:focus {
+          border-color: $secondary-color;
+          outline: 0;
+          box-shadow: 0 0 0 1px rgba($secondary-color, 0.5);
+        }
+
+        &::placeholder {
+          color: #949494;
+        }
+      }
+
+      .buttonSend {
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+
+        svg {
+          fill: #919191;
+        }
+
+        &:disabled {
+          pointer-events: none;
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+
+  &.dark {
+    .chatBody {
+      background-color: $dark-gray;
+
+      .message {
+        background-color: #056162;
+        @include box-shadow(0.7);
+
+        .accountName {
+          color: rgba($white, 0.5);
+        }
+
+        .messageBody {
+          color: rgba($white, 0.9);
+        }
+
+        .triangle {
+          border-color: transparent #056162 transparent transparent;
+        }
+      }
+
+      .messageTime {
+        color: rgba($white, 0.5);
+      }
+    }
+
+    .chatFooter {
+      background-color: color.adjust($light-gray, $lightness: -20%);
+
+      form {
+        .input {
+          background-color: #33383b;
+          color: $white;
+
+          &:focus {
+            border-color: #0da896;
+            outline: 0;
+            box-shadow: 0 0 0 1px rgba(13, 168, 150, 0.5);
+          }
+        }
+
+        .buttonSend svg {
+          fill: rgb(104, 104, 104);
+        }
+      }
+    }
+  }
+}
+
+// Keyframes
+@keyframes _pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba($primary-color, 0.75);
+  }
+  100% {
+    box-shadow: 0 0 0 15px rgba($primary-color, 0);
+  }
+}
+
+@keyframes _bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0, 0);
+    transform-origin: bottom right;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+    transform-origin: bottom right;
+  }
+}
+
+@keyframes _bounceOut {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);
+    transform-origin: bottom right;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0, 0);
+    transform-origin: bottom right;
+  }
+}

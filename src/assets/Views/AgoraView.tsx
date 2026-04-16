@@ -1,11 +1,21 @@
-import CardText from "../Components/Card/CardText";
-import './scss/AgoraView.scss';
+import { useParams } from "react-router-dom";
+import CardText from "../Components/Card/text/CardText";
+import styles from './scss/Views.module.scss';
+
+const titleMap: Record<string, string> = {
+  nosotros: "Sobre Nosotros",
+  servicios: "Nuestros Servicios",
+  neurodiversidad: "Neurodiversidad",
+  desarrollo: "Desarrollo",
+  comunicacion: "Comunicación",
+};
+
 export default function AgoraView() {
+  const { category } = useParams<{ category?: string }>();
+
   return (
-    <div>
-      <h2>Ágora</h2>
-      <CardText ids={['1', '2']} />
-   
+    <div className={styles.container}>
+      <CardText category={category} />
     </div>
   );
 }

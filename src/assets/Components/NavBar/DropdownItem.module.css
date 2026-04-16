@@ -1,0 +1,24 @@
+.dropdown-content-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: #333;
+  border: 1px solid #333;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-content-tree li {
+  margin-bottom: 10px;
+}
+
+.dropdown-content-tree li a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+}
+
+.dropdown-content-tree li a:hover {
+  background-color: #444;
+}

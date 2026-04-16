@@ -1,0 +1,134 @@
+/* src/components/ItemGenericSkeleton/ItemGenericSkeleton.module.scss */
+
+// --- Variables y Animación de Esqueleto ---
+$skeleton-bg-base: #2a2a2a; // Color de fondo general del esqueleto de la tarjeta
+$skeleton-bg-element: #3a3a3a; // Un gris un poco más claro para los "huesos"
+$skeleton-text-color: rgba(240, 240, 240, 0.2); // Color para simular texto transparente
+
+@keyframes skeletonPulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// --- Clases generales para formas de esqueleto ---
+// Estas se aplican directamente a los divs que actúan como placeholders
+.skeletonLine,
+.skeletonRect,
+.skeletonCircle {
+  background-color: $skeleton-bg-element;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.skeletonLine {
+  border-radius: 0.25rem; // Pequeño radio para líneas
+}
+
+.skeletonRect {
+  border-radius: 0.25rem;
+}
+
+.skeletonCircle {
+  border-radius: 50%;
+}
+
+// --- Estilos para transformar elementos originales en esqueletos ---
+// Aplicamos esta clase a la tarjeta raíz del esqueleto para anular los estilos originales
+.isSkeleton {
+  background-color: $skeleton-bg-base; // Fondo sólido para la tarjeta del esqueleto
+  box-shadow: none; // Quitamos las sombras complejas
+  cursor: default; // No interactivo
+
+  // Anular estilos de hover/active si se heredan, aunque en un esqueleto no deberían tener efecto
+  &:hover, &:focus, &:active {
+    box-shadow: none;
+    transform: none;
+    filter: none;
+    border-color: transparent;
+    background: $skeleton-bg-base;
+  }
+
+  // Hacer que el texto se vea como placeholders
+  // Estas son las clases de texto del componente original que ahora tendrán placeholders
+  .id, .date, .title, .message, .loadingText {
+    color: $skeleton-text-color;
+    text-shadow: none;
+  }
+}
+
+// --- Dimensiones y apariencias de los placeholders específicos ---
+.skeletonIdPlaceholder {
+  width: 6rem;
+  height: 1rem;
+}
+
+.skeletonDatePlaceholder {
+  width: 9rem;
+  height: 1rem;
+}
+
+.skeletonStatusPlaceholder {
+  width: 4rem;
+  height: 1rem;
+}
+
+.skeletonTitlePlaceholder {
+  width: 80%;
+  height: 2rem;
+}
+
+.skeletonTagPlaceholder {
+  width: 4rem;
+  height: 0.95rem;
+}
+
+.previewImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background-color: $skeleton-bg-element;
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+}
+
+.removeButtonPlaceholder {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: $skeleton-bg-element; // Usar el color del esqueleto
+  animation: skeletonPulse 1.2s infinite ease-in-out;
+  z-index: 4;
+}
+
+.loadingSpinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  border-top: 2px solid #87ceeb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.skeletonLoadingTextPlaceholder {
+  width: 8rem;
+  height: 0.75rem;
+}
+
+.skeletonMessageLine {
+  width: 100%;
+  height: 1.2rem;
+  margin-bottom: 0.3rem;
+  &.short { width: 80%; }
+  &.shortest { width: 60%; }
+}
+
+.skeletonActionButton {
+  width: 2.5rem;
+  height: 2.5rem;
+}
