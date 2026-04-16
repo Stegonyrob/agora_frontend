@@ -7,7 +7,7 @@
 <div align="center">
   <img src="public/images/img/logo.png" alt="Ágora Logo" width="200"/>
   
-  [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://reactjs.org/)
+  [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.4.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
   [![Vite](https://img.shields.io/badge/Vite-6.3.5-646CFF?logo=vite)](https://vitejs.dev/)
   [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -39,7 +39,7 @@
 ## 🛠️ Stack Tecnológico
 
 ### Frontend Core
-- **React 18.2.0** - Biblioteca de UI
+- **React 19.2.0** - Biblioteca de UI
 - **TypeScript 5.4.2** - Tipado estático
 - **Vite 6.3.5** - Build tool y dev server
 - **React Router DOM 6.22.3** - Enrutamiento SPA
@@ -65,12 +65,15 @@
 - **React Google reCAPTCHA 3.1.0** - Protección contra bots
 
 ### Utilidades
-- **Axios 1.6.7** - Cliente HTTP
+- **Axios 1.15.0** - Cliente HTTP
 - **date-fns 4.1.0** - Manipulación de fechas
 - **DOMPurify 3.2.4** - Sanitización de HTML
 - **ExcelJS 4.4.0** - Exportación de datos
 - **crypto-js 4.2.0** - Encriptación
 - **UUID 11.1.0** - Generación de identificadores únicos
+- **react-i18next 15.5.2** - Internacionalización (i18n)
+- **TinyMCE 6** - Editor de texto enriquecido (WYSIWYG)
+- **Appwrite 16.0.2** - BaaS para almacenamiento y servicios backend
 
 ### Testing
 - **Vitest 3.1.4** - Framework de testing
@@ -165,12 +168,19 @@ yarn install
 
 3. **Configurar variables de entorno**
 
-Crea un archivo `.env` en la raíz del proyecto basándote en `.env.example`:
+Crea un archivo `.env.local` en la raíz del proyecto basándote en `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+Edita `.env.local` con tus valores reales (nunca subas este archivo a git):
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_ENDPOINT_GENERAL=http://localhost:8080/api/v1
 VITE_RECAPTCHA_SITE_KEY=tu_clave_recaptcha
 VITE_GOOGLE_MAPS_API_KEY=tu_clave_google_maps
+VITE_GOOGLE_CLIENT_ID=tu_client_id
 ```
 
 4. **Iniciar el servidor de desarrollo**
@@ -293,7 +303,6 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ## 📞 Contacto
 
 - **Email**: agoracentroeducativo@gmail.com
-- **Website**: [Ágora Centro Educativo](http://localhost:5173)
 - **WhatsApp**: Disponible en la plataforma
 
 ## 🙏 Agradecimientos
