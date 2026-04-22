@@ -1,0 +1,59 @@
+.faqContent {
+  max-width: 80%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+}
+
+.faqContent h1 {
+  margin-bottom: 2rem;
+}
+
+.statusMessage {
+  line-height: 1.7;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* Override Bootstrap accordion to match the card look */
+.accordion {
+  :global(.accordion-item) {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  :global(.accordion-button) {
+    font-size: 1.425rem;
+    font-weight: 500;
+    color: #212529;
+    background-color: transparent;
+    padding: 1.1rem 0;
+
+    &:not(.collapsed) {
+      color: inherit;
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &::after {
+      filter: none;
+    }
+  }
+
+  :global(.accordion-body) {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: #444;
+    padding: 0.5rem 0 1.25rem;
+  }
+}
