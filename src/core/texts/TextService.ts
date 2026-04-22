@@ -37,4 +37,8 @@ export default class TextService {
   async unArchiveText(textId: number): Promise<void> {
     return await this.repository.archive(textId, false);
   }
+
+  async getTextsByCategory(category: string): Promise<IText[]> {
+    return await this.repository.getByCategory(category);
+  }
 }
