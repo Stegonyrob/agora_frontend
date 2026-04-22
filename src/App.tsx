@@ -46,7 +46,6 @@ const AdminLegalTextView = lazy(() => import("@/assets/Views/AdminLegalTextView"
 const AdminUsersView = lazy(() => import("@/assets/Views/AdminUsersView"));
 const AdminTextView = lazy(() => import("@/assets/Views/AdminTextView"));
 const ProfileView = lazy(() => import("@/assets/Views/ProfileView"));
-const FaqView = lazy(() => import("@/assets/Views/FaqView"));
 
 
 
@@ -173,7 +172,6 @@ const App: React.FC = () => {
               <Route path="legal/:type" element={<LegalTextView />} />
               <Route path="blog-rules-preview" element={<LegalTextView />} />
               <Route path="reset-password" element={<ResetPasswordPage />} />
-              <Route path="faq" element={<FaqView />} />
             </Route>
             <Route
               path="/blog"

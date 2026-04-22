@@ -72,22 +72,4 @@ export class TextRepository {
       { headers: getAuthHeaders() },
     );
   }
-
-  // Endpoint público: no requiere autenticación
-  async getByCategory(category: string): Promise<IText[]> {
-    try {
-      const res = await axios.get(`${this.uri}/category/${category}`);
-      return res.data || [];
-    } catch (error: any) {
-      console.error(
-        `[TextRepository] Error fetching texts by category "${category}":`,
-        {
-          status: error.response?.status,
-          data: error.response?.data,
-          url: `${this.uri}/category/${category}`,
-        },
-      );
-      return [];
-    }
-  }
 }
